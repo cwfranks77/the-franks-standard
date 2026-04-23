@@ -57,7 +57,6 @@ const faqs = reactive([
   { q: 'Can I sell firearms?', a: 'We do not allow firearms or items that require ATF/FBI reporting. Accessories like optics, parts, triggers (non-NFA items), and gear are welcome.', open: false },
   { q: 'What categories can I sell in?', a: 'Sports cards, memorabilia, musical instruments, firearms accessories, coins, art, watches, jewelry, sneakers, vintage electronics, and more. See our full category list on the Browse page.', open: false },
   { q: 'How do I get paid?', a: 'Sellers connect their bank account via Stripe. When a buyer confirms receipt, your payment is released automatically.', open: false },
-  { q: 'What is FretPilot Studio?', a: 'FretPilot Studio is a Franks Standard brand — an AI-powered guitar learning platform with lessons, a trainer, and a gear store. Visit fretpilotstudio.com.', open: false },
 ])
 </script>
 

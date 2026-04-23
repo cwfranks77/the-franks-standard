@@ -10,11 +10,10 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@stripe/stripe-js": "^5.5.0",
     "nuxt": "^3.16.0",
     "vue": "^3.5.0",
-    "vue-router": "^4.5.0",
-    "@nuxtjs/supabase": "^1.4.0",
-    "@stripe/stripe-js": "^5.5.0"
+    "vue-router": "^4.5.0"
   },
   "devDependencies": {
     "@nuxt/devtools": "^2.3.0",

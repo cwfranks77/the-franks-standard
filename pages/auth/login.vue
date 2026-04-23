@@ -34,9 +34,11 @@ const loading = ref(false)
 async function handleLogin() {
   loading.value = true
   try {
-    const client = useSupabaseClient()
-    const { error } = await client.auth.signInWithPassword({ email: email.value, password: password.value })
-    if (error) throw error
+    // TODO: Uncomment when Supabase module is enabled
+    // const client = useSupabaseClient()
+    // const { error } = await client.auth.signInWithPassword({ email: email.value, password: password.value })
+    // if (error) throw error
+    alert('Auth will work once Supabase is connected. Redirecting to dashboard preview...')
     navigateTo('/dashboard')
   } catch (err) {
     alert(err.message || 'Login failed')

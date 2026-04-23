@@ -55,19 +55,14 @@ const loading = ref(false)
 async function handleRegister() {
   loading.value = true
   try {
-    const client = useSupabaseClient()
-    const { error } = await client.auth.signUp({
-      email: email.value,
-      password: password.value,
-      options: {
-        data: {
-          full_name: fullName.value,
-          account_type: accountType.value,
-        },
-      },
-    })
-    if (error) throw error
-    alert('Account created! Check your email to confirm.')
+    // TODO: Uncomment when Supabase module is enabled
+    // const client = useSupabaseClient()
+    // const { error } = await client.auth.signUp({
+    //   email: email.value, password: password.value,
+    //   options: { data: { full_name: fullName.value, account_type: accountType.value } },
+    // })
+    // if (error) throw error
+    alert('Account created! (Connect Supabase to enable real auth)')
     navigateTo('/auth/login')
   } catch (err) {
     alert(err.message || 'Registration failed')

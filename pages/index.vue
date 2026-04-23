@@ -100,15 +100,6 @@
       </div>
     </section>
 
-    <!-- FretPilot sub-brand -->
-    <section class="section section-dark">
-      <div class="container text-center">
-        <p class="text-muted" style="font-size: 0.85rem;">A FRANKS STANDARD BRAND</p>
-        <h3 class="mt-1">FretPilot Studio</h3>
-        <p class="text-muted mt-1">Learn guitar with AI-powered lessons, a built-in trainer, and a curated gear store.</p>
-        <a href="https://fretpilotstudio.com" target="_blank" class="btn btn-dark mt-2">Visit FretPilot Studio</a>
-      </div>
-    </section>
   </div>
 </template>
 

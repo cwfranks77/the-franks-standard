@@ -2,13 +2,9 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
   devtools: { enabled: true },
 
-  modules: [
-    '@nuxtjs/supabase',
-  ],
-
-  supabase: {
-    redirect: false,
-  },
+  // Uncomment when you have real Supabase credentials in .env
+  // modules: ['@nuxtjs/supabase'],
+  // supabase: { redirect: false },
 
   app: {
     head: {
