@@ -1,6 +1,10 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
   devtools: { enabled: true },
+  ssr: false,
+  nitro: {
+    preset: 'github-pages',
+  },
 
   // Uncomment when you have real Supabase credentials in .env
   // modules: ['@nuxtjs/supabase'],
