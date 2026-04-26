@@ -1,7 +1,7 @@
 <template>
   <div class="auth-page">
     <div class="auth-card">
-      <img src="/logo.png" alt="The Franks Standard" class="auth-logo" />
+      <img src="/logo.svg" alt="The Franks Standard" class="auth-logo" />
       <h1>Sign In</h1>
       <p class="text-muted">Welcome back to The Franks Standard</p>
 

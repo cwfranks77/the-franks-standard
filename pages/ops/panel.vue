@@ -17,6 +17,8 @@
             <li><NuxtLink to="/dashboard">Member dashboard</NuxtLink></li>
             <li><NuxtLink to="/sell">Create listing</NuxtLink></li>
             <li><NuxtLink to="/browse">Browse live</NuxtLink></li>
+            <li><NuxtLink to="/pay">Pay and fees (Stripe links)</NuxtLink></li>
+            <li><NuxtLink to="/video">Video call hub</NuxtLink></li>
             <li><NuxtLink to="/auth/register">Registration (QA)</NuxtLink></li>
           </ul>
         </section>
@@ -99,3 +101,4 @@ function signOut () {
 .checklist li { margin-bottom: 8px; }
 .small { font-size: 0.86rem; margin-bottom: 10px; }
 </style>
+

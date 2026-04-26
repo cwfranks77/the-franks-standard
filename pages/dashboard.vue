@@ -3,17 +3,21 @@
     <div class="container">
       <h1>Dashboard</h1>
       <p class="text-muted">Manage your listings, orders, and account</p>
+      <div class="quick-actions">
+        <NuxtLink to="/pay" class="btn btn-primary btn-sm">Pay fees (Stripe)</NuxtLink>
+        <NuxtLink to="/video" class="btn btn-outline btn-sm">Start a video call</NuxtLink>
+      </div>
 
       <div class="grid grid-3 mt-4">
-        <div class="stat-card">
+        <div class="stat-card hover-lift">
           <p class="stat-label">Active Listings</p>
           <p class="stat-value">0</p>
         </div>
-        <div class="stat-card">
+        <div class="stat-card hover-lift">
           <p class="stat-label">Total Sales</p>
           <p class="stat-value">$0.00</p>
         </div>
-        <div class="stat-card">
+        <div class="stat-card hover-lift">
           <p class="stat-label">Pending Orders</p>
           <p class="stat-value">0</p>
         </div>
@@ -41,8 +45,14 @@
   </div>
 </template>
 
+<script setup>
+definePageMeta({ layout: 'default' })
+useSeoMeta({ title: 'Dashboard - The Franks Standard' })
+</script>
+
 <style scoped>
 .dash-page { padding: 40px 0; }
+.quick-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 1rem; }
 .dash-page h1 { font-size: 2rem; }
 .stat-card {
   padding: 24px;

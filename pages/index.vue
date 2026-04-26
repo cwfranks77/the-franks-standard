@@ -1,28 +1,81 @@
 <template>
   <div>
-    <section class="hero-split">
+    <section class="hero-epic">
+      <div class="hero-aurora" aria-hidden="true" />
       <div class="container hero-grid">
         <div class="hero-copy">
-          <p class="hero-kicker">Authentication-first collectibles and gear</p>
-          <h1 class="hero-title">
-            If it is on The Franks Standard,<br /><span class="text-gold">it is real</span> — and provable.
+          <p class="hero-pulse-ribbon">Proof-first marketplace. <span>Live floor energy.</span></p>
+          <h1 class="hero-title-epic">
+            <span class="t-line">If it is here,</span>
+            <span class="t-line t-gold-shine">it is real.</span>
+            <span class="t-line t-sub">Provenance you can see, and enforce.</span>
           </h1>
-          <p class="hero-subtitle">
-            Every seller ships proof: a Certificate of Authenticity or a platform-backed guarantee. Escrow and buyer confirmation
-            are not extras — they are how a marketplace should behave when the item is the story.
+          <p class="hero-sub-epic">
+            Every listing ships a COA or a signed, in-platform guarantee. Escrow, buyer confirm, and a permanent ban
+            for fraud. This is the collector economy, not the endless scroll.
           </p>
           <div class="hero-actions">
             <NuxtLink to="/auth/register" class="btn btn-primary btn-lg">Start free</NuxtLink>
-            <NuxtLink to="/compare" class="btn btn-outline btn-lg">How we beat eBay and Amazon</NuxtLink>
-            <NuxtLink to="/browse" class="btn btn-dark btn-lg">Browse the floor</NuxtLink>
+            <NuxtLink to="/compare" class="btn btn-outline btn-lg">The Standard vs the big apps</NuxtLink>
+            <NuxtLink to="/browse" class="btn btn-dark btn-lg">Hit the floor</NuxtLink>
+          </div>
+          <div class="hero-avatars" aria-label="Product examples">
+            <img
+              v-for="(a, i) in heroMosaic"
+              :key="i"
+              :src="a"
+              alt=""
+              width="72"
+              height="72"
+              class="mosaic-img"
+            />
           </div>
           <div class="hero-badges">
-            <span class="coa-badge">COA or signed guarantee on every listing</span>
-            <span class="coa-badge soft">Zero tolerance for fakes</span>
+            <span class="coa-badge coa-badge-bright">COA or platform guarantee on every public listing</span>
+            <span class="coa-badge soft">Zero room for fakes</span>
           </div>
         </div>
-        <div class="hero-art" aria-hidden="true">
-          <img class="hero-img" src="/img/hero-showcase.svg" alt="" width="560" height="420" />
+        <div class="hero-stage" aria-hidden="true">
+          <div class="stack-card stack-a">
+            <img
+              src="https://images.unsplash.com/photo-1514525253161-7a46d19d820f?auto=format&w=600&h=420&q=80&fit=crop"
+              alt=""
+              width="300"
+              height="210"
+            />
+          </div>
+          <div class="stack-card stack-b">
+            <img
+              src="https://images.unsplash.com/photo-1617806118233-18e1de247200?auto=format&w=600&h=420&q=80&fit=crop"
+              alt=""
+              width="300"
+              height="210"
+            />
+          </div>
+          <div class="stack-burst" />
+        </div>
+      </div>
+    </section>
+
+    <div class="activity-ticker" aria-label="What the Standard stands for">
+      <div class="ticker-track">
+        <span v-for="(b, j) in tickerBelt" :key="`a-${j}`" class="ticker-bubble">{{ b }}</span>
+        <span v-for="(b, j) in tickerBelt" :key="`b-${j}`" class="ticker-bubble">{{ b }}</span>
+      </div>
+    </div>
+
+    <section class="section sig-section">
+      <div class="container">
+        <h2 class="section-title text-center">Signature moves you will not find bolted onto a bazaar app</h2>
+        <p class="section-subtitle text-center text-muted">
+          Proof, meetups, and help without shipping you to a generic help center maze.
+        </p>
+        <div class="grid grid-4 mt-4 sig-grid">
+          <article v-for="s in signatures" :key="s.title" class="sig-card">
+            <p class="sig-tag">{{ s.tag }}</p>
+            <h3>{{ s.title }}</h3>
+            <p class="sig-desc">{{ s.desc }}</p>
+          </article>
         </div>
       </div>
     </section>
@@ -138,6 +191,24 @@
 </template>
 
 <script setup>
+const heroMosaic = [
+  'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?auto=format&w=80&h=80&q=70&fit=crop',
+  'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&w=80&h=80&q=70&fit=crop',
+  'https://images.unsplash.com/photo-1617806118233-18e1de247200?auto=format&w=80&h=80&q=70&fit=crop',
+  'https://images.unsplash.com/photo-1542536907-0d6e8e7e4c6c?auto=format&w=80&h=80&q=70&fit=crop',
+  'https://images.unsplash.com/photo-1624366330919-0b5f42f16160?auto=format&w=80&h=80&q=70&fit=crop',
+  'https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?auto=format&w=80&h=80&q=70&fit=crop',
+]
+
+const tickerBelt = [
+  'Sellers: COA upload in flow. ',
+  'Sneaker grails, slabbed cards. ',
+  'Escrow and confirm on every handoff. ',
+  'We ban fraud for life, not strikes. ',
+  'Art, watches, games: the floor is the story. ',
+  'See how we differ from eBay and Amazon. ',
+]
+
 const stats = [
   { n: '1', t: 'Proof before publish — no exceptions' },
   { n: '100%', t: 'Listings with COA or a signed platform guarantee' },
@@ -150,25 +221,48 @@ const pillars = [
   { t: 'Lose the account if you fake it', d: 'Counterfeit is not a “dispute” — it is a removal, a refund, and a permanent bar from the community.' },
 ]
 
+const signatures = [
+  {
+    tag: 'Witness room',
+    title: 'Video meet on the same floor as escrow',
+    desc: 'Open a Jitsi room from Video in the header, share one link, and keep the deal inside the Standard’s story — no random app hopping.',
+  },
+  {
+    tag: 'Policy desk',
+    title: 'Help that knows your playbook',
+    desc: 'The Help assistant is tuned for fees, COA, disputes, and tech paths. Escalate to humans via Support and email when it is not enough.',
+  },
+  {
+    tag: 'Proof vault',
+    title: 'No public listing without COA or a signed guarantee',
+    desc: 'Authentication is the listing, not an add-on PDF. Buyers see proof before money moves; fraud is a permanent ban, not a strike.',
+  },
+  {
+    tag: 'Seller shield',
+    title: 'Reputation that is hard to fake',
+    desc: 'You are on a named standard for high-trust inventory — collectibles, gear, and pieces that deserve paperwork, not a SKU flood.',
+  },
+]
+
 const exclusives = [
   {
     title: 'Auth is the listing, not a sticker',
-    body: 'Amazon optimizes for Prime velocity; eBay optimizes for every category at once. Here, authenticity is a gate — not a buried PDF.',
+    body: 'Big marketplaces optimize for volume and optional paperwork. Here, proof is a gate before publish — not buried fine print.',
     icon: '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#c9a84c" stroke-width="1.4"><path d="M4 7h16v10H4zM8 7V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M8 12h8M8 16h4"/></svg>',
   },
   {
-    title: 'A marketplace that punishes the right people',
-    body: 'Proven fakes are not a warning letter — the seller profile is done. The buyer gets protected first.',
+    title: 'We punish the right people',
+    body: 'Proven fakes end the seller relationship. Buyers are protected first — not parked in an endless dispute queue.',
     icon: '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#2ecc71" stroke-width="1.4"><path d="M7 12l3 3 7-7"/><circle cx="12" cy="12" r="9.5"/></svg>',
   },
   {
-    title: 'Made for the inventory that deserves paperwork',
-    body: 'Guitars, coins, cards, timepieces, art — the categories where a photo and a hunch are not good enough.',
+    title: 'Built for inventory that deserves paperwork',
+    body: 'Cards, watches, art, instruments, grails — categories where a photo and a hunch are not a substitute for evidence.',
     icon: '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#c9a84c" stroke-width="1.4"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg>',
   },
   {
-    title: 'A brand people remember',
-    body: 'You are not “seller ID 4,821,100.” You are on a named standard — built to feel like a club, not a warehouse app.',
+    title: 'Support and tech in plain sight',
+    body: 'Customer and technical help live on Support; the Help button covers common cases. No generic maze — just the Standard’s lanes.',
     icon: '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#2ecc71" stroke-width="1.4"><path d="M12 3l2.2 4.4L19 8.3l-3.4 3.2L16.2 19 12 16.6 7.8 19l.6-7.5L5 8.3l4.8-.9z"/></svg>',
   },
 ]
@@ -186,50 +280,192 @@ const categories = [
 </script>
 
 <style scoped>
-.hero-split {
-  padding: 80px 0 48px;
-  background:
-    radial-gradient(ellipse 80% 50% at 20% 10%, rgba(201, 168, 76, 0.12) 0%, transparent 50%),
-    radial-gradient(ellipse 60% 40% at 100% 30%, rgba(46, 204, 113, 0.06) 0%, transparent 50%);
+.hero-epic {
+  position: relative;
+  padding: 64px 0 48px;
+  overflow: hidden;
+}
+.hero-aurora {
+  position: absolute;
+  inset: -20% -20% 40% -20%;
+  background: conic-gradient(
+    from 120deg at 30% 30%,
+    rgba(255, 45, 122, 0.35) 0deg,
+    rgba(0, 224, 255, 0.15) 90deg,
+    rgba(139, 92, 255, 0.25) 200deg,
+    transparent 320deg
+  );
+  filter: blur(50px);
+  pointer-events: none;
+  opacity: 0.85;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-aurora { opacity: 0.75; }
 }
 .hero-grid {
+  position: relative;
   display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  gap: 48px;
+  grid-template-columns: 1.08fr 0.92fr;
+  gap: 40px;
   align-items: center;
 }
-.hero-kicker {
+.hero-pulse-ribbon {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  font-size: 0.7rem;
-  color: var(--gold);
-  margin-bottom: 12px;
+  color: var(--magenta, #ff2d7a);
+  margin-bottom: 14px;
+  background: linear-gradient(90deg, rgba(255, 45, 122, 0.15), rgba(0, 224, 255, 0.12));
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 224, 255, 0.35);
+  box-shadow: 0 0 0 1px rgba(255, 45, 122, 0.12), 0 0 18px rgba(0, 224, 255, 0.08);
 }
-.hero-title {
-  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
-  line-height: 1.1;
-  margin-bottom: 18px;
+.hero-pulse-ribbon span { color: var(--cyan, #00e0ff); }
+.hero-title-epic {
+  font-family: 'Syne', 'Inter', sans-serif;
+  font-size: clamp(2rem, 4.2vw, 3.15rem);
+  line-height: 1.04;
+  margin: 0 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1em;
 }
-.hero-subtitle {
-  font-size: 1.08rem;
-  color: var(--stone-300);
+.t-gold-shine {
+  background: linear-gradient(110deg, var(--gold) 0%, #fff1a8 30%, var(--gold) 55%, var(--magenta) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 5s ease-in-out infinite;
+}
+@keyframes shine {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+.t-line { display: block; }
+.t-line.t-sub {
+  font-size: 0.5em;
+  -webkit-text-fill-color: var(--stone-200);
+  font-weight: 700;
+  margin-top: 0.2em;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  background: none;
+  animation: none;
+}
+.hero-sub-epic {
+  font-size: 1.06rem;
+  color: var(--stone-200);
   line-height: 1.7;
   max-width: 560px;
+  margin: 0 0 4px;
 }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
-.hero-badges { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
-.coa-badge.soft { border-color: rgba(201, 168, 76, 0.3); color: var(--stone-200); }
-.hero-art { display: flex; justify-content: center; }
-.hero-img {
-  max-width: 100%;
-  height: auto;
-  border-radius: var(--radius-xl);
-  box-shadow: 0 24px 60px rgba(0,0,0,0.4);
-  border: 1px solid var(--stone-800);
+.hero-avatars {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0 10px;
+}
+.mosaic-img {
+  width: 48px; height: 48px; border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--gold);
+  box-shadow: 0 0 0 1px rgba(0, 224, 255, 0.22), 0 8px 20px rgba(255, 45, 122, 0.18);
+}
+@media (prefers-reduced-motion: reduce) {
+  .t-gold-shine { animation: none; }
+}
+.hero-badges { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+.coa-badge-bright {
+  border-color: rgba(0, 224, 255, 0.45) !important;
+  color: var(--stone-100) !important;
+  background: rgba(255, 45, 122, 0.1) !important;
+}
+.coa-badge.soft { border-color: rgba(0, 224, 255, 0.25); color: var(--stone-200); }
+.hero-stage { position: relative; min-height: 380px; }
+.stack-card {
+  position: absolute;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 32px 60px rgba(0,0,0,0.5);
+  border: 1px solid rgba(0, 224, 255, 0.2);
+}
+.stack-card img { display: block; width: 100%; height: auto; }
+.stack-a {
+  width: 86%;
+  right: 0; top: 0;
+  z-index: 2;
+  transform: rotate(1.2deg) translateZ(0);
+}
+.stack-b {
+  width: 72%;
+  left: 0; bottom: 0;
+  z-index: 1;
+  transform: rotate(-2deg);
+  border-color: rgba(255, 45, 122, 0.3);
+}
+.stack-burst {
+  position: absolute;
+  inset: 15% 10% auto 5%;
+  height: 200px;
+  background: radial-gradient(ellipse, rgba(255, 45, 122, 0.2) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
 }
 @media (max-width: 1024px) {
   .hero-grid { grid-template-columns: 1fr; }
-  .hero-art { order: -1; }
+  .hero-stage { min-height: 300px; order: -1; }
+}
+.activity-ticker {
+  overflow: hidden;
+  border-block: 1px solid rgba(0, 224, 255, 0.15);
+  background: linear-gradient(90deg, rgba(10,5,24,0.5), rgba(18,8,32,0.4));
+  margin-bottom: 8px;
+  padding: 10px 0;
+}
+.ticker-track {
+  display: flex; gap: 2rem; width: max-content;
+  animation: ticker 34s linear infinite;
+}
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.ticker-bubble {
+  flex: 0 0 auto; white-space: nowrap; font-size: 0.85rem; font-weight: 600; color: var(--stone-200);
+}
+.ticker-bubble::before { content: '  '; }
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track { animation: none; }
+}
+.sig-section {
+  padding: 56px 0 24px;
+  border-bottom: 1px solid rgba(0, 224, 255, 0.08);
+}
+.sig-grid { gap: 18px; }
+.sig-card {
+  padding: 20px 18px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--stone-800);
+  background: linear-gradient(160deg, rgba(0, 224, 255, 0.06), rgba(18, 8, 32, 0.95));
+  text-align: left;
+}
+.sig-card h3 { font-size: 1.02rem; margin: 0 0 8px; color: var(--stone-100); line-height: 1.25; }
+.sig-tag {
+  font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.14em;
+  color: var(--magenta, #ff2d7a); margin: 0 0 10px;
+}
+.sig-desc { margin: 0; font-size: 0.88rem; line-height: 1.5; color: var(--stone-400); }
+@media (max-width: 900px) {
+  .sig-grid.grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 520px) {
+  .sig-grid.grid-4 { grid-template-columns: 1fr; }
 }
 .stats { padding: 12px 0 36px; }
 .stats-row {

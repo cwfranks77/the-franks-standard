@@ -3,7 +3,7 @@
     <div class="container">
       <h2 class="section-title text-center">Live energy from the floor</h2>
       <p class="section-subtitle text-center text-muted max-w">
-        A rotating look at the kinds of inventory the Standard is built for. Browse will fill in as sellers come aboard.
+        A non-stop reel: streetwear, slabs, chrono, gallery work. The Standard is a lookbook, not a grid of gray boxes.
       </p>
     </div>
     <div class="reel-wrap" aria-label="Product examples">
@@ -52,7 +52,7 @@ const lineDoubled = computed(() => [...items, ...items])
 .reel-line {
   display: flex; gap: 20px; width: max-content;
   padding: 10px 0;
-  animation: reel-infinite 42s linear infinite;
+  animation: reel-infinite 36s linear infinite;
   will-change: transform;
 }
 @keyframes reel-infinite {
@@ -60,8 +60,18 @@ const lineDoubled = computed(() => [...items, ...items])
   100% { transform: translateX(-50%); }
 }
 .reel-card {
-  flex: 0 0 280px; background: var(--stone-900); border: 1px solid var(--stone-800);
-  border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  flex: 0 0 280px;
+  background: linear-gradient(180deg, rgba(18, 8, 32, 0.8), var(--stone-900));
+  border: 1px solid rgba(0, 224, 255, 0.2);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(255, 45, 122, 0.12) inset, 0 10px 36px rgba(0,0,0,0.4);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s;
+}
+.reel-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  border-color: rgba(0, 224, 255, 0.45);
+  box-shadow: 0 0 32px rgba(255, 45, 122, 0.15), 0 12px 40px rgba(0,0,0,0.45);
 }
 .reel-card h4 { font-size: 0.95rem; padding: 12px 12px 4px; }
 .reel-cat { color: var(--stone-500); font-size: 0.8rem; padding: 0 12px 12px; margin: 0; }

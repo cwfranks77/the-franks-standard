@@ -43,6 +43,10 @@
           <div class="listing-actions">
             <button class="btn btn-primary btn-lg" style="flex: 1;">Buy Now</button>
             <button class="btn btn-outline btn-lg">Message Seller</button>
+            <NuxtLink
+              class="btn btn-outline btn-lg"
+              :to="videoMeetLink"
+            >Video call</NuxtLink>
           </div>
 
           <div class="listing-description mt-3">
@@ -67,8 +71,16 @@
 </template>
 
 <script setup>
+import { createRoomSlug } from '~/composables/useVideoRoom'
+
 const route = useRoute()
 const selectedImage = ref(0)
+
+const videoRoom = ref(createRoomSlug())
+const videoMeetLink = computed(() => {
+  const id = (route.params.id || '').toString() || 'listing'
+  return { path: `/video/r/${videoRoom.value}`, query: { n: `Listing ${id}` } }
+})
 
 // TODO: Fetch from Supabase using route.params.id
 const listing = reactive({
@@ -78,7 +90,7 @@ const listing = reactive({
   price: 499.99,
   condition: 'Excellent',
   description: 'This is a placeholder listing. When Supabase is connected, real listings will appear here with full details, photos, and COA information.',
-  images: ['/placeholder.jpg'],
+  images: ['/img/hero-showcase.svg'],
   coaType: 'guarantee',
   sellerName: 'Charles Franks',
   sellerJoined: 'April 2026',
@@ -126,7 +138,7 @@ const listing = reactive({
   margin-bottom: 20px;
 }
 .listing-price { font-size: 2rem; font-weight: 700; color: var(--gold); font-family: 'Cinzel', serif; }
-.listing-actions { display: flex; gap: 12px; }
+.listing-actions { display: flex; flex-wrap: wrap; gap: 12px; }
 .listing-description h3, .seller-info h3 {
   font-size: 1rem;
   margin-bottom: 8px;

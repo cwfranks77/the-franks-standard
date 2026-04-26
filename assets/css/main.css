@@ -1,22 +1,25 @@
 :root {
-  --stone-50: #faf9f7;
-  --stone-100: #f0eeeb;
-  --stone-200: #e2dfd9;
-  --stone-300: #cdc8be;
-  --stone-400: #b5ae9f;
-  --stone-500: #9d9484;
-  --stone-600: #847a6a;
-  --stone-700: #6b6356;
-  --stone-800: #504b42;
-  --stone-900: #3a3630;
-  --stone-950: #1a1a2e;
+  --stone-50: #faf7ff;
+  --stone-100: #e8e4f0;
+  --stone-200: #c9c2d4;
+  --stone-300: #a39ab8;
+  --stone-400: #7d7294;
+  --stone-500: #5c5470;
+  --stone-600: #3f3a4f;
+  --stone-700: #2a2538;
+  --stone-800: #1a1528;
+  --stone-900: #120e1c;
+  --stone-950: #0a0518;
 
-  --gold: #c9a84c;
-  --gold-light: #e0c76e;
-  --gold-dark: #a68a3a;
+  --gold: #ffd84d;
+  --gold-light: #ffe566;
+  --gold-dark: #c9a008;
+  --magenta: #ff2d7a;
+  --cyan: #00e0ff;
+  --violet: #8b5cff;
 
-  --trust-green: #2ecc71;
-  --alert-red: #e74c3c;
+  --trust-green: #00f5a0;
+  --alert-red: #ff3d5c;
 
   --radius: 8px;
   --radius-lg: 12px;
@@ -40,6 +43,19 @@ body {
   color: var(--stone-100);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  position: relative;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 120% 80% at 0% 0%, rgba(255, 45, 122, 0.2) 0%, transparent 45%),
+    radial-gradient(ellipse 100% 60% at 100% 10%, rgba(0, 224, 255, 0.12) 0%, transparent 40%),
+    radial-gradient(ellipse 80% 50% at 50% 100%, rgba(139, 92, 255, 0.15) 0%, transparent 50%),
+    linear-gradient(180deg, #0a0518 0%, #120a22 100%);
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -80,24 +96,26 @@ img { max-width: 100%; height: auto; }
 }
 
 .btn-primary {
-  background: var(--gold);
-  color: var(--stone-950);
+  background: linear-gradient(135deg, var(--gold) 0%, #ffb020 100%);
+  color: #0a0518;
+  box-shadow: 0 0 0 0 rgba(255, 216, 77, 0.4), 0 4px 24px rgba(255, 45, 122, 0.25);
 }
 .btn-primary:hover {
-  background: var(--gold-light);
-  color: var(--stone-950);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
+  color: #0a0518;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 32px rgba(0, 224, 255, 0.25), 0 8px 28px rgba(255, 45, 122, 0.3);
 }
 
 .btn-outline {
-  background: transparent;
+  background: rgba(255, 45, 122, 0.08);
   color: var(--gold);
-  border: 2px solid var(--gold);
+  border: 2px solid rgba(0, 224, 255, 0.45);
 }
 .btn-outline:hover {
-  background: var(--gold);
-  color: var(--stone-950);
+  background: rgba(0, 224, 255, 0.15);
+  color: #fff;
+  border-color: var(--cyan);
 }
 
 .btn-dark {
@@ -235,3 +253,40 @@ img { max-width: 100%; height: auto; }
 .mt-4 { margin-top: 32px; }
 .mb-2 { margin-bottom: 16px; }
 .mb-4 { margin-bottom: 32px; }
+
+/* Route transitions (global, matches nuxt app.pageTransition name: page) */
+.page-enter-active,
+.page-leave-active {
+  transition: opacity 0.18s ease, transform 0.22s ease;
+}
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-enter-active, .page-leave-active { transition: none; }
+  .page-enter-from, .page-leave-to { transform: none; }
+}
+
+/* Marketplace feel: card lift, subtle sheen */
+.hover-lift {
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 224, 255, 0.12);
+}
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+.animate-float-slow {
+  animation: float-y 4.5s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-float-slow { animation: none; }
+}

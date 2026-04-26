@@ -1,30 +1,68 @@
 <template>
   <div class="site-wrapper">
+    <div class="site-ribbon" role="status" aria-label="Site highlights">
+      <div class="container site-ribbon-inner">
+        <span class="ribbon-txt">COA or signed guarantee on every listing</span>
+        <span class="ribbon-dot" aria-hidden="true" />
+        <span class="ribbon-txt">Escrow &amp; buyer confirmation</span>
+        <span class="ribbon-dot" aria-hidden="true" />
+        <span class="ribbon-txt">Zero tolerance for fakes</span>
+      </div>
+    </div>
     <header class="site-header">
       <div class="container header-inner">
         <div class="header-left">
-          <NuxtLink to="/" class="header-brand" @click="menuOpen = false">
-            <div class="logo-knock-column">
-              <img src="/logo.png" alt="The Franks Standard" class="header-logo" />
-              <span
-                v-show="onHome"
-                class="op-knock"
-                title=""
-                aria-hidden="true"
-                @click.stop="onOpKnockClick"
-              />
-            </div>
+          <NuxtLink
+            to="/"
+            class="header-brand"
+            @click="onBrandOrLogoClick"
+          >
+            <img
+              src="/logo.svg"
+              alt="The Franks Standard"
+              class="header-logo"
+              :class="{ 'op-knock-home': onHome }"
+            />
             <span class="header-name">The Franks Standard</span>
           </NuxtLink>
         </div>
 
         <nav class="header-nav" :class="{ open: menuOpen }">
-          <NuxtLink to="/browse" class="nav-link" @click="menuOpen = false">Browse</NuxtLink>
-          <NuxtLink to="/sell" class="nav-link" @click="menuOpen = false">Sell</NuxtLink>
-          <NuxtLink to="/how-it-works" class="nav-link" @click="menuOpen = false">How It Works</NuxtLink>
-          <NuxtLink to="/compare" class="nav-link" @click="menuOpen = false">The Standard vs Others</NuxtLink>
-          <NuxtLink to="/auth/login" class="btn btn-outline btn-sm" @click="menuOpen = false">Sign In</NuxtLink>
-          <NuxtLink to="/auth/register" class="btn btn-primary btn-sm" @click="menuOpen = false">Join Free</NuxtLink>
+          <NuxtLink to="/video" class="nav-link" @click="closeAllNav">Video</NuxtLink>
+          <NuxtLink to="/browse" class="nav-link" @click="closeAllNav">Browse</NuxtLink>
+          <NuxtLink to="/pay" class="nav-link nav-highlight" @click="closeAllNav">Pay &amp; fees</NuxtLink>
+          <NuxtLink to="/support" class="nav-link" @click="closeAllNav">Support</NuxtLink>
+          <div
+            class="nav-more"
+            :class="{ open: moreOpen }"
+            @mouseenter="onNavMoreEnter"
+            @mouseleave="onNavMoreLeave"
+          >
+            <button
+              type="button"
+              class="nav-more-btn"
+              :aria-expanded="moreOpen"
+              @click.stop="toggleExplore"
+            >
+              Explore
+              <span class="chev" aria-hidden="true" />
+            </button>
+            <div v-show="moreOpen" class="nav-more-panel" @click.stop>
+              <NuxtLink to="/categories" class="nav-drop-link" @click="closeAllNav">Categories A to Z</NuxtLink>
+              <NuxtLink to="/how-it-works" class="nav-drop-link" @click="closeAllNav">How it works</NuxtLink>
+              <NuxtLink to="/about" class="nav-drop-link" @click="closeAllNav">Our story and mission</NuxtLink>
+              <NuxtLink to="/support" class="nav-drop-link" @click="closeAllNav">Support and tech</NuxtLink>
+              <NuxtLink to="/contact" class="nav-drop-link" @click="closeAllNav">Get in touch</NuxtLink>
+              <NuxtLink to="/compare" class="nav-drop-link" @click="closeAllNav">Us vs eBay and Amazon</NuxtLink>
+              <NuxtLink to="/terms" class="nav-drop-link" @click="closeAllNav">Terms</NuxtLink>
+              <NuxtLink to="/privacy" class="nav-drop-link" @click="closeAllNav">Privacy</NuxtLink>
+              <NuxtLink to="/prohibited-items" class="nav-drop-link" @click="closeAllNav">Prohibited items</NuxtLink>
+              <NuxtLink to="/pay" class="nav-drop-link" @click="closeAllNav">Pay &amp; fees (Stripe)</NuxtLink>
+            </div>
+          </div>
+          <NuxtLink to="/sell" class="nav-link" @click="closeAllNav">Sell</NuxtLink>
+          <NuxtLink to="/auth/login" class="btn btn-outline btn-sm" @click="closeAllNav">Sign In</NuxtLink>
+          <NuxtLink to="/auth/register" class="btn btn-primary btn-sm" @click="closeAllNav">Join Free</NuxtLink>
         </nav>
 
         <button class="menu-toggle" @click="menuOpen = !menuOpen" aria-label="Toggle menu">
@@ -32,6 +70,15 @@
         </button>
       </div>
     </header>
+
+    <div class="site-trust" aria-label="Why buyers and sellers use this marketplace">
+      <div class="container site-trust-inner">
+        <div class="trust-pill">Secure checkout (Stripe links)</div>
+        <div class="trust-pill">Seller &amp; buyer tools</div>
+        <div class="trust-pill">Video meet built in</div>
+        <div class="trust-pill">Help with mic, email, or live Video</div>
+      </div>
+    </div>
 
     <main class="site-main">
       <slot />
@@ -41,11 +88,12 @@
       <div class="container">
         <div class="footer-grid">
           <div class="footer-brand">
-            <img src="/logo.png" alt="The Franks Standard" class="footer-logo" />
+            <img src="/logo.svg" alt="The Franks Standard" class="footer-logo" />
             <p class="text-muted">The marketplace where authenticity isn't optional — it's the standard.</p>
           </div>
           <div class="footer-col">
             <h4>Marketplace</h4>
+            <NuxtLink to="/video">Video calls</NuxtLink>
             <NuxtLink to="/browse">Browse All</NuxtLink>
             <NuxtLink to="/sell">Sell an Item</NuxtLink>
             <NuxtLink to="/categories">Categories</NuxtLink>
@@ -54,6 +102,7 @@
             <h4>Company</h4>
             <NuxtLink to="/how-it-works">How It Works</NuxtLink>
             <NuxtLink to="/about">About Us</NuxtLink>
+            <NuxtLink to="/support">Support</NuxtLink>
             <NuxtLink to="/contact">Contact</NuxtLink>
           </div>
           <div class="footer-col">
@@ -83,7 +132,8 @@
           aria-label="Operator unlock"
         >
           <h2 class="op-modal-h">Operator access</h2>
-          <p class="op-modal-sub text-muted">Enter the key you set in your build. Nothing is pre-filled; only you can know it if you have not shared it.</p>
+          <p class="op-modal-sub text-muted">Enter the <strong>exact</strong> value of <code>NUXT_PUBLIC_OPS_ACCESS_KEY</code> from your <code>.env</code> (build) or the matching GitHub Actions secret. Leading or trailing spaces are ignored.</p>
+          <p v-if="isDev" class="op-hint text-muted">Dev: open the modal with <code>?ops=unlock</code> on any URL, then set a key in <code>.env</code> and restart.</p>
           <form @submit.prevent="submitOpModal">
             <div v-if="!keyConfigured" class="op-warn" role="alert">
               Add <code>NUXT_PUBLIC_OPS_ACCESS_KEY</code> in <code>.env</code> and in GitHub Actions secrets, then rebuild.
@@ -101,6 +151,14 @@
                 />
               </div>
             </template>
+            <details v-if="keyConfigured" class="op-lost">
+              <summary>Lost the phrase? Set a new one</summary>
+              <p class="op-lost-txt">
+                There is <strong>no</strong> recovery from this site alone, because the phrase is only checked in the built bundle.
+                In GitHub: replace the secret <code>NUXT_PUBLIC_OPS_ACCESS_KEY</code> (or the variable in the workflow) with a <strong>new</strong> long random value,
+                update the same in your local <code>.env</code> for dev, then <code>npm run generate</code> and run <code>npm run deploy:gh-pages</code> (or push after Actions is fixed). The old phrase will stop working on the next deploy.
+              </p>
+            </details>
             <p v-if="opError" class="op-err" role="alert">{{ opError }}</p>
             <div class="op-modal-actions">
               <button type="button" class="btn btn-outline btn-sm" @click="closeOpModal">Cancel</button>
@@ -114,6 +172,7 @@
         </div>
       </div>
     </Teleport>
+    <AiSupportDrawer />
   </div>
 </template>
 
@@ -124,7 +183,17 @@ const config = useRuntimeConfig()
 const { grant } = useOpsSession()
 
 const menuOpen = ref(false)
+const moreOpen = ref(false)
 const onHome = computed(() => route.path === '/')
+
+let exploreHoverOk = true
+onMounted(() => {
+  if (!import.meta.client) { return }
+  const mq = window.matchMedia('(min-width: 769px)')
+  const sync = () => { exploreHoverOk = mq.matches }
+  sync()
+  mq.addEventListener('change', sync)
+})
 
 const opModalOpen = ref(false)
 const opPhrase = ref('')
@@ -134,14 +203,55 @@ let opKnockClicks = 0
 let opKnockTimer = null
 
 const keyConfigured = computed(() => String(config.public?.opsAccessKey || '').length > 0)
+const isDev = computed(() => import.meta.dev)
 
-function onOpKnockClick () {
-  if (!onHome.value) { return }
+function tryOpenOpsFromQuery () {
+  if (!import.meta.client || !import.meta.dev) { return }
+  const q = route.query
+  if (String(q.ops) === 'unlock') {
+    opModalOpen.value = true
+    opError.value = ''
+    const { ops: _drop, ...rest } = q
+    router.replace({ path: route.path, query: rest })
+  }
+}
+onMounted(tryOpenOpsFromQuery)
+watch(
+  () => [route.path, route.query],
+  tryOpenOpsFromQuery,
+  { deep: true },
+)
+
+function closeAllNav () {
+  menuOpen.value = false
+  moreOpen.value = false
+}
+
+function onNavMoreEnter () {
+  if (import.meta.client && exploreHoverOk) { moreOpen.value = true }
+}
+function onNavMoreLeave () {
+  if (import.meta.client && exploreHoverOk) { moreOpen.value = false }
+}
+function toggleExplore () {
+  moreOpen.value = !moreOpen.value
+}
+
+/**
+ * On the home page only, five quick clicks on the brand row (logo and name) open
+ * the operator modal; preventDefault blocks no-op navigation to the same page.
+ */
+function onBrandOrLogoClick (e) {
+  if (!onHome.value) {
+    closeAllNav()
+    return
+  }
+  e.preventDefault()
   if (opKnockTimer) {
     clearTimeout(opKnockTimer)
   }
   opKnockClicks += 1
-  opKnockTimer = setTimeout(() => { opKnockClicks = 0 }, 2600)
+  opKnockTimer = setTimeout(() => { opKnockClicks = 0 }, 2800)
   if (opKnockClicks >= 5) {
     opKnockClicks = 0
     if (opKnockTimer) {
@@ -163,10 +273,9 @@ function submitOpModal () {
   const expected = String(config.public?.opsAccessKey || '')
   if (!expected) { return }
   opSubmitting.value = true
-  if (opPhrase.value === expected) {
+  if (opPhrase.value.trim() === expected.trim()) {
     grant()
     closeOpModal()
-    opSubmitting.value = false
     router.push('/ops/panel')
   } else {
     opError.value = 'That does not match your build key. Check .env and redeploy, or the GitHub secret.'
@@ -180,9 +289,10 @@ function submitOpModal () {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(26, 26, 46, 0.95);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--stone-800);
+  background: linear-gradient(180deg, rgba(10, 5, 24, 0.97) 0%, rgba(18, 10, 40, 0.92) 100%);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(0, 224, 255, 0.12);
+  box-shadow: 0 4px 32px rgba(255, 45, 122, 0.08);
 }
 .header-inner {
   display: flex;
@@ -198,22 +308,8 @@ function submitOpModal () {
   color: var(--stone-100);
 }
 .header-brand:hover { color: var(--gold); }
-.logo-knock-column {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-/* Invisible 6px-tall hit strip directly under the logo; homepage only. Five quick clicks here opens the operator dialog. */
-.op-knock {
-  display: block;
-  width: 44px;
-  min-height: 8px;
-  height: 8px;
-  margin-top: 2px;
-  background: rgba(0,0,0,0.01);
-  cursor: default;
-}
-.header-logo { height: 40px; width: auto; }
+.header-logo { height: 40px; width: auto; flex-shrink: 0; }
+.header-logo.op-knock-home { filter: drop-shadow(0 0 6px rgba(255, 216, 77, 0.25)); }
 .header-name {
   font-family: 'Cinzel', serif;
   font-weight: 700;
@@ -223,7 +319,9 @@ function submitOpModal () {
 .header-nav {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 18px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 .nav-link {
   color: var(--stone-300);
@@ -232,6 +330,68 @@ function submitOpModal () {
   transition: color 0.2s;
 }
 .nav-link:hover, .nav-link.router-link-active { color: var(--gold); }
+.nav-more {
+  position: relative;
+}
+.nav-more.open .chev { transform: rotate(180deg); }
+.nav-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 45, 122, 0.12);
+  border: 1px solid rgba(0, 224, 255, 0.35);
+  color: var(--stone-100);
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.88rem;
+  padding: 7px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+.nav-more-btn:hover, .nav-more.open .nav-more-btn {
+  background: rgba(0, 224, 255, 0.1);
+  border-color: var(--gold);
+  box-shadow: 0 0 20px rgba(255, 45, 122, 0.2);
+}
+.chev {
+  width: 0; height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid var(--gold);
+  transition: transform 0.2s;
+}
+.nav-more-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 240px;
+  padding: 8px 0;
+  background: var(--stone-900);
+  border: 1px solid rgba(0, 224, 255, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(255, 45, 122, 0.15);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  animation: drop-fade 0.18s ease;
+}
+.nav-drop-link {
+  padding: 10px 16px;
+  color: var(--stone-200);
+  font-size: 0.9rem;
+  text-decoration: none;
+  border-left: 3px solid transparent;
+}
+.nav-drop-link:hover, .nav-drop-link.router-link-active {
+  color: var(--gold);
+  background: rgba(255, 45, 122, 0.08);
+  border-left-color: var(--cyan);
+}
+@keyframes drop-fade {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: none; }
+}
 
 .menu-toggle {
   display: none;
@@ -264,8 +424,16 @@ function submitOpModal () {
     background: var(--stone-950);
     border-bottom: 1px solid var(--stone-800);
     gap: 16px;
+    align-items: stretch;
   }
   .header-nav.open { display: flex; }
+  .nav-more { width: 100%; }
+  .nav-more-panel {
+    position: static;
+    margin-top: 8px;
+    width: 100%;
+    box-shadow: none;
+  }
 }
 
 .site-main { min-height: calc(100vh - 70px - 300px); }
@@ -338,4 +506,34 @@ function submitOpModal () {
 .op-warn code { color: var(--gold-light); font-size: 0.78em; }
 .op-err { color: var(--alert-red); font-size: 0.88rem; margin-top: 6px; }
 .op-modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+.op-lost { margin: 8px 0; font-size: 0.82rem; }
+.op-lost summary { color: var(--gold); cursor: pointer; }
+.op-lost-txt { margin: 8px 0 0; color: var(--stone-300); line-height: 1.5; }
+.op-lost-txt code { color: var(--gold-light); font-size: 0.78em; }
+.op-hint { font-size: 0.8rem; margin: 0 0 8px; }
+.op-hint code { color: var(--cyan); font-size: 0.8em; }
+
+.site-ribbon {
+  background: linear-gradient(90deg, rgba(255, 45, 122, 0.2), rgba(0, 224, 255, 0.08), rgba(139, 92, 255, 0.15));
+  border-bottom: 1px solid rgba(0, 224, 255, 0.2);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--stone-200);
+}
+.site-ribbon-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 20px; padding: 7px 12px; }
+.ribbon-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); opacity: 0.6; }
+
+.site-trust { background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--stone-800); }
+.site-trust-inner { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 10px 0; }
+.trust-pill {
+  font-size: 0.78rem; color: var(--stone-200);
+  padding: 4px 12px; border-radius: 999px;
+  background: var(--stone-900); border: 1px solid rgba(0, 224, 255, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.trust-pill:hover { transform: translateY(-1px); box-shadow: 0 0 20px rgba(0, 224, 255, 0.12); }
+
+.nav-link.nav-highlight { color: var(--gold-light); }
 </style>

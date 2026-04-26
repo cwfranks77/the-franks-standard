@@ -8,7 +8,10 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "post:social": "node scripts/post-franks-social.cjs"
+    "post:social": "node scripts/post-franks-social.cjs",
+    "notify:telegram": "node scripts/notify-telegram.cjs",
+    "verify": "nuxt generate",
+    "deploy:gh-pages": "nuxt generate && npx --yes gh-pages@6.2.0 -d .output/public -t -m \"chore(gh-pages): static deploy\""
   },
   "dependencies": {
     "@stripe/stripe-js": "^5.5.0",
