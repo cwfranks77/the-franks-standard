@@ -41,7 +41,7 @@
 <script setup>
 definePageMeta({ layout: 'default' })
 useSeoMeta({
-  title: 'Pay & fees — The Franks Standard',
+  title: 'Pay and fees - The Franks Standard',
   description: 'Pay selling fees, buyer protection, and order holds via Stripe.',
 })
 
@@ -61,7 +61,7 @@ const items = computed(() => [
     key: 'pro',
     badge: 'Sellers',
     title: 'Pro seller (optional)',
-    body: 'Monthly or annual upgrade for featured slots—wire your own Stripe product.',
+    body: 'Monthly or annual upgrade for featured slots - wire your own Stripe product.',
     url: c.payProSellerUrl || null,
     envName: 'NUXT_PUBLIC_PAY_PRO_SELLER_URL',
   },
