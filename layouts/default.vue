@@ -2,15 +2,27 @@
   <div class="site-wrapper">
     <header class="site-header">
       <div class="container header-inner">
-        <NuxtLink to="/" class="header-brand">
-          <img src="/logo.png" alt="The Franks Standard" class="header-logo" />
-          <span class="header-name">The Franks Standard</span>
-        </NuxtLink>
+        <div class="header-left">
+          <NuxtLink to="/" class="header-brand" @click="menuOpen = false">
+            <div class="logo-knock-column">
+              <img src="/logo.png" alt="The Franks Standard" class="header-logo" />
+              <span
+                v-show="onHome"
+                class="op-knock"
+                title=""
+                aria-hidden="true"
+                @click.stop="onOpKnockClick"
+              />
+            </div>
+            <span class="header-name">The Franks Standard</span>
+          </NuxtLink>
+        </div>
 
         <nav class="header-nav" :class="{ open: menuOpen }">
           <NuxtLink to="/browse" class="nav-link" @click="menuOpen = false">Browse</NuxtLink>
           <NuxtLink to="/sell" class="nav-link" @click="menuOpen = false">Sell</NuxtLink>
           <NuxtLink to="/how-it-works" class="nav-link" @click="menuOpen = false">How It Works</NuxtLink>
+          <NuxtLink to="/compare" class="nav-link" @click="menuOpen = false">The Standard vs Others</NuxtLink>
           <NuxtLink to="/auth/login" class="btn btn-outline btn-sm" @click="menuOpen = false">Sign In</NuxtLink>
           <NuxtLink to="/auth/register" class="btn btn-primary btn-sm" @click="menuOpen = false">Join Free</NuxtLink>
         </nav>
@@ -57,11 +69,110 @@
         </div>
       </div>
     </footer>
+
+    <Teleport to="body">
+      <div
+        v-if="opModalOpen"
+        class="op-modal-backdrop"
+        @click.self="closeOpModal"
+      >
+        <div
+          class="op-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Operator unlock"
+        >
+          <h2 class="op-modal-h">Operator access</h2>
+          <p class="op-modal-sub text-muted">Enter the key you set in your build. Nothing is pre-filled; only you can know it if you have not shared it.</p>
+          <form @submit.prevent="submitOpModal">
+            <div v-if="!keyConfigured" class="op-warn" role="alert">
+              Add <code>NUXT_PUBLIC_OPS_ACCESS_KEY</code> in <code>.env</code> and in GitHub Actions secrets, then rebuild.
+            </div>
+            <template v-else>
+              <div class="form-group">
+                <label class="label" for="op-phrase">Your phrase (access key)</label>
+                <input
+                  id="op-phrase"
+                  v-model="opPhrase"
+                  class="input"
+                  type="password"
+                  autocomplete="off"
+                  placeholder="Type the same value as in NUXT_PUBLIC_OPS_ACCESS_KEY"
+                />
+              </div>
+            </template>
+            <p v-if="opError" class="op-err" role="alert">{{ opError }}</p>
+            <div class="op-modal-actions">
+              <button type="button" class="btn btn-outline btn-sm" @click="closeOpModal">Cancel</button>
+              <button
+                type="submit"
+                class="btn btn-primary btn-sm"
+                :disabled="!keyConfigured || opSubmitting"
+              >{{ opSubmitting ? 'Checking' : 'Unlock' }}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup>
+const route = useRoute()
+const router = useRouter()
+const config = useRuntimeConfig()
+const { grant } = useOpsSession()
+
 const menuOpen = ref(false)
+const onHome = computed(() => route.path === '/')
+
+const opModalOpen = ref(false)
+const opPhrase = ref('')
+const opError = ref('')
+const opSubmitting = ref(false)
+let opKnockClicks = 0
+let opKnockTimer = null
+
+const keyConfigured = computed(() => String(config.public?.opsAccessKey || '').length > 0)
+
+function onOpKnockClick () {
+  if (!onHome.value) { return }
+  if (opKnockTimer) {
+    clearTimeout(opKnockTimer)
+  }
+  opKnockClicks += 1
+  opKnockTimer = setTimeout(() => { opKnockClicks = 0 }, 2600)
+  if (opKnockClicks >= 5) {
+    opKnockClicks = 0
+    if (opKnockTimer) {
+      clearTimeout(opKnockTimer)
+    }
+    opModalOpen.value = true
+    opError.value = ''
+  }
+}
+
+function closeOpModal () {
+  opModalOpen.value = false
+  opPhrase.value = ''
+  opError.value = ''
+}
+
+function submitOpModal () {
+  opError.value = ''
+  const expected = String(config.public?.opsAccessKey || '')
+  if (!expected) { return }
+  opSubmitting.value = true
+  if (opPhrase.value === expected) {
+    grant()
+    closeOpModal()
+    opSubmitting.value = false
+    router.push('/ops/panel')
+  } else {
+    opError.value = 'That does not match your build key. Check .env and redeploy, or the GitHub secret.'
+  }
+  opSubmitting.value = false
+}
 </script>
 
 <style scoped>
@@ -79,6 +190,7 @@ const menuOpen = ref(false)
   justify-content: space-between;
   height: 70px;
 }
+.header-left { flex: 0 0 auto; }
 .header-brand {
   display: flex;
   align-items: center;
@@ -86,6 +198,21 @@ const menuOpen = ref(false)
   color: var(--stone-100);
 }
 .header-brand:hover { color: var(--gold); }
+.logo-knock-column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+/* Invisible 6px-tall hit strip directly under the logo; homepage only. Five quick clicks here opens the operator dialog. */
+.op-knock {
+  display: block;
+  width: 44px;
+  min-height: 8px;
+  height: 8px;
+  margin-top: 2px;
+  background: rgba(0,0,0,0.01);
+  cursor: default;
+}
 .header-logo { height: 40px; width: auto; }
 .header-name {
   font-family: 'Cinzel', serif;
@@ -185,4 +312,30 @@ const menuOpen = ref(false)
 @media (max-width: 480px) {
   .footer-grid { grid-template-columns: 1fr; }
 }
+.op-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
+}
+.op-modal {
+  max-width: 400px;
+  width: 100%;
+  padding: 28px 24px;
+  background: var(--stone-900);
+  border: 1px solid var(--stone-800);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 24px 50px rgba(0,0,0,0.5);
+}
+.op-modal-h { font-size: 1.25rem; margin-bottom: 6px; }
+.op-modal-sub { font-size: 0.9rem; margin-bottom: 16px; }
+.op-warn { font-size: 0.85rem; color: var(--stone-200); background: rgba(231, 76, 60, 0.12); border: 1px solid rgba(231, 76, 60, 0.3); border-radius: var(--radius); padding: 10px; margin-bottom: 12px; }
+.op-warn code { color: var(--gold-light); font-size: 0.78em; }
+.op-err { color: var(--alert-red); font-size: 0.88rem; margin-top: 6px; }
+.op-modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
 </style>

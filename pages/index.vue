@@ -1,54 +1,80 @@
 <template>
   <div>
-    <!-- Hero -->
-    <section class="hero">
-      <div class="container text-center">
-        <img src="/logo.png" alt="The Franks Standard" class="hero-logo" />
-        <h1 class="hero-title">If It's on The Franks Standard,<br /><span class="text-gold">It's Real.</span></h1>
-        <p class="hero-subtitle">
-          The marketplace where every seller must provide a Certificate of Authenticity
-          before listing. No fakes. No guessing. No exceptions.
-        </p>
-        <div class="hero-actions">
-          <NuxtLink to="/browse" class="btn btn-primary btn-lg">Browse Marketplace</NuxtLink>
-          <NuxtLink to="/sell" class="btn btn-outline btn-lg">Start Selling</NuxtLink>
+    <section class="hero-split">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <p class="hero-kicker">Authentication-first collectibles and gear</p>
+          <h1 class="hero-title">
+            If it is on The Franks Standard,<br /><span class="text-gold">it is real</span> — and provable.
+          </h1>
+          <p class="hero-subtitle">
+            Every seller ships proof: a Certificate of Authenticity or a platform-backed guarantee. Escrow and buyer confirmation
+            are not extras — they are how a marketplace should behave when the item is the story.
+          </p>
+          <div class="hero-actions">
+            <NuxtLink to="/auth/register" class="btn btn-primary btn-lg">Start free</NuxtLink>
+            <NuxtLink to="/compare" class="btn btn-outline btn-lg">How we beat eBay and Amazon</NuxtLink>
+            <NuxtLink to="/browse" class="btn btn-dark btn-lg">Browse the floor</NuxtLink>
+          </div>
+          <div class="hero-badges">
+            <span class="coa-badge">COA or signed guarantee on every listing</span>
+            <span class="coa-badge soft">Zero tolerance for fakes</span>
+          </div>
         </div>
-        <div class="hero-trust">
-          <span class="coa-badge">COA Required on Every Listing</span>
+        <div class="hero-art" aria-hidden="true">
+          <img class="hero-img" src="/img/hero-showcase.svg" alt="" width="560" height="420" />
         </div>
       </div>
     </section>
 
-    <!-- How it works -->
+    <section class="stats">
+      <div class="container stats-row">
+        <div class="stat" v-for="s in stats" :key="s.t">
+          <p class="stat-n">{{ s.n }}</p>
+          <p class="stat-t">{{ s.t }}</p>
+        </div>
+      </div>
+    </section>
+
+    <ShowcaseReel />
+
     <section class="section">
       <div class="container">
-        <h2 class="section-title text-center">How The Franks Standard Works</h2>
-        <p class="section-subtitle text-center text-muted">Three pillars. One guarantee.</p>
+        <h2 class="section-title text-center">The three pillars of The Standard</h2>
+        <p class="section-subtitle text-center text-muted">Proof first. Pay second. Ban forever for fraud — no passes.</p>
         <div class="grid grid-3 mt-4">
-          <div class="pillar-card">
-            <div class="pillar-icon">1</div>
-            <h3>List With Proof</h3>
-            <p>Sellers upload a Certificate of Authenticity or digitally sign The Franks Standard Guarantee backing the item's authenticity.</p>
-          </div>
-          <div class="pillar-card">
-            <div class="pillar-icon">2</div>
-            <h3>Buy With Confidence</h3>
-            <p>Every listing displays its COA status. Your payment is held in escrow until you confirm the item is as described.</p>
-          </div>
-          <div class="pillar-card">
-            <div class="pillar-icon">3</div>
-            <h3>Protected by The Standard</h3>
-            <p>If an item is proven counterfeit, the seller is permanently banned and you get a full refund. Zero tolerance.</p>
+          <div class="pillar-card" v-for="(p, i) in pillars" :key="p.t">
+            <div class="pillar-top">
+              <span class="pillar-num">{{ i + 1 }}</span>
+            </div>
+            <h3>{{ p.t }}</h3>
+            <p>{{ p.d }}</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Categories -->
+    <section class="section only-here">
+      <div class="container">
+        <h2 class="section-title">What you get here, not in a bazaar or big-box</h2>
+        <p class="section-subtitle text-muted">Built for the collector economy — not the endless SKU line.</p>
+        <div class="grid grid-2 mt-4 bento">
+          <article class="bento-card" v-for="f in exclusives" :key="f.title">
+            <div class="bento-icon" v-html="f.icon" />
+            <div>
+              <h3>{{ f.title }}</h3>
+              <p>{{ f.body }}</p>
+            </div>
+          </article>
+        </div>
+        <NuxtLink to="/compare" class="inline-link">See a straight comparison to eBay and Amazon</NuxtLink>
+      </div>
+    </section>
+
     <section class="section section-dark">
       <div class="container">
-        <h2 class="section-title text-center">What You'll Find Here</h2>
-        <p class="section-subtitle text-center text-muted">Authentic goods across every category</p>
+        <h2 class="section-title text-center">Curated for serious inventory</h2>
+        <p class="section-subtitle text-center text-muted">If it belongs on a stage, a slab, a wall, or a rack — and it is real</p>
         <div class="grid grid-4 mt-4">
           <div class="category-card" v-for="cat in categories" :key="cat.name">
             <div class="category-emoji">{{ cat.icon }}</div>
@@ -59,168 +85,214 @@
       </div>
     </section>
 
-    <!-- Why not eBay -->
     <section class="section">
       <div class="container">
-        <h2 class="section-title text-center">Why Not eBay?</h2>
+        <h2 class="section-title text-center">eBay, Amazon, and the big platforms</h2>
+        <p class="section-subtitle text-center text-muted">They are built for size. We are built for what cannot be faked on purpose.</p>
         <div class="comparison mt-4">
           <div class="comp-col comp-bad">
-            <h3>Other Marketplaces</h3>
+            <h3>What breaks outside</h3>
             <ul>
-              <li>Anyone can list anything, no proof required</li>
-              <li>Flooded with counterfeits and knockoffs</li>
-              <li>Dispute process favors scammers</li>
-              <li>No accountability for fake sellers</li>
-              <li>13%+ fees eat into your profits</li>
+              <li>Open listings, optional paperwork, endless gray-market noise</li>
+              <li>Fees and policies tuned for retail turns, not provenance</li>
+              <li>Disputes that can drag while bad actors re-list elsewhere</li>
             </ul>
           </div>
           <div class="comp-col comp-good">
-            <h3>The Franks Standard</h3>
+            <h3>How The Franks Standard answers</h3>
             <ul>
-              <li>COA or signed guarantee required to list</li>
-              <li>Every item backed by authenticity proof</li>
-              <li>Escrow payments protect every transaction</li>
-              <li>Fake sellers permanently banned, no second chances</li>
-              <li>Fair fees — sellers keep more of their money</li>
+              <li>Auth gate before a listing is public — COA or a signed in-platform guarantee</li>
+              <li>Escrow and buyer confirmation to match how collectibles are actually traded</li>
+              <li>Permanent ban on proven fakes, not a “strike” system</li>
             </ul>
+            <NuxtLink to="/compare" class="btn btn-outline btn-sm comp-cta">Open the full comparison</NuxtLink>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- CTA -->
-    <section class="section cta-section">
-      <div class="container text-center">
-        <h2 class="section-title">Ready to Buy or Sell the Real Deal?</h2>
-        <p class="section-subtitle text-muted">Join The Franks Standard today. It's free to sign up.</p>
-        <div class="hero-actions mt-3">
-          <NuxtLink to="/auth/register" class="btn btn-primary btn-lg">Create Free Account</NuxtLink>
-          <NuxtLink to="/how-it-works" class="btn btn-outline btn-lg">Learn More</NuxtLink>
+    <section class="section proof-strip">
+      <div class="container proof-inner">
+        <div>
+          <h2>Staying on the page should feel like confidence</h2>
+          <p class="text-muted">
+            Every section here is a promise. Create an account, save your seller profile, and be first when new categories open.
+            No spam — the Standard is a membership for people who are tired of gambling on the big apps.
+          </p>
         </div>
+        <NuxtLink to="/auth/register" class="btn btn-primary btn-lg">Create your free account</NuxtLink>
       </div>
     </section>
 
+    <section class="section cta-section">
+      <div class="container text-center">
+        <h2 class="section-title">The floor is open</h2>
+        <p class="section-subtitle text-muted">Buy with proof. Sell with reputation. It takes minutes to get inside.</p>
+        <div class="hero-actions mt-3">
+          <NuxtLink to="/auth/register" class="btn btn-primary btn-lg">Join the Standard</NuxtLink>
+          <NuxtLink to="/how-it-works" class="btn btn-outline btn-lg">Read the play-by-play</NuxtLink>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
 <script setup>
+const stats = [
+  { n: '1', t: 'Proof before publish — no exceptions' },
+  { n: '100%', t: 'Listings with COA or a signed platform guarantee' },
+  { n: '0', t: 'Chances to come back as a known fraud' },
+]
+
+const pillars = [
+  { t: 'List with evidence', d: 'Upload a COA or sign The Franks Standard authenticity backing so the buyer can review before the sale closes.' },
+  { t: 'Pay with hold', d: 'Escrow and buyer confirmation are built in — your funds stay protected until the item matches the story.' },
+  { t: 'Lose the account if you fake it', d: 'Counterfeit is not a “dispute” — it is a removal, a refund, and a permanent bar from the community.' },
+]
+
+const exclusives = [
+  {
+    title: 'Auth is the listing, not a sticker',
+    body: 'Amazon optimizes for Prime velocity; eBay optimizes for every category at once. Here, authenticity is a gate — not a buried PDF.',
+    icon: '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#c9a84c" stroke-width="1.4"><path d="M4 7h16v10H4zM8 7V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M8 12h8M8 16h4"/></svg>',
+  },
+  {
+    title: 'A marketplace that punishes the right people',
+    body: 'Proven fakes are not a warning letter — the seller profile is done. The buyer gets protected first.',
+    icon: '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#2ecc71" stroke-width="1.4"><path d="M7 12l3 3 7-7"/><circle cx="12" cy="12" r="9.5"/></svg>',
+  },
+  {
+    title: 'Made for the inventory that deserves paperwork',
+    body: 'Guitars, coins, cards, timepieces, art — the categories where a photo and a hunch are not good enough.',
+    icon: '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#c9a84c" stroke-width="1.4"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg>',
+  },
+  {
+    title: 'A brand people remember',
+    body: 'You are not “seller ID 4,821,100.” You are on a named standard — built to feel like a club, not a warehouse app.',
+    icon: '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#2ecc71" stroke-width="1.4"><path d="M12 3l2.2 4.4L19 8.3l-3.4 3.2L16.2 19 12 16.6 7.8 19l.6-7.5L5 8.3l4.8-.9z"/></svg>',
+  },
+]
+
 const categories = [
-  { icon: '🏆', name: 'Sports Cards & Memorabilia', desc: 'Graded cards, signed jerseys, game-used gear' },
-  { icon: '🎸', name: 'Musical Instruments', desc: 'Vintage guitars, amps, pro audio equipment' },
-  { icon: '🔧', name: 'Firearms Accessories', desc: 'Parts, optics, triggers — no ATF-reportable items' },
-  { icon: '🪙', name: 'Coins & Currency', desc: 'Rare coins, bullion, graded numismatics' },
-  { icon: '🎨', name: 'Art & Antiques', desc: 'Original artwork, vintage collectibles, estate pieces' },
-  { icon: '⌚', name: 'Watches & Jewelry', desc: 'Luxury watches, vintage jewelry, certified gems' },
-  { icon: '👟', name: 'Sneakers & Streetwear', desc: 'Authenticated kicks, limited drops, designer apparel' },
-  { icon: '🎮', name: 'Vintage Electronics & Games', desc: 'Retro consoles, sealed games, rare tech' },
+  { icon: '🏆', name: 'Sports cards and memorabilia', desc: 'Graded cards, signed jerseys, game-used gear' },
+  { icon: '🎸', name: 'Musical instruments', desc: 'Vintage guitars, amps, pro audio equipment' },
+  { icon: '🔧', name: 'Firearms accessories', desc: 'Parts, optics, triggers — no ATF-reportable items' },
+  { icon: '🪙', name: 'Coins and currency', desc: 'Rare coins, bullion, graded numismatics' },
+  { icon: '🎨', name: 'Art and antiques', desc: 'Original artwork, vintage collectibles, estate pieces' },
+  { icon: '⌚', name: 'Watches and jewelry', desc: 'Luxury watches, certified gems' },
+  { icon: '👟', name: 'Sneakers and streetwear', desc: 'Authenticated kicks, limited drops' },
+  { icon: '🎮', name: 'Retro tech and games', desc: 'Rare consoles, sealed software' },
 ]
 </script>
 
 <style scoped>
-.hero {
-  padding: 100px 0 80px;
-  background: radial-gradient(ellipse at 50% 0%, rgba(201, 168, 76, 0.08) 0%, transparent 60%);
+.hero-split {
+  padding: 80px 0 48px;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 10%, rgba(201, 168, 76, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 100% 30%, rgba(46, 204, 113, 0.06) 0%, transparent 50%);
 }
-.hero-logo {
-  height: 120px;
-  margin-bottom: 30px;
-  filter: drop-shadow(0 4px 20px rgba(201, 168, 76, 0.2));
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 48px;
+  align-items: center;
+}
+.hero-kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.7rem;
+  color: var(--gold);
+  margin-bottom: 12px;
 }
 .hero-title {
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  margin-bottom: 20px;
-  letter-spacing: 1px;
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  line-height: 1.1;
+  margin-bottom: 18px;
 }
 .hero-subtitle {
-  font-size: 1.15rem;
+  font-size: 1.08rem;
   color: var(--stone-300);
-  max-width: 650px;
-  margin: 0 auto 30px;
+  line-height: 1.7;
+  max-width: 560px;
 }
-.hero-actions {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  flex-wrap: wrap;
+.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+.hero-badges { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+.coa-badge.soft { border-color: rgba(201, 168, 76, 0.3); color: var(--stone-200); }
+.hero-art { display: flex; justify-content: center; }
+.hero-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-xl);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+  border: 1px solid var(--stone-800);
 }
-.hero-trust { margin-top: 30px; }
-
+@media (max-width: 1024px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .hero-art { order: -1; }
+}
+.stats { padding: 12px 0 36px; }
+.stats-row {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 16px; border: 1px solid var(--stone-800);
+  border-radius: var(--radius-lg); background: rgba(0,0,0,0.2);
+  padding: 20px 16px;
+}
+.stat { text-align: center; padding: 0 6px; }
+.stat-n { font-family: 'Cinzel', serif; font-size: 1.8rem; color: var(--gold); margin-bottom: 4px; }
+.stat-t { color: var(--stone-400); font-size: 0.86rem; line-height: 1.35; }
+@media (max-width: 640px) { .stats-row { grid-template-columns: 1fr; } }
 .section { padding: 80px 0; }
-.section-dark { background: rgba(0, 0, 0, 0.2); }
-.section-title { font-size: clamp(1.5rem, 3vw, 2.2rem); margin-bottom: 8px; }
 .section-subtitle { font-size: 1.05rem; }
-
 .pillar-card {
-  text-align: center;
-  padding: 30px 24px;
+  text-align: left; padding: 28px 24px;
   border: 1px solid var(--stone-800);
   border-radius: var(--radius-lg);
-  background: var(--stone-900);
+  background: linear-gradient(180deg, rgba(201, 168, 76, 0.04) 0%, var(--stone-900) 40%);
 }
-.pillar-icon {
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 16px;
-  border-radius: 50%;
-  background: var(--gold);
-  color: var(--stone-950);
-  font-family: 'Cinzel', serif;
-  font-weight: 900;
-  font-size: 1.3rem;
+.pillar-top { display: flex; align-items: center; margin-bottom: 14px; }
+.pillar-num {
+  width: 40px; height: 40px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center;
+  background: var(--gold); color: var(--stone-950); font-family: 'Cinzel', serif; font-weight: 800;
 }
-.pillar-card h3 {
-  font-size: 1.15rem;
-  margin-bottom: 10px;
-  color: var(--gold);
+.pillar-card h3 { font-size: 1.15rem; color: var(--stone-100); margin-bottom: 8px; }
+.pillar-card p { color: var(--stone-400); font-size: 0.92rem; }
+.only-here { background: rgba(0, 0, 0, 0.15); }
+.bento { gap: 16px; }
+.bento-card {
+  display: flex; gap: 16px; padding: 22px;
+  border: 1px solid var(--stone-800); border-radius: var(--radius-lg);
+  background: var(--stone-900); align-items: flex-start; transition: border-color 0.2s, transform 0.2s;
 }
-.pillar-card p { color: var(--stone-400); font-size: 0.9rem; }
-
+.bento-card:hover { border-color: rgba(201, 168, 76, 0.4); transform: translateY(-2px); }
+.bento-card h3 { font-size: 1.05rem; color: var(--stone-100); margin-bottom: 6px; }
+.bento-card p { color: var(--stone-400); font-size: 0.9rem; }
+.bento-icon { flex: 0 0 auto; padding: 4px; }
+@media (min-width: 1024px) { .bento { grid-template-columns: repeat(2, 1fr); } }
+.inline-link { display: inline-block; margin-top: 20px; color: var(--gold); font-weight: 600; }
 .category-card {
-  padding: 24px;
-  border: 1px solid var(--stone-800);
-  border-radius: var(--radius-lg);
-  background: var(--stone-900);
-  text-align: center;
-  transition: border-color 0.2s;
+  padding: 24px; border: 1px solid var(--stone-800);
+  border-radius: var(--radius-lg); background: var(--stone-900); text-align: center; transition: border-color 0.2s;
 }
 .category-card:hover { border-color: var(--gold); }
-.category-emoji { font-size: 2.5rem; margin-bottom: 12px; }
-.category-card h4 { font-size: 0.95rem; margin-bottom: 6px; }
-.category-card p { color: var(--stone-400); font-size: 0.8rem; }
-
-.comparison {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-}
-.comp-col {
-  padding: 30px;
-  border-radius: var(--radius-lg);
-}
-.comp-bad {
-  background: rgba(231, 76, 60, 0.06);
-  border: 1px solid rgba(231, 76, 60, 0.2);
-}
-.comp-good {
-  background: rgba(46, 204, 113, 0.06);
-  border: 1px solid rgba(46, 204, 113, 0.2);
-}
-.comp-col h3 { font-size: 1.1rem; margin-bottom: 16px; }
+.category-emoji { font-size: 2.1rem; margin-bottom: 10px; }
+.category-card h4 { font-size: 0.9rem; margin-bottom: 6px; }
+.category-card p { color: var(--stone-400); font-size: 0.78rem; }
+.comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.comp-col { padding: 28px; border-radius: var(--radius-lg); }
+.comp-bad { background: rgba(231, 76, 60, 0.05); border: 1px solid rgba(231, 76, 60, 0.18); }
+.comp-good { background: rgba(46, 204, 113, 0.05); border: 1px solid rgba(46, 204, 113, 0.2); }
+.comp-col h3 { font-size: 1.1rem; margin-bottom: 14px; }
 .comp-bad h3 { color: var(--alert-red); }
 .comp-good h3 { color: var(--trust-green); }
 .comp-col ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
-.comp-col li { color: var(--stone-300); font-size: 0.9rem; padding-left: 24px; position: relative; }
-.comp-bad li::before { content: '\2717'; position: absolute; left: 0; color: var(--alert-red); }
+.comp-col li { color: var(--stone-300); font-size: 0.92rem; padding-left: 24px; position: relative; }
+.comp-bad li::before { content: '\00d7'; position: absolute; left: 0; color: var(--alert-red); font-size: 1.1rem; }
 .comp-good li::before { content: '\2713'; position: absolute; left: 0; color: var(--trust-green); }
-
-@media (max-width: 768px) {
-  .comparison { grid-template-columns: 1fr; }
-}
-
-.cta-section {
-  background: radial-gradient(ellipse at 50% 100%, rgba(201, 168, 76, 0.08) 0%, transparent 60%);
-}
+.comp-cta { margin-top: 20px; }
+@media (max-width: 800px) { .comparison { grid-template-columns: 1fr; } }
+.proof-strip { background: linear-gradient(100deg, rgba(201, 168, 76, 0.1), rgba(0,0,0,0)); border-top: 1px solid var(--stone-800); }
+.proof-inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+.proof-inner h2 { font-size: 1.6rem; margin-bottom: 8px; }
+.cta-section { background: radial-gradient(ellipse at 50% 100%, rgba(201, 168, 76, 0.1) 0%, transparent 60%); }
 </style>
