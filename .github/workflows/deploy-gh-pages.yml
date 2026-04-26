@@ -68,4 +68,4 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_NOTIFY_CHAT_ID: ${{ secrets.TELEGRAM_NOTIFY_CHAT_ID }}
-        run: node scripts/notify-telegram.cjs "The Franks Standard: deployed. ${{ steps.deployment.outputs.page_url }}"
+        run: 'node scripts/notify-telegram.cjs "The Franks Standard: deployed. ${{ steps.deployment.outputs.page_url }}"'
