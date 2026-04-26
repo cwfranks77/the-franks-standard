@@ -18,8 +18,8 @@
             @click="onBrandOrLogoClick"
           >
             <img
-              src="/logo.svg"
-              alt="The Franks Standard"
+              src="/franks-pavilion.png"
+              alt=""
               class="header-logo"
               :class="{ 'op-knock-home': onHome }"
             />
@@ -30,6 +30,7 @@
         <nav class="header-nav" :class="{ open: menuOpen }">
           <NuxtLink to="/video" class="nav-link" @click="closeAllNav">Video</NuxtLink>
           <NuxtLink to="/browse" class="nav-link" @click="closeAllNav">Browse</NuxtLink>
+          <NuxtLink to="/sellers" class="nav-link" @click="closeAllNav">For sellers</NuxtLink>
           <NuxtLink to="/pay" class="nav-link nav-highlight" @click="closeAllNav">Pay &amp; fees</NuxtLink>
           <NuxtLink to="/support" class="nav-link" @click="closeAllNav">Support</NuxtLink>
           <div
@@ -88,13 +89,15 @@
       <div class="container">
         <div class="footer-grid">
           <div class="footer-brand">
-            <img src="/logo.svg" alt="The Franks Standard" class="footer-logo" />
-            <p class="text-muted">The marketplace where authenticity isn't optional — it's the standard.</p>
+            <img src="/franks-pavilion.png" alt="" class="footer-logo" />
+            <p class="footer-site-name">The Franks Standard</p>
+            <p class="text-muted">The Franks Standard LLC — the marketplace where authenticity is not optional.</p>
           </div>
           <div class="footer-col">
             <h4>Marketplace</h4>
             <NuxtLink to="/video">Video calls</NuxtLink>
             <NuxtLink to="/browse">Browse All</NuxtLink>
+            <NuxtLink to="/sellers">For stores &amp; sellers</NuxtLink>
             <NuxtLink to="/sell">Sell an Item</NuxtLink>
             <NuxtLink to="/categories">Categories</NuxtLink>
           </div>
@@ -308,7 +311,15 @@ function submitOpModal () {
   color: var(--stone-100);
 }
 .header-brand:hover { color: var(--gold); }
-.header-logo { height: 40px; width: auto; flex-shrink: 0; }
+.header-logo {
+  width: 84px;
+  height: 44px;
+  object-fit: cover;
+  object-position: 50% 32%;
+  flex-shrink: 0;
+  border-radius: 4px;
+  border: 1px solid var(--stone-700);
+}
 .header-logo.op-knock-home { filter: drop-shadow(0 0 6px rgba(255, 216, 77, 0.25)); }
 .header-name {
   font-family: 'Cinzel', serif;
@@ -449,7 +460,23 @@ function submitOpModal () {
   grid-template-columns: 2fr 1fr 1fr 1fr;
   gap: 40px;
 }
-.footer-logo { height: 50px; margin-bottom: 12px; }
+.footer-logo {
+  width: 100px;
+  height: 56px;
+  object-fit: cover;
+  object-position: 50% 32%;
+  border-radius: 4px;
+  border: 1px solid var(--stone-800);
+  margin-bottom: 12px;
+  display: block;
+}
+.footer-site-name {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--stone-100);
+  margin: 0 0 6px 0;
+}
 .footer-col {
   display: flex;
   flex-direction: column;

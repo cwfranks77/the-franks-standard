@@ -3,7 +3,7 @@ const siteUrl = (rawSite && String(rawSite).trim())
   ? String(rawSite).replace(/\/$/, '')
   : 'https://thefranksstandard.com'
 const rawOg = process.env.NUXT_PUBLIC_OG_IMAGE
-const ogImage = (rawOg && String(rawOg).trim()) ? String(rawOg).trim() : `${siteUrl}/logo.svg`
+const ogImage = (rawOg && String(rawOg).trim()) ? String(rawOg).trim() : `${siteUrl}/franks-pavilion.png`
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
@@ -25,9 +25,14 @@ export default defineNuxtConfig({
     },
   },
 
-  // Uncomment when you have real Supabase credentials in .env
-  // modules: ['@nuxtjs/supabase'],
-  // supabase: { redirect: false },
+  modules: ['@nuxtjs/supabase'],
+
+  // Client-only app (ssr: false); session lives in the browser. Set URL + anon key in .env and in GitHub Actions.
+  supabase: {
+    redirect: false,
+    types: false,
+    useSsrCookies: false,
+  },
 
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
@@ -50,7 +55,8 @@ export default defineNuxtConfig({
         { name: 'theme-color', content: '#0a0518' },
       ],
       link: [
-        { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' },
+        { rel: 'icon', type: 'image/png', href: '/franks-pavilion.png' },
+        { rel: 'apple-touch-icon', href: '/franks-pavilion.png' },
         { rel: 'preconnect', href: 'https://images.unsplash.com' },
         { rel: 'preconnect', href: 'https://meet.jit.si' },
         { rel: 'preconnect', href: 'https://js.stripe.com' },

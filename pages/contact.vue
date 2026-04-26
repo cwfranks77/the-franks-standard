@@ -2,8 +2,9 @@
   <div class="page narrow">
     <h1>Contact</h1>
     <p class="text-muted lead">
-      Questions from buyers and sellers, press, and partnerships: reach the team at the address below.
-      For step-by-step help and tech issues, start at
+      Questions from buyers and sellers, press, and partnerships: reach the team at the address below. Stores and volume
+      sellers: start at <NuxtLink to="/sellers">For sellers</NuxtLink> (same email). For step-by-step help and tech
+      issues, go to
       <NuxtLink to="/support">Support &amp; tech</NuxtLink>
       or use the <strong>Help</strong> button on any page.
     </p>

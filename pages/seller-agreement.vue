@@ -16,8 +16,9 @@
 
       <h2>3. Fees and payouts</h2>
       <p>
-        Applicable fees and payout timing will be shown in your seller tools and at the time of sale. You are responsible
-        for taxes in your jurisdiction.
+        Applicable fees and payout timing will be shown in your seller tools and at the time of sale, as each capability is
+        turned on for your account. You are responsible for taxes in your jurisdiction. The platform is a marketplace
+        facilitator; payment processors and your bank may have separate terms, which you accept when you use those flows.
       </p>
 
       <h2>4. Shipping and support</h2>

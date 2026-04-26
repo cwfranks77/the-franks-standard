@@ -18,7 +18,7 @@ require('dotenv').config({ path: path.join(__dirname, '..', '.env') })
 const PUBLIC_DIR = path.join(__dirname, '..', 'public')
 /** Telegram sendPhoto expects a raster image; prefer png/jpg if present. */
 function resolveRasterLogoPath () {
-  for (const name of ['logo.png', 'logo.jpg', 'logo.jpeg']) {
+  for (const name of ['franks-pavilion.png', 'logo.png', 'logo.jpg', 'logo.jpeg']) {
     const p = path.join(PUBLIC_DIR, name)
     if (fs.existsSync(p)) { return p }
   }
@@ -87,11 +87,7 @@ async function postTelegram () {
       await axios.post(`${base}/sendMessage`, { chat_id: channelId, text: TELEGRAM_TEXT })
     }
   } else {
-    if (!fs.existsSync(path.join(PUBLIC_DIR, 'logo.svg'))) {
-      console.warn('No logo.png/jpg in public/; posting text only. Add a raster logo for Telegram photo posts.')
-    } else {
-      console.warn('Only logo.svg found; Telegram sendPhoto needs PNG or JPG. Posting text only, or add public/logo.png.')
-    }
+    console.warn('No franks-pavilion.png or logo.png/jpg in public/; posting text only. Add a PNG for Telegram sendPhoto.')
     await axios.post(`${base}/sendMessage`, { chat_id: channelId, text: TELEGRAM_TEXT })
   }
   console.log('OK: Telegram')

@@ -11,30 +11,43 @@
         the <NuxtLink to="/seller-agreement">Seller Agreement</NuxtLink>.
       </p>
 
-      <h2>2. Accounts</h2>
+      <h2>2. Marketplace facilitator</h2>
+      <p>
+        The Franks Standard is a <em>platform</em> and marketplace facilitator. We are not the seller of items listed by third
+        parties, and we are not a bank, money transmitter, or escrow agent except where we say otherwise in a specific
+        product flow or in the terms of a payment provider you choose at checkout. Individual sales are between the buyer
+        and the seller; the platform, payment processors, and (where used) your card issuer or bank have their own terms and
+        roles, which you should read at checkout. Features such as public listing shelves, connect payouts, and hold-and-release
+        payments may be offered in phases—see
+        <NuxtLink to="/sellers">For sellers</NuxtLink>,
+        <NuxtLink to="/how-it-works">How it works</NuxtLink>, and
+        <NuxtLink to="/contact">Contact</NuxtLink> for what is available and how to work with the team to go live.
+      </p>
+
+      <h2>3. Accounts</h2>
       <p>You are responsible for your account credentials and for all activity under your account. You must provide accurate information.</p>
 
-      <h2>3. Listings and authenticity</h2>
+      <h2>4. Listings and authenticity</h2>
       <p>
         Sellers must comply with our authenticity requirements, including providing a COA or signed in-platform guarantee as
         required. Prohibited or illegal items are not allowed; see <NuxtLink to="/prohibited-items">Prohibited Items</NuxtLink>.
       </p>
 
-      <h2>4. Payments and disputes</h2>
+      <h2>5. Payments and disputes</h2>
       <p>
         Payment processing and escrow (where applicable) will follow the flows and provider terms we describe at checkout.
         We take counterfeit and misrepresentation seriously; see our <NuxtLink to="/how-it-works">How it works</NuxtLink> page
         for our standards.
       </p>
 
-      <h2>5. Limitation of liability</h2>
+      <h2>6. Limitation of liability</h2>
       <p>
         The service is provided &quot;as is.&quot; To the maximum extent permitted by law, The Franks Standard and its
         operators are not liable for indirect or consequential damages. Some jurisdictions do not allow certain limitations;
         in those cases, our liability is limited to the fullest extent allowed by law.
       </p>
 
-      <h2>6. Contact</h2>
+      <h2>7. Contact</h2>
       <p>For terms questions: <NuxtLink to="/contact">Contact</NuxtLink> or <a href="mailto:info@thefranksstandard.com">info@thefranksstandard.com</a></p>
     </div>
   </div>

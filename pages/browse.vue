@@ -3,10 +3,16 @@
     <div class="container">
       <div class="browse-header">
         <h1>Browse Marketplace</h1>
-        <p class="text-muted">Every item backed by a Certificate of Authenticity</p>
+        <p class="text-muted">
+          The floor lists live inventory as sellers and shops go on board; every public item is COA- or guarantee-backed.
+          <NuxtLink to="/sellers">Apply to add your store</NuxtLink>.
+        </p>
       </div>
 
       <!-- Filters -->
+      <p v-if="loadError" class="text-muted" style="max-width: 640px;">
+        Could not load listings (check Supabase env and the SQL migration in the repo was run in your project). {{ loadError }}
+      </p>
       <div class="browse-filters">
         <div class="filter-bar">
           <input
@@ -61,9 +67,13 @@
 </template>
 
 <script setup>
+const { publicUrlForPath } = useListingImageUrl()
+const supabase = useSupabaseClient()
+
 const searchQuery = ref('')
 const selectedCategory = ref('')
 const sortBy = ref('newest')
+const loadError = ref('')
 
 const categories = [
   'Sports Cards & Memorabilia',
@@ -76,8 +86,35 @@ const categories = [
   'Vintage Electronics & Games',
 ]
 
-// TODO: Replace with Supabase query
 const listings = ref([])
+
+async function loadListings() {
+  loadError.value = ''
+  const { data, error } = await supabase
+    .from('listings')
+    .select('id, title, category, price, condition, coa_type, image_paths, created_at, seller:profiles(full_name)')
+    .eq('status', 'published')
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    loadError.value = error.message
+    return
+  }
+  listings.value = (data || []).map((r) => ({
+    id: r.id,
+    title: r.title,
+    category: r.category,
+    price: Number(r.price),
+    coaType: r.coa_type,
+    createdAt: r.created_at,
+    image: publicUrlForPath(r.image_paths?.[0]),
+    seller: (r.seller && r.seller.full_name) ? r.seller.full_name : 'Seller',
+  }))
+}
+
+onMounted(() => {
+  loadListings()
+})
 
 const filteredListings = computed(() => {
   let results = [...listings.value]
@@ -90,8 +127,17 @@ const filteredListings = computed(() => {
   if (selectedCategory.value) {
     results = results.filter((i) => i.category === selectedCategory.value)
   }
-  if (sortBy.value === 'price-low') results.sort((a, b) => a.price - b.price)
-  if (sortBy.value === 'price-high') results.sort((a, b) => b.price - a.price)
+  if (sortBy.value === 'newest') {
+    results = [...results].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    )
+  }
+  if (sortBy.value === 'price-low') {
+    results = [...results].sort((a, b) => a.price - b.price)
+  }
+  if (sortBy.value === 'price-high') {
+    results = [...results].sort((a, b) => b.price - a.price)
+  }
   return results
 })
 </script>

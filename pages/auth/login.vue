@@ -1,7 +1,7 @@
 <template>
   <div class="auth-page">
     <div class="auth-card">
-      <img src="/logo.svg" alt="The Franks Standard" class="auth-logo" />
+      <img src="/franks-pavilion.png" alt="" class="auth-logo" role="presentation" />
       <h1>Sign In</h1>
       <p class="text-muted">Welcome back to The Franks Standard</p>
 
@@ -27,6 +27,7 @@
 </template>
 
 <script setup>
+const route = useRoute()
 const email = ref('')
 const password = ref('')
 const loading = ref(false)
@@ -34,14 +35,19 @@ const loading = ref(false)
 async function handleLogin() {
   loading.value = true
   try {
-    // TODO: Uncomment when Supabase module is enabled
-    // const client = useSupabaseClient()
-    // const { error } = await client.auth.signInWithPassword({ email: email.value, password: password.value })
-    // if (error) throw error
-    alert('Auth will work once Supabase is connected. Redirecting to dashboard preview...')
-    navigateTo('/dashboard')
+    const supabase = useSupabaseClient()
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email.value,
+      password: password.value,
+    })
+    if (error) {
+      throw error
+    }
+    const raw = route.query.redirect
+    const next = typeof raw === 'string' && raw.startsWith('/') ? raw : '/dashboard'
+    await navigateTo(next)
   } catch (err) {
-    alert(err.message || 'Login failed')
+    alert(err?.message || 'Login failed')
   } finally {
     loading.value = false
   }
@@ -65,7 +71,7 @@ async function handleLogin() {
   border-radius: var(--radius-xl);
   text-align: center;
 }
-.auth-logo { height: 60px; margin-bottom: 20px; }
+.auth-logo { max-width: 220px; width: 100%; height: auto; max-height: 100px; object-fit: contain; margin-bottom: 20px; border-radius: 6px; }
 .auth-card h1 { font-size: 1.5rem; margin-bottom: 4px; }
 .auth-footer { font-size: 0.9rem; }
 </style>

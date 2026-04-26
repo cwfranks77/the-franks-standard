@@ -50,6 +50,16 @@ const steps = [
 ]
 
 const faqs = reactive([
+  {
+    q: 'Is the public marketplace floor and checkout live for every seller right now?',
+    a: 'The site is open to the public, and we onboard stores and high-trust inventory in stages so proof and policies stay ahead of scale. If you are a shop or volume seller, use For sellers to apply. Single-item drafts can be sent from the Sell page. Full connected accounts, hosted listings, and seller payouts follow as your store is enabled—no surprise “go live” without a conversation with the team.',
+    open: false,
+  },
+  {
+    q: 'I run a store. How do I get on the floor?',
+    a: 'Start with the For sellers page: email the team with what you sell and a link to your site or social. The same inbox (info@thefranksstandard.com) is our official channel, listed on Contact. We will confirm authenticity rules, fees, and timing for your catalog.',
+    open: false,
+  },
   { q: 'Is it free to sign up?', a: 'Yes, creating an account is completely free for buyers and sellers.', open: false },
   { q: 'What fees does The Franks Standard charge?', a: 'Sellers pay a small transaction fee (lower than eBay\'s 13%) when an item sells. Buyers pay no extra fees.', open: false },
   { q: 'What is the Franks Standard Guarantee?', a: 'It\'s a legally binding digital signature where the seller stakes their name and reputation on the authenticity of the item. If the item is proven fake, the seller is permanently banned and the buyer is refunded.', open: false },

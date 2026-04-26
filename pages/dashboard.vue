@@ -11,7 +11,7 @@
       <div class="grid grid-3 mt-4">
         <div class="stat-card hover-lift">
           <p class="stat-label">Active Listings</p>
-          <p class="stat-value">0</p>
+          <p class="stat-value">{{ stats.count }}</p>
         </div>
         <div class="stat-card hover-lift">
           <p class="stat-label">Total Sales</p>
@@ -28,11 +28,17 @@
           <h2>My Listings</h2>
           <NuxtLink to="/sell" class="btn btn-primary btn-sm">+ New Listing</NuxtLink>
         </div>
-        <div class="empty-state text-center" style="padding: 40px;">
+        <div v-if="!myListings.length" class="empty-state text-center" style="padding: 40px;">
           <p style="font-size: 2rem;">🏛️</p>
           <p class="text-muted mt-1">You haven't listed anything yet.</p>
           <NuxtLink to="/sell" class="btn btn-outline btn-sm mt-2">Create Your First Listing</NuxtLink>
         </div>
+        <ul v-else class="dash-listings">
+          <li v-for="l in myListings" :key="l.id">
+            <NuxtLink :to="`/listing/${l.id}`">{{ l.title }}</NuxtLink>
+            <span class="text-muted small">${{ Number(l.price).toLocaleString() }} — {{ l.status }}</span>
+          </li>
+        </ul>
       </div>
 
       <div class="dash-section mt-4">
@@ -46,8 +52,29 @@
 </template>
 
 <script setup>
-definePageMeta({ layout: 'default' })
+definePageMeta({ layout: 'default', middleware: 'requires-auth' })
 useSeoMeta({ title: 'Dashboard - The Franks Standard' })
+
+const supabase = useSupabaseClient()
+const stats = reactive({ count: 0 })
+const myListings = ref([])
+
+onMounted(async () => {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return
+  }
+  const { data, error } = await supabase
+    .from('listings')
+    .select('id, title, price, status, created_at')
+    .eq('seller_id', user.id)
+    .order('created_at', { ascending: false })
+  if (error) {
+    return
+  }
+  myListings.value = data || []
+  stats.count = myListings.value.filter((l) => l.status === 'published').length
+})
 </script>
 
 <style scoped>
@@ -70,6 +97,18 @@ useSeoMeta({ title: 'Dashboard - The Franks Standard' })
   padding: 24px;
 }
 .dash-section h2 { font-size: 1.2rem; color: var(--gold); }
+.dash-listings { list-style: none; margin: 0; padding: 0; }
+.dash-listings li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--stone-800);
+}
+.dash-listings a { color: var(--stone-100); text-decoration: none; }
+.dash-listings a:hover { color: var(--gold); }
+.dash-listings .small { font-size: 0.8rem; }
 .dash-section-header {
   display: flex;
   justify-content: space-between;

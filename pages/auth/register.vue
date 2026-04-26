@@ -1,7 +1,7 @@
 <template>
   <div class="auth-page">
     <div class="auth-card">
-      <img src="/logo.svg" alt="The Franks Standard" class="auth-logo" />
+      <img src="/franks-pavilion.png" alt="" class="auth-logo" role="presentation" />
       <h1>Join The Franks Standard</h1>
       <p class="text-muted">Create your free account to buy and sell</p>
 
@@ -55,17 +55,32 @@ const loading = ref(false)
 async function handleRegister() {
   loading.value = true
   try {
-    // TODO: Uncomment when Supabase module is enabled
-    // const client = useSupabaseClient()
-    // const { error } = await client.auth.signUp({
-    //   email: email.value, password: password.value,
-    //   options: { data: { full_name: fullName.value, account_type: accountType.value } },
-    // })
-    // if (error) throw error
-    alert('Account created! (Connect Supabase to enable real auth)')
-    navigateTo('/auth/login')
+    const supabase = useSupabaseClient()
+    const { data, error } = await supabase.auth.signUp({
+      email: email.value,
+      password: password.value,
+      options: {
+        data: {
+          full_name: fullName.value,
+          account_type: accountType.value,
+        },
+      },
+    })
+    if (error) {
+      throw error
+    }
+    if (data.user && !data.session) {
+      alert('Check your email to confirm your address, then sign in here.')
+      await navigateTo('/auth/login')
+      return
+    }
+    if (accountType.value === 'seller') {
+      await navigateTo('/sellers')
+    } else {
+      await navigateTo('/dashboard')
+    }
   } catch (err) {
-    alert(err.message || 'Registration failed')
+    alert(err?.message || 'Registration failed')
   } finally {
     loading.value = false
   }
@@ -89,7 +104,7 @@ async function handleRegister() {
   border-radius: var(--radius-xl);
   text-align: center;
 }
-.auth-logo { height: 60px; margin-bottom: 20px; }
+.auth-logo { max-width: 220px; width: 100%; height: auto; max-height: 100px; object-fit: contain; margin-bottom: 20px; border-radius: 6px; }
 .auth-card h1 { font-size: 1.5rem; margin-bottom: 4px; }
 .auth-footer { font-size: 0.9rem; }
 .terms-check {

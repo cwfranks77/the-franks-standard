@@ -4,7 +4,16 @@
       <div class="sell-wrapper">
         <div class="sell-header text-center">
           <h1>Sell on The Franks Standard</h1>
-          <p class="text-muted">List your authentic items. COA required — that's what makes us different.</p>
+          <p class="text-muted">List your authentic items. COA or signed guarantee required — that is what makes us different.</p>
+        </div>
+
+        <div class="sell-notice" role="status">
+          <p>
+            <strong>Sign in required.</strong> You are publishing to the live floor (same rules: COA or signed guarantee). Stores and high volume:
+            <NuxtLink to="/sellers">Apply as a store</NuxtLink>
+            or
+            <a :href="applicationMailto">info@thefranksstandard.com</a>.
+          </p>
         </div>
 
         <form class="sell-form" @submit.prevent="submitListing">
@@ -117,8 +126,8 @@
             </div>
           </div>
 
-          <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
-            List Item on The Franks Standard
+          <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;" :disabled="submitting">
+            {{ submitting ? 'Publishing…' : 'Publish to marketplace' }}
           </button>
         </form>
       </div>
@@ -127,6 +136,18 @@
 </template>
 
 <script setup>
+definePageMeta({ middleware: 'requires-auth' })
+
+useSeoMeta({
+  title: 'Sell — The Franks Standard',
+  description:
+    'Sell with COA or a signed guarantee. Onboarding for stores: apply to list on the authenticity-first marketplace.',
+})
+
+const applicationMailto = buildSellerApplicationMailto()
+const supabase = useSupabaseClient()
+const submitting = ref(false)
+
 const categories = [
   'Sports Cards & Memorabilia',
   'Musical Instruments',
@@ -183,8 +204,92 @@ async function submitListing() {
     alert('You must sign The Franks Standard Guarantee to list this item.')
     return
   }
-  // TODO: Upload to Supabase + create listing
-  alert('Listing submitted! (Connect Supabase to go live)')
+  if (form.coaType === 'upload' && !coaFile.value) {
+    alert('Please upload a COA document, or pick the in-platform guarantee instead.')
+    return
+  }
+  if (photoFiles.value.length < 1) {
+    alert('Add at least one item photo (first image is the cover).')
+    return
+  }
+  submitting.value = true
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      await navigateTo({ path: '/auth/login', query: { redirect: '/sell' } })
+      return
+    }
+    const { data: row, error: insErr } = await supabase
+      .from('listings')
+      .insert({
+        seller_id: user.id,
+        title: form.title.trim(),
+        description: form.description.trim(),
+        category: form.category,
+        price: Number(form.price),
+        condition: form.condition,
+        coa_type: form.coaType,
+        guarantee_signed: !!form.guaranteeSigned,
+        seller_legal_name: form.coaType === 'guarantee' ? form.sellerName.trim() : null,
+        coa_storage_path: null,
+        image_paths: [],
+        status: 'published',
+      })
+      .select('id')
+      .single()
+
+    if (insErr || !row) {
+      throw new Error(insErr?.message || 'Could not create listing. Did you run the SQL migration in Supabase?')
+    }
+
+    const listingId = row.id
+    const base = `${user.id}/${listingId}`
+
+    const imagePaths = []
+    for (let i = 0; i < photoFiles.value.length; i++) {
+      const file = photoFiles.value[i]
+      const ext = (file.name.split('.').pop() || 'jpg').replace(/[^a-z0-9]/gi, '') || 'jpg'
+      const path = `${base}/item-${i}.${ext}`
+      const { error: upErr } = await supabase.storage.from('listings').upload(path, file, {
+        upsert: true,
+        contentType: file.type || undefined,
+      })
+      if (upErr) {
+        throw new Error(upErr.message)
+      }
+      imagePaths.push(path)
+    }
+
+    let coaPath = null
+    if (form.coaType === 'upload' && coaFile.value) {
+      const cf = coaFile.value
+      const cext = (cf.name.split('.').pop() || 'pdf').replace(/[^a-z0-9]/gi, '') || 'pdf'
+      coaPath = `${base}/coa/coa.${cext}`
+      const { error: cErr } = await supabase.storage.from('listings').upload(coaPath, cf, { upsert: true })
+      if (cErr) {
+        throw new Error(cErr.message)
+      }
+    }
+
+    const { error: updErr } = await supabase
+      .from('listings')
+      .update({
+        image_paths: imagePaths,
+        coa_storage_path: coaPath,
+      })
+      .eq('id', listingId)
+
+    if (updErr) {
+      throw new Error(updErr.message)
+    }
+
+    await navigateTo(`/listing/${listingId}`)
+  } catch (e) {
+    const msg = e && typeof e === 'object' && 'message' in e ? e.message : String(e)
+    alert(`Could not publish: ${msg}`)
+  } finally {
+    submitting.value = false
+  }
 }
 </script>
 
@@ -282,6 +387,18 @@ async function submitListing() {
   border: 1px solid rgba(201, 168, 76, 0.2);
   border-radius: var(--radius);
 }
+.sell-notice {
+  margin-bottom: 24px;
+  padding: 18px 20px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  background: rgba(201, 168, 76, 0.07);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--stone-300);
+  text-align: left;
+}
+.sell-notice a { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }
 .guarantee-text {
   font-size: 0.9rem;
   color: var(--stone-300);

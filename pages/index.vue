@@ -177,6 +177,20 @@
       </div>
     </section>
 
+    <section class="section section-sellers-cta">
+      <div class="container text-center">
+        <h2 class="section-title">Bring your store to the floor</h2>
+        <p class="section-subtitle text-muted">
+          We are onboarding shops and pro sellers with authenticity-backed inventory—public listings and checkout roll out
+          in stages so there are no surprises. Same standards: COA or a signed in-platform guarantee on what goes public.
+        </p>
+        <div class="hero-actions mt-3">
+          <NuxtLink to="/sellers" class="btn btn-primary btn-lg">For sellers &amp; stores</NuxtLink>
+          <NuxtLink to="/sell" class="btn btn-outline btn-lg">Send a listing draft</NuxtLink>
+        </div>
+      </div>
+    </section>
+
     <section class="section cta-section">
       <div class="container text-center">
         <h2 class="section-title">The floor is open</h2>

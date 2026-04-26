@@ -5,15 +5,16 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
-    "generate": "nuxt generate",
+    "generate": "nuxt generate && node scripts/inject-spa-fallback.cjs",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "post:social": "node scripts/post-franks-social.cjs",
     "notify:telegram": "node scripts/notify-telegram.cjs",
-    "verify": "nuxt generate",
-    "deploy:gh-pages": "nuxt generate && npx --yes gh-pages@6.2.0 -d .output/public -t -m \"chore(gh-pages): static deploy\""
+    "verify": "npm run generate",
+    "deploy:gh-pages": "npm run generate && npx --yes gh-pages@6.2.0 -d .output/public -t -m \"chore(gh-pages): static deploy\""
   },
   "dependencies": {
+    "@nuxtjs/supabase": "^2.0.6",
     "@stripe/stripe-js": "^5.5.0",
     "nuxt": "^3.16.0",
     "vue": "^3.5.0",
@@ -21,9 +22,9 @@
   },
   "devDependencies": {
     "@nuxt/devtools": "^2.3.0",
-    "typescript": "^5.7.0",
     "axios": "^1.7.0",
     "dotenv": "^16.4.0",
-    "form-data": "^4.0.0"
+    "form-data": "^4.0.0",
+    "typescript": "^5.7.0"
   }
 }
