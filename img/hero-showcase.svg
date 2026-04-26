@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="420" viewBox="0 0 560 420" fill="none" aria-hidden="true">
+  <defs>
+    <linearGradient id="a" x1="80" y1="40" x2="480" y2="380" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#C9A84C" stop-opacity="0.35"/>
+      <stop offset="0.5" stop-color="#1A1A2E" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#2ecc71" stop-opacity="0.2"/>
+    </linearGradient>
+    <filter id="g" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="12" result="b"/>
+      <feColorMatrix in="b" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.4 0"/>
+    </filter>
+  </defs>
+  <rect width="560" height="420" rx="20" fill="#12121f"/>
+  <rect x="24" y="24" width="512" height="372" rx="16" stroke="url(#a)" stroke-width="1.2"/>
+  <g opacity="0.9">
+    <rect x="64" y="64" width="200" height="40" rx="6" fill="#2a2a3d"/>
+    <rect x="64" y="120" width="432" height="8" rx="2" fill="#3a3640"/>
+    <rect x="64" y="140" width="360" height="8" rx="2" fill="#2e2a35"/>
+    <rect x="64" y="168" width="300" height="8" rx="2" fill="#2e2a35"/>
+  </g>
+  <g filter="url(#g)">
+    <rect x="320" y="200" width="160" height="100" rx="10" fill="#1f1f30" stroke="#C9A84C" stroke-opacity="0.4"/>
+  </g>
+  <g>
+    <rect x="320" y="200" width="160" height="100" rx="10" fill="#1a1a2e" stroke="#C9A84C" stroke-width="1.2"/>
+    <text x="335" y="240" font-family="Georgia,serif" font-size="12" fill="#C9A84C">COA</text>
+    <rect x="335" y="252" width="88" height="4" rx="1" fill="#2ecc71" opacity="0.8"/>
+    <text x="335" y="278" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" fill="#9d9484">Verified listing</text>
+  </g>
+  <circle cx="140" cy="300" r="8" fill="#2ecc71"/>
+  <path d="M128 300 L136 308 L152 288" stroke="#1a1a2e" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+</svg>
