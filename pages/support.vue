@@ -12,7 +12,7 @@
     <section class="card voice-lane">
       <h2>Voice, AI help, and email</h2>
       <p class="text-muted">
-        <strong>Live voice:</strong> open <NuxtLink to="/video">Video</NuxtLink> for a browser room (mic + camera) with your buyer, seller, or team — no phone system required.
+        <strong>Live voice:</strong> open <NuxtLink to="/video">Video</NuxtLink> for a browser room (mic + camera) with your buyer, seller, or team - no phone system required.
         <strong>AI-style help:</strong> use the floating <strong>Help</strong> button; you can use the mic there to dictate your question in supported browsers (Chrome / Edge).
         <strong>Email a human:</strong>
         <a href="mailto:info@thefranksstandard.com?subject=The%20Franks%20Standard%20support">info@thefranksstandard.com</a>
@@ -55,7 +55,7 @@
         <NuxtLink to="/privacy">Privacy</NuxtLink>
       </div>
       <p class="text-muted small mt-2">
-        Operator tools are for site owners (unlock from the home page logo; ask Help for operator).
+        Owner toolkit (operator console) is for site owners only - unlock from the home page logo; ask Help for operator.
       </p>
     </section>
 

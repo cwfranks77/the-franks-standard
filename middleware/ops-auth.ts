@@ -6,5 +6,5 @@ export default defineNuxtRouteMiddleware(() => {
   if (isAuthed.value) {
     return
   }
-  return navigateTo('/')
+  return navigateTo('/ops')
 })

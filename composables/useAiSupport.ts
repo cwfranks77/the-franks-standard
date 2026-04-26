@@ -23,22 +23,22 @@ export function getAiReply (message: string): string {
     return 'Seller and buyer fees are paid through our Payments page. Open **Pay & fees** in the menu. You will use secure Stripe checkout links (we do not store your full card number on this site). Set up your own Payment Links in Stripe and paste the URLs into your `.env` as `NUXT_PUBLIC_PAY_*` variables, then rebuild.'
   }
   if (/(refund|money back|return)/.test(q)) {
-    return 'Eligible items follow the escrow and buyer-confirmation flow described in **How it works**. If something arrives not as described, use **Message** on the order and we prioritize proof (photos, COA). Disputes are reviewed with the listing terms and the Standard’s fraud policy.'
+    return 'Eligible items follow the escrow and buyer-confirmation flow described in **How it works**. If something arrives not as described, use **Message** on the order and we prioritize proof (photos, COA). Disputes are reviewed with the listing terms and the Standard\'s fraud policy.'
   }
   if (/(coa|authentic|fake|real|certificate)/.test(q)) {
-    return 'Every public listing on The Franks Standard requires a COA or a signed in-platform guarantee. Fakes are not a “second chance” here — they are a permanent ban. Upload COA in the sell flow; buyers see it before money releases.'
+    return 'Every public listing on The Franks Standard requires a COA or a signed in-platform guarantee. Fakes are not a second chance here - they are a permanent ban. Upload COA in the sell flow; buyers see it before money releases.'
   }
   if (/(fraud|scam|stolen|report)/.test(q)) {
     return 'Report through **Contact** with order ID and photos. The Standard has a zero-tolerance policy for counterfeits and will remove sellers who break trust.'
   }
   if (/(voice|speak|talk to someone|phone|call me|human on phone)/.test(q)) {
-    return 'For **live voice** with another person, open **Video** (Jitsi) in the header — it is mic and camera in the browser, no app install. For **email**, use **info@thefranksstandard.com** from **Contact** or **Support**. This assistant is text-first; use the mic button in Help to dictate your question if your browser supports it.'
+    return 'For **live voice** with another person, open **Video** (Jitsi) in the header - it is mic and camera in the browser, no app install. For **email**, use **info@thefranksstandard.com** from **Contact** or **Support**. This assistant is text-first; use the mic button in Help to dictate your question if your browser supports it.'
   }
   if (/(video|call|meet|jitsi)/.test(q)) {
     return 'Open **Video** in the header to start a Jitsi room, then share the link with your buyer or seller. Both of you use the same room. Allow camera and microphone in the browser when asked.'
   }
-  if (/(backdoor|ops|operator|panel|unlock|phrase|password)/.test(q)) {
-    return 'The operator area is for site owners. On the **home** page, tap the **logo and site name** five times quickly, then enter the same value as `NUXT_PUBLIC_OPS_ACCESS_KEY` in your build. If you **lost the phrase**, set a **new** value in `.env` and the GitHub secret, then **rebuild and deploy**; there is no secret recovery through chat.'
+  if (/(backdoor|ops|operator|panel|unlock|phrase|password|toolkit)/.test(q)) {
+    return 'The **owner toolkit** (operator console) is for site owners only. On the **home** page, tap the **logo and site name** five times quickly, then enter the same value as `NUXT_PUBLIC_OPS_ACCESS_KEY` from your build. You get shortcuts, honest appraisal **research** links, and runbooks - not hidden controls over shoppers. If you **lost the phrase**, set a **new** value in `.env` and GitHub Actions secrets, then **rebuild and deploy**.'
   }
   if (/(account|sign up|register|login|password)/.test(q)) {
     return 'Use **Join Free** or **Sign In** in the header. Your dashboard shows listings and orders. Password reset and email are wired up when you connect the auth backend (e.g. Supabase).'

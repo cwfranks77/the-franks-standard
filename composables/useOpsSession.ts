@@ -2,6 +2,7 @@ const STORAGE_KEY = 'tfs_ops_session_v1'
 
 export function useOpsSession () {
   const isAuthed = useState('ops-authed', () => false)
+
   if (import.meta.client) {
     isAuthed.value = sessionStorage.getItem(STORAGE_KEY) === '1'
   }
