@@ -18,15 +18,17 @@
     <rect x="64" y="140" width="360" height="8" rx="2" fill="#2e2a35"/>
     <rect x="64" y="168" width="300" height="8" rx="2" fill="#2e2a35"/>
   </g>
-  <g filter="url(#g)">
-    <rect x="320" y="200" width="160" height="100" rx="10" fill="#1f1f30" stroke="#C9A84C" stroke-opacity="0.4"/>
+  <!-- Proof-first placeholder (intentionally non-empty, but not a fake "COA" badge) -->
+  <g filter="url(#g)" opacity="0.95">
+    <rect x="308" y="196" width="184" height="112" rx="14" fill="#12121f" stroke="url(#a)" stroke-width="1.2"/>
   </g>
-  <g>
-    <rect x="320" y="200" width="160" height="100" rx="10" fill="#1a1a2e" stroke="#C9A84C" stroke-width="1.2"/>
-    <text x="335" y="240" font-family="Georgia,serif" font-size="12" fill="#C9A84C">COA</text>
-    <rect x="335" y="252" width="88" height="4" rx="1" fill="#2ecc71" opacity="0.8"/>
-    <text x="335" y="278" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" fill="#9d9484">Verified listing</text>
+  <g opacity="0.92">
+    <rect x="320" y="208" width="160" height="16" rx="6" fill="#2a2a3d"/>
+    <rect x="320" y="236" width="148" height="8" rx="3" fill="#3a3640"/>
+    <rect x="320" y="252" width="120" height="8" rx="3" fill="#2e2a35"/>
+    <rect x="320" y="276" width="90" height="8" rx="3" fill="#2e2a35"/>
+    <text x="320" y="304" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" fill="#9d9484">
+      Proof required • Image unavailable
+    </text>
   </g>
-  <circle cx="140" cy="300" r="8" fill="#2ecc71"/>
-  <path d="M128 300 L136 308 L152 288" stroke="#1a1a2e" stroke-width="2.2" fill="none" stroke-linecap="round"/>
 </svg>
