@@ -36,29 +36,6 @@
             <span class="coa-badge soft">Zero room for fakes</span>
           </div>
         </div>
-        <div class="hero-stage" aria-hidden="true">
-          <div class="stack-card stack-a">
-            <img
-              src="/img/reel-cards.svg"
-              alt=""
-              width="300"
-              height="210"
-              loading="lazy"
-              @error="onHeroStackImgError"
-            />
-          </div>
-          <div class="stack-card stack-b">
-            <img
-              src="/img/reel-watches.svg"
-              alt=""
-              width="300"
-              height="210"
-              loading="lazy"
-              @error="onHeroStackImgError"
-            />
-          </div>
-          <div class="stack-burst" />
-        </div>
       </div>
     </section>
 
@@ -210,22 +187,12 @@
 </template>
 
 <script setup>
-const HERO_FALLBACK = '/img/hero-showcase-v2.svg'
-const TRANSPARENT_PIXEL =
-  'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
-
-function onHeroStackImgError (e) {
-  const el = e?.target
-  if (!el || el.dataset?.fallbackHeroStack) { return }
-  el.dataset.fallbackHeroStack = '1'
-  el.src = HERO_FALLBACK
-}
-
 function onHeroMosaicError (e) {
   const el = e?.target
   if (!el || el.dataset?.fallbackHeroMosaic) { return }
   el.dataset.fallbackHeroMosaic = '1'
-  el.src = TRANSPARENT_PIXEL
+  el.src =
+    'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
   el.classList.add('mosaic-fallback')
 }
 
@@ -430,40 +397,8 @@ const categories = [
   background: rgba(255, 45, 122, 0.1) !important;
 }
 .coa-badge.soft { border-color: rgba(0, 224, 255, 0.25); color: var(--stone-200); }
-.hero-stage { position: relative; min-height: 380px; }
-.stack-card {
-  position: absolute;
-  border-radius: 20px;
-  overflow: hidden;
-  background: var(--stone-900);
-  box-shadow: 0 32px 60px rgba(0,0,0,0.5);
-  border: 1px solid rgba(0, 224, 255, 0.2);
-}
-.stack-card img { display: block; width: 100%; height: auto; }
-.stack-a {
-  width: 86%;
-  right: 0; top: 0;
-  z-index: 2;
-  transform: rotate(1.2deg) translateZ(0);
-}
-.stack-b {
-  width: 72%;
-  left: 0; bottom: 0;
-  z-index: 1;
-  transform: rotate(-2deg);
-  border-color: rgba(255, 45, 122, 0.3);
-}
-.stack-burst {
-  position: absolute;
-  inset: 15% 10% auto 5%;
-  height: 200px;
-  background: radial-gradient(ellipse, rgba(255, 45, 122, 0.2) 0%, transparent 65%);
-  pointer-events: none;
-  z-index: 0;
-}
 @media (max-width: 1024px) {
   .hero-grid { grid-template-columns: 1fr; }
-  .hero-stage { min-height: 300px; order: -1; }
 }
 .activity-ticker {
   overflow: hidden;
