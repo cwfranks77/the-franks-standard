@@ -35,7 +35,7 @@ function onReelImgError (e) {
   const el = e?.target
   if (!el || el.dataset?.fallbackReel) { return }
   el.dataset.fallbackReel = '1'
-  el.src = '/img/hero-showcase.svg'
+  el.src = '/img/hero-showcase-v2.svg'
 }
 
 const items = [

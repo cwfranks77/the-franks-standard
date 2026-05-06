@@ -12,7 +12,7 @@
       <div class="listing-layout">
         <div class="listing-images">
           <div class="main-image">
-            <img :src="listing.images[selectedImage] || '/img/hero-showcase.svg'" :alt="listing.title" />
+            <img :src="listing.images[selectedImage] || '/img/hero-showcase-v2.svg'" :alt="listing.title" />
           </div>
           <div class="image-thumbs" v-if="listing.images.length > 1">
             <button
@@ -148,7 +148,7 @@ async function load() {
   const paths = data.image_paths || []
   let images = paths.map((p) => publicUrlForPath(p))
   if (!images.length) {
-    images = ['/img/hero-showcase.svg']
+    images = ['/img/hero-showcase-v2.svg']
   }
 
   listing.value = {

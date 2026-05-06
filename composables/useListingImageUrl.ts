@@ -3,7 +3,7 @@ export function useListingImageUrl() {
 
   function publicUrlForPath(path) {
     if (!path) {
-      return '/img/hero-showcase.svg'
+      return '/img/hero-showcase-v2.svg'
     }
     const { data } = supabase.storage.from('listings').getPublicUrl(path)
     return data.publicUrl

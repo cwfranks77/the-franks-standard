@@ -210,7 +210,7 @@
 </template>
 
 <script setup>
-const HERO_FALLBACK = '/img/hero-showcase.svg'
+const HERO_FALLBACK = '/img/hero-showcase-v2.svg'
 const TRANSPARENT_PIXEL =
   'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
 
