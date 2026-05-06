@@ -22,6 +22,7 @@
               alt=""
               class="header-logo"
               :class="{ 'op-knock-home': onHome }"
+              @error="onPavilionImgError"
             />
             <span class="header-name">The Franks Standard</span>
           </NuxtLink>
@@ -89,7 +90,12 @@
       <div class="container">
         <div class="footer-grid">
           <div class="footer-brand">
-            <img src="/franks-pavilion.png" alt="" class="footer-logo" />
+            <img
+              src="/franks-pavilion.png"
+              alt=""
+              class="footer-logo"
+              @error="onPavilionImgError"
+            />
             <p class="footer-site-name">The Franks Standard</p>
             <p class="text-muted">The Franks Standard LLC — the marketplace where authenticity is not optional.</p>
           </div>
@@ -207,6 +213,14 @@ let opKnockTimer = null
 
 const keyConfigured = computed(() => String(config.public?.opsAccessKey || '').length > 0)
 const isDev = computed(() => import.meta.dev)
+
+function onPavilionImgError (e) {
+  const el = e?.target
+  if (!el || el.dataset?.pavilionFallback) { return }
+  // If /franks-pavilion.png is missing in production, fall back to the simple SVG mark.
+  el.dataset.pavilionFallback = '1'
+  el.src = '/logo.svg'
+}
 
 function tryOpenOpsFromQuery () {
   if (!import.meta.client || !import.meta.dev) { return }
