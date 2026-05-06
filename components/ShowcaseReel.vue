@@ -39,12 +39,12 @@ function onReelImgError (e) {
 }
 
 const items = [
-  { title: 'Slabbed sports', tag: 'Cards', alt: 'Sports collectibles', src: 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?auto=format&w=400&h=260&q=80&fit=crop' },
-  { title: 'Stage electrics', tag: 'Guitars', alt: 'Guitar', src: 'https://images.unsplash.com/photo-1525201548942-d3032a605a8e?auto=format&w=400&h=260&q=80&fit=crop' },
-  { title: 'Chrono steel', tag: 'Watches', alt: 'Watch', src: 'https://images.unsplash.com/photo-1523170335258-f5b1183203bb?auto=format&w=400&h=260&q=80&fit=crop' },
-  { title: 'Numismatics', tag: 'Coins', alt: 'Coins', src: 'https://images.unsplash.com/photo-1624366330919-0b5f42f16160?auto=format&w=400&h=260&q=80&fit=crop' },
-  { title: 'Deadstock', tag: 'Sneakers', alt: 'Sneakers', src: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&w=400&h=260&q=80&fit=crop' },
-  { title: 'Gallery & estate', tag: 'Art', alt: 'Art and antiques', src: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&w=400&h=260&q=80&fit=crop' },
+  { title: 'Slabbed sports', tag: 'Cards', alt: 'Sports collectibles', src: '/img/reel-cards.svg' },
+  { title: 'Stage electrics', tag: 'Guitars', alt: 'Guitar', src: '/img/reel-guitars.svg' },
+  { title: 'Chrono steel', tag: 'Watches', alt: 'Watch', src: '/img/reel-watches.svg' },
+  { title: 'Numismatics', tag: 'Coins', alt: 'Coins', src: '/img/reel-coins.svg' },
+  { title: 'Deadstock', tag: 'Sneakers', alt: 'Sneakers', src: '/img/hero-showcase-v2.svg' },
+  { title: 'Gallery & estate', tag: 'Art', alt: 'Art and antiques', src: '/img/hero-showcase-v2.svg' },
 ]
 const lineDoubled = computed(() => [...items, ...items])
 </script>

@@ -39,7 +39,7 @@
         <div class="hero-stage" aria-hidden="true">
           <div class="stack-card stack-a">
             <img
-              src="https://images.unsplash.com/photo-1514525253161-7a46d19d820f?auto=format&w=600&h=420&q=80&fit=crop"
+              src="/img/reel-cards.svg"
               alt=""
               width="300"
               height="210"
@@ -49,7 +49,7 @@
           </div>
           <div class="stack-card stack-b">
             <img
-              src="https://images.unsplash.com/photo-1617806118233-18e1de247200?auto=format&w=600&h=420&q=80&fit=crop"
+              src="/img/reel-watches.svg"
               alt=""
               width="300"
               height="210"
@@ -230,12 +230,12 @@ function onHeroMosaicError (e) {
 }
 
 const heroMosaic = [
-  'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?auto=format&w=80&h=80&q=70&fit=crop',
-  'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&w=80&h=80&q=70&fit=crop',
-  'https://images.unsplash.com/photo-1617806118233-18e1de247200?auto=format&w=80&h=80&q=70&fit=crop',
-  'https://images.unsplash.com/photo-1542536907-0d6e8e7e4c6c?auto=format&w=80&h=80&q=70&fit=crop',
-  'https://images.unsplash.com/photo-1624366330919-0b5f42f16160?auto=format&w=80&h=80&q=70&fit=crop',
-  'https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?auto=format&w=80&h=80&q=70&fit=crop',
+  '/franks-pavilion.png',
+  '/logo.svg',
+  '/img/reel-cards.svg',
+  '/img/reel-watches.svg',
+  '/img/reel-guitars.svg',
+  '/img/reel-coins.svg',
 ]
 
 const tickerBelt = [
