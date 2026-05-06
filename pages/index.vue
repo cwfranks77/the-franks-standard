@@ -28,6 +28,7 @@
               width="72"
               height="72"
               class="mosaic-img"
+              @error="onHeroMosaicError"
             />
           </div>
           <div class="hero-badges">
@@ -42,6 +43,8 @@
               alt=""
               width="300"
               height="210"
+              loading="lazy"
+              @error="onHeroStackImgError"
             />
           </div>
           <div class="stack-card stack-b">
@@ -50,6 +53,8 @@
               alt=""
               width="300"
               height="210"
+              loading="lazy"
+              @error="onHeroStackImgError"
             />
           </div>
           <div class="stack-burst" />
@@ -205,6 +210,25 @@
 </template>
 
 <script setup>
+const HERO_FALLBACK = '/img/hero-showcase.svg'
+const TRANSPARENT_PIXEL =
+  'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
+
+function onHeroStackImgError (e) {
+  const el = e?.target
+  if (!el || el.dataset?.fallbackHeroStack) { return }
+  el.dataset.fallbackHeroStack = '1'
+  el.src = HERO_FALLBACK
+}
+
+function onHeroMosaicError (e) {
+  const el = e?.target
+  if (!el || el.dataset?.fallbackHeroMosaic) { return }
+  el.dataset.fallbackHeroMosaic = '1'
+  el.src = TRANSPARENT_PIXEL
+  el.classList.add('mosaic-fallback')
+}
+
 const heroMosaic = [
   'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?auto=format&w=80&h=80&q=70&fit=crop',
   'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&w=80&h=80&q=70&fit=crop',
@@ -391,6 +415,11 @@ const categories = [
   border: 2px solid var(--gold);
   box-shadow: 0 0 0 1px rgba(0, 224, 255, 0.22), 0 8px 20px rgba(255, 45, 122, 0.18);
 }
+.mosaic-img.mosaic-fallback {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(0, 224, 255, 0.25);
+  box-shadow: none;
+}
 @media (prefers-reduced-motion: reduce) {
   .t-gold-shine { animation: none; }
 }
@@ -406,6 +435,7 @@ const categories = [
   position: absolute;
   border-radius: 20px;
   overflow: hidden;
+  background: var(--stone-900);
   box-shadow: 0 32px 60px rgba(0,0,0,0.5);
   border: 1px solid rgba(0, 224, 255, 0.2);
 }

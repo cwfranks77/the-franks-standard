@@ -17,6 +17,7 @@
                 width="400"
                 height="260"
                 loading="lazy"
+                @error="onReelImgError"
               />
               <span class="reel-coa">COA</span>
             </div>
@@ -30,6 +31,13 @@
 </template>
 
 <script setup>
+function onReelImgError (e) {
+  const el = e?.target
+  if (!el || el.dataset?.fallbackReel) { return }
+  el.dataset.fallbackReel = '1'
+  el.src = '/img/hero-showcase.svg'
+}
+
 const items = [
   { title: 'Slabbed sports', tag: 'Cards', alt: 'Sports collectibles', src: 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?auto=format&w=400&h=260&q=80&fit=crop' },
   { title: 'Stage electrics', tag: 'Guitars', alt: 'Guitar', src: 'https://images.unsplash.com/photo-1525201548942-d3032a605a8e?auto=format&w=400&h=260&q=80&fit=crop' },
