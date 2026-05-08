@@ -9,14 +9,26 @@
       </p>
     </header>
 
-    <section class="card voice-lane">
-      <h2>Voice, AI help, and email</h2>
+    <section class="card phone-lane">
+      <h2>📞 Customer Service</h2>
+      <div class="phone-row">
+        <a href="tel:+18008374357" class="phone-number">1-800-TFS-HELP</a>
+        <span class="phone-badge">AI-Powered</span>
+      </div>
       <p class="text-muted">
-        <strong>Live voice:</strong> open <NuxtLink to="/video">Video</NuxtLink> for a browser room (mic + camera) with your buyer, seller, or team - no phone system required.
-        <strong>AI-style help:</strong> use the floating <strong>Help</strong> button; you can use the mic there to dictate your question in supported browsers (Chrome / Edge).
-        <strong>Email a human:</strong>
+        Our AI customer service line handles orders, returns, billing, and general inquiries.
+        For complex issues, the AI will connect you to a human agent. Available during business hours.
+      </p>
+    </section>
+
+    <section class="card voice-lane">
+      <h2>More ways to get help</h2>
+      <p class="text-muted">
+        <strong>AI Chat:</strong> use the floating <strong>Help</strong> button on any page for instant answers.
+        <strong>Video call:</strong> open <NuxtLink to="/video">Video</NuxtLink> for a face-to-face room with your buyer, seller, or our team — no app required.
+        <strong>Email:</strong>
         <a href="mailto:info@thefranksstandard.com?subject=The%20Franks%20Standard%20support">info@thefranksstandard.com</a>
-        (include order ID and photos when it is about an item).
+        (include order ID and photos for order issues).
       </p>
     </section>
 
@@ -92,6 +104,16 @@ useSeoMeta({
   .grid.two { grid-template-columns: 1fr; }
 }
 .voice-lane { padding: 22px 20px; margin-bottom: 24px; border: 1px solid rgba(201, 168, 76, 0.35); background: linear-gradient(135deg, rgba(201, 168, 76, 0.08), rgba(18, 8, 32, 0.95)); }
+.phone-lane { padding: 28px 24px; margin-bottom: 24px; border: 2px solid rgba(0, 245, 160, 0.35); background: linear-gradient(135deg, rgba(0, 245, 160, 0.06), rgba(18, 8, 32, 0.95)); }
+.phone-lane h2 { font-size: 1.3rem; margin-bottom: 14px; color: var(--trust-green); }
+.phone-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+.phone-number { font-size: 1.6rem; font-weight: 800; color: var(--trust-green); font-family: 'Cinzel', serif; text-decoration: none; }
+.phone-number:hover { color: var(--gold); }
+.phone-badge {
+  display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 999px;
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+  background: rgba(0, 245, 160, 0.12); color: var(--trust-green); border: 1px solid rgba(0, 245, 160, 0.3);
+}
 .voice-lane h2 { font-size: 1.2rem; margin-bottom: 12px; color: var(--gold); }
 .voice-lane p { line-height: 1.6; font-size: 0.95rem; }
 .lane { padding: 22px 20px; }

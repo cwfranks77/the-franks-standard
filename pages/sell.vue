@@ -23,6 +23,30 @@
           </p>
         </div>
 
+        <!-- Listing type selector -->
+        <div class="listing-type-selector">
+          <button
+            type="button"
+            class="listing-type-btn"
+            :class="{ active: listingMode === 'direct' }"
+            @click="listingMode = 'direct'"
+          >
+            <span class="lt-icon">📦</span>
+            <span class="lt-label">Direct Sale</span>
+            <span class="lt-desc">You ship the item yourself</span>
+          </button>
+          <button
+            type="button"
+            class="listing-type-btn"
+            :class="{ active: listingMode === 'dropship' }"
+            @click="listingMode = 'dropship'"
+          >
+            <span class="lt-icon">🚚</span>
+            <span class="lt-label">Dropship</span>
+            <span class="lt-desc">Supplier ships direct to buyer</span>
+          </button>
+        </div>
+
         <form class="sell-form" @submit.prevent="submitListing">
           <!-- Item details -->
           <div class="form-section">
@@ -62,6 +86,44 @@
                 <option value="good">Good</option>
                 <option value="fair">Fair</option>
               </select>
+            </div>
+          </div>
+
+          <!-- Dropship details -->
+          <div v-if="listingMode === 'dropship'" class="form-section dropship-section">
+            <h2>Dropship Details</h2>
+            <p class="text-muted mb-2">Provide supplier information. The buyer's address will be shared with your supplier for direct fulfillment.</p>
+
+            <div class="form-group">
+              <label class="label">Supplier Name</label>
+              <input class="input" v-model="dropship.supplierName" placeholder="e.g. AuthentiCards Supply Co." required />
+            </div>
+
+            <div class="form-group">
+              <label class="label">Supplier Contact Email</label>
+              <input class="input" type="email" v-model="dropship.supplierEmail" placeholder="supplier@example.com" />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="label">Estimated Ship Time</label>
+                <select class="select" v-model="dropship.shipTime" required>
+                  <option value="">Select timeframe</option>
+                  <option value="1-3 days">1-3 business days</option>
+                  <option value="3-5 days">3-5 business days</option>
+                  <option value="5-10 days">5-10 business days</option>
+                  <option value="10-14 days">10-14 business days</option>
+                  <option value="14+ days">14+ business days</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="label">Ships From</label>
+                <input class="input" v-model="dropship.shipsFrom" placeholder="e.g. Dallas, TX" />
+              </div>
+            </div>
+
+            <div class="dropship-notice">
+              <p><strong>Dropship policy:</strong> You are responsible for the authenticity and condition of items shipped by your supplier. COA or guarantee still required. Buyer disputes are resolved under the same Standard.</p>
             </div>
           </div>
 
@@ -155,6 +217,7 @@ const { isOwner } = useOwnerMode()
 const applicationMailto = buildSellerApplicationMailto()
 const supabase = useSupabaseClient()
 const submitting = ref(false)
+const listingMode = ref('direct')
 
 const categories = [
   'Sports Cards & Memorabilia',
@@ -176,6 +239,13 @@ const form = reactive({
   coaType: '',
   sellerName: '',
   guaranteeSigned: false,
+})
+
+const dropship = reactive({
+  supplierName: '',
+  supplierEmail: '',
+  shipTime: '',
+  shipsFrom: '',
 })
 
 const photoPreviews = ref([])
@@ -422,6 +492,29 @@ async function submitListing() {
   cursor: pointer;
 }
 .guarantee-check input { margin-top: 3px; accent-color: var(--gold); }
+.listing-type-selector {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;
+}
+.listing-type-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 20px 16px; border: 2px solid var(--stone-700);
+  border-radius: var(--radius-lg); background: var(--stone-900);
+  cursor: pointer; transition: border-color 0.2s, background 0.2s; text-align: center;
+  color: var(--stone-300); font-family: inherit;
+}
+.listing-type-btn:hover { border-color: var(--gold); }
+.listing-type-btn.active {
+  border-color: var(--gold); background: rgba(201, 168, 76, 0.06);
+}
+.lt-icon { font-size: 1.8rem; }
+.lt-label { font-weight: 700; font-size: 1rem; color: var(--stone-100); }
+.lt-desc { font-size: 0.78rem; color: var(--stone-400); }
+.dropship-section { border-color: var(--cyan); border-width: 2px; }
+.dropship-notice {
+  margin-top: 12px; padding: 12px 14px;
+  background: rgba(0, 224, 255, 0.05); border: 1px solid rgba(0, 224, 255, 0.15);
+  border-radius: var(--radius); font-size: 0.85rem; color: var(--stone-300); line-height: 1.6;
+}
 .sell-owner-banner {
   display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
   margin-bottom: 24px; padding: 18px 20px;

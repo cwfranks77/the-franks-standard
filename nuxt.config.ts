@@ -17,11 +17,13 @@ export default defineNuxtConfig({
   // Operator unlock phrase for /ops (build-time; see the-franks-standard-continuity/OPS-ACCESS.md)
   runtimeConfig: {
     public: {
+      siteUrl: siteUrl,
       opsAccessKey: process.env.NUXT_PUBLIC_OPS_ACCESS_KEY || '',
       payListingFeeUrl: process.env.NUXT_PUBLIC_PAY_LISTING_FEE_URL || '',
       payProSellerUrl: process.env.NUXT_PUBLIC_PAY_PRO_SELLER_URL || '',
       payOrderDepositUrl: process.env.NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL || '',
       payDisputeFeeUrl: process.env.NUXT_PUBLIC_PAY_DISPUTE_FEE_URL || '',
+      customerServicePhone: process.env.NUXT_PUBLIC_CUSTOMER_SERVICE_PHONE || '1-800-TFS-HELP',
     },
   },
 

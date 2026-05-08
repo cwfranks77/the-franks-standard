@@ -9,15 +9,40 @@
       or use the <strong>Help</strong> button on any page.
     </p>
     <div class="card contact-card">
-      <p class="label">Email</p>
-      <p class="email">
-        <a href="mailto:info@thefranksstandard.com">info@thefranksstandard.com</a>
-      </p>
-      <p class="text-muted small">
-        This inbox is the official channel for The Franks Standard. If you forward from another mailbox,
-        reply from the same thread so we can match your case. For urgent order problems, include order ID
-        and photos in your first message.
-      </p>
+      <div class="contact-method">
+        <p class="label">📞 Phone (AI-Powered)</p>
+        <p class="phone-big">
+          <a href="tel:+18008374357">1-800-TFS-HELP</a>
+        </p>
+        <p class="text-muted small">
+          AI customer service for orders, returns, billing, and general questions.
+          Complex issues are escalated to a human agent.
+        </p>
+      </div>
+      <hr class="contact-divider" />
+      <div class="contact-method">
+        <p class="label">✉️ Email</p>
+        <p class="email">
+          <a href="mailto:info@thefranksstandard.com">info@thefranksstandard.com</a>
+        </p>
+        <p class="text-muted small">
+          For order issues, include your order ID and photos. Reply from the same thread so we can match your case.
+        </p>
+      </div>
+      <hr class="contact-divider" />
+      <div class="contact-method">
+        <p class="label">💬 AI Chat</p>
+        <p class="text-muted small">
+          Click the <strong>Help</strong> button in the bottom-right corner of any page for instant AI-powered answers.
+        </p>
+      </div>
+      <hr class="contact-divider" />
+      <div class="contact-method">
+        <p class="label">📹 Video Call</p>
+        <p class="text-muted small">
+          Use <NuxtLink to="/video">Video</NuxtLink> for face-to-face conversations — no app required.
+        </p>
+      </div>
       <p class="text-muted mt-3 small">
         Public site: <strong>thefranksstandard.com</strong>
       </p>
@@ -41,7 +66,11 @@ useSeoMeta({
 .lead { font-size: 1.05rem; line-height: 1.6; margin-bottom: 24px; }
 .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gold); margin-bottom: 6px; }
 .email a { font-size: 1.1rem; font-weight: 600; }
-.contact-card { padding: 24px; margin-top: 8px; }
+.phone-big a { font-size: 1.4rem; font-weight: 800; color: var(--trust-green); font-family: 'Cinzel', serif; text-decoration: none; }
+.phone-big a:hover { color: var(--gold); }
+.contact-card { padding: 28px; margin-top: 8px; }
+.contact-method { padding: 4px 0; }
+.contact-divider { border: none; border-top: 1px solid var(--stone-800); margin: 16px 0; }
 .small { font-size: 0.9rem; line-height: 1.5; }
 .mt-3 { margin-top: 1rem; }
 </style>

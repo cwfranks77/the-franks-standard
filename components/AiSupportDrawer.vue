@@ -6,7 +6,7 @@
       aria-label="Open help assistant"
       @click="open = !open"
     >
-      <span class="ai-fab-mark" aria-hidden="true">?</span>
+      <span class="ai-fab-mark" aria-hidden="true">💬</span>
       <span class="ai-fab-label">Help</span>
     </button>
     <Transition name="ai-panel">
@@ -15,8 +15,8 @@
     <Transition name="ai-panel">
       <aside v-show="open" class="ai-panel" role="dialog" aria-label="AI help assistant (beta)">
         <div class="ai-head">
-          <h2>Assistant (beta)</h2>
-          <p class="ai-sub">AI-style answers. Dictate with the mic (Chrome/Edge). Live voice with people: open Video in the menu.</p>
+          <h2>AI Customer Service</h2>
+          <p class="ai-sub">Get instant help with orders, selling, fees, and more. Call <strong>1-800-TFS-HELP</strong> for phone support.</p>
           <button type="button" class="ai-x" aria-label="Close" @click="open = false">&times;</button>
         </div>
         <div ref="logEl" class="ai-log" role="log" aria-live="polite">
@@ -24,7 +24,8 @@
             v-for="(m, i) in messages"
             :key="i"
             :class="['ai-msg', m.role === 'user' ? 'is-user' : 'is-bot']"
-          >{{ m.text }}</div>
+            v-html="m.role === 'bot' ? formatBotMsg(m.text) : escapeHtml(m.text)"
+          />
         </div>
         <form class="ai-form" @submit.prevent="send">
           <input
@@ -49,6 +50,7 @@
           <button type="submit" class="btn btn-primary btn-sm">Send</button>
         </form>
         <div class="ai-esc-row">
+          <a href="tel:+18008374357" class="ai-esc ai-phone">📞 1-800-TFS-HELP</a>
           <NuxtLink to="/support" class="ai-esc" @click="open = false">Support and tech &rarr;</NuxtLink>
           <NuxtLink to="/contact" class="ai-esc" @click="open = false">Contact the team &rarr;</NuxtLink>
         </div>
@@ -110,12 +112,26 @@ function toggleVoice () {
   }
 }
 
+function escapeHtml (text) {
+  const d = document.createElement('div')
+  d.textContent = text
+  return d.innerHTML
+}
+
+function formatBotMsg (text) {
+  let s = escapeHtml(text)
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+  s = s.replace(/\n/g, '<br>')
+  s = s.replace(/• /g, '&bull; ')
+  return s
+}
+
 function send () {
   const t = (input.value || '').trim()
   if (!t) { return }
   messages.value.push({ role: 'user', text: t })
   input.value = ''
-  const reply = getAiReply(t).replace(/\*\*([^*]+)\*\*/g, '$1')
+  const reply = getAiReply(t)
   messages.value.push({ role: 'bot', text: reply })
   nextTick(() => {
     if (logEl.value) { logEl.value.scrollTop = logEl.value.scrollHeight }
@@ -180,6 +196,7 @@ function send () {
 .ai-mic.is-listening { border-color: var(--magenta, #ff2d7a); color: var(--magenta, #ff2d7a); }
 .ai-esc-row { display: flex; flex-direction: column; gap: 6px; padding: 0 12px 14px; }
 .ai-esc { display: block; font-size: 0.82rem; }
+.ai-phone { font-weight: 700; color: var(--trust-green); font-size: 0.88rem; }
 .ai-panel-enter-active, .ai-panel-leave-active { transition: opacity 0.2s ease, transform 0.25s ease; }
 .ai-panel-enter-from, .ai-panel-leave-to { opacity: 0; transform: translateY(8px); }
 </style>

@@ -5,7 +5,15 @@
       <h1>Join The Franks Standard</h1>
       <p class="text-muted">Create your free account to buy and sell</p>
 
-      <form @submit.prevent="handleRegister" class="mt-3">
+      <div v-if="showConfirmNotice" class="confirm-notice">
+        <p class="confirm-icon">✉️</p>
+        <h2>Check your email</h2>
+        <p>We sent a confirmation link from <strong>The Franks Standard</strong> to <strong>{{ email }}</strong>.</p>
+        <p class="text-muted">Click the link in the email to activate your account, then sign in below.</p>
+        <NuxtLink to="/auth/login" class="btn btn-primary mt-2" style="width: 100%;">Go to Sign In</NuxtLink>
+      </div>
+
+      <form v-else @submit.prevent="handleRegister" class="mt-3">
         <div class="form-group">
           <label class="label">Full Name</label>
           <input class="input" v-model="fullName" placeholder="Charles Franks" required />
@@ -51,15 +59,18 @@ const password = ref('')
 const accountType = ref('')
 const agreeTerms = ref(false)
 const loading = ref(false)
+const showConfirmNotice = ref(false)
 
 async function handleRegister() {
   loading.value = true
   try {
     const supabase = useSupabaseClient()
+    const siteUrl = useRuntimeConfig().public.siteUrl || window.location.origin
     const { data, error } = await supabase.auth.signUp({
       email: email.value,
       password: password.value,
       options: {
+        emailRedirectTo: `${siteUrl}/auth/login?confirmed=1`,
         data: {
           full_name: fullName.value,
           account_type: accountType.value,
@@ -70,8 +81,7 @@ async function handleRegister() {
       throw error
     }
     if (data.user && !data.session) {
-      alert('Check your email to confirm your address, then sign in here.')
-      await navigateTo('/auth/login')
+      showConfirmNotice.value = true
       return
     }
     if (accountType.value === 'seller') {
@@ -118,4 +128,10 @@ async function handleRegister() {
   margin-bottom: 8px;
 }
 .terms-check input { margin-top: 3px; accent-color: var(--gold); }
+.confirm-notice {
+  text-align: center; padding: 20px 0;
+}
+.confirm-notice h2 { font-size: 1.3rem; margin: 12px 0 8px; color: var(--gold); }
+.confirm-notice p { font-size: 0.92rem; line-height: 1.6; color: var(--stone-200); }
+.confirm-icon { font-size: 3rem; margin-bottom: 4px; }
 </style>
