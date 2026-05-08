@@ -7,7 +7,14 @@
           <p class="text-muted">List your authentic items. COA or signed guarantee required — that is what makes us different.</p>
         </div>
 
-        <div class="sell-notice" role="status">
+        <div v-if="isOwner" class="sell-owner-banner" role="status">
+          <span class="sell-owner-badge">Owner mode</span>
+          <p>
+            <strong>All listing fees waived.</strong> You have full seller access as the site owner. List freely — COA or signed guarantee still required (your standard).
+          </p>
+        </div>
+
+        <div v-else class="sell-notice" role="status">
           <p>
             <strong>Sign in required.</strong> You are publishing to the live floor (same rules: COA or signed guarantee). Stores and high volume:
             <NuxtLink to="/sellers">Apply as a store</NuxtLink>
@@ -144,6 +151,7 @@ useSeoMeta({
     'Sell with COA or a signed guarantee. Onboarding for stores: apply to list on the authenticity-first marketplace.',
 })
 
+const { isOwner } = useOwnerMode()
 const applicationMailto = buildSellerApplicationMailto()
 const supabase = useSupabaseClient()
 const submitting = ref(false)
@@ -414,4 +422,18 @@ async function submitListing() {
   cursor: pointer;
 }
 .guarantee-check input { margin-top: 3px; accent-color: var(--gold); }
+.sell-owner-banner {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+  margin-bottom: 24px; padding: 18px 20px;
+  border-radius: var(--radius-lg);
+  border: 2px solid rgba(0, 245, 160, 0.35);
+  background: linear-gradient(135deg, rgba(0, 245, 160, 0.08), rgba(201, 168, 76, 0.06));
+  font-size: 0.92rem; line-height: 1.6; color: var(--stone-200);
+}
+.sell-owner-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 12px; border-radius: 999px;
+  font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
+  background: rgba(201, 168, 76, 0.18); color: var(--gold); border: 1px solid rgba(201, 168, 76, 0.4);
+}
 </style>

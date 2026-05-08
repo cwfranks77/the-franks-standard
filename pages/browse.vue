@@ -2,7 +2,10 @@
   <div class="browse-page">
     <div class="container">
       <div class="browse-header">
-        <h1>Browse Marketplace</h1>
+        <div class="browse-title-row">
+          <h1>Browse Marketplace</h1>
+          <span v-if="listings.length" class="browse-count-badge">{{ listings.length }} {{ listings.length === 1 ? 'listing' : 'listings' }} live</span>
+        </div>
         <p class="text-muted">
           The floor lists live inventory as sellers and shops go on board; every public item is COA- or guarantee-backed.
           <NuxtLink to="/sellers">Apply to add your store</NuxtLink>.
@@ -24,6 +27,14 @@
           <select class="select filter-select" v-model="selectedCategory">
             <option value="">All Categories</option>
             <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+          </select>
+          <select class="select filter-select" v-model="selectedCondition">
+            <option value="">All Conditions</option>
+            <option value="new">New / Sealed</option>
+            <option value="like-new">Like New</option>
+            <option value="excellent">Excellent</option>
+            <option value="good">Good</option>
+            <option value="fair">Fair</option>
           </select>
           <select class="select filter-select" v-model="sortBy">
             <option value="newest">Newest First</option>
@@ -50,8 +61,9 @@
             <h3 class="listing-title">{{ item.title }}</h3>
             <div class="listing-footer">
               <span class="listing-price">${{ item.price.toLocaleString() }}</span>
-              <span class="listing-seller text-muted">{{ item.seller }}</span>
+              <span v-if="item.condition" class="listing-condition-tag">{{ item.condition.replace(/-/g, ' ') }}</span>
             </div>
+            <p class="listing-seller text-muted">{{ item.seller }}</p>
           </div>
         </NuxtLink>
       </div>
@@ -72,6 +84,7 @@ const supabase = useSupabaseClient()
 
 const searchQuery = ref('')
 const selectedCategory = ref('')
+const selectedCondition = ref('')
 const sortBy = ref('newest')
 const loadError = ref('')
 
@@ -93,6 +106,7 @@ async function loadListings() {
   const { data, error } = await supabase
     .from('listings')
     .select('id, title, category, price, condition, coa_type, image_paths, created_at, seller:profiles(full_name)')
+
     .eq('status', 'published')
     .order('created_at', { ascending: false })
 
@@ -105,6 +119,7 @@ async function loadListings() {
     title: r.title,
     category: r.category,
     price: Number(r.price),
+    condition: r.condition || '',
     coaType: r.coa_type,
     createdAt: r.created_at,
     image: publicUrlForPath(r.image_paths?.[0]),
@@ -126,6 +141,9 @@ const filteredListings = computed(() => {
   }
   if (selectedCategory.value) {
     results = results.filter((i) => i.category === selectedCategory.value)
+  }
+  if (selectedCondition.value) {
+    results = results.filter((i) => i.condition === selectedCondition.value)
   }
   if (sortBy.value === 'newest') {
     results = [...results].sort(
@@ -196,7 +214,19 @@ const filteredListings = computed(() => {
   font-size: 1.1rem;
   color: var(--gold);
 }
-.listing-seller { font-size: 0.8rem; }
+.listing-seller { font-size: 0.8rem; margin-top: 6px; }
+.listing-condition-tag {
+  font-size: 0.7rem; font-weight: 600; text-transform: capitalize;
+  padding: 2px 8px; border-radius: 999px;
+  background: rgba(0, 224, 255, 0.08); color: var(--cyan); border: 1px solid rgba(0, 224, 255, 0.2);
+}
 
 .empty-state { padding: 60px 0; }
+.browse-title-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.browse-count-badge {
+  display: inline-flex; align-items: center;
+  padding: 4px 12px; border-radius: 999px;
+  font-size: 0.75rem; font-weight: 700;
+  background: rgba(0, 245, 160, 0.1); color: var(--trust-green); border: 1px solid rgba(0, 245, 160, 0.3);
+}
 </style>

@@ -53,6 +53,9 @@
             <button class="btn btn-primary btn-lg" type="button" style="flex: 1;" disabled>Buy (checkout next)</button>
             <button class="btn btn-outline btn-lg" type="button" disabled>Message seller (soon)</button>
             <NuxtLink class="btn btn-outline btn-lg" :to="videoMeetLink">Video call</NuxtLink>
+            <button class="btn btn-dark btn-lg" type="button" @click="shareListing" :title="shareTooltip">
+              {{ shareCopied ? 'Link copied!' : 'Share' }}
+            </button>
           </div>
 
           <div class="listing-description mt-3">
@@ -86,6 +89,29 @@ const { publicUrlForPath } = useListingImageUrl()
 const selectedImage = ref(0)
 const loading = ref(true)
 const listing = ref(null)
+const shareCopied = ref(false)
+let shareTimer = null
+
+const shareTooltip = computed(() =>
+  listing.value ? `Share "${listing.value.title}"` : 'Share this listing'
+)
+
+async function shareListing () {
+  const url = window.location.href
+  const title = listing.value ? listing.value.title : 'Check out this listing'
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: `${title} — The Franks Standard`, url })
+      return
+    } catch { /* user cancelled or unsupported — fall through to clipboard */ }
+  }
+  try {
+    await navigator.clipboard.writeText(url)
+    shareCopied.value = true
+    if (shareTimer) clearTimeout(shareTimer)
+    shareTimer = setTimeout(() => { shareCopied.value = false }, 2500)
+  } catch { /* clipboard not available */ }
+}
 
 const videoRoom = ref(createRoomSlug())
 const videoMeetLink = computed(() => {

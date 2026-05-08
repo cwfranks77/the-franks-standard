@@ -8,6 +8,14 @@
       </p>
     </div>
 
+    <div v-if="isOwner" class="pay-owner-banner">
+      <span class="pay-owner-badge">Owner mode</span>
+      <div>
+        <p><strong>All fees are waived for you.</strong> As the site owner, you have free full access to sell on The Franks Standard.</p>
+        <p class="text-muted" style="font-size: 0.85rem; margin-top: 4px;">These payment links are for regular sellers and buyers. Your listings are fee-free.</p>
+      </div>
+    </div>
+
     <div class="grid grid-2 pay-grid">
       <article
         v-for="item in items"
@@ -45,6 +53,7 @@ useSeoMeta({
   description: 'Pay selling fees, buyer protection, and order holds via Stripe.',
 })
 
+const { isOwner } = useOwnerMode()
 const config = useRuntimeConfig()
 const c = config.public
 
@@ -102,4 +111,19 @@ const items = computed(() => [
   color: var(--stone-200);
 }
 .fine { font-size: 0.85rem; margin-top: 2rem; }
+.pay-owner-banner {
+  display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px;
+  margin-bottom: 1.5rem; padding: 18px 20px;
+  border-radius: var(--radius-lg, 12px);
+  border: 2px solid rgba(0, 245, 160, 0.35);
+  background: linear-gradient(135deg, rgba(0, 245, 160, 0.08), rgba(201, 168, 76, 0.06));
+  color: var(--stone-200); line-height: 1.6;
+}
+.pay-owner-badge {
+  display: inline-flex; align-items: center;
+  padding: 4px 12px; border-radius: 999px;
+  font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
+  background: rgba(201, 168, 76, 0.18); color: var(--gold); border: 1px solid rgba(201, 168, 76, 0.4);
+  white-space: nowrap;
+}
 </style>

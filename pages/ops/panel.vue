@@ -9,6 +9,11 @@
             Quick links, honest appraisal research, and copy-paste runbooks. Nothing here runs hidden code against visitors:
             this page is only for you after you unlock from the home page.
           </p>
+          <div class="owner-badge-row">
+            <span class="owner-badge">Owner mode active</span>
+            <span class="owner-badge owner-badge-green">All fees waived</span>
+            <span class="owner-badge owner-badge-green">Full seller access</span>
+          </div>
         </div>
         <button type="button" class="btn btn-outline btn-sm" @click="signOut">Sign out</button>
       </header>
@@ -27,6 +32,25 @@
             <li><NuxtLink to="/compare">Compare to eBay / Amazon</NuxtLink></li>
             <li><NuxtLink to="/contact">Contact</NuxtLink></li>
           </ul>
+        </section>
+
+        <section class="card">
+          <h2>Owner seller tools</h2>
+          <p class="small text-muted">You have free full access — no listing fees, no pro-seller fees, no dispute fees. Just list and sell.</p>
+          <ul class="btn-list" style="margin-top: 12px;">
+            <li><NuxtLink to="/sell" class="btn btn-primary btn-sm">Create a listing (free)</NuxtLink></li>
+            <li><NuxtLink to="/dashboard" class="btn btn-outline btn-sm">My dashboard</NuxtLink></li>
+            <li><NuxtLink to="/browse" class="btn btn-outline btn-sm">Browse floor</NuxtLink></li>
+          </ul>
+          <div class="owner-perks-box">
+            <p class="small"><strong>Your owner perks:</strong></p>
+            <ul class="owner-perks-list">
+              <li>Listing fees: <strong>waived</strong></li>
+              <li>Pro seller upgrade: <strong>included</strong></li>
+              <li>Dispute/mediation fees: <strong>waived</strong></li>
+              <li>Priority listing review: <strong>always</strong></li>
+            </ul>
+          </div>
         </section>
 
         <section class="card">
@@ -227,6 +251,23 @@ function flashCopied () {
 .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--stone-500); }
 .area { min-height: 72px; resize: vertical; }
 .copied { font-size: 0.85rem; color: var(--trust-green, #2ecc71); margin-top: 10px; }
+.owner-badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.owner-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 5px 14px; border-radius: 999px;
+  font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+  background: rgba(201, 168, 76, 0.15); color: var(--gold); border: 1px solid rgba(201, 168, 76, 0.35);
+}
+.owner-badge-green {
+  background: rgba(0, 245, 160, 0.1); color: var(--trust-green); border-color: rgba(0, 245, 160, 0.3);
+}
+.owner-perks-box {
+  margin-top: 14px; padding: 12px 14px;
+  background: rgba(0, 245, 160, 0.05); border: 1px solid rgba(0, 245, 160, 0.15);
+  border-radius: var(--radius, 8px);
+}
+.owner-perks-list { margin: 6px 0 0 1rem; font-size: 0.85rem; color: var(--stone-300); line-height: 1.6; }
+.owner-perks-list strong { color: var(--trust-green); }
 @media (max-width: 800px) {
   .grid { grid-template-columns: 1fr; }
   .card.wide { grid-column: auto; }

@@ -25,6 +25,7 @@
               @error="onPavilionImgError"
             />
             <span class="header-name">The Franks Standard</span>
+            <span v-if="isOwner" class="header-owner-pill">Owner</span>
           </NuxtLink>
         </div>
 
@@ -182,6 +183,11 @@
       </div>
     </Teleport>
     <AiSupportDrawer />
+
+    <NuxtLink v-if="isOwner" to="/sell" class="owner-sell-fab" title="Create a listing (free)">
+      <span class="fab-plus">+</span>
+      <span class="fab-label">Sell</span>
+    </NuxtLink>
   </div>
 </template>
 
@@ -190,6 +196,7 @@ const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
 const { grant } = useOpsSession()
+const { isOwner } = useOwnerMode()
 
 const menuOpen = ref(false)
 const moreOpen = ref(false)
@@ -577,4 +584,34 @@ function submitOpModal () {
 .trust-pill:hover { transform: translateY(-1px); box-shadow: 0 0 20px rgba(0, 224, 255, 0.12); }
 
 .nav-link.nav-highlight { color: var(--gold-light); }
+
+.header-owner-pill {
+  display: inline-flex; align-items: center;
+  padding: 2px 8px; border-radius: 999px;
+  font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
+  background: rgba(0, 245, 160, 0.12); color: var(--trust-green); border: 1px solid rgba(0, 245, 160, 0.3);
+  font-family: 'Inter', sans-serif;
+  margin-left: 4px;
+}
+
+.owner-sell-fab {
+  position: fixed; bottom: 90px; right: 24px; z-index: 9000;
+  display: flex; align-items: center; gap: 8px;
+  padding: 14px 22px; border-radius: 999px;
+  background: linear-gradient(135deg, var(--gold) 0%, #ffb020 100%);
+  color: var(--stone-950); font-weight: 700; font-size: 0.95rem;
+  box-shadow: 0 4px 24px rgba(201, 168, 76, 0.4), 0 0 0 2px rgba(0, 245, 160, 0.15);
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+}
+.owner-sell-fab:hover {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 8px 32px rgba(201, 168, 76, 0.5), 0 0 0 2px rgba(0, 245, 160, 0.3);
+  color: var(--stone-950);
+}
+.fab-plus { font-size: 1.3rem; font-weight: 900; line-height: 1; }
+.fab-label { font-family: 'Inter', sans-serif; }
+@media (max-width: 480px) {
+  .owner-sell-fab { bottom: 80px; right: 16px; padding: 12px 18px; font-size: 0.88rem; }
+}
 </style>

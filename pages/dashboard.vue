@@ -3,8 +3,16 @@
     <div class="container">
       <h1>Dashboard</h1>
       <p class="text-muted">Manage your listings, orders, and account</p>
+
+      <div v-if="isOwner" class="owner-banner">
+        <span class="owner-badge-dash">Owner mode</span>
+        <span class="owner-fee-text">All fees waived — list freely, sell without charges</span>
+      </div>
+
       <div class="quick-actions">
-        <NuxtLink to="/pay" class="btn btn-primary btn-sm">Pay fees (Stripe)</NuxtLink>
+        <NuxtLink v-if="!isOwner" to="/pay" class="btn btn-primary btn-sm">Pay fees (Stripe)</NuxtLink>
+        <NuxtLink v-else to="/ops/panel" class="btn btn-primary btn-sm">Owner toolkit</NuxtLink>
+        <NuxtLink to="/sell" class="btn btn-primary btn-sm">+ New Listing</NuxtLink>
         <NuxtLink to="/video" class="btn btn-outline btn-sm">Start a video call</NuxtLink>
       </div>
 
@@ -55,6 +63,7 @@
 definePageMeta({ layout: 'default', middleware: 'requires-auth' })
 useSeoMeta({ title: 'Dashboard - The Franks Standard' })
 
+const { isOwner } = useOwnerMode()
 const supabase = useSupabaseClient()
 const stats = reactive({ count: 0 })
 const myListings = ref([])
@@ -115,4 +124,17 @@ onMounted(async () => {
   align-items: center;
   margin-bottom: 16px;
 }
+.owner-banner {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+  margin-top: 14px; padding: 14px 18px;
+  background: linear-gradient(135deg, rgba(0, 245, 160, 0.08), rgba(201, 168, 76, 0.08));
+  border: 1px solid rgba(0, 245, 160, 0.25); border-radius: var(--radius-lg);
+}
+.owner-badge-dash {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 12px; border-radius: 999px;
+  font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
+  background: rgba(201, 168, 76, 0.18); color: var(--gold); border: 1px solid rgba(201, 168, 76, 0.4);
+}
+.owner-fee-text { font-size: 0.88rem; color: var(--trust-green); font-weight: 600; }
 </style>
