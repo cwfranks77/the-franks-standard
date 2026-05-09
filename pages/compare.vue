@@ -44,14 +44,43 @@
       </div>
     </section>
 
+    <section class="section">
+      <div class="container">
+        <h2 class="section-title">Fraud protection — step by step</h2>
+        <p class="text-muted mb-2">How each platform handles fakes, disputes, and seller accountability.</p>
+        <div class="matrix-wrap">
+          <table class="matrix fraud-table">
+            <thead>
+              <tr>
+                <th scope="col" class="topic">Protection step</th>
+                <th scope="col" class="tfs-col">The Franks Standard</th>
+                <th scope="col">eBay</th>
+                <th scope="col">Amazon</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="r in fraudRows" :key="r.step">
+                <th scope="row" class="row-label">{{ r.step }}</th>
+                <td><span class="tfs-cell">{{ r.tfs }}</span></td>
+                <td>{{ r.ebay }}</td>
+                <td>{{ r.amazon }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
     <section class="section section-dark">
       <div class="container">
-        <h2 class="section-title">What only lives here (for now)</h2>
+        <h2 class="section-title">What only lives here</h2>
         <ul class="unique">
           <li>Certificate of Authenticity or a signed in-platform guarantee is required to list, not an optional badge.</li>
           <li>Disputes are seen through a counterfeit lens first — a ban follows proven fraud, not a slap on the wrist.</li>
           <li>Escrow and confirmation flows are designed for items where condition and provenance are the product.</li>
           <li>Category mix is curated around gear, music, numismatics, and collectibles with real recourse, not one-click commodity SKUs.</li>
+          <li>Video calls built in — verify an item face-to-face before buying. No other marketplace offers this.</li>
+          <li>AI customer service with phone, chat, and email — not a generic help center maze.</li>
         </ul>
       </div>
     </section>
@@ -70,6 +99,16 @@
 </template>
 
 <script setup>
+const fraudRows = [
+  { step: 'Before listing', tfs: 'COA or signed guarantee required — no proof, no publish', ebay: 'No verification — anyone can list anything', amazon: 'Brand registry optional — most sellers skip it' },
+  { step: 'Verification method', tfs: 'COA upload or legally-binding in-platform guarantee with seller\'s real name', ebay: 'Optional "Authenticity Guarantee" on select categories ($100+)', amazon: 'No built-in authenticity check for third-party sellers' },
+  { step: 'Payment protection', tfs: 'Escrow hold — funds stay locked until buyer confirms item matches listing', ebay: 'PayPal/managed payments — refund via case system after dispute', amazon: 'A-to-z Guarantee — refund possible but seller keeps strike' },
+  { step: 'Dispute process', tfs: 'Fraud-first review: photos, COA check, video call option — resolved in days', ebay: 'Case opened → seller responds → eBay decides (can take weeks)', amazon: 'A-to-z claim → automated decision → appeal process' },
+  { step: 'Fake item found', tfs: 'Permanent ban for seller, full refund for buyer, potential legal referral', ebay: '3-strike system — seller can relist after warning', amazon: 'Account warning or temporary suspension — reinstatement possible' },
+  { step: 'Repeat offenders', tfs: 'Cannot return — ban is permanent, no appeals for proven fakes', ebay: 'May lose selling privileges after multiple strikes', amazon: 'Account suspended but can create new seller account' },
+  { step: 'Buyer recourse', tfs: 'Escrow refund + video call + direct seller contact + 1-800-TFS-HELP', ebay: 'Money Back Guarantee claim (limited window)', amazon: 'A-to-z claim + return (shipping often buyer\'s cost)' },
+]
+
 const rows = [
   { label: 'Listing gate', tfs: 'COA or signed platform guarantee to publish', ebay: 'Open listing for most items', amazon: 'Retail/brand and SKUs' },
   { label: 'Trust model', tfs: 'Auth-first; bans for proven fakes', ebay: 'Varies; heavy catalog', amazon: 'Prime trust is logistics, not provenance' },
@@ -111,6 +150,8 @@ useSeoMeta({
   .matrix { min-width: 640px; }
   .matrix-wrap { margin: 0 -4px; }
 }
+.fraud-table .tfs-cell { color: var(--trust-green); }
+.fraud-table td:nth-child(3), .fraud-table td:nth-child(4) { color: var(--stone-400); font-size: 0.85rem; }
 .section-dark { background: rgba(0, 0, 0, 0.18); }
 .unique { max-width: 800px; margin: 0; padding-left: 1.1rem; color: var(--stone-300); line-height: 1.65; }
 .unique li { margin-bottom: 10px; }

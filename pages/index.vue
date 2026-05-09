@@ -71,6 +71,8 @@
       </div>
     </section>
 
+    <TrustCounter />
+
     <ShowcaseReel />
 
     <section class="section">
