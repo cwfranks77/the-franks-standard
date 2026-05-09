@@ -23,11 +23,11 @@
         </div>
         <div class="stat-card hover-lift">
           <p class="stat-label">Total Sales</p>
-          <p class="stat-value">$0.00</p>
+          <p class="stat-value">${{ stats.totalSales }}</p>
         </div>
         <div class="stat-card hover-lift">
           <p class="stat-label">Pending Orders</p>
-          <p class="stat-value">0</p>
+          <p class="stat-value">{{ stats.pendingOrders }}</p>
         </div>
       </div>
 
@@ -52,7 +52,9 @@
       <div class="dash-section mt-4">
         <h2>Recent Orders</h2>
         <div class="empty-state text-center" style="padding: 40px;">
-          <p class="text-muted">No orders yet.</p>
+          <p style="font-size: 2rem;">🛒</p>
+          <p class="text-muted mt-1">No orders yet. Start browsing the floor!</p>
+          <NuxtLink to="/browse" class="btn btn-outline btn-sm mt-2">Browse Marketplace</NuxtLink>
         </div>
       </div>
     </div>
@@ -65,7 +67,7 @@ useSeoMeta({ title: 'Dashboard - The Franks Standard' })
 
 const { isOwner } = useOwnerMode()
 const supabase = useSupabaseClient()
-const stats = reactive({ count: 0 })
+const stats = reactive({ count: 0, totalSales: '0.00', pendingOrders: 0 })
 const myListings = ref([])
 
 onMounted(async () => {

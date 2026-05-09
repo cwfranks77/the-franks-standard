@@ -18,6 +18,31 @@
         <button type="button" class="btn btn-outline btn-sm" @click="signOut">Sign out</button>
       </header>
 
+      <!-- FREE FULL ACCESS — prominent top section -->
+      <section class="free-access-banner">
+        <div class="free-access-header">
+          <span class="free-access-icon">🔓</span>
+          <div>
+            <h2>Free Full Access — Active</h2>
+            <p>You are the site owner. All fees are waived. You can sell, manage, and operate everything for free.</p>
+          </div>
+        </div>
+        <div class="free-access-actions">
+          <NuxtLink to="/sell" class="btn btn-primary btn-lg">Sell an Item (Free)</NuxtLink>
+          <NuxtLink to="/dashboard" class="btn btn-outline btn-lg">My Dashboard</NuxtLink>
+          <NuxtLink to="/browse" class="btn btn-dark btn-lg">Browse Floor</NuxtLink>
+        </div>
+        <div class="free-access-perks">
+          <div class="perk-item"><span class="perk-check">✓</span> Listing fees waived</div>
+          <div class="perk-item"><span class="perk-check">✓</span> Pro seller included</div>
+          <div class="perk-item"><span class="perk-check">✓</span> Dispute fees waived</div>
+          <div class="perk-item"><span class="perk-check">✓</span> No Supabase login needed</div>
+          <div class="perk-item"><span class="perk-check">✓</span> Dropship and direct sell</div>
+          <div class="perk-item"><span class="perk-check">✓</span> Priority everything</div>
+        </div>
+        <p class="free-access-note">This access is your backdoor inside the hidden room. Tap the logo 5 times on the homepage to unlock anytime.</p>
+      </section>
+
       <div class="grid">
         <section class="card">
           <h2>Site shortcuts</h2>
@@ -32,25 +57,6 @@
             <li><NuxtLink to="/compare">Compare to eBay / Amazon</NuxtLink></li>
             <li><NuxtLink to="/contact">Contact</NuxtLink></li>
           </ul>
-        </section>
-
-        <section class="card">
-          <h2>Owner seller tools</h2>
-          <p class="small text-muted">You have free full access — no listing fees, no pro-seller fees, no dispute fees. Just list and sell.</p>
-          <ul class="btn-list" style="margin-top: 12px;">
-            <li><NuxtLink to="/sell" class="btn btn-primary btn-sm">Create a listing (free)</NuxtLink></li>
-            <li><NuxtLink to="/dashboard" class="btn btn-outline btn-sm">My dashboard</NuxtLink></li>
-            <li><NuxtLink to="/browse" class="btn btn-outline btn-sm">Browse floor</NuxtLink></li>
-          </ul>
-          <div class="owner-perks-box">
-            <p class="small"><strong>Your owner perks:</strong></p>
-            <ul class="owner-perks-list">
-              <li>Listing fees: <strong>waived</strong></li>
-              <li>Pro seller upgrade: <strong>included</strong></li>
-              <li>Dispute/mediation fees: <strong>waived</strong></li>
-              <li>Priority listing review: <strong>always</strong></li>
-            </ul>
-          </div>
         </section>
 
         <section class="card">
@@ -251,6 +257,22 @@ function flashCopied () {
 .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--stone-500); }
 .area { min-height: 72px; resize: vertical; }
 .copied { font-size: 0.85rem; color: var(--trust-green, #2ecc71); margin-top: 10px; }
+.free-access-banner {
+  margin-bottom: 24px; padding: 28px 24px;
+  border: 2px solid rgba(0, 245, 160, 0.45);
+  border-radius: var(--radius-lg, 12px);
+  background: linear-gradient(135deg, rgba(0, 245, 160, 0.08), rgba(201, 168, 76, 0.06), rgba(18, 8, 32, 0.95));
+}
+.free-access-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
+.free-access-icon { font-size: 2.5rem; flex: 0 0 auto; }
+.free-access-header h2 { font-size: 1.4rem; color: var(--trust-green); margin: 0 0 6px; }
+.free-access-header p { font-size: 0.95rem; color: var(--stone-200); margin: 0; line-height: 1.5; }
+.free-access-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+.free-access-perks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px 16px; margin-bottom: 16px; }
+.perk-item { display: flex; align-items: center; gap: 8px; font-size: 0.88rem; color: var(--stone-200); }
+.perk-check { color: var(--trust-green); font-weight: 800; font-size: 1rem; }
+.free-access-note { font-size: 0.8rem; color: var(--stone-400); font-style: italic; }
+@media (max-width: 640px) { .free-access-perks { grid-template-columns: repeat(2, 1fr); } }
 .owner-badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .owner-badge {
   display: inline-flex; align-items: center; gap: 4px;

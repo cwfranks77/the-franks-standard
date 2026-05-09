@@ -50,8 +50,24 @@
           </div>
 
           <div class="listing-actions">
-            <button class="btn btn-primary btn-lg" type="button" style="flex: 1;" disabled>Buy (checkout next)</button>
-            <button class="btn btn-outline btn-lg" type="button" disabled>Message seller (soon)</button>
+            <a
+              v-if="buyUrl"
+              :href="buyUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn btn-primary btn-lg"
+              style="flex: 1;"
+            >Buy now (Stripe) &rarr;</a>
+            <NuxtLink
+              v-else
+              to="/pay"
+              class="btn btn-primary btn-lg"
+              style="flex: 1;"
+            >Buy — go to checkout</NuxtLink>
+            <a
+              :href="messageSellerHref"
+              class="btn btn-outline btn-lg"
+            >Message seller</a>
             <NuxtLink class="btn btn-outline btn-lg" :to="videoMeetLink">Video call</NuxtLink>
             <button class="btn btn-dark btn-lg" type="button" @click="shareListing" :title="shareTooltip">
               {{ shareCopied ? 'Link copied!' : 'Share' }}
@@ -112,6 +128,19 @@ async function shareListing () {
     shareTimer = setTimeout(() => { shareCopied.value = false }, 2500)
   } catch { /* clipboard not available */ }
 }
+
+const config = useRuntimeConfig()
+const buyUrl = computed(() => config.public.payOrderDepositUrl || '')
+
+const messageSellerHref = computed(() => {
+  const title = listing.value ? listing.value.title : 'Listing'
+  const id = (route.params.id || '').toString()
+  const subject = encodeURIComponent(`Question about: ${title}`)
+  const body = encodeURIComponent(
+    `Hi,\n\nI have a question about your listing "${title}" (ID: ${id}) on The Franks Standard.\n\n`
+  )
+  return `mailto:info@thefranksstandard.com?subject=${subject}&body=${body}`
+})
 
 const videoRoom = ref(createRoomSlug())
 const videoMeetLink = computed(() => {
