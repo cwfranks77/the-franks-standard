@@ -90,6 +90,73 @@
           </div>
         </section>
 
+        <section class="card wide call-monitor-card">
+          <h2>📞 Call Monitoring &amp; Recordings</h2>
+          <p class="small text-muted">Monitor customer service calls, listen to recordings, and track how clients are responding. All calls through the AI agent are recorded automatically.</p>
+
+          <div class="call-links">
+            <a href="https://console.twilio.com/us1/monitor/logs/calls" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">Call Logs (Twilio)</a>
+            <a href="https://console.twilio.com/us1/monitor/logs/recordings" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">Recordings</a>
+            <a href="https://console.twilio.com/us1/develop/studio/flows" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">AI Agent Flow</a>
+            <a href="https://console.twilio.com/us1/monitor/insights/call-summaries" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">Call Analytics</a>
+          </div>
+
+          <details class="call-setup-guide mt-1">
+            <summary>Twilio AI Agent Setup Guide (one-time)</summary>
+            <div class="setup-content">
+              <h4>Step 1: Create Twilio account</h4>
+              <ol>
+                <li>Go to <a href="https://www.twilio.com/try-twilio" target="_blank">twilio.com/try-twilio</a> and create a free account</li>
+                <li>Verify your phone number</li>
+                <li>Get your Account SID and Auth Token from the <a href="https://console.twilio.com" target="_blank">console dashboard</a></li>
+              </ol>
+
+              <h4>Step 2: Buy a phone number</h4>
+              <ol>
+                <li>Go to <a href="https://console.twilio.com/us1/develop/phone-numbers/manage/search" target="_blank">Phone Numbers → Buy a Number</a></li>
+                <li>Search for a toll-free number (1-800, 1-888, etc.)</li>
+                <li>Buy it (~$2/month for toll-free)</li>
+                <li>Update <code>NUXT_PUBLIC_CUSTOMER_SERVICE_PHONE</code> with the new number</li>
+              </ol>
+
+              <h4>Step 3: Set up Studio Flow (AI Agent)</h4>
+              <ol>
+                <li>Go to <a href="https://console.twilio.com/us1/develop/studio/flows" target="_blank">Studio → Flows → Create new Flow</a></li>
+                <li>Name it "Franks Standard Customer Service"</li>
+                <li>Add a <strong>Say/Play</strong> widget: "Thank you for calling The Franks Standard, the authenticity-first marketplace. I'm your AI assistant. How can I help you today?"</li>
+                <li>Add a <strong>Gather Input</strong> widget (speech recognition) to capture what the caller says</li>
+                <li>Route based on keywords: orders, refunds, COA, selling, fees → play the relevant recorded answer</li>
+                <li>Add a <strong>"Talk to a person"</strong> path that dials your cell phone</li>
+              </ol>
+
+              <h4>Step 4: Enable call recording</h4>
+              <ol>
+                <li>In your Studio Flow, on the incoming call trigger, check <strong>"Record calls"</strong></li>
+                <li>Or go to <a href="https://console.twilio.com/us1/develop/voice/settings" target="_blank">Voice → Settings</a> and enable recording globally</li>
+                <li>Recordings appear in <a href="https://console.twilio.com/us1/monitor/logs/recordings" target="_blank">Monitor → Recordings</a></li>
+              </ol>
+
+              <h4>Step 5: Connect number to flow</h4>
+              <ol>
+                <li>Go to your phone number's config page</li>
+                <li>Under "A call comes in" → select <strong>Studio Flow</strong> → "Franks Standard Customer Service"</li>
+                <li>Save — your AI agent is now live</li>
+              </ol>
+
+              <h4>Step 6: Live monitoring</h4>
+              <p>To listen to live calls: Twilio Console → Monitor → Calls → click any active call → "Listen". You can hear the conversation in real time without the caller knowing.</p>
+            </div>
+          </details>
+
+          <div class="call-features">
+            <div class="call-feat"><span>🤖</span> AI answers common questions (fees, COA, orders, returns)</div>
+            <div class="call-feat"><span>📱</span> "Talk to a person" patches through to your phone</div>
+            <div class="call-feat"><span>🔴</span> Every call recorded automatically</div>
+            <div class="call-feat"><span>👁️</span> Monitor live calls from Twilio dashboard</div>
+            <div class="call-feat"><span>📊</span> Call analytics and feedback tracking</div>
+          </div>
+        </section>
+
         <section class="card">
           <h2>Market research (not a legal appraisal)</h2>
           <p class="small text-muted">
@@ -291,6 +358,22 @@ function flashCopied () {
 .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--stone-500); }
 .area { min-height: 72px; resize: vertical; }
 .copied { font-size: 0.85rem; color: var(--trust-green, #2ecc71); margin-top: 10px; }
+.call-monitor-card { border-color: rgba(34, 232, 255, 0.25); }
+.call-links { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+.call-setup-guide { margin-top: 14px; }
+.call-setup-guide summary { color: var(--gold); cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+.setup-content { margin-top: 12px; font-size: 0.85rem; color: var(--stone-200); line-height: 1.6; }
+.setup-content h4 { font-size: 0.88rem; color: var(--cyan); margin: 16px 0 6px; font-family: 'Inter', sans-serif; }
+.setup-content ol { padding-left: 1.2rem; margin: 4px 0 0; }
+.setup-content li { margin-bottom: 6px; }
+.setup-content a { color: var(--gold); }
+.setup-content code { color: var(--gold-light); font-size: 0.82em; }
+.call-features { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; margin-top: 14px; }
+.call-feat {
+  display: flex; align-items: center; gap: 8px; padding: 10px 12px; font-size: 0.85rem; color: var(--stone-200);
+  background: rgba(0, 0, 0, 0.2); border-radius: var(--radius, 8px); border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.call-feat span { font-size: 1.1rem; flex: 0 0 auto; }
 .coa-monitor-card { border-color: rgba(255, 77, 142, 0.25); }
 .coa-monitor-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
 .coa-monitor-header h2 { margin: 0; }

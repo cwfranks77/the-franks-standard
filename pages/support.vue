@@ -12,12 +12,13 @@
     <section class="card phone-lane">
       <h2>📞 Customer Service</h2>
       <div class="phone-row">
-        <a href="tel:+18008374357" class="phone-number">1-800-TFS-HELP</a>
+        <a href="tel:+18008374357" class="phone-number">{{ phoneDisplay }}</a>
         <span class="phone-badge">AI-Powered</span>
+        <span class="phone-badge phone-badge-rec">Calls Recorded</span>
       </div>
       <p class="text-muted">
-        Our AI customer service line handles orders, returns, billing, and general inquiries.
-        For complex issues, the AI will connect you to a human agent. Available during business hours.
+        Our AI customer service handles orders, returns, billing, and general inquiries.
+        For complex issues, the AI connects you to the owner directly. All calls are recorded for quality and training.
       </p>
     </section>
 
@@ -83,6 +84,9 @@
 </template>
 
 <script setup>
+const config = useRuntimeConfig()
+const phoneDisplay = computed(() => config.public.customerServicePhone || '1-800-TFS-HELP')
+
 useSeoMeta({
   title: 'Support and tech - The Franks Standard',
   description: 'Customer and technical support: orders, video, payments, contact.',
@@ -113,6 +117,9 @@ useSeoMeta({
   display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 999px;
   font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
   background: rgba(0, 245, 160, 0.12); color: var(--trust-green); border: 1px solid rgba(0, 245, 160, 0.3);
+}
+.phone-badge-rec {
+  background: rgba(255, 77, 106, 0.1); color: var(--alert-red); border-color: rgba(255, 77, 106, 0.3);
 }
 .voice-lane h2 { font-size: 1.2rem; margin-bottom: 12px; color: var(--gold); }
 .voice-lane p { line-height: 1.6; font-size: 0.95rem; }
