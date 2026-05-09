@@ -16,7 +16,7 @@
       <aside v-show="open" class="ai-panel" role="dialog" aria-label="AI help assistant (beta)">
         <div class="ai-head">
           <h2>AI Customer Service</h2>
-          <p class="ai-sub">Get instant help with orders, selling, fees, and more. Call <strong>1-800-TFS-HELP</strong> for phone support.</p>
+          <p class="ai-sub">Get instant help with orders, selling, fees, and more. Call <strong>(877) 837-0527</strong> for phone support.</p>
           <button type="button" class="ai-x" aria-label="Close" @click="open = false">&times;</button>
         </div>
         <div ref="logEl" class="ai-log" role="log" aria-live="polite">
@@ -50,7 +50,7 @@
           <button type="submit" class="btn btn-primary btn-sm">Send</button>
         </form>
         <div class="ai-esc-row">
-          <a href="tel:+18008374357" class="ai-esc ai-phone">📞 1-800-TFS-HELP</a>
+          <a href="tel:+18778370527" class="ai-esc ai-phone">📞 (877) 837-0527</a>
           <NuxtLink to="/support" class="ai-esc" @click="open = false">Support and tech &rarr;</NuxtLink>
           <NuxtLink to="/contact" class="ai-esc" @click="open = false">Contact the team &rarr;</NuxtLink>
         </div>

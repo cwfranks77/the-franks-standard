@@ -12,7 +12,7 @@
       <div class="contact-method">
         <p class="label">📞 Phone (AI-Powered)</p>
         <p class="phone-big">
-          <a href="tel:+18008374357">1-800-TFS-HELP</a>
+          <a href="tel:+18778370527">(877) 837-0527</a>
         </p>
         <p class="text-muted small">
           AI customer service for orders, returns, billing, and general questions.

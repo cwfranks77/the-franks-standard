@@ -36,7 +36,7 @@
         <div class="offer-card">
           <span class="offer-icon">📞</span>
           <h3>AI customer service included</h3>
-          <p>Your buyers get 1-800-TFS-HELP, AI chat, video calls, and email support — all built in to every plan.</p>
+          <p>Your buyers get (877) 837-0527, AI chat, video calls, and email support — all built in to every plan.</p>
         </div>
       </div>
 

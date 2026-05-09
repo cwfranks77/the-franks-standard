@@ -31,7 +31,7 @@ export function getAiReply (message: string): string {
     return 'Welcome to The Franks Standard customer service. I can help with:\n\n' +
       '• Buying and selling\n• Fees and payments\n• COA and authenticity\n• Shipping and orders\n' +
       '• Account issues\n• Disputes and returns\n• Dropshipping\n• Technical problems\n\n' +
-      'What can I help you with today? You can also call us at 1-800-TFS-HELP.'
+      'What can I help you with today? You can also call us at (877) 837-0527.'
   }
 
   // Greeting
@@ -44,13 +44,13 @@ export function getAiReply (message: string): string {
   // Thanks
   if (/^(thanks|thank you|thx|ty|appreciate|cheers|cool thanks)/i.test(q)) {
     return 'You\'re welcome! Is there anything else I can help you with? ' +
-      'If you need to speak with a person, call 1-800-TFS-HELP or email info@thefranksstandard.com.'
+      'If you need to speak with a person, call (877) 837-0527 or email info@thefranksstandard.com.'
   }
 
   // Phone / call / speak to human
   if (matchAny(q, [/phone|call (us|me|them|you)|speak.*(human|person|agent|someone|representative)|talk to.*human|customer service number|toll.?free|1.?800/])) {
     ctx.lastTopic = 'phone'
-    return '📞 **Customer Service Line: 1-800-TFS-HELP**\n\n' +
+    return '📞 **Customer Service Line: (877) 837-0527**\n\n' +
       'Our AI-powered phone service is available to help with:\n' +
       '• Order status and tracking\n• Returns and refunds\n• Account questions\n• Billing issues\n\n' +
       'For complex issues, the AI will connect you with a human agent. ' +
@@ -118,7 +118,7 @@ export function getAiReply (message: string): string {
       '• **Buyer deposits** — order payment via Stripe\n\n' +
       '**Owner/operator?** All fees are waived in Owner Mode.\n\n' +
       'All payments go through Stripe — we never store your card number. ' +
-      'Visit **Pay & Fees** in the menu for payment links, or call 1-800-TFS-HELP for billing questions.'
+      'Visit **Pay & Fees** in the menu for payment links, or call (877) 837-0527 for billing questions.'
   }
 
   // Payment / Stripe / checkout / card
@@ -130,7 +130,7 @@ export function getAiReply (message: string): string {
       '• Stripe accepts all major cards, Apple Pay, and Google Pay\n' +
       '• Payment issues? Check with your bank first, then email us\n\n' +
       'If your payment fails, try a different card or clear your browser cookies. ' +
-      'For persistent issues, call 1-800-TFS-HELP.'
+      'For persistent issues, call (877) 837-0527.'
   }
 
   // Payment failed / declined
@@ -142,7 +142,7 @@ export function getAiReply (message: string): string {
       '3. **Try another card** — or use Apple/Google Pay\n' +
       '4. **Clear cookies** — then retry the Stripe checkout link\n\n' +
       'If it still fails, note the exact time and error message, then:\n' +
-      '• Call **1-800-TFS-HELP**\n' +
+      '• Call **(877) 837-0527**\n' +
       '• Or email **info@thefranksstandard.com** with the details'
   }
 
@@ -157,7 +157,7 @@ export function getAiReply (message: string): string {
       '• Full refund to the buyer\n• Permanent ban for the seller\n• No second chances\n\n' +
       'We work with PSA, PCGS, Beckett, and other grading services. ' +
       'Include grading details in your listing description.\n\n' +
-      'Questions about verifying a specific item? Call 1-800-TFS-HELP.'
+      'Questions about verifying a specific item? Call (877) 837-0527.'
   }
 
   // Fake / fraud / scam / counterfeit
@@ -169,7 +169,7 @@ export function getAiReply (message: string): string {
       '1. **Do not return it yet** — keep it as evidence\n' +
       '2. **Take photos** of the item, packaging, and any COA\n' +
       '3. **Report it** via Contact with your order ID and photos\n' +
-      '4. **Call 1-800-TFS-HELP** for urgent cases\n\n' +
+      '4. **Call (877) 837-0527** for urgent cases\n\n' +
       'Proven fakes result in: full buyer refund, permanent seller ban, and potential legal referral. ' +
       'Email info@thefranksstandard.com with "FRAUD REPORT" in the subject line for priority review.'
   }
@@ -183,7 +183,7 @@ export function getAiReply (message: string): string {
       '• **Damaged in shipping?** Take photos of the packaging and item immediately\n' +
       '• **Counterfeit?** See our fraud report process (type "report fraud")\n\n' +
       'Refund timeline depends on the payment method (usually 5-10 business days via Stripe).\n\n' +
-      'For return help: call **1-800-TFS-HELP** or email with order ID and photos.'
+      'For return help: call **(877) 837-0527** or email with order ID and photos.'
   }
 
   // Shipping / tracking / delivery
@@ -198,7 +198,7 @@ export function getAiReply (message: string): string {
       '2. Message the seller through the listing\n' +
       '3. Open a video call for a live conversation\n\n' +
       'Packages not arrived after the estimated window? ' +
-      'Call **1-800-TFS-HELP** or file a dispute.'
+      'Call **(877) 837-0527** or file a dispute.'
   }
 
   // Order status / my order
@@ -210,7 +210,7 @@ export function getAiReply (message: string): string {
       '2. Your orders and listings are listed there\n' +
       '3. Click on an order to see details and tracking\n\n' +
       'If you need help with a specific order, have your **order ID** ready and:\n' +
-      '• Call **1-800-TFS-HELP**\n' +
+      '• Call **(877) 837-0527**\n' +
       '• Email **info@thefranksstandard.com** with the order ID\n\n' +
       'For urgent issues, include photos in your email.'
   }
@@ -224,7 +224,7 @@ export function getAiReply (message: string): string {
       '• **Email not confirmed?** Check spam/junk folder for the confirmation email from The Franks Standard\n' +
       '• **Locked out?** Email info@thefranksstandard.com from your account email\n\n' +
       'Don\'t create duplicate accounts — this can trigger security flags. ' +
-      'Call **1-800-TFS-HELP** if you\'re stuck.'
+      'Call **(877) 837-0527** if you\'re stuck.'
   }
 
   // Banned / suspended
@@ -236,7 +236,7 @@ export function getAiReply (message: string): string {
       '• Include what you see when you try to sign in\n' +
       '• Do NOT create a new account (this will make it worse)\n\n' +
       'Bans for proven counterfeits are permanent. Other restrictions may be reviewed. ' +
-      'Call **1-800-TFS-HELP** for a status update.'
+      'Call **(877) 837-0527** for a status update.'
   }
 
   // Dispute / complaint / problem with order
@@ -249,7 +249,7 @@ export function getAiReply (message: string): string {
       '4. **Formal dispute** — email info@thefranksstandard.com with:\n' +
       '   - Order ID\n   - Photos of the issue\n   - What resolution you want\n\n' +
       'A small mediation fee applies for escalated reviews (see Pay & Fees).\n' +
-      'Call **1-800-TFS-HELP** for urgent disputes.'
+      'Call **(877) 837-0527** for urgent disputes.'
   }
 
   // Video / Jitsi / meet / call buyer/seller
@@ -300,7 +300,7 @@ export function getAiReply (message: string): string {
       '• Note your browser, device, and what you were doing\n' +
       '• Take a screenshot of the error\n' +
       '• Email **info@thefranksstandard.com** with these details\n' +
-      '• Or call **1-800-TFS-HELP**'
+      '• Or call **(877) 837-0527**'
   }
 
   // Compare / why us / eBay / Amazon / other marketplaces
@@ -356,7 +356,7 @@ export function getAiReply (message: string): string {
   // Goodbye
   if (matchAny(q, [/^(bye|goodbye|see ya|later|done|that'?s all|nothing else|no more|i'?m good)/])) {
     return 'Thanks for using The Franks Standard! If you need anything else:\n\n' +
-      '• Call **1-800-TFS-HELP** anytime\n' +
+      '• Call **(877) 837-0527** anytime\n' +
       '• Email **info@thefranksstandard.com**\n' +
       '• Use the **Help** button on any page\n\n' +
       'Have a great day! 👋'
@@ -390,5 +390,5 @@ export function getAiReply (message: string): string {
     '• **"Return"** — refunds and returns\n' +
     '• **"Report fraud"** — counterfeit or scam report\n' +
     '• **"Phone"** — our customer service number\n\n' +
-    'Or call **1-800-TFS-HELP** to speak with someone directly.'
+    'Or call **(877) 837-0527** to speak with someone directly.'
 }

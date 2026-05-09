@@ -50,7 +50,7 @@
             <span class="od-icon">📞</span>
             <div>
               <h4>Talk to us</h4>
-              <p><a href="tel:+18008374357">1-800-TFS-HELP</a></p>
+              <p><a href="tel:+18778370527">(877) 837-0527</a></p>
               <p class="text-muted small">AI-powered customer service with human escalation. Or use <NuxtLink to="/video">Video</NuxtLink> for face-to-face.</p>
             </div>
           </div>

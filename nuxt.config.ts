@@ -23,7 +23,7 @@ export default defineNuxtConfig({
       payProSellerUrl: process.env.NUXT_PUBLIC_PAY_PRO_SELLER_URL || '',
       payOrderDepositUrl: process.env.NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL || '',
       payDisputeFeeUrl: process.env.NUXT_PUBLIC_PAY_DISPUTE_FEE_URL || '',
-      customerServicePhone: process.env.NUXT_PUBLIC_CUSTOMER_SERVICE_PHONE || '1-800-TFS-HELP',
+      customerServicePhone: process.env.NUXT_PUBLIC_CUSTOMER_SERVICE_PHONE || '(877) 837-0527',
     },
   },
 

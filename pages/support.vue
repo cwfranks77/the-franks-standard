@@ -12,7 +12,7 @@
     <section class="card phone-lane">
       <h2>📞 Customer Service</h2>
       <div class="phone-row">
-        <a href="tel:+18008374357" class="phone-number">{{ phoneDisplay }}</a>
+        <a href="tel:+18778370527" class="phone-number">{{ phoneDisplay }}</a>
         <span class="phone-badge">AI-Powered</span>
         <span class="phone-badge phone-badge-rec">Calls Recorded</span>
       </div>
@@ -85,7 +85,7 @@
 
 <script setup>
 const config = useRuntimeConfig()
-const phoneDisplay = computed(() => config.public.customerServicePhone || '1-800-TFS-HELP')
+const phoneDisplay = computed(() => config.public.customerServicePhone || '(877) 837-0527')
 
 useSeoMeta({
   title: 'Support and tech - The Franks Standard',

@@ -50,7 +50,7 @@ Here's what makes us different:
 📜 COA or signed guarantee required on every single listing
 💰 5% fees vs eBay's 13.25% — you keep more
 🏪 Open your own store — AI builds it for you in minutes
-📞 Real customer service: 1-800-TFS-HELP
+📞 Real customer service: (877) 837-0527
 🤝 Open Door Policy — founder Charles Franks reads every feedback email
 
 🎁 NEW SELLER LAUNCH OFFER:
@@ -86,7 +86,7 @@ Why sellers are switching:
 ✅ AI builds your store in minutes
 ✅ Dropshipping supported
 ✅ Video calls built into every listing
-✅ 1-800-TFS-HELP — real customer service
+✅ (877) 837-0527 — real customer service
 
 🎁 10 free listings for new sellers. No card needed.
 
@@ -136,7 +136,7 @@ What makes us different:
 ❌ Fakes = Permanent ban (not 3 strikes)
 💰 5% fees (eBay takes 13.25%)
 🏪 AI builds your store in minutes
-📞 1-800-TFS-HELP — real humans
+📞 (877) 837-0527 — real humans
 🤝 Founder Charles Franks — reachable anytime (open door policy)
 
 🎁 LAUNCH OFFER:
