@@ -1,0 +1,24 @@
+{
+  "name": "The Franks Standard",
+  "short_name": "Franks Standard",
+  "description": "The authenticity-first collectibles and gear marketplace. COA or signed guarantee on every listing.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0518",
+  "theme_color": "#0a0518",
+  "orientation": "any",
+  "categories": ["shopping", "business"],
+  "icons": [
+    {
+      "src": "/franks-pavilion.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

@@ -173,6 +173,23 @@
       </div>
     </section>
 
+    <section class="section app-section">
+      <div class="container">
+        <div class="app-promo">
+          <div class="app-promo-copy">
+            <h2 class="section-title">Take the Standard with you</h2>
+            <p class="text-muted">
+              Install The Franks Standard on your phone. Browse, buy, sell, and get notifications — just like a native app
+              on Android and iPhone. No app store download, no waiting for approval.
+            </p>
+          </div>
+          <div class="app-promo-install">
+            <AppInstallBanner />
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="section cta-section">
       <div class="container text-center">
         <h2 class="section-title">The floor is open</h2>
@@ -510,4 +527,10 @@ const categories = [
 .proof-inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
 .proof-inner h2 { font-size: 1.6rem; margin-bottom: 8px; }
 .cta-section { background: radial-gradient(ellipse at 50% 100%, rgba(201, 168, 76, 0.1) 0%, transparent 60%); }
+.app-section { padding: 48px 0; border-top: 1px solid var(--stone-800); }
+.app-promo { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; }
+.app-promo-copy { }
+.app-promo-copy .section-title { text-align: left; font-size: 1.6rem; }
+.app-promo-copy .text-muted { font-size: 1rem; line-height: 1.65; }
+@media (max-width: 768px) { .app-promo { grid-template-columns: 1fr; } }
 </style>

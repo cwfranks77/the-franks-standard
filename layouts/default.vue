@@ -122,6 +122,34 @@
             <NuxtLink to="/prohibited-items">Prohibited Items</NuxtLink>
             <NuxtLink to="/seller-agreement">Seller Agreement</NuxtLink>
           </div>
+          <div class="footer-col footer-app-col">
+            <h4>Get the App</h4>
+            <button
+              v-if="appCanInstall"
+              type="button"
+              class="btn btn-primary btn-sm footer-install-btn"
+              @click="appPromptInstall"
+            >Install for Android</button>
+            <button
+              v-else-if="appIsIos"
+              type="button"
+              class="btn btn-primary btn-sm footer-install-btn"
+              @click="showFooterIos = !showFooterIos"
+            >Install for iPhone</button>
+            <button
+              v-else
+              type="button"
+              class="btn btn-outline btn-sm footer-install-btn"
+              @click="showFooterGeneric = !showFooterGeneric"
+            >Install App</button>
+            <p v-if="showFooterIos" class="footer-install-help">
+              In Safari: tap Share → "Add to Home Screen" → Add
+            </p>
+            <p v-if="showFooterGeneric" class="footer-install-help">
+              In Chrome/Edge: tap menu (⋮) → "Install app"
+            </p>
+            <p class="text-muted footer-app-note">Works like a native app — no app store needed</p>
+          </div>
         </div>
         <div class="footer-bottom">
           <p>&copy; {{ new Date().getFullYear() }} The Franks Standard &bull; Founded by Charles Franks &bull; All rights reserved.</p>
@@ -197,6 +225,9 @@ const router = useRouter()
 const config = useRuntimeConfig()
 const { grant } = useOpsSession()
 const { isOwner } = useOwnerMode()
+const { canInstall: appCanInstall, isIos: appIsIos, promptInstall: appPromptInstall } = useAppInstall()
+const showFooterIos = ref(false)
+const showFooterGeneric = ref(false)
 
 const menuOpen = ref(false)
 const moreOpen = ref(false)
@@ -478,7 +509,7 @@ function submitOpModal () {
 }
 .footer-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
   gap: 40px;
 }
 .footer-logo {
@@ -522,6 +553,9 @@ function submitOpModal () {
   color: var(--stone-500);
   font-size: 0.85rem;
 }
+.footer-install-btn { width: 100%; }
+.footer-install-help { font-size: 0.8rem; color: var(--stone-300); margin-top: 8px; line-height: 1.4; }
+.footer-app-note { font-size: 0.75rem; margin-top: 8px; }
 @media (max-width: 768px) {
   .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
 }

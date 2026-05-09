@@ -339,6 +339,24 @@ export function getAiReply (message: string): string {
       'Have a great day! 👋'
   }
 
+  // App download / install
+  if (matchAny(q, [/app|download|install|android|iphone|ipad|ios|mobile|home screen|pwa|play store|app store|google play|apple store/])) {
+    ctx.lastTopic = 'app'
+    return '**Install The Franks Standard app:**\n\n' +
+      '**Android (Chrome):**\n' +
+      '1. Open thefranksstandard.com in Chrome\n' +
+      '2. Tap the menu (three dots) at the top right\n' +
+      '3. Tap **"Install app"** or **"Add to Home screen"**\n' +
+      '4. The app icon appears on your home screen\n\n' +
+      '**iPhone / iPad (Safari):**\n' +
+      '1. Open thefranksstandard.com in Safari\n' +
+      '2. Tap the **Share** button (square with arrow)\n' +
+      '3. Scroll down and tap **"Add to Home Screen"**\n' +
+      '4. Tap **"Add"**\n\n' +
+      'The app works just like a native app — full screen, fast, no app store needed. ' +
+      'You can also scroll to the bottom of the homepage to find the install button.'
+  }
+
   // Catch-all with intelligent follow-up
   ctx.lastTopic = 'unknown'
   return 'I want to make sure I help you with the right thing. Could you tell me more about what you need?\n\n' +
