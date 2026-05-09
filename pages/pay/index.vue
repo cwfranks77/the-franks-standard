@@ -3,9 +3,13 @@
     <div class="pay-hero">
       <h1>Pay &amp; fees</h1>
       <p class="lede text-muted">
-        Checkouts are handled by <strong>Stripe</strong> (industry standard). You create <strong>Payment Links</strong> in your Stripe Dashboard, put the URLs in
-        <code>.env</code> as the variables below, then run <code>npm run generate</code> and deploy. No server is required for this pattern on GitHub Pages.
+        All payments are handled by <strong>Stripe</strong> — the same payment processor used by Shopify, Amazon, and millions of businesses.
+        Your funds are collected securely and deposited to The Franks Standard operating account. Seller payouts go through Stripe Connect.
       </p>
+      <div class="pay-quick-links">
+        <NuxtLink to="/pricing" class="btn btn-outline btn-sm">See pricing plans</NuxtLink>
+        <NuxtLink to="/launch-offer" class="btn btn-outline btn-sm">Launch offer (new sellers)</NuxtLink>
+      </div>
     </div>
 
     <div v-if="isOwner" class="pay-owner-banner">
@@ -97,6 +101,7 @@ const items = computed(() => [
 .pay-page { padding: 2.5rem 0 3.5rem; }
 .pay-hero { max-width: 700px; margin-bottom: 2rem; }
 .pay-hero h1 { font-size: 1.85rem; margin-bottom: 0.5rem; }
+.pay-quick-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .lede { font-size: 1.02rem; line-height: 1.7; }
 .lede strong { color: var(--stone-200); }
 .lede code { color: var(--gold-light); font-size: 0.85em; }

@@ -33,7 +33,7 @@
           <NuxtLink to="/video" class="nav-link" @click="closeAllNav">Video</NuxtLink>
           <NuxtLink to="/browse" class="nav-link" @click="closeAllNav">Browse</NuxtLink>
           <NuxtLink to="/sellers" class="nav-link" @click="closeAllNav">For sellers</NuxtLink>
-          <NuxtLink to="/pay" class="nav-link nav-highlight" @click="closeAllNav">Pay &amp; fees</NuxtLink>
+          <NuxtLink to="/pricing" class="nav-link nav-highlight" @click="closeAllNav">Pricing</NuxtLink>
           <NuxtLink to="/support" class="nav-link" @click="closeAllNav">Support</NuxtLink>
           <div
             class="nav-more"
@@ -53,6 +53,9 @@
             <div v-show="moreOpen" class="nav-more-panel" @click.stop>
               <NuxtLink to="/categories" class="nav-drop-link" @click="closeAllNav">Categories A to Z</NuxtLink>
               <NuxtLink to="/how-it-works" class="nav-drop-link" @click="closeAllNav">How it works</NuxtLink>
+              <NuxtLink to="/pricing" class="nav-drop-link" @click="closeAllNav">Pricing</NuxtLink>
+              <NuxtLink to="/launch-offer" class="nav-drop-link" @click="closeAllNav">Launch offer (new sellers)</NuxtLink>
+              <NuxtLink to="/store-builder" class="nav-drop-link" @click="closeAllNav">AI Store Builder</NuxtLink>
               <NuxtLink to="/about" class="nav-drop-link" @click="closeAllNav">Our story and mission</NuxtLink>
               <NuxtLink to="/support" class="nav-drop-link" @click="closeAllNav">Support and tech</NuxtLink>
               <NuxtLink to="/contact" class="nav-drop-link" @click="closeAllNav">Get in touch</NuxtLink>
@@ -102,18 +105,19 @@
           </div>
           <div class="footer-col">
             <h4>Marketplace</h4>
-            <NuxtLink to="/video">Video calls</NuxtLink>
             <NuxtLink to="/browse">Browse All</NuxtLink>
-            <NuxtLink to="/sellers">For stores &amp; sellers</NuxtLink>
             <NuxtLink to="/sell">Sell an Item</NuxtLink>
             <NuxtLink to="/categories">Categories</NuxtLink>
+            <NuxtLink to="/pricing">Pricing</NuxtLink>
+            <NuxtLink to="/video">Video Calls</NuxtLink>
           </div>
           <div class="footer-col">
-            <h4>Company</h4>
+            <h4>Sellers</h4>
+            <NuxtLink to="/sellers">For Stores &amp; Sellers</NuxtLink>
+            <NuxtLink to="/store-builder">AI Store Builder</NuxtLink>
+            <NuxtLink to="/launch-offer">Launch Offer</NuxtLink>
             <NuxtLink to="/how-it-works">How It Works</NuxtLink>
-            <NuxtLink to="/about">About Us</NuxtLink>
             <NuxtLink to="/support">Support</NuxtLink>
-            <NuxtLink to="/contact">Contact</NuxtLink>
           </div>
           <div class="footer-col">
             <h4>Legal</h4>

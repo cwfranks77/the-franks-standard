@@ -15,8 +15,8 @@
             for fraud. This is the collector economy, not the endless scroll.
           </p>
           <div class="hero-actions">
-            <NuxtLink to="/auth/register" class="btn btn-primary btn-lg">Start free</NuxtLink>
-            <NuxtLink to="/compare" class="btn btn-outline btn-lg">The Standard vs the big apps</NuxtLink>
+            <NuxtLink to="/auth/register" class="btn btn-primary btn-lg">Start free — 10 listings on us</NuxtLink>
+            <NuxtLink to="/pricing" class="btn btn-outline btn-lg">See pricing (5% vs 13%)</NuxtLink>
             <NuxtLink to="/browse" class="btn btn-dark btn-lg">Hit the floor</NuxtLink>
           </div>
           <div class="hero-avatars" aria-label="Product examples">

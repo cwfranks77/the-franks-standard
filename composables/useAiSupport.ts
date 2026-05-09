@@ -85,6 +85,29 @@ export function getAiReply (message: string): string {
       'Dropship fees are the same as direct sale fees.'
   }
 
+  // Store builder / AI tools
+  if (matchAny(q, [/store builder|ai builder|design.*store|set up.*store|build.*store|create.*store|store setup|ai help.*sell/])) {
+    ctx.lastTopic = 'storebuilder'
+    return '**AI Store Builder:**\n\n' +
+      'Our AI Store Builder helps you get set up in minutes:\n\n' +
+      '1. Go to **AI Store Builder** in the Explore menu\n' +
+      '2. Tell us your store name, what you sell, and your style (direct or dropship)\n' +
+      '3. Click "Build my store with AI"\n' +
+      '4. Get your store bio, listing descriptions, pricing strategy, and launch checklist\n\n' +
+      'It\'s free for all sellers. Go to **AI Store Builder** in the menu to try it now!'
+  }
+
+  // Launch offer / promotion
+  if (matchAny(q, [/launch offer|promo|promotion|discount|deal|special|new seller|first.*free|referr|invite|bonus/])) {
+    ctx.lastTopic = 'promo'
+    return '**New Seller Launch Offer:**\n\n' +
+      '• **10 free listings** — no card needed\n' +
+      '• **3% transaction fee** for first 90 days (then 5%)\n' +
+      '• **Free AI Store Builder** to design your shop\n' +
+      '• **Referral bonus** — invite a seller, both get 1 month Pro free\n\n' +
+      'Go to **Launch Offer** in the Explore menu for full details, or create your free account to get started.'
+  }
+
   // Fees / pricing / cost
   if (matchAny(q, [/fee|fees|cost|price|charge|how much|pricing|commission|percentage|listing fee|seller fee|pro seller/])) {
     ctx.lastTopic = 'fees'
