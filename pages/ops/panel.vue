@@ -56,7 +56,38 @@
             <li><NuxtLink to="/support">Support</NuxtLink></li>
             <li><NuxtLink to="/compare">Compare to eBay / Amazon</NuxtLink></li>
             <li><NuxtLink to="/contact">Contact</NuxtLink></li>
+            <li><NuxtLink to="/ops/ads"><strong>Social Media Ads</strong></NuxtLink></li>
           </ul>
+        </section>
+
+        <section class="card wide coa-monitor-card">
+          <div class="coa-monitor-header">
+            <h2>COA Enforcement Monitor</h2>
+            <button type="button" class="btn btn-primary btn-sm" @click="runCoaScan" :disabled="coaChecking">
+              {{ coaChecking ? 'Scanning...' : 'Scan all listings now' }}
+            </button>
+          </div>
+          <p class="small text-muted">Detects any published listing missing a valid COA or unsigned guarantee. You get alerted the minute something slips through.</p>
+          <p v-if="coaLastCheck" class="small text-muted" style="margin-top: 6px;">Last scan: {{ coaLastCheck }}</p>
+
+          <div v-if="coaViolations.length === 0 && coaLastCheck" class="coa-all-clear">
+            <span class="coa-clear-icon">✅</span>
+            <p><strong>All clear.</strong> Every published listing has a valid COA or signed guarantee.</p>
+          </div>
+
+          <div v-if="coaViolations.length > 0" class="coa-violations">
+            <p class="coa-alert-count">⚠️ {{ coaViolations.length }} listing{{ coaViolations.length === 1 ? '' : 's' }} with COA issues:</p>
+            <div v-for="v in coaViolations" :key="v.id" class="coa-violation-row">
+              <div class="coa-v-info">
+                <p class="coa-v-title">{{ v.title }}</p>
+                <p class="coa-v-meta text-muted">{{ v.category }} — {{ new Date(v.createdAt).toLocaleDateString() }}</p>
+              </div>
+              <div class="coa-v-problems">
+                <span v-for="p in v.problems" :key="p" class="coa-v-tag">{{ p }}</span>
+              </div>
+              <NuxtLink :to="`/listing/${v.id}`" class="btn btn-outline btn-sm">View</NuxtLink>
+            </div>
+          </div>
         </section>
 
         <section class="card">
@@ -158,6 +189,9 @@ definePageMeta({ layout: 'default', middleware: 'ops-auth' })
 
 const router = useRouter()
 const { revoke } = useOpsSession()
+const { violations: coaViolations, lastCheck: coaLastCheck, checking: coaChecking, scan: runCoaScan } = useCoaMonitor()
+
+onMounted(() => { runCoaScan() })
 
 const copied = ref(false)
 let copiedTimer = null
@@ -257,6 +291,30 @@ function flashCopied () {
 .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--stone-500); }
 .area { min-height: 72px; resize: vertical; }
 .copied { font-size: 0.85rem; color: var(--trust-green, #2ecc71); margin-top: 10px; }
+.coa-monitor-card { border-color: rgba(255, 77, 142, 0.25); }
+.coa-monitor-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+.coa-monitor-header h2 { margin: 0; }
+.coa-all-clear {
+  display: flex; align-items: center; gap: 10px; margin-top: 14px; padding: 14px;
+  background: rgba(16, 255, 176, 0.06); border: 1px solid rgba(16, 255, 176, 0.2); border-radius: var(--radius, 8px);
+}
+.coa-clear-icon { font-size: 1.4rem; }
+.coa-all-clear p { margin: 0; font-size: 0.9rem; color: var(--trust-green); }
+.coa-violations { margin-top: 14px; }
+.coa-alert-count { font-weight: 700; color: var(--alert-red); font-size: 0.95rem; margin-bottom: 10px; }
+.coa-violation-row {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 12px; margin-bottom: 8px;
+  background: rgba(255, 77, 106, 0.06); border: 1px solid rgba(255, 77, 106, 0.2); border-radius: var(--radius, 8px);
+}
+.coa-v-info { flex: 1; min-width: 150px; }
+.coa-v-title { font-weight: 600; font-size: 0.9rem; color: var(--stone-100); margin: 0; }
+.coa-v-meta { font-size: 0.78rem; margin: 2px 0 0; }
+.coa-v-problems { display: flex; flex-wrap: wrap; gap: 4px; }
+.coa-v-tag {
+  padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 600;
+  background: rgba(255, 77, 106, 0.15); color: var(--alert-red); white-space: nowrap;
+}
 .free-access-banner {
   margin-bottom: 24px; padding: 28px 24px;
   border: 2px solid rgba(0, 245, 160, 0.45);
