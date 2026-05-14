@@ -2,18 +2,21 @@
   <div class="auth-page">
     <div class="auth-card">
       <img src="/franks-pavilion.png" alt="" class="auth-logo" role="presentation" />
+      <template v-if="registeredPending">
+        <h1>Check your inbox</h1>
+        <p class="text-muted">
+          We sent a confirmation link to <strong>{{ email }}</strong>. Open it on this device to finish setting up your account.
+        </p>
+        <p class="text-muted fine">Did not get it? Check spam, then try signing in — you can request another email from there.</p>
+        <NuxtLink to="/auth/login" class="btn btn-primary mt-2" style="width: 100%;">Go to sign in</NuxtLink>
+      </template>
+      <template v-else>
       <h1>Join The Franks Standard</h1>
       <p class="text-muted">Create your free account to buy and sell</p>
 
-      <div v-if="showConfirmNotice" class="confirm-notice">
-        <p class="confirm-icon">✉️</p>
-        <h2>Check your email</h2>
-        <p>We sent a confirmation link from <strong>The Franks Standard</strong> to <strong>{{ email }}</strong>.</p>
-        <p class="text-muted">Click the link in the email to activate your account, then sign in below.</p>
-        <NuxtLink to="/auth/login" class="btn btn-primary mt-2" style="width: 100%;">Go to Sign In</NuxtLink>
-      </div>
+      <p v-if="formError" class="form-err" role="alert">{{ formError }}</p>
 
-      <form v-else @submit.prevent="handleRegister" class="mt-3">
+      <form @submit.prevent="handleRegister" class="mt-3">
         <div class="form-group">
           <label class="label">Full Name</label>
           <input class="input" v-model="fullName" placeholder="Charles Franks" required />
@@ -48,29 +51,34 @@
       <p class="auth-footer text-muted mt-3">
         Already have an account? <NuxtLink to="/auth/login">Sign In</NuxtLink>
       </p>
+      </template>
     </div>
   </div>
 </template>
 
 <script setup>
+const config = useRuntimeConfig()
+
 const fullName = ref('')
 const email = ref('')
 const password = ref('')
 const accountType = ref('')
 const agreeTerms = ref(false)
 const loading = ref(false)
-const showConfirmNotice = ref(false)
+const formError = ref('')
+const registeredPending = ref(false)
 
 async function handleRegister() {
+  formError.value = ''
   loading.value = true
   try {
     const supabase = useSupabaseClient()
-    const siteUrl = useRuntimeConfig().public.siteUrl || window.location.origin
+    const site = String(config.public?.siteUrl || '').replace(/\/$/, '') || 'https://thefranksstandard.com'
     const { data, error } = await supabase.auth.signUp({
       email: email.value,
       password: password.value,
       options: {
-        emailRedirectTo: `${siteUrl}/auth/login?confirmed=1`,
+        emailRedirectTo: `${site}/auth/verify`,
         data: {
           full_name: fullName.value,
           account_type: accountType.value,
@@ -81,7 +89,7 @@ async function handleRegister() {
       throw error
     }
     if (data.user && !data.session) {
-      showConfirmNotice.value = true
+      registeredPending.value = true
       return
     }
     if (accountType.value === 'seller') {
@@ -90,7 +98,7 @@ async function handleRegister() {
       await navigateTo('/dashboard')
     }
   } catch (err) {
-    alert(err?.message || 'Registration failed')
+    formError.value = err?.message || 'Registration failed. Please try again.'
   } finally {
     loading.value = false
   }
@@ -109,10 +117,18 @@ async function handleRegister() {
   width: 100%;
   max-width: 420px;
   padding: 40px;
-  background: var(--stone-900);
-  border: 1px solid var(--stone-800);
+  background: #fff;
+  border: 1px solid var(--line);
   border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
   text-align: center;
+}
+.fine { font-size: 0.88rem; margin-top: 16px; }
+.form-err {
+  color: var(--rose);
+  font-size: 0.9rem;
+  margin-top: 8px;
+  text-align: left;
 }
 .auth-logo { max-width: 220px; width: 100%; height: auto; max-height: 100px; object-fit: contain; margin-bottom: 20px; border-radius: 6px; }
 .auth-card h1 { font-size: 1.5rem; margin-bottom: 4px; }
@@ -122,16 +138,10 @@ async function handleRegister() {
   gap: 8px;
   align-items: flex-start;
   font-size: 0.85rem;
-  color: var(--stone-400);
+  color: var(--ink-3);
   cursor: pointer;
   text-align: left;
   margin-bottom: 8px;
 }
 .terms-check input { margin-top: 3px; accent-color: var(--gold); }
-.confirm-notice {
-  text-align: center; padding: 20px 0;
-}
-.confirm-notice h2 { font-size: 1.3rem; margin: 12px 0 8px; color: var(--gold); }
-.confirm-notice p { font-size: 0.92rem; line-height: 1.6; color: var(--stone-200); }
-.confirm-icon { font-size: 3rem; margin-bottom: 4px; }
 </style>

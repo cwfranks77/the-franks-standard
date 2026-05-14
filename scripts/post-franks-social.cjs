@@ -2,8 +2,9 @@
  * Post The Franks Standard to Telegram, Facebook, X.
  * Reuse the same TELEGRAM_*, FACEBOOK_*, TWITTER_* (or X_*) variables as token/scripts/post-social.js for ZFUEL if you want one bot and apps for both brands.
  *
- *   cd the-franks-standard-site
- *   node scripts/post-franks-social.cjs
+ *   cd the-franks-standard
+ *   npm run post:social
+ *   # or: node scripts/post-franks-social.cjs [--telegram|--facebook|--x]
  *
  * Requires: npm i axios form-data dotenv
  */
