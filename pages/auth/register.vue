@@ -38,7 +38,8 @@
           <select class="select" v-model="accountType" required>
             <option value="">Select account type</option>
             <option value="buyer">Buy items</option>
-            <option value="seller">Buy & Sell items</option>
+            <option value="sell">Sell items</option>
+            <option value="both">Buy &amp; sell items</option>
           </select>
         </div>
 
@@ -61,6 +62,11 @@
 </template>
 
 <script setup>
+function postRegisterPath (type) {
+  if (type === 'sell' || type === 'seller') return '/sell'
+  return '/dashboard'
+}
+
 function authSiteUrl () {
   if (import.meta.client && typeof window !== 'undefined') {
     const { hostname, protocol, host } = window.location
@@ -113,19 +119,7 @@ async function handleRegister() {
       }
       return
     }
-    if (data.user && data.session) {
-      if (accountType.value === 'seller') {
-        await navigateTo('/sellers')
-      } else {
-        await navigateTo('/dashboard')
-      }
-      return
-    }
-    if (accountType.value === 'seller') {
-      await navigateTo('/sellers')
-    } else {
-      await navigateTo('/dashboard')
-    }
+    await navigateTo(postRegisterPath(accountType.value))
   } catch (err) {
     const msg = err?.message || ''
     if (/already registered|already been registered|user already exists/i.test(msg)) {
