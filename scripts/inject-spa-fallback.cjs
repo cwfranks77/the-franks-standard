@@ -17,12 +17,16 @@ const PHONE_DISPLAY = process.env.NUXT_PUBLIC_CUSTOMER_SERVICE_PHONE || '(877) 8
 const PHONE_TEL = '+1' + PHONE_DISPLAY.replace(/\D+/g, '').replace(/^1/, '')
 const SUPPORT_EMAIL = 'info@thefranksstandard.com'
 
-// Auto-noindex: only set noindex when the build is explicitly flagged as a
-// non-canonical mirror via NUXT_NOINDEX=1. We do NOT auto-detect by host or
-// CI vendor because thefranksstandard.com is actually served from GitHub
-// Pages (DNS points to GH Pages), so auto-noindexing the GH Pages build
-// would noindex the real canonical site.
-const IS_NOINDEX_BUILD = String(process.env.NUXT_NOINDEX || '').trim() === '1'
+// Auto-noindex: set noindex when this build is NOT serving the canonical
+// host. Vercel always sets VERCEL_URL to the actual deploy host (like
+// thefranksstandard-site-abc.vercel.app). If that doesn't match our
+// SITE_URL host, this build is a duplicate mirror — tell crawlers to ignore.
+// GitHub Pages builds (the real canonical) do not set VERCEL_URL, so they
+// stay indexable. NUXT_NOINDEX=1 is an explicit manual override.
+const SITE_HOST = SITE_URL.replace(/^https?:\/\//, '').replace(/\/.*$/, '').toLowerCase()
+const VERCEL_URL_HOST = String(process.env.VERCEL_URL || '').toLowerCase().replace(/\/.*$/, '')
+const IS_NONCANONICAL_VERCEL = !!VERCEL_URL_HOST && VERCEL_URL_HOST !== SITE_HOST
+const IS_NOINDEX_BUILD = String(process.env.NUXT_NOINDEX || '').trim() === '1' || IS_NONCANONICAL_VERCEL
 
 const ROOT = path.join(__dirname, '..', '.output', 'public')
 const NUXT_EMPTY = '<div id="__nuxt"></div>'
@@ -222,6 +226,8 @@ if (!fs.existsSync(ROOT)) {
   process.exit(1)
 }
 
-console.log('inject-spa-fallback: target =', IS_NOINDEX_BUILD ? 'noindex (NUXT_NOINDEX=1 set)' : 'canonical / indexable')
+console.log('inject-spa-fallback: target =', IS_NOINDEX_BUILD
+  ? `noindex (VERCEL_URL=${VERCEL_URL_HOST || 'n/a'} != ${SITE_HOST} or NUXT_NOINDEX=1)`
+  : 'canonical / indexable')
 walkHtml(ROOT)
 console.log('inject-spa-fallback: done')

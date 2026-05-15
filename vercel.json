@@ -3,11 +3,6 @@
   "installCommand": "npm ci",
   "buildCommand": "npm run build",
   "outputDirectory": ".output/public",
-  "build": {
-    "env": {
-      "NUXT_NOINDEX": "1"
-    }
-  },
   "redirects": [
     {
       "source": "/:path*",
