@@ -6,7 +6,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "nuxt generate && node scripts/inject-spa-fallback.cjs",
+    "build": "nuxt generate && node scripts/inject-spa-fallback.cjs && node scripts/finish-pwa.cjs",
     "dev": "nuxt dev",
     "generate": "npm run build",
     "preview": "nuxt preview",
