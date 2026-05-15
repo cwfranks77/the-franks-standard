@@ -227,7 +227,7 @@ if (!fs.existsSync(ROOT)) {
 }
 
 console.log('inject-spa-fallback: target =', IS_NOINDEX_BUILD
-  ? `noindex (VERCEL_URL=${VERCEL_URL_HOST || 'n/a'} != ${SITE_HOST} or NUXT_NOINDEX=1)`
+  ? `noindex (VERCEL=${process.env.VERCEL || ''} NUXT_NOINDEX=${process.env.NUXT_NOINDEX || ''})`
   : 'canonical / indexable')
 walkHtml(ROOT)
 console.log('inject-spa-fallback: done')
