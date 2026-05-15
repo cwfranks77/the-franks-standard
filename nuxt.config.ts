@@ -1,9 +1,20 @@
+import { createHash } from 'node:crypto'
+
 const rawSite = process.env.NUXT_PUBLIC_SITE_URL
 const siteUrl = (rawSite && String(rawSite).trim())
   ? String(rawSite).replace(/\/$/, '')
   : 'https://thefranksstandard.com'
 const rawOg = process.env.NUXT_PUBLIC_OG_IMAGE
 const ogImage = (rawOg && String(rawOg).trim()) ? String(rawOg).trim() : `${siteUrl}/franks-pavilion.png`
+
+// Operator unlock: hash the phrase at BUILD time on the server so the plaintext
+// never ships to the browser. Backward-compatible: accepts either
+// NUXT_PUBLIC_OPS_ACCESS_KEY_HASH (preferred) or the legacy
+// NUXT_PUBLIC_OPS_ACCESS_KEY (plaintext, hashed here before shipping).
+const opsKeyPlain = String(process.env.NUXT_PUBLIC_OPS_ACCESS_KEY || '').trim()
+const opsKeyHashFromEnv = String(process.env.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH || '').trim().toLowerCase()
+const opsAccessKeyHash = opsKeyHashFromEnv
+  || (opsKeyPlain ? createHash('sha256').update(opsKeyPlain).digest('hex') : '')
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
@@ -15,11 +26,12 @@ export default defineNuxtConfig({
     preset: process.env.VERCEL ? 'static' : 'github-pages',
   },
 
-  // Operator unlock phrase for /ops (build-time; see the-franks-standard-continuity/OPS-ACCESS.md)
+  // Operator unlock phrase for /ops — only the SHA-256 hash ships to the browser.
+  // See the-franks-standard-continuity/OPS-ACCESS.md and scripts/hash-ops-key.cjs.
   runtimeConfig: {
     public: {
       siteUrl: siteUrl,
-      opsAccessKey: process.env.NUXT_PUBLIC_OPS_ACCESS_KEY || '',
+      opsAccessKeyHash,
       payListingFeeUrl: process.env.NUXT_PUBLIC_PAY_LISTING_FEE_URL || 'https://buy.stripe.com/5kQfZa78O7EL8bAcqwbII09',
       payProSellerUrl: process.env.NUXT_PUBLIC_PAY_PRO_SELLER_URL || 'https://buy.stripe.com/5kQfZaeBgaQX0J8duAbII0a',
       payOrderDepositUrl: process.env.NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL || 'https://buy.stripe.com/cNiaEQeBg1gnezY4Y4bII0b',
@@ -102,7 +114,8 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/png', href: '/franks-pavilion.png' },
         { rel: 'apple-touch-icon', href: '/franks-pavilion.png' },
         { rel: 'manifest', href: '/manifest.webmanifest' },
-        { rel: 'canonical', href: siteUrl },
+        // NOTE: per-page canonical URLs are injected by scripts/inject-spa-fallback.cjs
+        // at build time so each route advertises itself (not the homepage) as canonical.
         { rel: 'preconnect', href: 'https://images.unsplash.com' },
         { rel: 'preconnect', href: 'https://meet.jit.si' },
         { rel: 'preconnect', href: 'https://js.stripe.com' },

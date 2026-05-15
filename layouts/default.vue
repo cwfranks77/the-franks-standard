@@ -236,7 +236,7 @@ const opSubmitting = ref(false)
 let opKnockClicks = 0
 let opKnockTimer = null
 
-const keyConfigured = computed(() => String(config.public?.opsAccessKey || '').length > 0)
+const keyConfigured = computed(() => String((config.public as any)?.opsAccessKeyHash || '').length > 0)
 const isDev = computed(() => import.meta.dev)
 
 function onPavilionImgError (e) {
@@ -310,19 +310,31 @@ function closeOpModal () {
   opError.value = ''
 }
 
-function submitOpModal () {
+async function sha256Hex (input: string): Promise<string> {
+  const bytes = new TextEncoder().encode(input)
+  const digest = await crypto.subtle.digest('SHA-256', bytes)
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
+}
+
+async function submitOpModal () {
   opError.value = ''
-  const expected = String(config.public?.opsAccessKey || '')
-  if (!expected) { return }
+  const expectedHash = String((config.public as any)?.opsAccessKeyHash || '').toLowerCase()
+  if (!expectedHash) { return }
   opSubmitting.value = true
-  if (opPhrase.value.trim() === expected.trim()) {
-    grant()
-    closeOpModal()
-    router.push('/ops/panel')
-  } else {
-    opError.value = 'That does not match your build key. Check .env and redeploy, or the GitHub secret.'
+  try {
+    const typedHash = await sha256Hex(opPhrase.value.trim())
+    if (typedHash === expectedHash) {
+      grant()
+      closeOpModal()
+      router.push('/ops/panel')
+    } else {
+      opError.value = 'That does not match your build key. Check .env and redeploy, or the GitHub secret.'
+    }
+  } finally {
+    opSubmitting.value = false
   }
-  opSubmitting.value = false
 }
 </script>
 

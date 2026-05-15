@@ -24,7 +24,8 @@ const REQUIRED = [
   'NUXT_PUBLIC_SUPABASE_URL',
   'NUXT_PUBLIC_SUPABASE_KEY',
   'NUXT_PUBLIC_SITE_URL',
-  'NUXT_PUBLIC_OPS_ACCESS_KEY',
+  // Either the hash (preferred) or the legacy plaintext key satisfies this.
+  ['NUXT_PUBLIC_OPS_ACCESS_KEY_HASH', 'NUXT_PUBLIC_OPS_ACCESS_KEY'],
 ]
 
 function loadEnvFile (file) {
@@ -70,7 +71,10 @@ function addToVercel (name, value) {
 }
 
 const vars = mergeVars()
-const missing = REQUIRED.filter((k) => !vars[k])
+const missing = REQUIRED.filter((k) => {
+  if (Array.isArray(k)) return k.every((alt) => !vars[alt])
+  return !vars[k]
+}).map((k) => Array.isArray(k) ? k.join(' or ') : k)
 
 console.log('Vercel env push — project:', fs.existsSync(path.join(ROOT, '.vercel', 'project.json'))
   ? JSON.parse(fs.readFileSync(path.join(ROOT, '.vercel', 'project.json'), 'utf8')).projectName

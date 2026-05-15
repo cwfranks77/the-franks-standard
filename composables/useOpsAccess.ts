@@ -10,39 +10,50 @@ export const useOpsAccess = () => {
   const handleLogoClick = () => {
     logoClicks.value++
 
-    // Clear existing timeout
     if (clickTimeout) clearTimeout(clickTimeout)
 
-    // Reset after 5 seconds of inactivity
     clickTimeout = setTimeout(() => {
       resetClicks()
     }, 5000)
 
-    // Show modal on 5th click
     if (logoClicks.value === 5) {
       showModal.value = true
       resetClicks()
     }
   }
 
-  const verifyPassword = (password: string): boolean => {
+  // Hash the typed phrase in the browser and compare against the stored hash.
+  // The plaintext is never shipped to the client; only the SHA-256 hash is.
+  async function sha256Hex (input: string): Promise<string> {
+    const bytes = new TextEncoder().encode(input)
+    const digest = await crypto.subtle.digest('SHA-256', bytes)
+    return Array.from(new Uint8Array(digest))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('')
+  }
+
+  const verifyPassword = async (password: string): Promise<boolean> => {
     const config = useRuntimeConfig()
-    const correctPassword = config.public.opsAccessKey
-    const isValid = password === correctPassword && correctPassword !== ''
-    
-    if (isValid) {
+    const expectedHash = String((config.public as any).opsAccessKeyHash || '').toLowerCase()
+    if (!expectedHash) return false
+
+    const typedHash = await sha256Hex(String(password || '').trim())
+    const isValid = typedHash === expectedHash
+
+    if (isValid && typeof window !== 'undefined') {
       sessionStorage.setItem('ops_access_granted', 'true')
     }
-    
+
     return isValid
   }
 
   const hasOpsAccess = (): boolean => {
-    if (process.server) return false
+    if (typeof window === 'undefined') return false
     return sessionStorage.getItem('ops_access_granted') === 'true'
   }
 
   const clearOpsAccess = () => {
+    if (typeof window === 'undefined') return
     sessionStorage.removeItem('ops_access_granted')
   }
 
