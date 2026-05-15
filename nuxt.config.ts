@@ -15,6 +15,15 @@ const opsKeyPlain = String(process.env.NUXT_PUBLIC_OPS_ACCESS_KEY || '').trim()
 const opsKeyHashFromEnv = String(process.env.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH || '').trim().toLowerCase()
 const opsAccessKeyHash = opsKeyHashFromEnv
   || (opsKeyPlain ? createHash('sha256').update(opsKeyPlain).digest('hex') : '')
+// IMPORTANT: write the computed hash back into process.env so Nuxt's
+// automatic runtimeConfig override (NUXT_PUBLIC_OPS_ACCESS_KEY_HASH ->
+// runtimeConfig.public.opsAccessKeyHash) picks up our computed value
+// instead of the empty string a CI job might pass when the HASH secret
+// is not separately set. Without this, the GitHub Actions workflow's
+// `${{ secrets.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH }}` (which resolves to "")
+// would silently wipe out the hash we just computed from the plaintext.
+process.env.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH = opsAccessKeyHash
+console.log('[ops] opsAccessKeyHash length:', opsAccessKeyHash.length)
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
