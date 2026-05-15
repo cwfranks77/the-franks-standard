@@ -2,7 +2,6 @@
   <div class="dl-page">
     <div class="container narrow">
       <div class="dl-hero text-center">
-        <p class="dl-emoji">ðŸ“±</p>
         <h1>Install The Franks Standard</h1>
         <p class="text-muted lead">Add the app to your home screen or desktop â€” full screen, fast, no app store.</p>
 
@@ -35,7 +34,6 @@
 
       <div id="browser-install" class="dl-grid">
         <div class="dl-card">
-          <div class="dl-card-icon">ðŸ¤–</div>
           <h2>Android</h2>
           <p class="text-muted">Chrome or Edge.</p>
           <ol class="dl-steps">
@@ -47,7 +45,6 @@
         </div>
 
         <div class="dl-card">
-          <div class="dl-card-icon">ðŸŽ</div>
           <h2>iPhone &amp; iPad</h2>
           <p class="text-muted">Safari only.</p>
           <ol class="dl-steps">
@@ -58,7 +55,6 @@
         </div>
 
         <div class="dl-card">
-          <div class="dl-card-icon">ðŸ’»</div>
           <h2>Desktop</h2>
           <p class="text-muted">Chrome, Edge, or Brave.</p>
           <ol class="dl-steps">
@@ -105,7 +101,6 @@ async function onInstallClick () {
 .dl-page { padding: 48px 0 80px; }
 .narrow { max-width: 900px; margin: 0 auto; }
 .dl-hero { margin-bottom: 28px; }
-.dl-emoji { font-size: 3.5rem; margin-bottom: 8px; }
 h1 { font-size: 2rem; margin-bottom: 10px; }
 .lead { font-size: 1.05rem; max-width: 600px; margin: 0 auto 20px; }
 .dl-install-hero { margin-top: 8px; }
@@ -118,7 +113,6 @@ h1 { font-size: 2rem; margin-bottom: 10px; }
   padding: 28px 24px; border: 1px solid var(--stone-800); border-radius: var(--radius-lg);
   background: var(--stone-900); display: flex; flex-direction: column;
 }
-.dl-card-icon { font-size: 2.5rem; margin-bottom: 12px; }
 .dl-card h2 { font-size: 1.25rem; margin-bottom: 6px; }
 .dl-steps { margin: 16px 0; padding-left: 1.3rem; color: var(--stone-200); font-size: 0.9rem; line-height: 1.6; flex: 1; }
 .dl-steps li { margin-bottom: 8px; }
