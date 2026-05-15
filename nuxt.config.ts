@@ -58,7 +58,8 @@ export default defineNuxtConfig({
       globPatterns: ['**/*.{js,css,html,png,svg,ico,json,woff2,webmanifest}'],
     },
     client: {
-      installPrompt: true,
+      // Custom capture in plugins/pwa-capture.client.ts (vite-pwa hides prompt after dismiss in localStorage).
+      installPrompt: false,
       periodicSyncForUpdates: 3600,
     },
     devOptions: {

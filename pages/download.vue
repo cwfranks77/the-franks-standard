@@ -2,82 +2,76 @@
   <div class="dl-page">
     <div class="container narrow">
       <div class="dl-hero text-center">
-        <p class="dl-emoji">📱</p>
-        <h1>Download The Franks Standard</h1>
-        <p class="text-muted lead">Install the app on your phone or tablet. Works like a native app — full screen and fast. No app store needed.</p>
+        <p class="dl-emoji">ðŸ“±</p>
+        <h1>Install The Franks Standard</h1>
+        <p class="text-muted lead">Add the app to your home screen or desktop â€” full screen, fast, no app store.</p>
+
+        <div v-if="!isStandalone" class="dl-install-hero">
+          <button
+            v-if="!isIos"
+            type="button"
+            class="btn btn-primary btn-lg dl-install-main"
+            @click="onInstallClick"
+          >
+            {{ canInstall ? 'Install App' : 'Install App' }}
+          </button>
+          <button
+            v-else
+            type="button"
+            class="btn btn-primary btn-lg dl-install-main"
+            @click="iosHelpOpen = true"
+          >
+            Install on iPhone (Safari)
+          </button>
+          <p v-if="installMsg" class="dl-install-msg" role="alert">{{ installMsg }}</p>
+          <p v-else-if="!canInstall && !isIos && isChromium" class="dl-install-hint text-muted">
+            If the dialog does not open, use <strong>â‹® menu â†’ Install app</strong> or the install icon in the address bar below.
+          </p>
+        </div>
+        <p v-else class="text-muted">You are already using the installed app.</p>
       </div>
 
-      <AppInstallBanner open-help />
+      <AppInstallBanner />
 
-      <div class="dl-grid">
+      <div id="browser-install" class="dl-grid">
         <div class="dl-card">
-          <div class="dl-card-icon">🤖</div>
+          <div class="dl-card-icon">ðŸ¤–</div>
           <h2>Android</h2>
-          <p class="text-muted">Chrome or Edge on any Android phone or tablet.</p>
+          <p class="text-muted">Chrome or Edge.</p>
           <ol class="dl-steps">
             <li>Open <strong>thefranksstandard.com</strong> in Chrome</li>
-            <li>Tap the <strong>menu</strong> (⋮ three dots) at the top right</li>
-            <li>Tap <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong></li>
-            <li>Tap <strong>"Install"</strong> in the popup</li>
+            <li>Tap <strong>â‹®</strong> â†’ <strong>Install app</strong></li>
+            <li>Confirm <strong>Install</strong></li>
           </ol>
-          <button
-            v-if="canInstall"
-            type="button"
-            class="btn btn-primary btn-lg dl-btn"
-            @click="promptInstall"
-          >Install now</button>
-          <p v-else class="dl-note text-muted">Open this page on your Android phone to see the install button.</p>
+          <button v-if="!isIos && !isStandalone" type="button" class="btn btn-primary dl-btn" @click="onInstallClick">Install App</button>
         </div>
 
         <div class="dl-card">
-          <div class="dl-card-icon">🍎</div>
+          <div class="dl-card-icon">ðŸŽ</div>
           <h2>iPhone &amp; iPad</h2>
-          <p class="text-muted">Safari on any iPhone or iPad.</p>
+          <p class="text-muted">Safari only.</p>
           <ol class="dl-steps">
-            <li>Open <strong>thefranksstandard.com</strong> in <strong>Safari</strong> (not Chrome)</li>
-            <li>Tap the <strong>Share</strong> button <span class="share-icon">⬆</span> at the bottom</li>
-            <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
-            <li>Tap <strong>"Add"</strong> in the top right</li>
+            <li>Open in <strong>Safari</strong></li>
+            <li><strong>Share</strong> â†’ <strong>Add to Home Screen</strong></li>
+            <li>Tap <strong>Add</strong></li>
           </ol>
-          <p class="dl-note text-muted">iOS requires Safari for installing web apps. Chrome on iPhone cannot install apps.</p>
         </div>
 
         <div class="dl-card">
-          <div class="dl-card-icon">💻</div>
+          <div class="dl-card-icon">ðŸ’»</div>
           <h2>Desktop</h2>
-          <p class="text-muted">Chrome, Edge, or Brave on Windows, Mac, or Linux.</p>
+          <p class="text-muted">Chrome, Edge, or Brave.</p>
           <ol class="dl-steps">
-            <li>Open <strong>thefranksstandard.com</strong> in Chrome or Edge</li>
-            <li>Click the <strong>install icon</strong> in the address bar (or menu → "Install app")</li>
-            <li>Click <strong>"Install"</strong></li>
+            <li>Install icon in the address bar, or</li>
+            <li><strong>â‹®</strong> â†’ <strong>Install The Franks Standard</strong></li>
           </ol>
-          <button
-            v-if="canInstall"
-            type="button"
-            class="btn btn-primary btn-lg dl-btn"
-            @click="promptInstall"
-          >Install now</button>
+          <button v-if="!isIos && !isStandalone" type="button" class="btn btn-primary dl-btn" @click="onInstallClick">Install App</button>
         </div>
       </div>
 
-      <div class="dl-faq">
-        <h2 class="text-center">Frequently asked</h2>
-        <details class="faq-item">
-          <summary>Is this a real app?</summary>
-          <p>Yes. It is a Progressive Web App (PWA). It installs to your home screen and runs full-screen in Chrome or Safari — like a native app without the app store.</p>
-        </details>
-        <details class="faq-item">
-          <summary>Why not the App Store or Google Play?</summary>
-          <p>PWAs install instantly with no download wait, no app store approval delays, and no storage bloat. You always get the latest version automatically. We may add native apps later — see our <NuxtLink to="/roadmap">Roadmap</NuxtLink>.</p>
-        </details>
-        <details class="faq-item">
-          <summary>Will I get notifications?</summary>
-          <p>Push notifications are on our roadmap. Currently, you can check your dashboard and listings anytime by opening the app.</p>
-        </details>
-        <details class="faq-item">
-          <summary>Can I uninstall it?</summary>
-          <p>Yes, same as any app. On Android: long-press the icon → Uninstall. On iPhone: long-press → Remove App. On desktop: right-click → Uninstall.</p>
-        </details>
+      <div v-if="iosHelpOpen" class="dl-ios-help">
+        <p><strong>Safari:</strong> Share â†’ Add to Home Screen â†’ Add</p>
+        <button type="button" class="btn btn-outline btn-sm" @click="iosHelpOpen = false">Close</button>
       </div>
 
       <div class="dl-cta text-center">
@@ -89,21 +83,36 @@
 
 <script setup>
 useSeoMeta({
-  title: 'Download — The Franks Standard',
-  description: 'Install The Franks Standard app on Android, iPhone, iPad, or desktop. No app store needed.',
+  title: 'Install app â€” The Franks Standard',
+  description: 'Install The Franks Standard on Android, iPhone, iPad, or desktop.',
 })
 
-const { canInstall, promptInstall } = useAppInstall()
+const { canInstall, isIos, isChromium, isStandalone, promptInstall } = useAppInstall()
+const installMsg = ref('')
+const iosHelpOpen = ref(false)
+
+async function onInstallClick () {
+  installMsg.value = ''
+  const ok = await promptInstall()
+  if (!ok) {
+    installMsg.value = 'Use Chrome menu (â‹®) â†’ Install app, or the install icon in the address bar.'
+    document.getElementById('browser-install')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+}
 </script>
 
 <style scoped>
 .dl-page { padding: 48px 0 80px; }
 .narrow { max-width: 900px; margin: 0 auto; }
-.dl-hero { margin-bottom: 36px; }
+.dl-hero { margin-bottom: 28px; }
 .dl-emoji { font-size: 3.5rem; margin-bottom: 8px; }
 h1 { font-size: 2rem; margin-bottom: 10px; }
-.lead { font-size: 1.05rem; max-width: 600px; margin: 0 auto; }
-.dl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.lead { font-size: 1.05rem; max-width: 600px; margin: 0 auto 20px; }
+.dl-install-hero { margin-top: 8px; }
+.dl-install-main { min-width: 220px; padding: 14px 28px; font-size: 1.05rem; }
+.dl-install-msg, .dl-install-hint { margin-top: 12px; font-size: 0.9rem; max-width: 420px; margin-left: auto; margin-right: auto; }
+.dl-install-msg { color: var(--gold, #ffd84d); }
+.dl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 28px; }
 @media (max-width: 768px) { .dl-grid { grid-template-columns: 1fr; } }
 .dl-card {
   padding: 28px 24px; border: 1px solid var(--stone-800); border-radius: var(--radius-lg);
@@ -111,21 +120,12 @@ h1 { font-size: 2rem; margin-bottom: 10px; }
 }
 .dl-card-icon { font-size: 2.5rem; margin-bottom: 12px; }
 .dl-card h2 { font-size: 1.25rem; margin-bottom: 6px; }
-.dl-steps {
-  margin: 16px 0; padding-left: 1.3rem; color: var(--stone-200);
-  font-size: 0.9rem; line-height: 1.6; flex: 1;
-}
+.dl-steps { margin: 16px 0; padding-left: 1.3rem; color: var(--stone-200); font-size: 0.9rem; line-height: 1.6; flex: 1; }
 .dl-steps li { margin-bottom: 8px; }
 .dl-btn { width: 100%; margin-top: 12px; }
-.dl-note { font-size: 0.82rem; margin-top: 12px; line-height: 1.4; }
-.share-icon { display: inline-block; font-size: 1rem; vertical-align: middle; }
-.dl-faq { max-width: 640px; margin: 48px auto 0; }
-.dl-faq h2 { font-size: 1.3rem; margin-bottom: 20px; color: var(--gold); }
-.faq-item {
-  margin-bottom: 8px; padding: 14px 16px; border: 1px solid var(--stone-800);
-  border-radius: var(--radius); background: var(--stone-900);
+.dl-ios-help {
+  margin-top: 20px; padding: 16px; border-radius: var(--radius-lg);
+  background: var(--stone-900); border: 1px solid var(--stone-800); text-align: center;
 }
-.faq-item summary { cursor: pointer; font-weight: 600; color: var(--stone-100); font-size: 0.92rem; }
-.faq-item p { margin-top: 10px; font-size: 0.88rem; color: var(--stone-300); line-height: 1.6; }
 .dl-cta { margin-top: 40px; }
 </style>

@@ -27,9 +27,17 @@
           Install on iPhone
         </button>
         <button
-          v-else
+          v-else-if="isChromium"
           type="button"
           class="btn btn-primary btn-sm install-btn"
+          @click="doInstall"
+        >
+          Install App
+        </button>
+        <button
+          v-else
+          type="button"
+          class="btn btn-outline btn-sm install-btn"
           @click="showGenericHelp = !showGenericHelp"
         >
           {{ showGenericHelp ? 'Hide steps' : 'How to install' }}
@@ -62,7 +70,7 @@ const props = defineProps({
   openHelp: { type: Boolean, default: false },
 })
 
-const { canInstall, isIos, isStandalone, swReady, promptInstall } = useAppInstall()
+const { canInstall, isIos, isChromium, isStandalone, swReady, promptInstall } = useAppInstall()
 const showIosHelp = ref(false)
 const showGenericHelp = ref(props.openHelp)
 
