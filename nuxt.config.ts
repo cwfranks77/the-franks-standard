@@ -11,7 +11,8 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   ssr: false,
   nitro: {
-    preset: 'github-pages',
+    // Vercel static hosting: use generic static preset. GitHub Pages keeps github-pages (.nojekyll, etc.).
+    preset: process.env.VERCEL ? 'static' : 'github-pages',
   },
 
   // Operator unlock phrase for /ops (build-time; see the-franks-standard-continuity/OPS-ACCESS.md)

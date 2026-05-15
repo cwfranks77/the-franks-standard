@@ -51,7 +51,7 @@ jobs:
           NUXT_PUBLIC_PAY_DISPUTE_FEE_URL: ${{ secrets.NUXT_PUBLIC_PAY_DISPUTE_FEE_URL }}
           NUXT_PUBLIC_SITE_URL: ${{ secrets.NUXT_PUBLIC_SITE_URL }}
           NUXT_PUBLIC_OG_IMAGE: ${{ secrets.NUXT_PUBLIC_OG_IMAGE }}
-        run: npx nuxt generate && node scripts/inject-spa-fallback.cjs
+        run: npm run build
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

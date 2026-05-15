@@ -6,9 +6,9 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "nuxt build",
+    "build": "nuxt generate && node scripts/inject-spa-fallback.cjs",
     "dev": "nuxt dev",
-    "generate": "nuxt generate && node scripts/inject-spa-fallback.cjs",
+    "generate": "npm run build",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "post:social": "node scripts/post-franks-social.cjs",

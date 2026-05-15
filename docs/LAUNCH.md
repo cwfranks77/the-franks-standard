@@ -6,10 +6,9 @@
 
 ## Vercel (if The Franks Standard is linked there)
 
-This repo is a **client-only static site** (`ssr: false`, `nuxt generate`). The repo root **`vercel.json`** is set to:
+This repo is a **client-only static site** (`ssr: false`, `nuxt generate`). The repo root **`vercel.json`** uses **`npm run build`** (same as `npm run generate`) and publishes **`.output/public`**.
 
-- **Build:** `npm run generate` (includes the SPA static shell step)
-- **Output:** `.output/public` (not `.output` — that folder is for Node server builds and will confuse Vercel)
+On Vercel’s build servers **`VERCEL` is set**, so Nitro uses the **`static`** preset; GitHub Actions / local builds keep **`github-pages`** for static hosting quirks.
 
 **In the Vercel dashboard** for this project: **Settings → General →** set **Root Directory** to repo root if needed, and turn **off** any **Build / Output overrides** so **`vercel.json`** is used (`npm run generate` → `.output/public`). **Settings → Environment Variables → Production** — add the same **`NUXT_PUBLIC_*`** values as in GitHub Actions (Supabase URL/key, `NUXT_PUBLIC_SITE_URL`, Stripe links, ops key, phone if you use it). Redeploy.
 
