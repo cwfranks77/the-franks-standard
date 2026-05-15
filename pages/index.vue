@@ -75,6 +75,8 @@
 
     <ShowcaseReel />
 
+    <HomeOfferings />
+
     <section class="section">
       <div class="container">
         <h2 class="section-title text-center">The three pillars of The Standard</h2>
@@ -160,6 +162,8 @@
         <NuxtLink to="/auth/register" class="btn btn-primary btn-lg">Create your free account</NuxtLink>
       </div>
     </section>
+
+    <HomeContactHub />
 
     <section class="section section-sellers-cta">
       <div class="container text-center">
@@ -322,6 +326,14 @@ const categories = [
   filter: blur(50px);
   pointer-events: none;
   opacity: 0.85;
+  animation: aurora-drift 18s ease-in-out infinite alternate;
+}
+@keyframes aurora-drift {
+  0% { transform: rotate(0deg) scale(1); opacity: 0.75; }
+  100% { transform: rotate(8deg) scale(1.08); opacity: 0.95; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-aurora { animation: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .hero-aurora { opacity: 0.75; }
