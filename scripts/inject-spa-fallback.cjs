@@ -159,6 +159,7 @@ function fallbackForRoute (route) {
       <p class="fss-static-ribbon">Proof-first marketplace. <span>Live floor energy.</span></p>
       <h1 class="fss-static-h1"><span class="fss-s1">If it is here,</span> <span class="fss-s2">it is real.</span></h1>
       <p class="fss-static-sub">The authenticity-first collectibles and gear marketplace. Every listing backed by a Certificate of Authenticity or signed in-platform guarantee. The full app with gallery and motion loads next (JavaScript required).</p>
+      <p class="fss-static-sub"><strong>Founder is reachable:</strong> Charles Franks reads feedback personally &mdash; <a href="/open-door" style="color:#ffd84d;font-weight:600">Open Door Policy</a>.</p>
       ${contactBlock}`
       break
   }
