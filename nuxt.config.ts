@@ -68,6 +68,28 @@ export default defineNuxtConfig({
     workbox: {
       navigateFallback: '/index.html',
       globPatterns: ['**/*.{js,css,html,png,svg,ico,json,woff2,webmanifest}'],
+      // Force a newly built SW to take over immediately, so users do not
+      // get stuck on a stale cached bundle after a deploy. Without these
+      // two flags, the old SW keeps serving old JS to open tabs until
+      // every tab is closed -- which looks like "site shows new content
+      // for a second then reverts to the old version."
+      skipWaiting: true,
+      clientsClaim: true,
+      cleanupOutdatedCaches: true,
+      runtimeCaching: [
+        {
+          // HTML navigations: always try the network first so a fresh
+          // build is picked up immediately. Fall back to cache only if
+          // the user is offline.
+          urlPattern: ({ request }) => request.mode === 'navigate',
+          handler: 'NetworkFirst',
+          options: {
+            cacheName: 'fss-html',
+            networkTimeoutSeconds: 4,
+            expiration: { maxEntries: 24, maxAgeSeconds: 24 * 60 * 60 },
+          },
+        },
+      ],
     },
     client: {
       // Custom capture in plugins/pwa-capture.client.ts (vite-pwa hides prompt after dismiss in localStorage).
