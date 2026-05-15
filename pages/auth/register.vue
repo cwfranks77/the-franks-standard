@@ -7,7 +7,11 @@
         <p class="text-muted">
           We sent a confirmation link to <strong>{{ email }}</strong>. Open it on this device to finish setting up your account.
         </p>
-        <p class="text-muted fine">Did not get it? Check spam, then try signing in — you can request another email from there.</p>
+        <p class="text-muted fine">
+          Gmail: search for mail from <strong>Supabase</strong> or <strong>noreply</strong> in Spam and All Mail.
+          Still nothing after 10 minutes? Supabase must send through custom SMTP (or add your email to the org team) — see note below.
+        </p>
+        <p v-if="emailHint" class="form-err email-hint" role="status">{{ emailHint }}</p>
         <NuxtLink to="/auth/login" class="btn btn-primary mt-2" style="width: 100%;">Go to sign in</NuxtLink>
       </template>
       <template v-else>
@@ -77,6 +81,7 @@ const agreeTerms = ref(false)
 const loading = ref(false)
 const formError = ref('')
 const registeredPending = ref(false)
+const emailHint = ref('')
 
 async function handleRegister() {
   formError.value = ''
@@ -100,6 +105,12 @@ async function handleRegister() {
     }
     if (data.user && !data.session) {
       registeredPending.value = true
+      const confirmed = data.user.email_confirmed_at || data.user.confirmed_at
+      const identities = data.user.identities?.length ?? 0
+      if (!confirmed && identities === 0) {
+        emailHint.value =
+          'Supabase may not have sent mail yet. On the free default sender, only org team emails receive mail — set up SMTP in Supabase (Authentication → SMTP) or add your Gmail to the Supabase org team.'
+      }
       return
     }
     if (data.user && data.session) {
@@ -121,6 +132,9 @@ async function handleRegister() {
       formError.value = 'That email already has an account. Sign in below, or use Resend confirmation on the sign-in page.'
     } else if (/rate limit|too many requests|email.*limit/i.test(msg)) {
       formError.value = 'Too many emails sent. Wait about an hour, then use Sign in → Resend confirmation email.'
+    } else if (/not authorized|error sending confirmation/i.test(msg)) {
+      formError.value =
+        'Supabase cannot email this address until you set up custom SMTP (Authentication → SMTP) or add your Gmail to your Supabase organization team.'
     } else {
       formError.value = msg || 'Registration failed. Please try again.'
     }
@@ -169,4 +183,5 @@ async function handleRegister() {
   margin-bottom: 8px;
 }
 .terms-check input { margin-top: 3px; accent-color: var(--gold); }
+.email-hint { margin-top: 12px; line-height: 1.45; }
 </style>

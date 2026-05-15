@@ -83,7 +83,13 @@ async function resendConfirmation () {
     }
     resendOk.value = 'If an account exists for that email, we sent a new confirmation link. Check spam.'
   } catch (err) {
-    formError.value = err?.message || 'Could not resend. Try again in a minute.'
+    const msg = err?.message || ''
+    if (/not authorized|error sending confirmation/i.test(msg)) {
+      formError.value =
+        'Email not sent: set up custom SMTP in Supabase (Authentication → SMTP), or add this Gmail to your Supabase org team.'
+    } else {
+      formError.value = msg || 'Could not resend. Try again in a minute.'
+    }
   } finally {
     resendLoading.value = false
   }
