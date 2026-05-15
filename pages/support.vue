@@ -31,6 +31,13 @@
         <a href="mailto:info@thefranksstandard.com?subject=The%20Franks%20Standard%20support">info@thefranksstandard.com</a>
         (include order ID and photos for order issues).
       </p>
+      <p class="text-muted alias-note">
+        Department aliases are active and all forward into the same team inbox:
+        <a href="mailto:support@thefranksstandard.com">support@thefranksstandard.com</a>,
+        <a href="mailto:sales@thefranksstandard.com">sales@thefranksstandard.com</a>,
+        <a href="mailto:press@thefranksstandard.com">press@thefranksstandard.com</a>,
+        <a href="mailto:partnerships@thefranksstandard.com">partnerships@thefranksstandard.com</a>.
+      </p>
     </section>
 
     <div class="grid two">
@@ -123,6 +130,7 @@ useSeoMeta({
 }
 .voice-lane h2 { font-size: 1.2rem; margin-bottom: 12px; color: var(--gold); }
 .voice-lane p { line-height: 1.6; font-size: 0.95rem; }
+.alias-note { margin-top: 10px; font-size: 0.88rem; }
 .lane { padding: 22px 20px; }
 .lane h2 { font-size: 1.25rem; margin-bottom: 8px; color: var(--gold); }
 .checklist { margin: 14px 0 0; padding-left: 1.15rem; line-height: 1.55; color: var(--stone-200); }

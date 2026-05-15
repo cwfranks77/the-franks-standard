@@ -22,6 +22,9 @@
               <li>
                 <span class="hub-label">Email</span>
                 <a href="mailto:info@thefranksstandard.com" class="hub-value">info@thefranksstandard.com</a>
+                <span class="hub-note">
+                  Also accepts: support@, sales@, press@, partnerships@ (all forwarded to info@).
+                </span>
               </li>
               <li>
                 <span class="hub-label">Live help</span>

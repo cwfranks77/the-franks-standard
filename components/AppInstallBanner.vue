@@ -82,6 +82,11 @@ const installMsg = ref('')
 
 async function doInstall () {
   installMsg.value = ''
+  if (!canInstall.value && isChromium.value) {
+    showGenericHelp.value = true
+    installMsg.value = 'Use Chrome menu (three dots) then Install app.'
+    return
+  }
   const ok = await promptInstall()
   if (!ok) {
     installMsg.value = 'If nothing opened, use Chrome menu (three dots) then Install app.'

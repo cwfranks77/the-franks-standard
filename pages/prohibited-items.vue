@@ -37,7 +37,12 @@
         <p>Sellers are responsible for ensuring their items comply with all applicable federal, state, and local laws. Listing a prohibited item will result in immediate removal and potential permanent ban from the platform.</p>
 
         <h2>Reporting Violations</h2>
-        <p>If you see a listing that violates this policy, please contact us at <a href="mailto:support@thefranksstandard.com">support@thefranksstandard.com</a>.</p>
+        <p>
+          If you see a listing that violates this policy, contact
+          <a href="mailto:support@thefranksstandard.com">support@thefranksstandard.com</a>
+          or <a href="mailto:info@thefranksstandard.com">info@thefranksstandard.com</a>.
+          Both route to the same review inbox.
+        </p>
       </div>
     </div>
   </div>

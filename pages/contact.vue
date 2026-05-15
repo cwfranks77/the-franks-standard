@@ -28,6 +28,15 @@
         <p class="text-muted small">
           For order issues, include your order ID and photos. Reply from the same thread so we can match your case.
         </p>
+        <div class="alias-wrap">
+          <p class="label alias-label">Department inboxes (all route to info@)</p>
+          <p class="alias-line">
+            <a href="mailto:support@thefranksstandard.com">support@thefranksstandard.com</a> ·
+            <a href="mailto:sales@thefranksstandard.com">sales@thefranksstandard.com</a> ·
+            <a href="mailto:press@thefranksstandard.com">press@thefranksstandard.com</a> ·
+            <a href="mailto:partnerships@thefranksstandard.com">partnerships@thefranksstandard.com</a>
+          </p>
+        </div>
       </div>
       <hr class="contact-divider" />
       <div class="contact-method">
@@ -72,5 +81,10 @@ useSeoMeta({
 .contact-method { padding: 4px 0; }
 .contact-divider { border: none; border-top: 1px solid var(--stone-800); margin: 16px 0; }
 .small { font-size: 0.9rem; line-height: 1.5; }
+.alias-wrap { margin-top: 12px; }
+.alias-label { color: var(--stone-400); margin-bottom: 4px; }
+.alias-line { font-size: 0.9rem; line-height: 1.6; }
+.alias-line a { color: var(--stone-100); }
+.alias-line a:hover { color: var(--gold); }
 .mt-3 { margin-top: 1rem; }
 </style>

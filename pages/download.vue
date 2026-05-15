@@ -3,7 +3,7 @@
     <div class="container narrow">
       <div class="dl-hero text-center">
         <h1>Install The Franks Standard</h1>
-        <p class="text-muted lead">Add the app to your home screen or desktop â€” full screen, fast, no app store.</p>
+        <p class="text-muted lead">Add the app to your home screen or desktop - full screen, fast, no app store.</p>
 
         <div v-if="!isStandalone" class="dl-install-hero">
           <button
@@ -12,7 +12,7 @@
             class="btn btn-primary btn-lg dl-install-main"
             @click="onInstallClick"
           >
-            {{ canInstall ? 'Install App' : 'Install App' }}
+            {{ canInstall ? 'Install App' : 'Show Install Steps' }}
           </button>
           <button
             v-else
@@ -24,7 +24,7 @@
           </button>
           <p v-if="installMsg" class="dl-install-msg" role="alert">{{ installMsg }}</p>
           <p v-else-if="!canInstall && !isIos && isChromium" class="dl-install-hint text-muted">
-            If the dialog does not open, use <strong>â‹® menu â†’ Install app</strong> or the install icon in the address bar below.
+            If the dialog does not open, use <strong>Chrome menu (three dots) -> Install app</strong> or the install icon in the address bar below.
           </p>
         </div>
         <p v-else class="text-muted">You are already using the installed app.</p>
@@ -38,7 +38,7 @@
           <p class="text-muted">Chrome or Edge.</p>
           <ol class="dl-steps">
             <li>Open <strong>thefranksstandard.com</strong> in Chrome</li>
-            <li>Tap <strong>â‹®</strong> â†’ <strong>Install app</strong></li>
+            <li>Tap <strong>three-dot menu</strong> -> <strong>Install app</strong></li>
             <li>Confirm <strong>Install</strong></li>
           </ol>
           <button v-if="!isIos && !isStandalone" type="button" class="btn btn-primary dl-btn" @click="onInstallClick">Install App</button>
@@ -49,7 +49,7 @@
           <p class="text-muted">Safari only.</p>
           <ol class="dl-steps">
             <li>Open in <strong>Safari</strong></li>
-            <li><strong>Share</strong> â†’ <strong>Add to Home Screen</strong></li>
+            <li><strong>Share</strong> -> <strong>Add to Home Screen</strong></li>
             <li>Tap <strong>Add</strong></li>
           </ol>
         </div>
@@ -59,14 +59,14 @@
           <p class="text-muted">Chrome, Edge, or Brave.</p>
           <ol class="dl-steps">
             <li>Install icon in the address bar, or</li>
-            <li><strong>â‹®</strong> â†’ <strong>Install The Franks Standard</strong></li>
+            <li><strong>three-dot menu</strong> -> <strong>Install The Franks Standard</strong></li>
           </ol>
           <button v-if="!isIos && !isStandalone" type="button" class="btn btn-primary dl-btn" @click="onInstallClick">Install App</button>
         </div>
       </div>
 
       <div v-if="iosHelpOpen" class="dl-ios-help">
-        <p><strong>Safari:</strong> Share â†’ Add to Home Screen â†’ Add</p>
+        <p><strong>Safari:</strong> Share -> Add to Home Screen -> Add</p>
         <button type="button" class="btn btn-outline btn-sm" @click="iosHelpOpen = false">Close</button>
       </div>
 
@@ -79,7 +79,7 @@
 
 <script setup>
 useSeoMeta({
-  title: 'Install app â€” The Franks Standard',
+  title: 'Install app - The Franks Standard',
   description: 'Install The Franks Standard on Android, iPhone, iPad, or desktop.',
 })
 
@@ -89,9 +89,15 @@ const iosHelpOpen = ref(false)
 
 async function onInstallClick () {
   installMsg.value = ''
+  if (!canInstall.value && isChromium.value) {
+    installMsg.value = 'Use Chrome menu (three dots) -> Install app, or use the install icon in the address bar.'
+    document.getElementById('browser-install')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    return
+  }
+
   const ok = await promptInstall()
   if (!ok) {
-    installMsg.value = 'Use Chrome menu (â‹®) â†’ Install app, or the install icon in the address bar.'
+    installMsg.value = 'Use Chrome menu (three dots) -> Install app, or use the install icon in the address bar.'
     document.getElementById('browser-install')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 }
