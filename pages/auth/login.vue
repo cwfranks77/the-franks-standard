@@ -11,11 +11,11 @@
       <form @submit.prevent="handleLogin" class="mt-3">
         <div class="form-group">
           <label class="label">Email</label>
-          <input class="input" type="email" v-model="email" placeholder="you@example.com" required />
+          <input class="input" type="email" v-model="email" placeholder="you@example.com" autocomplete="email" required />
         </div>
         <div class="form-group">
           <label class="label">Password</label>
-          <input class="input" type="password" v-model="password" placeholder="Your password" required />
+          <input class="input" type="password" v-model="password" placeholder="Your password" autocomplete="current-password" required />
         </div>
         <button type="submit" class="btn btn-primary" style="width: 100%;" :disabled="loading">
           {{ loading ? 'Signing in...' : 'Sign In' }}
@@ -42,7 +42,6 @@
 
 <script setup>
 const route = useRoute()
-const config = useRuntimeConfig()
 const email = ref('')
 const password = ref('')
 const loading = ref(false)

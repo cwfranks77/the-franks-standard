@@ -19,15 +19,15 @@
       <form @submit.prevent="handleRegister" class="mt-3">
         <div class="form-group">
           <label class="label">Full Name</label>
-          <input class="input" v-model="fullName" placeholder="Charles Franks" required />
+          <input class="input" v-model="fullName" placeholder="Charles Franks" autocomplete="name" required />
         </div>
         <div class="form-group">
           <label class="label">Email</label>
-          <input class="input" type="email" v-model="email" placeholder="you@example.com" required />
+          <input class="input" type="email" v-model="email" placeholder="you@example.com" autocomplete="email" required />
         </div>
         <div class="form-group">
           <label class="label">Password</label>
-          <input class="input" type="password" v-model="password" placeholder="At least 8 characters" minlength="8" required />
+          <input class="input" type="password" v-model="password" placeholder="At least 8 characters" autocomplete="new-password" minlength="8" required />
         </div>
         <div class="form-group">
           <label class="label">I want to...</label>
@@ -57,8 +57,6 @@
 </template>
 
 <script setup>
-const config = useRuntimeConfig()
-
 const fullName = ref('')
 const email = ref('')
 const password = ref('')
@@ -92,13 +90,28 @@ async function handleRegister() {
       registeredPending.value = true
       return
     }
+    if (data.user && data.session) {
+      if (accountType.value === 'seller') {
+        await navigateTo('/sellers')
+      } else {
+        await navigateTo('/dashboard')
+      }
+      return
+    }
     if (accountType.value === 'seller') {
       await navigateTo('/sellers')
     } else {
       await navigateTo('/dashboard')
     }
   } catch (err) {
-    formError.value = err?.message || 'Registration failed. Please try again.'
+    const msg = err?.message || ''
+    if (/already registered|already been registered|user already exists/i.test(msg)) {
+      formError.value = 'That email already has an account. Sign in below, or use Resend confirmation on the sign-in page.'
+    } else if (/rate limit|too many requests|email.*limit/i.test(msg)) {
+      formError.value = 'Too many emails sent. Wait about an hour, then use Sign in → Resend confirmation email.'
+    } else {
+      formError.value = msg || 'Registration failed. Please try again.'
+    }
   } finally {
     loading.value = false
   }

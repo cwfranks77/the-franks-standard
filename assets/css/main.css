@@ -174,6 +174,44 @@ img { max-width: 100%; height: auto; }
 
 .form-group { margin-bottom: 20px; }
 
+/* Auth pages: white card — dark text in inputs (global inputs use light text for dark pages) */
+.auth-card .input,
+.auth-card .textarea,
+.auth-card .select {
+  background: #fff;
+  border-color: #c9c0d8;
+  color: #150f24;
+  -webkit-text-fill-color: #150f24;
+}
+.auth-card .input::placeholder,
+.auth-card .textarea::placeholder {
+  color: #6e6588;
+  opacity: 1;
+}
+.auth-card .select option {
+  color: #150f24;
+  background: #fff;
+}
+.auth-card .label {
+  color: #322c44;
+}
+.auth-card .text-muted,
+.auth-card p.text-muted {
+  color: #4a4360;
+}
+.auth-card h1 {
+  color: #150f24;
+}
+.auth-card .terms-check {
+  color: #4a4360;
+}
+.auth-card .form-err {
+  color: #b91c3c;
+}
+.auth-card .form-ok {
+  color: #047857;
+}
+
 /* Cards */
 .card {
   background: rgba(255, 255, 255, 0.03);
