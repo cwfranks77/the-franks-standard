@@ -35,6 +35,7 @@
           <NuxtLink to="/sellers" class="nav-link" @click="closeAllNav">For sellers</NuxtLink>
           <NuxtLink to="/pricing" class="nav-link nav-highlight" @click="closeAllNav">Pricing</NuxtLink>
           <NuxtLink to="/support" class="nav-link" @click="closeAllNav">Support</NuxtLink>
+          <NuxtLink to="/contact" class="nav-link" @click="closeAllNav">Contact</NuxtLink>
           <div
             class="nav-more"
             :class="{ open: moreOpen }"
@@ -130,13 +131,14 @@
             <NuxtLink to="/prohibited-items">Prohibited Items</NuxtLink>
             <NuxtLink to="/seller-agreement">Seller Agreement</NuxtLink>
           </div>
-          <div class="footer-col">
-            <h4>More</h4>
-            <NuxtLink to="/download">Download App</NuxtLink>
-            <NuxtLink to="/open-door">Open Door Policy</NuxtLink>
-            <NuxtLink to="/roadmap">Launch Roadmap</NuxtLink>
-            <NuxtLink to="/about">About Us</NuxtLink>
-            <NuxtLink to="/contact">Contact</NuxtLink>
+          <div class="footer-col footer-col-contact">
+            <h4>Contact</h4>
+            <a href="tel:+18778370527" class="footer-contact-line">(877) 837-0527</a>
+            <a href="mailto:info@thefranksstandard.com" class="footer-contact-line">info@thefranksstandard.com</a>
+            <NuxtLink to="/contact">Full contact page</NuxtLink>
+            <NuxtLink to="/support">Support &amp; tech</NuxtLink>
+            <NuxtLink to="/download">Download app</NuxtLink>
+            <NuxtLink to="/about">About us</NuxtLink>
           </div>
         </div>
         <div class="footer-bottom">
@@ -530,6 +532,12 @@ function submitOpModal () {
   font-size: 0.9rem;
 }
 .footer-col a:hover { color: var(--stone-100); }
+.footer-col-contact .footer-contact-line {
+  color: var(--stone-100);
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+.footer-col-contact .footer-contact-line:hover { color: var(--gold); }
 .footer-bottom {
   margin-top: 40px;
   padding-top: 20px;

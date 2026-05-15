@@ -65,6 +65,7 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/png', href: '/franks-pavilion.png' },
         { rel: 'apple-touch-icon', href: '/franks-pavilion.png' },
         { rel: 'manifest', href: '/manifest.json' },
+        { rel: 'canonical', href: siteUrl },
         { rel: 'preconnect', href: 'https://images.unsplash.com' },
         { rel: 'preconnect', href: 'https://meet.jit.si' },
         { rel: 'preconnect', href: 'https://js.stripe.com' },

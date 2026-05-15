@@ -2,5 +2,19 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "npm ci",
   "buildCommand": "npm run build",
-  "outputDirectory": ".output/public"
+  "outputDirectory": ".output/public",
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "thefranksstandard-site.vercel.app" }],
+      "destination": "https://thefranksstandard.com/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.thefranksstandard.com" }],
+      "destination": "https://thefranksstandard.com/:path*",
+      "permanent": true
+    }
+  ]
 }
