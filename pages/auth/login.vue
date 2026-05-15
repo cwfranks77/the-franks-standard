@@ -33,6 +33,12 @@
         </button>
       </p>
 
+      <p class="auth-help text-muted">
+        Still stuck?
+        <a href="mailto:info@thefranksstandard.com?subject=Sign-in%20help">Email support</a>
+        or call <a href="tel:+18778370527">(877) 837-0527</a>.
+      </p>
+
       <p class="auth-footer text-muted mt-3">
         Don't have an account? <NuxtLink to="/auth/register">Join Free</NuxtLink>
       </p>
@@ -114,8 +120,9 @@ async function handleLogin() {
   loading.value = true
   try {
     const supabase = useSupabaseClient()
+    const emailTrimmed = email.value.trim().toLowerCase()
     const { error } = await supabase.auth.signInWithPassword({
-      email: email.value,
+      email: emailTrimmed,
       password: password.value,
     })
     if (error) {
@@ -125,7 +132,16 @@ async function handleLogin() {
     const next = typeof raw === 'string' && raw.startsWith('/') ? raw : '/dashboard'
     await navigateTo(next)
   } catch (err) {
-    formError.value = err?.message || 'Sign in failed. Check your email and password.'
+    const msg = err?.message || ''
+    if (/email not confirmed|email.*not.*confirmed/i.test(msg)) {
+      formError.value = 'Your email is not confirmed yet. Use "Resend confirmation email" below, then open that link on this device.'
+    } else if (/invalid login credentials|invalid.*credentials/i.test(msg)) {
+      formError.value = 'Email/password did not match. Check spelling, then try again.'
+    } else if (/network|fetch failed|failed to fetch|timed out/i.test(msg)) {
+      formError.value = 'Network issue while signing in. Check connection, then try again.'
+    } else {
+      formError.value = msg || 'Sign in failed. Check your email and password.'
+    }
   } finally {
     loading.value = false
   }
@@ -189,4 +205,14 @@ async function handleLogin() {
 .auth-logo { max-width: 220px; width: 100%; height: auto; max-height: 100px; object-fit: contain; margin-bottom: 20px; border-radius: 6px; }
 .auth-card h1 { font-size: 1.5rem; margin-bottom: 4px; }
 .auth-footer { font-size: 0.9rem; }
+.auth-help {
+  margin-top: 10px;
+  font-size: 0.84rem;
+  text-align: left;
+  line-height: 1.45;
+}
+.auth-help a {
+  color: var(--gold-dark);
+  font-weight: 600;
+}
 </style>

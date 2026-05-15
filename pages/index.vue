@@ -19,6 +19,11 @@
             <NuxtLink to="/pricing" class="btn btn-outline btn-lg">See pricing (5% vs 13%)</NuxtLink>
             <NuxtLink to="/browse" class="btn btn-dark btn-lg">Hit the floor</NuxtLink>
           </div>
+          <p class="hero-help text-muted">
+            Need help getting in?
+            <a href="tel:+18778370527">(877) 837-0527</a> ·
+            <a href="mailto:info@thefranksstandard.com">info@thefranksstandard.com</a>
+          </p>
           <div class="hero-avatars" aria-label="Product examples">
             <img
               v-for="(a, i) in heroMosaic"
@@ -416,6 +421,15 @@ const categories = [
   margin: 0 0 4px;
 }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+.hero-help {
+  margin: 12px 0 0;
+  font-size: 0.9rem;
+}
+.hero-help a {
+  color: var(--gold);
+  font-weight: 600;
+}
+.hero-help a:hover { color: var(--gold-light); }
 .hero-avatars {
   display: flex;
   flex-wrap: wrap;

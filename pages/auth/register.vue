@@ -53,6 +53,12 @@
         </button>
       </form>
 
+      <p class="auth-help text-muted">
+        Trouble creating your account?
+        <a href="mailto:info@thefranksstandard.com?subject=Account%20signup%20help">Email support</a>
+        or call <a href="tel:+18778370527">(877) 837-0527</a>.
+      </p>
+
       <p class="auth-footer text-muted mt-3">
         Already have an account? <NuxtLink to="/auth/login">Sign In</NuxtLink>
       </p>
@@ -108,8 +114,9 @@ async function handleRegister() {
   try {
     const supabase = useSupabaseClient()
     const site = authSiteUrl()
+    const emailTrimmed = email.value.trim().toLowerCase()
     const { data, error } = await supabase.auth.signUp({
-      email: email.value,
+      email: emailTrimmed,
       password: password.value,
       options: {
         emailRedirectTo: `${site}/auth/verify`,
@@ -142,6 +149,8 @@ async function handleRegister() {
     } else if (/not authorized|error sending confirmation/i.test(msg)) {
       formError.value =
         'Supabase cannot email this address until you set up custom SMTP (Authentication → SMTP) or add your Gmail to your Supabase organization team.'
+    } else if (/network|fetch failed|failed to fetch|timed out/i.test(msg)) {
+      formError.value = 'Network issue while creating your account. Check connection, then try again.'
     } else {
       formError.value = msg || 'Registration failed. Please try again.'
     }
@@ -179,6 +188,16 @@ async function handleRegister() {
 .auth-logo { max-width: 220px; width: 100%; height: auto; max-height: 100px; object-fit: contain; margin-bottom: 20px; border-radius: 6px; }
 .auth-card h1 { font-size: 1.5rem; margin-bottom: 4px; }
 .auth-footer { font-size: 0.9rem; }
+.auth-help {
+  margin-top: 12px;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  text-align: left;
+}
+.auth-help a {
+  color: var(--gold-dark);
+  font-weight: 600;
+}
 .terms-check {
   display: flex;
   gap: 8px;

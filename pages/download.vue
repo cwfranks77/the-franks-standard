@@ -72,6 +72,11 @@
 
       <div class="dl-cta text-center">
         <NuxtLink to="/auth/register" class="btn btn-primary btn-lg">Create your free account</NuxtLink>
+        <p class="text-muted dl-help">
+          Install giving you trouble? Email
+          <a href="mailto:info@thefranksstandard.com?subject=Install%20help">info@thefranksstandard.com</a>
+          or call <a href="tel:+18778370527">(877) 837-0527</a>.
+        </p>
       </div>
     </div>
   </div>
@@ -128,4 +133,9 @@ h1 { font-size: 2rem; margin-bottom: 10px; }
   background: var(--stone-900); border: 1px solid var(--stone-800); text-align: center;
 }
 .dl-cta { margin-top: 40px; }
+.dl-help {
+  margin-top: 12px;
+  font-size: 0.88rem;
+}
+.dl-help a { color: var(--gold); font-weight: 600; }
 </style>
