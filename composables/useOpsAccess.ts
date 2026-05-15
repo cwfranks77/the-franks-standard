@@ -22,7 +22,23 @@ export const useOpsAccess = () => {
     }
   }
 
-  // Hash the typed phrase in the browser and compare against the stored hash.
+  // Normalize user input from mobile keyboards:
+  // - trim
+  // - lowercase
+  // - convert unicode dashes to ASCII hyphen
+  // - remove zero-width chars
+  // - treat spaces as separators (equivalent to hyphens)
+  function normalizeOpsPhrase (input: string): string {
+    return String(input || '')
+      .trim()
+      .toLowerCase()
+      .replace(/[\u200B-\u200D\uFEFF]/g, '')
+      .replace(/[\u2010-\u2015\u2212\uFE58\uFE63\uFF0D]/g, '-')
+      .replace(/\s*-\s*/g, '-')
+      .replace(/\s+/g, '-')
+  }
+
+  // Hash the normalized phrase in the browser and compare against the stored hash.
   // The plaintext is never shipped to the client; only the SHA-256 hash is.
   async function sha256Hex (input: string): Promise<string> {
     const bytes = new TextEncoder().encode(input)
@@ -37,7 +53,7 @@ export const useOpsAccess = () => {
     const expectedHash = String((config.public as any).opsAccessKeyHash || '').toLowerCase()
     if (!expectedHash) return false
 
-    const typedHash = await sha256Hex(String(password || '').trim())
+    const typedHash = await sha256Hex(normalizeOpsPhrase(password))
     const isValid = typedHash === expectedHash
 
     if (isValid && typeof window !== 'undefined') {

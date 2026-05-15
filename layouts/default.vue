@@ -160,7 +160,7 @@
           aria-label="Operator unlock"
         >
           <h2 class="op-modal-h">Operator access</h2>
-          <p class="op-modal-sub text-muted">Enter the <strong>exact</strong> value of <code>NUXT_PUBLIC_OPS_ACCESS_KEY</code> from your <code>.env</code> (build) or the matching GitHub Actions secret. Leading or trailing spaces are ignored.</p>
+          <p class="op-modal-sub text-muted">Enter the value of <code>NUXT_PUBLIC_OPS_ACCESS_KEY</code> from your <code>.env</code> (build) or the matching GitHub Actions secret. Leading/trailing spaces are ignored. Hyphens/dashes and spaces are treated the same.</p>
           <p v-if="isDev" class="op-hint text-muted">Dev: open the modal with <code>?ops=unlock</code> on any URL, then set a key in <code>.env</code> and restart.</p>
           <form @submit.prevent="submitOpModal">
             <div v-if="!keyConfigured" class="op-warn" role="alert">
@@ -318,13 +318,23 @@ async function sha256Hex (input) {
     .join('')
 }
 
+function normalizeOpsPhrase (input) {
+  return String(input || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[\u200B-\u200D\uFEFF]/g, '')
+    .replace(/[\u2010-\u2015\u2212\uFE58\uFE63\uFF0D]/g, '-')
+    .replace(/\s*-\s*/g, '-')
+    .replace(/\s+/g, '-')
+}
+
 async function submitOpModal () {
   opError.value = ''
   const expectedHash = String(config.public?.opsAccessKeyHash || '').toLowerCase()
   if (!expectedHash) { return }
   opSubmitting.value = true
   try {
-    const typedHash = await sha256Hex(opPhrase.value.trim())
+    const typedHash = await sha256Hex(normalizeOpsPhrase(opPhrase.value))
     if (typedHash === expectedHash) {
       grant()
       closeOpModal()
