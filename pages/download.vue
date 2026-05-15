@@ -4,8 +4,10 @@
       <div class="dl-hero text-center">
         <p class="dl-emoji">📱</p>
         <h1>Download The Franks Standard</h1>
-        <p class="text-muted lead">Install the app on your phone or tablet. Works like a native app — full screen, fast, offline-ready. No app store needed.</p>
+        <p class="text-muted lead">Install the app on your phone or tablet. Works like a native app — full screen and fast. No app store needed.</p>
       </div>
+
+      <AppInstallBanner />
 
       <div class="dl-grid">
         <div class="dl-card">
@@ -62,7 +64,7 @@
         <h2 class="text-center">Frequently asked</h2>
         <details class="faq-item">
           <summary>Is this a real app?</summary>
-          <p>Yes. It is a Progressive Web App (PWA) — the same technology used by Twitter, Starbucks, and Pinterest. It installs to your home screen, runs full-screen, and works offline for cached pages.</p>
+          <p>Yes. It is a Progressive Web App (PWA). It installs to your home screen and runs full-screen in Chrome or Safari — like a native app without the app store.</p>
         </details>
         <details class="faq-item">
           <summary>Why not the App Store or Google Play?</summary>

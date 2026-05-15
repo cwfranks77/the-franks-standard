@@ -55,7 +55,7 @@ export default defineNuxtConfig({
         { name: 'twitter:title', content: 'The Franks Standard' },
         { name: 'twitter:description', content: 'Authenticity-first collectibles and gear. COA required. Built for real sellers and buyers.' },
         { name: 'twitter:image', content: ogImage },
-        { name: 'theme-color', content: '#ffffff' },
+        { name: 'theme-color', content: '#0c0619' },
         { name: 'mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },

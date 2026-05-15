@@ -1,7 +1,7 @@
 <template>
   <div class="auth-page">
     <div class="auth-card">
-      <img src="/franks-pavilion.png" alt="" class="auth-logo" role="presentation" />
+      <img src="/franks-pavilion.png" alt="" class="auth-logo" role="presentation" @error="onAuthLogoError" />
       <template v-if="registeredPending">
         <h1>Check your inbox</h1>
         <p class="text-muted">
@@ -64,7 +64,20 @@
 <script setup>
 function postRegisterPath (type) {
   if (type === 'sell' || type === 'seller') return '/sell'
+  if (type === 'both') return '/dashboard'
   return '/dashboard'
+}
+
+onMounted(() => {
+  useGuestOnly()
+})
+
+function onAuthLogoError (e) {
+  const el = e?.target
+  if (el && !el.dataset?.logoFallback) {
+    el.dataset.logoFallback = '1'
+    el.src = '/logo.svg'
+  }
 }
 
 function authSiteUrl () {

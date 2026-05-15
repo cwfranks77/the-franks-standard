@@ -68,7 +68,7 @@
           </div>
         </div>
         <div class="text-center mt-3">
-          <NuxtLink to="/auth/register" class="btn btn-primary">Get your referral link</NuxtLink>
+          <NuxtLink to="/auth/register" class="btn btn-primary">Create free account to refer sellers</NuxtLink>
         </div>
       </section>
 

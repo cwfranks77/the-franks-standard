@@ -1,7 +1,7 @@
 <template>
   <div class="auth-page">
     <div class="auth-card">
-      <img src="/franks-pavilion.png" alt="" class="auth-logo" role="presentation" />
+      <img src="/franks-pavilion.png" alt="" class="auth-logo" role="presentation" @error="onAuthLogoError" />
       <h1>Confirming your email</h1>
       <p v-if="phase === 'loading'" class="text-muted">One moment while we finish signing you in...</p>
       <p v-else-if="phase === 'error'" class="err">{{ message }}</p>
@@ -24,6 +24,14 @@ const supabase = useSupabaseClient()
 const phase = ref('loading')
 const message = ref('')
 
+function onAuthLogoError (e) {
+  const el = e?.target
+  if (el && !el.dataset?.logoFallback) {
+    el.dataset.logoFallback = '1'
+    el.src = '/logo.svg'
+  }
+}
+
 onMounted(async () => {
   try {
     const code = typeof route.query.code === 'string' ? route.query.code : ''
@@ -33,7 +41,7 @@ onMounted(async () => {
     const otpType = otpTypes.has(typeRaw) ? typeRaw : 'signup'
 
     if (code) {
-      const { error } = await supabase.auth.exchangeCodeForSession()
+      const { error } = await supabase.auth.exchangeCodeForSession(code)
       if (error) throw error
     } else if (tokenHash) {
       const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: otpType })

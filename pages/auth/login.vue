@@ -1,7 +1,7 @@
 <template>
   <div class="auth-page">
     <div class="auth-card">
-      <img src="/franks-pavilion.png" alt="" class="auth-logo" role="presentation" />
+      <img src="/franks-pavilion.png" alt="" class="auth-logo" role="presentation" @error="onAuthLogoError" />
       <h1>Sign In</h1>
       <p class="text-muted">Welcome back to The Franks Standard</p>
 
@@ -42,6 +42,19 @@
 
 <script setup>
 const route = useRoute()
+
+onMounted(() => {
+  useGuestOnly()
+})
+
+function onAuthLogoError (e) {
+  const el = e?.target
+  if (el && !el.dataset?.logoFallback) {
+    el.dataset.logoFallback = '1'
+    el.src = '/logo.svg'
+  }
+}
+
 function authSiteUrl () {
   if (import.meta.client && typeof window !== 'undefined') {
     const { hostname, protocol, host } = window.location
