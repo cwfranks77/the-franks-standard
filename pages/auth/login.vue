@@ -61,7 +61,7 @@ async function resendConfirmation () {
   resendLoading.value = true
   try {
     const supabase = useSupabaseClient()
-    const site = String(config.public?.siteUrl || '').replace(/\/$/, '') || 'https://thefranksstandard.com'
+    const site = useAuthSiteUrl()
     const { error } = await supabase.auth.resend({
       type: 'signup',
       email: addr,

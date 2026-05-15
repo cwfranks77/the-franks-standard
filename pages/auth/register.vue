@@ -73,7 +73,7 @@ async function handleRegister() {
   loading.value = true
   try {
     const supabase = useSupabaseClient()
-    const site = String(config.public?.siteUrl || '').replace(/\/$/, '') || 'https://thefranksstandard.com'
+    const site = useAuthSiteUrl()
     const { data, error } = await supabase.auth.signUp({
       email: email.value,
       password: password.value,
