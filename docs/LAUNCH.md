@@ -10,7 +10,13 @@ This repo is a **client-only static site** (`ssr: false`, `nuxt generate`). The 
 
 On Vercel’s build servers **`VERCEL` is set**, so Nitro uses the **`static`** preset; GitHub Actions / local builds keep **`github-pages`** for static hosting quirks.
 
-**In the Vercel dashboard** for this project: **Settings → General →** set **Root Directory** to repo root if needed, and turn **off** any **Build / Output overrides** so **`vercel.json`** is used (`npm run generate` → `.output/public`). **Settings → Environment Variables → Production** — add the same **`NUXT_PUBLIC_*`** values as in GitHub Actions (Supabase URL/key, `NUXT_PUBLIC_SITE_URL`, Stripe links, ops key, phone if you use it). Redeploy.
+**In the Vercel dashboard** for project **`the-franks-standard`** (linked to this repo): turn **off** Build/Output overrides so **`vercel.json`** wins. **Environment variables** — fastest path from your machine:
+
+1. Copy `env.local.example` → `.env.local` and fill **Supabase URL + anon key** (same values as GitHub secrets `NUXT_PUBLIC_SUPABASE_URL` / `NUXT_PUBLIC_SUPABASE_KEY` — Supabase → Project → Settings → API).
+2. Run **`npm run env:vercel`** (pushes all `NUXT_PUBLIC_*` to Production, Preview, Development).
+3. **Redeploy** in Vercel (Deployments → … → Redeploy).
+
+Without **Supabase** env vars, signup/login is broken on Vercel even if the site loads.
 
 **One production domain:** If **thefranksstandard.com** DNS already points at **GitHub Pages**, do not also assign that exact domain to Vercel unless you intend to move hosting—two hosts fighting for the same name causes random failures (auth redirects, SSL, “wrong site”). Use Vercel’s **`*.vercel.app`** preview for experiments, or move DNS to Vercel only when you commit to Vercel as the sole host.
 
