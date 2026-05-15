@@ -23,10 +23,8 @@ const SUPPORT_EMAIL = 'info@thefranksstandard.com'
 // SITE_URL host, this build is a duplicate mirror — tell crawlers to ignore.
 // GitHub Pages builds (the real canonical) do not set VERCEL_URL, so they
 // stay indexable. NUXT_NOINDEX=1 is an explicit manual override.
-const SITE_HOST = SITE_URL.replace(/^https?:\/\//, '').replace(/\/.*$/, '').toLowerCase()
-const VERCEL_URL_HOST = String(process.env.VERCEL_URL || '').toLowerCase().replace(/\/.*$/, '')
-const IS_NONCANONICAL_VERCEL = !!VERCEL_URL_HOST && VERCEL_URL_HOST !== SITE_HOST
-const IS_NOINDEX_BUILD = String(process.env.NUXT_NOINDEX || '').trim() === '1' || IS_NONCANONICAL_VERCEL
+const IS_NOINDEX_BUILD = String(process.env.VERCEL || '').trim() === '1' ||
+  String(process.env.NUXT_NOINDEX || '').trim() === '1'
 
 const ROOT = path.join(__dirname, '..', '.output', 'public')
 const NUXT_EMPTY = '<div id="__nuxt"></div>'
