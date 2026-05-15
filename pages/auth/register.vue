@@ -57,6 +57,18 @@
 </template>
 
 <script setup>
+function authSiteUrl () {
+  if (import.meta.client && typeof window !== 'undefined') {
+    const { hostname, protocol, host } = window.location
+    if (hostname && !/localhost|127\.0\.0\.1/i.test(hostname)) {
+      return protocol + '//' + host
+    }
+  }
+  const cfg = String(useRuntimeConfig().public?.siteUrl || '').trim().replace(/\/$/, '')
+  if (cfg && !/localhost|127\.0\.0\.1/i.test(cfg)) return cfg
+  return 'https://thefranksstandard.com'
+}
+
 const fullName = ref('')
 const email = ref('')
 const password = ref('')
@@ -71,7 +83,7 @@ async function handleRegister() {
   loading.value = true
   try {
     const supabase = useSupabaseClient()
-    const site = useAuthSiteUrl()
+    const site = authSiteUrl()
     const { data, error } = await supabase.auth.signUp({
       email: email.value,
       password: password.value,
