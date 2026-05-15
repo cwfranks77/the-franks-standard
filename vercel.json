@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "nuxt",
-  "buildCommand": "nuxt build",
-  "outputDirectory": ".output"
+  "installCommand": "npm ci",
+  "buildCommand": "npm run generate",
+  "outputDirectory": ".output/public"
 }

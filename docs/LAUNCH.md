@@ -4,6 +4,17 @@
 - Settings → Pages → **Source: GitHub Actions** (not “Deploy from a branch”) or the site 404s.
 - Custom domain **thefranksstandard.com** stays configured; DNS per [GitHub Pages custom domain](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site).
 
+## Vercel (if The Franks Standard is linked there)
+
+This repo is a **client-only static site** (`ssr: false`, `nuxt generate`). The repo root **`vercel.json`** is set to:
+
+- **Build:** `npm run generate` (includes the SPA static shell step)
+- **Output:** `.output/public` (not `.output` — that folder is for Node server builds and will confuse Vercel)
+
+**In the Vercel dashboard** for this project: **Settings → General →** set **Root Directory** to repo root if needed, and turn **off** any **Build / Output overrides** so **`vercel.json`** is used (`npm run generate` → `.output/public`). **Settings → Environment Variables → Production** — add the same **`NUXT_PUBLIC_*`** values as in GitHub Actions (Supabase URL/key, `NUXT_PUBLIC_SITE_URL`, Stripe links, ops key, phone if you use it). Redeploy.
+
+**One production domain:** If **thefranksstandard.com** DNS already points at **GitHub Pages**, do not also assign that exact domain to Vercel unless you intend to move hosting—two hosts fighting for the same name causes random failures (auth redirects, SSL, “wrong site”). Use Vercel’s **`*.vercel.app`** preview for experiments, or move DNS to Vercel only when you commit to Vercel as the sole host.
+
 ## Required GitHub Actions secrets
 - `NUXT_PUBLIC_SUPABASE_URL`, `NUXT_PUBLIC_SUPABASE_KEY` (anon key — Supabase → Project Settings → API)
 - `NUXT_PUBLIC_SITE_URL` = `https://thefranksstandard.com` (no trailing slash; used in signup email links)
@@ -39,6 +50,27 @@ If any step fails, fix **Redirect URLs** and **`NUXT_PUBLIC_SITE_URL`** in Actio
 
 1. Commit and **push to `main`** on `cwfranks77/the-franks-standard` (or run **Actions → Deploy Franks Standard → Run workflow**).
 2. Wait for the workflow green check; open `https://thefranksstandard.com` and run the smoke test again.
+
+## Advertising kit (ready to paste)
+
+Use **one canonical URL** everywhere: **https://thefranksstandard.com**
+
+| Link | URL |
+|------|-----|
+| Home | https://thefranksstandard.com |
+| Join (buyers & sellers) | https://thefranksstandard.com/auth/register |
+| Sign in | https://thefranksstandard.com/auth/login |
+| For stores | https://thefranksstandard.com/sellers |
+
+**Short lines you can post as-is:**
+
+1. *The Franks Standard is live — a proof-first marketplace for collectibles & gear. Every public listing needs a COA or a signed in-platform guarantee. Join free: https://thefranksstandard.com*
+
+2. *Selling high-trust inventory? The Franks Standard is built for reputation, not a flood of fakes. Stores: https://thefranksstandard.com/sellers*
+
+3. *Buy with proof — https://thefranksstandard.com — authenticity is not optional here.*
+
+After your smoke test passes, post where your people already are (Facebook groups, Discord, collector forums, email to partners). Optional automation: **`npm run post:social`** (see `.env.example` → Social launch).
 
 ## Tell people it exists
 
