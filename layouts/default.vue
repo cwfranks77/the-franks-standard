@@ -35,6 +35,7 @@
           <NuxtLink to="/sellers" class="nav-link" @click="closeAllNav">For sellers</NuxtLink>
           <NuxtLink to="/pricing" class="nav-link nav-highlight" @click="closeAllNav">Pricing</NuxtLink>
           <NuxtLink to="/support" class="nav-link" @click="closeAllNav">Support</NuxtLink>
+          <NuxtLink to="/open-door" class="nav-link" @click="closeAllNav">Open Door</NuxtLink>
           <NuxtLink to="/contact" class="nav-link" @click="closeAllNav">Contact</NuxtLink>
           <div
             class="nav-more"
@@ -66,7 +67,6 @@
               <NuxtLink to="/prohibited-items" class="nav-drop-link" @click="closeAllNav">Prohibited items</NuxtLink>
               <NuxtLink to="/pay" class="nav-drop-link" @click="closeAllNav">Pay &amp; fees (Stripe)</NuxtLink>
               <NuxtLink to="/download" class="nav-drop-link" @click="closeAllNav">Install app</NuxtLink>
-              <NuxtLink to="/open-door" class="nav-drop-link" @click="closeAllNav">Open Door Policy</NuxtLink>
               <NuxtLink to="/roadmap" class="nav-drop-link" @click="closeAllNav">Launch Roadmap</NuxtLink>
             </div>
           </div>

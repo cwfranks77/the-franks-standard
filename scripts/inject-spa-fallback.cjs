@@ -145,6 +145,14 @@ function fallbackForRoute (route) {
       <p class="fss-static-sub">Three pillars. One guarantee: list with proof, buy with confidence, protected by The Standard. Counterfeit = permanent ban + full refund.</p>
       ${contactBlock}`
       break
+    case '/open-door':
+      body = `
+      <p class="fss-static-ribbon">Open Door Policy &middot; Built for and by collectors</p>
+      <h1 class="fss-static-h1"><span class="fss-s1">The door</span> <span class="fss-s2">is open.</span></h1>
+      <p class="fss-static-sub">The Franks Standard is not a faceless platform. <strong>Charles Franks</strong> &mdash; the founder &mdash; reads feedback personally. No ticket queues. No 7-10 business day waits. Real feedback from real users shapes every release.</p>
+      <p class="fss-static-sub"><strong>Reach us:</strong> general feedback, technical issues, partnership inquiries, or a direct call &mdash; all answered by a human on the team.</p>
+      ${contactBlock}`
+      break
     case '/':
     default:
       body = `

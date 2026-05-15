@@ -39,6 +39,22 @@
       </div>
     </section>
 
+    <section class="founder-bar" aria-label="Founder is reachable">
+      <div class="container founder-bar-inner">
+        <div class="founder-bar-copy">
+          <p class="founder-bar-eyebrow">Open Door Policy</p>
+          <p class="founder-bar-text">
+            <strong>Charles Franks</strong> &mdash; the founder &mdash; reads feedback personally.
+            No ticket queues. No 7&ndash;10 business day waits.
+          </p>
+        </div>
+        <div class="founder-bar-actions">
+          <a href="tel:+18778370527" class="btn btn-outline btn-sm">Call (877) 837-0527</a>
+          <NuxtLink to="/open-door" class="btn btn-primary btn-sm">Open Door Policy &rarr;</NuxtLink>
+        </div>
+      </div>
+    </section>
+
     <div class="activity-ticker" aria-label="What the Standard stands for">
       <div class="ticker-track">
         <span v-for="(b, j) in tickerBelt" :key="`a-${j}`" class="ticker-bubble">{{ b }}</span>
@@ -431,6 +447,46 @@ const categories = [
 @media (max-width: 1024px) {
   .hero-grid { grid-template-columns: 1fr; }
 }
+.founder-bar {
+  border-block: 1px solid rgba(0, 245, 160, 0.18);
+  background: linear-gradient(90deg, rgba(0, 245, 160, 0.06), rgba(255, 216, 77, 0.05));
+  padding: 14px 0;
+}
+.founder-bar-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.founder-bar-copy { flex: 1 1 320px; min-width: 0; }
+.founder-bar-eyebrow {
+  margin: 0 0 4px;
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--trust-green, #00f5a0);
+  font-weight: 800;
+}
+.founder-bar-text {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--stone-100, #e8e4f0);
+  line-height: 1.5;
+}
+.founder-bar-text strong { color: var(--gold, #ffd84d); }
+.founder-bar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+@media (max-width: 640px) {
+  .founder-bar-inner { flex-direction: column; align-items: flex-start; }
+  .founder-bar-actions { width: 100%; }
+  .founder-bar-actions .btn { flex: 1 1 auto; text-align: center; }
+}
+
 .activity-ticker {
   overflow: hidden;
   border-block: 1px solid rgba(0, 224, 255, 0.15);
