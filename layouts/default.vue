@@ -236,7 +236,7 @@ const opSubmitting = ref(false)
 let opKnockClicks = 0
 let opKnockTimer = null
 
-const keyConfigured = computed(() => String((config.public as any)?.opsAccessKeyHash || '').length > 0)
+const keyConfigured = computed(() => String(config.public?.opsAccessKeyHash || '').length > 0)
 const isDev = computed(() => import.meta.dev)
 
 function onPavilionImgError (e) {
@@ -310,7 +310,7 @@ function closeOpModal () {
   opError.value = ''
 }
 
-async function sha256Hex (input: string): Promise<string> {
+async function sha256Hex (input) {
   const bytes = new TextEncoder().encode(input)
   const digest = await crypto.subtle.digest('SHA-256', bytes)
   return Array.from(new Uint8Array(digest))
@@ -320,7 +320,7 @@ async function sha256Hex (input: string): Promise<string> {
 
 async function submitOpModal () {
   opError.value = ''
-  const expectedHash = String((config.public as any)?.opsAccessKeyHash || '').toLowerCase()
+  const expectedHash = String(config.public?.opsAccessKeyHash || '').toLowerCase()
   if (!expectedHash) { return }
   opSubmitting.value = true
   try {
