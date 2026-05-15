@@ -17,12 +17,12 @@ const PHONE_DISPLAY = process.env.NUXT_PUBLIC_CUSTOMER_SERVICE_PHONE || '(877) 8
 const PHONE_TEL = '+1' + PHONE_DISPLAY.replace(/\D+/g, '').replace(/^1/, '')
 const SUPPORT_EMAIL = 'info@thefranksstandard.com'
 
-// Detect GitHub Pages build (running in Actions, not on Vercel). The site is
-// primarily hosted on Vercel; the GH Pages mirror should not compete in search.
-const IS_GH_PAGES_BUILD = !process.env.VERCEL && (
-  process.env.GITHUB_ACTIONS === 'true' ||
-  process.env.GITHUB_PAGES === 'true'
-)
+// Auto-noindex: only set noindex when the build is explicitly flagged as a
+// non-canonical mirror via NUXT_NOINDEX=1. We do NOT auto-detect by host or
+// CI vendor because thefranksstandard.com is actually served from GitHub
+// Pages (DNS points to GH Pages), so auto-noindexing the GH Pages build
+// would noindex the real canonical site.
+const IS_NOINDEX_BUILD = String(process.env.NUXT_NOINDEX || '').trim() === '1'
 
 const ROOT = path.join(__dirname, '..', '.output', 'public')
 const NUXT_EMPTY = '<div id="__nuxt"></div>'
@@ -176,8 +176,8 @@ function ensureCanonical (html, canonicalUrl) {
   return html.replace(/<\/head>/i, `${tag}\n</head>`)
 }
 
-function ensureNoindexIfGhPages (html) {
-  if (!IS_GH_PAGES_BUILD) return html
+function ensureNoindexIfFlagged (html) {
+  if (!IS_NOINDEX_BUILD) return html
   if (/<meta[^>]+name=["']robots["'][^>]*>/i.test(html)) {
     return html.replace(/<meta[^>]+name=["']robots["'][^>]*>/i, '<meta name="robots" content="noindex,nofollow">')
   }
@@ -191,8 +191,8 @@ function patchFile (file) {
 
   // Always (re)set the per-page canonical URL.
   s = ensureCanonical(s, canonical)
-  // On GH Pages mirror builds, set noindex so search engines only see the Vercel canonical.
-  s = ensureNoindexIfGhPages(s)
+  // Only noindex when an explicit NUXT_NOINDEX=1 build flag is set (e.g. a preview build).
+  s = ensureNoindexIfFlagged(s)
 
   // Inject visible body fallback (only once per file).
   if (!s.includes(START)) {
@@ -205,7 +205,7 @@ function patchFile (file) {
   }
 
   fs.writeFileSync(file, s, 'utf8')
-  const tag = IS_GH_PAGES_BUILD ? '[noindex]' : ''
+  const tag = IS_NOINDEX_BUILD ? '[noindex]' : ''
   console.log('inject-spa-fallback:', (path.relative(ROOT, file) || 'index'), '->', canonical, tag)
 }
 
@@ -222,6 +222,6 @@ if (!fs.existsSync(ROOT)) {
   process.exit(1)
 }
 
-console.log('inject-spa-fallback: target =', IS_GH_PAGES_BUILD ? 'GitHub Pages (will noindex)' : 'Vercel/canonical (indexable)')
+console.log('inject-spa-fallback: target =', IS_NOINDEX_BUILD ? 'noindex (NUXT_NOINDEX=1 set)' : 'canonical / indexable')
 walkHtml(ROOT)
 console.log('inject-spa-fallback: done')
