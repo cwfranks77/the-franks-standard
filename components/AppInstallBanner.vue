@@ -36,6 +36,7 @@
         </button>
       </div>
     </div>
+    <p v-if="installMsg" class="install-note" role="alert">{{ installMsg }}</p>
     <div v-if="showIosHelp" class="install-help">
       <p><strong>Install on iPhone / iPad:</strong></p>
       <ol>
@@ -69,8 +70,14 @@ onMounted(() => {
   if (props.openHelp && !isIos.value) showGenericHelp.value = true
 })
 
+const installMsg = ref('')
+
 async function doInstall () {
-  await promptInstall()
+  installMsg.value = ''
+  const ok = await promptInstall()
+  if (!ok) {
+    installMsg.value = 'If nothing opened, use Chrome menu (three dots) then Install app.'
+  }
 }
 </script>
 

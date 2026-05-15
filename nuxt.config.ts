@@ -28,7 +28,41 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ['@nuxtjs/supabase'],
+  modules: ['@nuxtjs/supabase', '@vite-pwa/nuxt'],
+
+  pwa: {
+    registerType: 'autoUpdate',
+    includeAssets: ['franks-pavilion.png', 'logo.svg', 'icons/icon-192.png', 'icons/icon-512.png'],
+    manifest: {
+      id: '/',
+      name: 'The Franks Standard',
+      short_name: 'Franks Standard',
+      description: 'Authenticity-first collectibles and gear marketplace.',
+      theme_color: '#0c0619',
+      background_color: '#0c0619',
+      display: 'standalone',
+      start_url: '/',
+      scope: '/',
+      orientation: 'any',
+      categories: ['shopping', 'business'],
+      icons: [
+        { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+        { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+        { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+      ],
+    },
+    workbox: {
+      navigateFallback: '/index.html',
+      globPatterns: ['**/*.{js,css,html,png,svg,ico,json,woff2,webmanifest}'],
+    },
+    client: {
+      installPrompt: true,
+      periodicSyncForUpdates: 3600,
+    },
+    devOptions: {
+      enabled: false,
+    },
+  },
 
   // Client-only app (ssr: false); session lives in the browser. Set URL + anon key in .env and in GitHub Actions.
   supabase: {
@@ -64,7 +98,6 @@ export default defineNuxtConfig({
       link: [
         { rel: 'icon', type: 'image/png', href: '/franks-pavilion.png' },
         { rel: 'apple-touch-icon', href: '/franks-pavilion.png' },
-        { rel: 'manifest', href: '/manifest.json' },
         { rel: 'canonical', href: siteUrl },
         { rel: 'preconnect', href: 'https://images.unsplash.com' },
         { rel: 'preconnect', href: 'https://meet.jit.si' },

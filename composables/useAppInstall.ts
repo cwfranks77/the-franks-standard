@@ -1,20 +1,29 @@
 /**
- * PWA install — shared state; beforeinstallprompt is captured in plugins/pwa-install.client.ts.
+ * PWA install via @vite-pwa/nuxt ($pwa.install).
  */
 export function useAppInstall () {
-  const canInstall = useState('pwa-can-install', () => false)
-  const isIos = useState('pwa-is-ios', () => false)
-  const isStandalone = useState('pwa-is-standalone', () => false)
-  const isAndroid = useState('pwa-is-android', () => false)
-  const swReady = useState('pwa-sw-ready', () => false)
+  const nuxtApp = useNuxtApp()
 
-  async function promptInstall () {
-    if (!import.meta.client) return false
-    const nuxtApp = useNuxtApp()
-    const run = nuxtApp.$pwaPromptInstall
-    if (typeof run === 'function') return run()
-    return false
+  const isIos = ref(false)
+  if (import.meta.client) {
+    const ua = navigator.userAgent || ''
+    isIos.value = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
   }
 
-  return { canInstall, isIos, isAndroid, isStandalone, swReady, promptInstall }
+  const canInstall = computed(() => !!nuxtApp.$pwa?.showInstallPrompt)
+  const isStandalone = computed(() => !!nuxtApp.$pwa?.isPWAInstalled)
+  const swReady = computed(() => !!nuxtApp.$pwa?.swActivated)
+
+  async function promptInstall () {
+    const pwa = nuxtApp.$pwa
+    if (!pwa?.showInstallPrompt) return false
+    try {
+      await pwa.install()
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  return { canInstall, isIos, isStandalone, swReady, promptInstall }
 }
