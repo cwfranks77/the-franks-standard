@@ -1,39 +1,20 @@
 /**
- * PWA install prompt for Android / desktop Chrome, plus iOS detection.
- * Captures the beforeinstallprompt event and exposes a trigger.
+ * PWA install — shared state; beforeinstallprompt is captured in plugins/pwa-install.client.ts.
  */
 export function useAppInstall () {
-  const canInstall = ref(false)
-  const isIos = ref(false)
-  const isStandalone = ref(false)
-  let deferredPrompt: any = null
-
-  if (import.meta.client) {
-    const ua = navigator.userAgent || ''
-    isIos.value = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
-    isStandalone.value = window.matchMedia('(display-mode: standalone)').matches
-      || (window.navigator as any).standalone === true
-
-    window.addEventListener('beforeinstallprompt', (e: Event) => {
-      e.preventDefault()
-      deferredPrompt = e
-      canInstall.value = true
-    })
-
-    window.addEventListener('appinstalled', () => {
-      canInstall.value = false
-      deferredPrompt = null
-    })
-  }
+  const canInstall = useState('pwa-can-install', () => false)
+  const isIos = useState('pwa-is-ios', () => false)
+  const isStandalone = useState('pwa-is-standalone', () => false)
+  const isAndroid = useState('pwa-is-android', () => false)
+  const swReady = useState('pwa-sw-ready', () => false)
 
   async function promptInstall () {
-    if (!deferredPrompt) return false
-    deferredPrompt.prompt()
-    const result = await deferredPrompt.userChoice
-    deferredPrompt = null
-    canInstall.value = false
-    return result.outcome === 'accepted'
+    if (!import.meta.client) return false
+    const nuxtApp = useNuxtApp()
+    const run = nuxtApp.$pwaPromptInstall
+    if (typeof run === 'function') return run()
+    return false
   }
 
-  return { canInstall, isIos, isStandalone, promptInstall }
+  return { canInstall, isIos, isAndroid, isStandalone, swReady, promptInstall }
 }

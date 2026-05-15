@@ -7,7 +7,7 @@
         <p class="text-muted lead">Install the app on your phone or tablet. Works like a native app — full screen and fast. No app store needed.</p>
       </div>
 
-      <AppInstallBanner />
+      <AppInstallBanner open-help />
 
       <div class="dl-grid">
         <div class="dl-card">

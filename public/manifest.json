@@ -1,4 +1,5 @@
 {
+  "id": "/",
   "name": "The Franks Standard",
   "short_name": "Franks Standard",
   "description": "Authenticity-first collectibles and gear marketplace.",
@@ -20,13 +21,13 @@
       "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "/franks-pavilion.png",
+      "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "maskable"
     }
   ]
 }

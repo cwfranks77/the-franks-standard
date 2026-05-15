@@ -3,7 +3,11 @@
     <div class="install-inner">
       <div class="install-copy">
         <p class="install-title">Get the app</p>
-        <p class="install-sub">Install The Franks Standard on your phone — works like a native app, no app store needed.</p>
+        <p class="install-sub">
+          <template v-if="canInstall">Tap Install — Chrome is ready to add this site to your home screen.</template>
+          <template v-else-if="isIos">Use Safari Share → Add to Home Screen (iOS has no in-page install button).</template>
+          <template v-else>Chrome/Edge: menu (⋮) → Install app, or the install icon in the address bar.</template>
+        </p>
       </div>
       <div class="install-buttons">
         <button
@@ -25,10 +29,10 @@
         <button
           v-else
           type="button"
-          class="btn btn-outline btn-sm install-btn"
+          class="btn btn-primary btn-sm install-btn"
           @click="showGenericHelp = !showGenericHelp"
         >
-          How to install
+          {{ showGenericHelp ? 'Hide steps' : 'How to install' }}
         </button>
       </div>
     </div>
@@ -43,18 +47,27 @@
     <div v-if="showGenericHelp" class="install-help">
       <p><strong>Install on Android / Desktop:</strong></p>
       <ol>
-        <li>Open this site in <strong>Chrome</strong> or <strong>Edge</strong></li>
-        <li>Tap the <strong>menu</strong> (three dots) in your browser</li>
-        <li>Tap <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong></li>
+        <li>Use <strong>Chrome</strong> or <strong>Edge</strong> on <strong>thefranksstandard.com</strong></li>
+        <li>Look for <strong>Install</strong> in the address bar, or</li>
+        <li>Menu <strong>⋮</strong> → <strong>Install app</strong> / <strong>Install The Franks Standard</strong></li>
       </ol>
+      <p v-if="!canInstall && swReady" class="install-note">App shell is ready — refresh once if Install is not in the menu yet.</p>
     </div>
   </div>
 </template>
 
 <script setup>
-const { canInstall, isIos, isStandalone, promptInstall } = useAppInstall()
+const props = defineProps({
+  openHelp: { type: Boolean, default: false },
+})
+
+const { canInstall, isIos, isStandalone, swReady, promptInstall } = useAppInstall()
 const showIosHelp = ref(false)
-const showGenericHelp = ref(false)
+const showGenericHelp = ref(props.openHelp)
+
+onMounted(() => {
+  if (props.openHelp && !isIos.value) showGenericHelp.value = true
+})
 
 async function doInstall () {
   await promptInstall()
@@ -88,4 +101,5 @@ async function doInstall () {
 }
 .install-help ol { margin: 8px 0 0; padding-left: 1.2rem; }
 .install-help li { margin-bottom: 6px; }
+.install-note { margin: 10px 0 0; font-size: 0.82rem; color: var(--stone-400); }
 </style>
