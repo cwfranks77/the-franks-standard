@@ -95,6 +95,29 @@
             <p class="text-muted mb-2">Provide supplier information. The buyer's address will be shared with your supplier for direct fulfillment.</p>
 
             <div class="form-group">
+              <label class="label">Dropship Provider</label>
+              <select class="select" v-model="dropship.providerKey">
+                <option value="">Custom / Private Supplier</option>
+                <option v-for="provider in dropshipProviders" :key="provider.key" :value="provider.key">
+                  {{ provider.name }}
+                </option>
+              </select>
+            </div>
+
+            <div v-if="selectedDropshipProvider" class="dropship-provider-card">
+              <p class="dropship-provider-name">{{ selectedDropshipProvider.name }}</p>
+              <p class="text-muted">{{ selectedDropshipProvider.note }}</p>
+              <a
+                class="dropship-provider-link"
+                :href="selectedDropshipProvider.website"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open provider website
+              </a>
+            </div>
+
+            <div class="form-group">
               <label class="label">Supplier Name</label>
               <input class="input" v-model="dropship.supplierName" placeholder="e.g. AuthentiCards Supply Co." required />
             </div>
@@ -231,6 +254,51 @@ const categories = [
   'Vintage Electronics & Games',
 ]
 
+const dropshipProviders = [
+  {
+    key: 'inventory-source',
+    name: 'Inventory Source',
+    website: 'https://www.inventorysource.com/',
+    contactEmail: 'support@inventorysource.com',
+    note: 'Supplier directory + inventory/order automation.',
+  },
+  {
+    key: 'spocket',
+    name: 'Spocket',
+    website: 'https://www.spocket.co/',
+    contactEmail: 'support@spocket.co',
+    note: 'US/EU suppliers and ecommerce integrations.',
+  },
+  {
+    key: 'syncee',
+    name: 'Syncee',
+    website: 'https://syncee.com/',
+    contactEmail: 'support@syncee.com',
+    note: 'Marketplace network with automated product sync.',
+  },
+  {
+    key: 'doba',
+    name: 'Doba',
+    website: 'https://www.doba.com/',
+    contactEmail: 'support@doba.com',
+    note: 'Catalog and fulfillment workflows for dropship sellers.',
+  },
+  {
+    key: 'zendrop',
+    name: 'Zendrop',
+    website: 'https://www.zendrop.com/',
+    contactEmail: 'support@zendrop.com',
+    note: 'Fast-ship programs and branded package options.',
+  },
+  {
+    key: 'cjdropshipping',
+    name: 'CJdropshipping',
+    website: 'https://cjdropshipping.com/',
+    contactEmail: 'support@cjdropshipping.com',
+    note: 'Global sourcing and fulfillment with warehouse options.',
+  },
+]
+
 const form = reactive({
   title: '',
   description: '',
@@ -243,10 +311,15 @@ const form = reactive({
 })
 
 const dropship = reactive({
+  providerKey: '',
   supplierName: '',
   supplierEmail: '',
   shipTime: '',
   shipsFrom: '',
+})
+
+const selectedDropshipProvider = computed(() => {
+  return dropshipProviders.find((p) => p.key === dropship.providerKey) || null
 })
 
 const photoPreviews = ref([])
@@ -260,6 +333,20 @@ onMounted(() => {
     listingMode.value = 'dropship'
   } else if (mode === 'direct') {
     listingMode.value = 'direct'
+  }
+})
+
+watch(() => dropship.providerKey, (providerKey) => {
+  if (!providerKey) return
+  const provider = dropshipProviders.find((p) => p.key === providerKey)
+  if (!provider) return
+
+  // Prefill only when fields are empty, so owner can override.
+  if (!dropship.supplierName) {
+    dropship.supplierName = provider.name
+  }
+  if (!dropship.supplierEmail && provider.contactEmail) {
+    dropship.supplierEmail = provider.contactEmail
   }
 })
 
@@ -525,6 +612,26 @@ async function submitListing() {
   background: rgba(0, 224, 255, 0.05); border: 1px solid rgba(0, 224, 255, 0.15);
   border-radius: var(--radius); font-size: 0.85rem; color: var(--stone-300); line-height: 1.6;
 }
+.dropship-provider-card {
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  background: rgba(201, 168, 76, 0.08);
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  border-radius: var(--radius);
+}
+.dropship-provider-name {
+  margin: 0 0 4px;
+  font-weight: 700;
+  color: var(--gold);
+}
+.dropship-provider-link {
+  display: inline-flex;
+  margin-top: 6px;
+  color: var(--gold-light);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.dropship-provider-link:hover { color: var(--gold); }
 .sell-owner-banner {
   display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
   margin-bottom: 24px; padding: 18px 20px;

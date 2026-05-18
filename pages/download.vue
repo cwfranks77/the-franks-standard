@@ -12,7 +12,7 @@
             class="btn btn-primary btn-lg dl-install-main"
             @click="onInstallClick"
           >
-            {{ canInstall ? 'Install App' : 'Show Install Steps' }}
+            {{ canInstall ? 'Install App' : 'Try Install / Show Steps' }}
           </button>
           <button
             v-else
@@ -41,7 +41,7 @@
             <li>Tap <strong>three-dot menu</strong> -> <strong>Install app</strong></li>
             <li>Confirm <strong>Install</strong></li>
           </ol>
-          <button v-if="!isIos && !isStandalone" type="button" class="btn btn-primary dl-btn" @click="onInstallClick">Install App</button>
+          <button v-if="!isIos && !isStandalone" type="button" class="btn btn-primary dl-btn" @click="onInstallClick">{{ canInstall ? 'Install App' : 'Try Install / Show Steps' }}</button>
         </div>
 
         <div class="dl-card">
@@ -61,7 +61,7 @@
             <li>Install icon in the address bar, or</li>
             <li><strong>three-dot menu</strong> -> <strong>Install The Franks Standard</strong></li>
           </ol>
-          <button v-if="!isIos && !isStandalone" type="button" class="btn btn-primary dl-btn" @click="onInstallClick">Install App</button>
+          <button v-if="!isIos && !isStandalone" type="button" class="btn btn-primary dl-btn" @click="onInstallClick">{{ canInstall ? 'Install App' : 'Try Install / Show Steps' }}</button>
         </div>
       </div>
 
@@ -94,16 +94,18 @@ const iosHelpOpen = ref(false)
 
 async function onInstallClick () {
   installMsg.value = ''
-  if (!canInstall.value && isChromium.value) {
-    installMsg.value = 'Use Chrome menu (three dots) -> Install app, or use the install icon in the address bar.'
-    document.getElementById('browser-install')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  // Always attempt native prompt first. Some environments can still open
+  // install UI even when canInstall isn't currently true.
+  const ok = await promptInstall()
+  if (ok) {
+    installMsg.value = 'Install prompt opened. If it did not appear, use the browser install menu below.'
     return
   }
 
-  const ok = await promptInstall()
-  if (!ok) {
-    installMsg.value = 'Use Chrome menu (three dots) -> Install app, or use the install icon in the address bar.'
-    document.getElementById('browser-install')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  if (isChromium.value) {
+    installMsg.value = 'No native prompt was available. Use Chrome/Edge menu (three dots) -> Install app, or the install icon in the address bar.'
+  } else {
+    installMsg.value = 'Native install prompt not available in this browser. Follow the platform steps below.'
   }
 }
 </script>
