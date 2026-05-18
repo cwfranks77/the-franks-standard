@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://thefranksstandard.com/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
+  <url><loc>https://thefranksstandard.com/browse</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>https://thefranksstandard.com/sell</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://thefranksstandard.com/download</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://thefranksstandard.com/categories</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://thefranksstandard.com/pricing</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://thefranksstandard.com/sellers</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://thefranksstandard.com/launch-offer</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://thefranksstandard.com/how-it-works</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://thefranksstandard.com/about</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://thefranksstandard.com/contact</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://thefranksstandard.com/support</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://thefranksstandard.com/compare</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://thefranksstandard.com/video</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://thefranksstandard.com/auth/register</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://thefranksstandard.com/auth/login</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://thefranksstandard.com/terms</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://thefranksstandard.com/privacy</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+</urlset>
