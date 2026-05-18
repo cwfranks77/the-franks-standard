@@ -72,8 +72,9 @@ useSeoMeta({
 
 <style scoped>
 .page { padding: 48px 16px 100px; max-width: 640px; margin: 0 auto; }
-.lead { font-size: 1.05rem; line-height: 1.6; margin-bottom: 24px; }
-.label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gold); margin-bottom: 6px; }
+.lead { font-size: 1.05rem; line-height: 1.6; margin-bottom: 24px; font-weight: 700; color: #111827; }
+.page .text-muted { color: #1f2937 !important; font-weight: 700; }
+.label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em; color: #374151; margin-bottom: 6px; font-weight: 800; }
 .email a { font-size: 1.1rem; font-weight: 600; }
 .phone-big a { font-size: 1.4rem; font-weight: 800; color: var(--trust-green); font-family: 'Cinzel', serif; text-decoration: none; }
 .phone-big a:hover { color: var(--gold); }
@@ -82,9 +83,9 @@ useSeoMeta({
 .contact-divider { border: none; border-top: 1px solid var(--stone-800); margin: 16px 0; }
 .small { font-size: 0.9rem; line-height: 1.5; }
 .alias-wrap { margin-top: 12px; }
-.alias-label { color: var(--stone-400); margin-bottom: 4px; }
-.alias-line { font-size: 0.9rem; line-height: 1.6; }
-.alias-line a { color: var(--stone-100); }
-.alias-line a:hover { color: var(--gold); }
+.alias-label { color: #374151; margin-bottom: 4px; font-weight: 800; }
+.alias-line { font-size: 0.9rem; line-height: 1.6; color: #1f2937; font-weight: 600; }
+.alias-line a { color: #146eb4; font-weight: 700; }
+.alias-line a:hover { color: #0f5f9c; }
 .mt-3 { margin-top: 1rem; }
 </style>

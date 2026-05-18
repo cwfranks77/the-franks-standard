@@ -87,7 +87,7 @@ img { max-width: 100%; height: auto; }
   gap: 8px;
   padding: 12px 28px;
   border-radius: var(--radius);
-  font-weight: 600;
+  font-weight: 800;
   font-size: 0.95rem;
   cursor: pointer;
   border: none;
@@ -151,6 +151,7 @@ img { max-width: 100%; height: auto; }
   font-size: 0.95rem;
   font-family: inherit;
   transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }
 .input:focus, .textarea:focus, .select:focus {
@@ -163,9 +164,9 @@ img { max-width: 100%; height: auto; }
 .label {
   display: block;
   margin-bottom: 6px;
-  font-weight: 500;
+  font-weight: 700;
   font-size: 0.9rem;
-  color: var(--stone-300);
+  color: var(--stone-800);
 }
 
 .form-group { margin-bottom: 20px; }
@@ -214,6 +215,7 @@ img { max-width: 100%; height: auto; }
   border: 1px solid #d7dde6;
   border-radius: var(--radius-lg);
   overflow: hidden;
+  color: #1f2937;
   transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
 }
 .card:hover {
@@ -222,6 +224,17 @@ img { max-width: 100%; height: auto; }
   border-color: #bfc8d4;
 }
 .card-body { padding: 18px; }
+
+/* Emergency readability fallback on light surfaces */
+.card .text-muted,
+.form-section .text-muted,
+.listing-type-btn .lt-desc,
+.sell-notice .text-muted,
+.dl-card .text-muted,
+.dl-ios-help .text-muted,
+.dl-install-alert .text-muted {
+  color: #4b5563 !important;
+}
 
 /* Badge */
 .badge {
@@ -292,7 +305,7 @@ img { max-width: 100%; height: auto; }
 .section-title {
   font-family: 'Cinzel', serif;
   font-size: clamp(1.5rem, 3vw, 2rem);
-  color: var(--stone-50);
+  color: var(--stone-900);
   margin-bottom: 12px;
   line-height: 1.2;
 }
@@ -305,7 +318,7 @@ img { max-width: 100%; height: auto; }
 /* Utility */
 .text-center { text-align: center; }
 .text-gold { color: var(--gold); }
-.text-muted { color: var(--stone-300); }
+.text-muted { color: var(--stone-700); }
 .mt-1 { margin-top: 8px; }
 .mt-2 { margin-top: 16px; }
 .mt-3 { margin-top: 24px; }

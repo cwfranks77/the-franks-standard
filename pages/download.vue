@@ -3,92 +3,39 @@
     <div class="container narrow">
       <div class="dl-hero text-center">
         <h1>Install The Franks Standard</h1>
-        <p class="text-muted lead">Add the app to your home screen or desktop - full screen, fast, no app store.</p>
+        <p class="text-muted lead">One install spot. Tap the button below.</p>
 
         <div v-if="!isStandalone" class="dl-install-hero">
           <button
-            v-if="!isIos"
             type="button"
             class="btn btn-primary btn-lg dl-install-main"
             @click="onInstallClick"
           >
-            {{ canInstall ? 'Install App' : 'Try Install / Show Steps' }}
-          </button>
-          <button
-            v-else
-            type="button"
-            class="btn btn-primary btn-lg dl-install-main"
-            @click="iosHelpOpen = true"
-          >
-            Install on iPhone (Safari)
+            Install App
           </button>
           <p v-if="installMsg" class="dl-install-msg" role="alert">{{ installMsg }}</p>
           <p v-else-if="!canInstall && !isIos && isChromium" class="dl-install-hint text-muted">
-            If the dialog does not open, use <strong>Chrome menu (three dots) -> Install app</strong> or the install icon in the address bar below.
+            If the popup does not appear, open browser menu (three dots) and tap <strong>Install app</strong>.
           </p>
         </div>
         <p v-else class="text-muted">You are already using the installed app.</p>
       </div>
 
       <div v-if="installHelpOpen && !isStandalone" class="dl-install-alert" role="status">
-        <h3>Install steps (this device)</h3>
+        <h3>Quick fallback steps</h3>
         <p v-if="isIos">
-          iPhone/iPad requires Safari: tap <strong>Share</strong> then <strong>Add to Home Screen</strong>.
+          iPhone/iPad: open in Safari, tap <strong>Share</strong>, then <strong>Add to Home Screen</strong>.
         </p>
         <p v-else-if="isChromium">
-          In Chrome/Edge, open the <strong>three-dot menu</strong> then tap <strong>Install app</strong>, or use the
-          install icon in the address bar.
+          Chrome/Edge: open the <strong>three-dot menu</strong>, then tap <strong>Install app</strong>.
         </p>
         <p v-else>
-          This browser does not expose a direct install prompt. Open <strong>thefranksstandard.com</strong> in Chrome/Edge/Safari and install from browser menu.
+          Use Chrome, Edge, or Safari and install from the browser menu.
         </p>
-        <div class="dl-install-alert-actions">
-          <a v-if="!isChromium && !isIos" href="https://thefranksstandard.com/download" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">
-            Open in supported browser
-          </a>
-          <button type="button" class="btn btn-outline btn-sm" @click="installHelpOpen = false">Hide steps</button>
-        </div>
+        <button type="button" class="btn btn-outline btn-sm" @click="installHelpOpen = false">Hide</button>
       </div>
 
       <AppInstallBanner />
-
-      <div id="browser-install" class="dl-grid">
-        <div class="dl-card">
-          <h2>Android</h2>
-          <p class="text-muted">Chrome or Edge.</p>
-          <ol class="dl-steps">
-            <li>Open <strong>thefranksstandard.com</strong> in Chrome</li>
-            <li>Tap <strong>three-dot menu</strong> -> <strong>Install app</strong></li>
-            <li>Confirm <strong>Install</strong></li>
-          </ol>
-          <button v-if="!isIos && !isStandalone" type="button" class="btn btn-primary dl-btn" @click="onInstallClick">{{ canInstall ? 'Install App' : 'Try Install / Show Steps' }}</button>
-        </div>
-
-        <div class="dl-card">
-          <h2>iPhone &amp; iPad</h2>
-          <p class="text-muted">Safari only.</p>
-          <ol class="dl-steps">
-            <li>Open in <strong>Safari</strong></li>
-            <li><strong>Share</strong> -> <strong>Add to Home Screen</strong></li>
-            <li>Tap <strong>Add</strong></li>
-          </ol>
-        </div>
-
-        <div class="dl-card">
-          <h2>Desktop</h2>
-          <p class="text-muted">Chrome, Edge, or Brave.</p>
-          <ol class="dl-steps">
-            <li>Install icon in the address bar, or</li>
-            <li><strong>three-dot menu</strong> -> <strong>Install The Franks Standard</strong></li>
-          </ol>
-          <button v-if="!isIos && !isStandalone" type="button" class="btn btn-primary dl-btn" @click="onInstallClick">{{ canInstall ? 'Install App' : 'Try Install / Show Steps' }}</button>
-        </div>
-      </div>
-
-      <div v-if="iosHelpOpen" class="dl-ios-help">
-        <p><strong>Safari:</strong> Share -> Add to Home Screen -> Add</p>
-        <button type="button" class="btn btn-outline btn-sm" @click="iosHelpOpen = false">Close</button>
-      </div>
 
       <div class="dl-cta text-center">
         <NuxtLink to="/auth/register" class="btn btn-primary btn-lg">Create your free account</NuxtLink>
@@ -113,14 +60,40 @@ const installMsg = ref('')
 const iosHelpOpen = ref(false)
 const installHelpOpen = ref(false)
 
+onMounted(async () => {
+  if (!import.meta.client) {
+    return
+  }
+  try {
+    if ('serviceWorker' in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations()
+      await Promise.all(regs.map((r) => r.unregister()))
+    }
+    if ('caches' in window) {
+      const names = await caches.keys()
+      await Promise.all(names.map((n) => caches.delete(n)))
+    }
+  } catch {
+    // Ignore cache reset errors; install flow should still work.
+  }
+})
+
 async function onInstallClick () {
   installMsg.value = ''
   installHelpOpen.value = false
+
+  if (isIos.value) {
+    iosHelpOpen.value = true
+    installHelpOpen.value = true
+    installMsg.value = 'iPhone/iPad cannot auto-download from a button. Use Safari -> Share -> Add to Home Screen.'
+    return
+  }
+
   // Always attempt native prompt first. Some environments can still open
   // install UI even when canInstall isn't currently true.
   const ok = await promptInstall()
   if (ok) {
-    installMsg.value = 'Install prompt opened. If it did not appear, use the browser install menu below.'
+    installMsg.value = 'Install prompt opened. Approve it to install the app.'
     return
   }
 
@@ -134,15 +107,16 @@ async function onInstallClick () {
 </script>
 
 <style scoped>
-.dl-page { padding: 48px 0 80px; }
+.dl-page { padding: 48px 0 80px; color: #111827; }
+.dl-page .text-muted { color: #1f2937 !important; font-weight: 700; }
 .narrow { max-width: 900px; margin: 0 auto; }
 .dl-hero { margin-bottom: 28px; }
-h1 { font-size: 2rem; margin-bottom: 10px; }
+h1 { font-size: 2rem; margin-bottom: 10px; color: #111827; }
 .lead { font-size: 1.05rem; max-width: 600px; margin: 0 auto 20px; }
 .dl-install-hero { margin-top: 8px; }
 .dl-install-main { min-width: 220px; padding: 14px 28px; font-size: 1.05rem; }
 .dl-install-msg, .dl-install-hint { margin-top: 12px; font-size: 0.9rem; max-width: 420px; margin-left: auto; margin-right: auto; }
-.dl-install-msg { color: var(--gold, #ffd84d); }
+.dl-install-msg { color: #1f2937; font-weight: 700; }
 .dl-install-alert {
   margin: 14px auto 0;
   max-width: 640px;
@@ -153,22 +127,8 @@ h1 { font-size: 2rem; margin-bottom: 10px; }
   border: 1px solid rgba(201, 168, 76, 0.35);
 }
 .dl-install-alert h3 { margin: 0 0 8px; color: var(--gold); font-size: 1rem; }
-.dl-install-alert p { margin: 0; color: var(--stone-200); font-size: 0.9rem; line-height: 1.5; }
+.dl-install-alert p { margin: 0; color: #1f2937; font-size: 0.9rem; line-height: 1.5; }
 .dl-install-alert-actions { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
-.dl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 28px; }
-@media (max-width: 768px) { .dl-grid { grid-template-columns: 1fr; } }
-.dl-card {
-  padding: 28px 24px; border: 1px solid var(--stone-800); border-radius: var(--radius-lg);
-  background: var(--stone-900); display: flex; flex-direction: column;
-}
-.dl-card h2 { font-size: 1.25rem; margin-bottom: 6px; }
-.dl-steps { margin: 16px 0; padding-left: 1.3rem; color: var(--stone-200); font-size: 0.9rem; line-height: 1.6; flex: 1; }
-.dl-steps li { margin-bottom: 8px; }
-.dl-btn { width: 100%; margin-top: 12px; }
-.dl-ios-help {
-  margin-top: 20px; padding: 16px; border-radius: var(--radius-lg);
-  background: var(--stone-900); border: 1px solid var(--stone-800); text-align: center;
-}
 .dl-cta { margin-top: 40px; }
 .dl-help {
   margin-top: 12px;

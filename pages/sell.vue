@@ -29,7 +29,7 @@
             type="button"
             class="listing-type-btn"
             :class="{ active: listingMode === 'direct' }"
-            @click="listingMode = 'direct'"
+            @click="setListingMode('direct')"
           >
             <span class="lt-icon">📦</span>
             <span class="lt-label">Direct Sale</span>
@@ -39,13 +39,15 @@
             type="button"
             class="listing-type-btn"
             :class="{ active: listingMode === 'dropship' }"
-            @click="listingMode = 'dropship'"
+            @click="setListingMode('dropship')"
           >
             <span class="lt-icon">🚚</span>
             <span class="lt-label">Dropship</span>
             <span class="lt-desc">Supplier ships direct to buyer</span>
           </button>
         </div>
+
+        <p v-if="modeNotice" class="mode-notice" role="status">{{ modeNotice }}</p>
 
         <form class="sell-form" @submit.prevent="submitListing">
           <!-- Item details -->
@@ -242,6 +244,7 @@ const supabase = useSupabaseClient()
 const route = useRoute()
 const submitting = ref(false)
 const listingMode = ref('direct')
+const modeNotice = ref('')
 
 const categories = [
   'Sports Cards & Memorabilia',
@@ -349,6 +352,21 @@ watch(() => dropship.providerKey, (providerKey) => {
     dropship.supplierEmail = provider.contactEmail
   }
 })
+
+async function setListingMode(mode) {
+  listingMode.value = mode
+  modeNotice.value = mode === 'dropship'
+    ? 'Dropship mode is active. Fill in supplier details below.'
+    : 'Direct sale mode is active. You will ship this item yourself.'
+
+  if (mode === 'dropship') {
+    await nextTick()
+    const section = document.querySelector('.dropship-section')
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+}
 
 function handlePhotos(e) {
   const files = Array.from(e.target.files)
@@ -477,14 +495,14 @@ async function submitListing() {
 .form-section {
   margin-bottom: 32px;
   padding: 28px;
-  border: 1px solid var(--stone-800);
+  border: 1px solid #d7dde6;
   border-radius: var(--radius-lg);
-  background: var(--stone-900);
+  background: #ffffff;
 }
 .form-section h2 {
   font-size: 1.2rem;
   margin-bottom: 16px;
-  color: var(--gold);
+  color: #111827;
 }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
@@ -543,18 +561,18 @@ async function submitListing() {
   display: flex;
   gap: 14px;
   padding: 18px;
-  border: 2px solid var(--stone-700);
+  border: 2px solid #d7dde6;
   border-radius: var(--radius);
   cursor: pointer;
   transition: border-color 0.2s, background 0.2s;
 }
 .coa-option.active {
-  border-color: var(--gold);
-  background: rgba(201, 168, 76, 0.05);
+  border-color: #f7ca00;
+  background: #fff8d9;
 }
 .coa-option input { margin-top: 3px; accent-color: var(--gold); }
 .coa-option h4 { font-family: 'Inter', sans-serif; font-size: 1rem; margin-bottom: 4px; }
-.coa-option p { font-size: 0.85rem; color: var(--stone-400); }
+.coa-option p { font-size: 0.85rem; color: #374151; }
 
 .guarantee-box {
   padding: 20px;
@@ -566,17 +584,17 @@ async function submitListing() {
   margin-bottom: 24px;
   padding: 18px 20px;
   border-radius: var(--radius-lg);
-  border: 1px solid rgba(201, 168, 76, 0.25);
-  background: rgba(201, 168, 76, 0.07);
+  border: 1px solid #f7ca00;
+  background: #fff8d9;
   font-size: 0.92rem;
   line-height: 1.6;
-  color: var(--stone-300);
+  color: #1f2937;
   text-align: left;
 }
 .sell-notice a { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }
 .guarantee-text {
   font-size: 0.9rem;
-  color: var(--stone-300);
+  color: #1f2937;
   line-height: 1.7;
 }
 .guarantee-text p { margin-bottom: 10px; }
@@ -585,7 +603,7 @@ async function submitListing() {
   gap: 10px;
   align-items: flex-start;
   font-size: 0.85rem;
-  color: var(--stone-300);
+  color: #1f2937;
   cursor: pointer;
 }
 .guarantee-check input { margin-top: 3px; accent-color: var(--gold); }
@@ -594,23 +612,33 @@ async function submitListing() {
 }
 .listing-type-btn {
   display: flex; flex-direction: column; align-items: center; gap: 4px;
-  padding: 20px 16px; border: 2px solid var(--stone-700);
-  border-radius: var(--radius-lg); background: var(--stone-900);
+  padding: 20px 16px; border: 2px solid #d7dde6;
+  border-radius: var(--radius-lg); background: #ffffff;
   cursor: pointer; transition: border-color 0.2s, background 0.2s; text-align: center;
-  color: var(--stone-300); font-family: inherit;
+  color: #1f2937; font-family: inherit;
 }
-.listing-type-btn:hover { border-color: var(--gold); }
+.listing-type-btn:hover { border-color: #f7ca00; }
 .listing-type-btn.active {
-  border-color: var(--gold); background: rgba(201, 168, 76, 0.06);
+  border-color: #f7ca00; background: #fff8d9;
+}
+.mode-notice {
+  margin: -6px 0 18px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  border: 1px solid #f7ca00;
+  background: #fff8d9;
+  color: #1f2937;
+  font-weight: 700;
+  font-size: 0.88rem;
 }
 .lt-icon { font-size: 1.8rem; }
-.lt-label { font-weight: 700; font-size: 1rem; color: var(--stone-100); }
-.lt-desc { font-size: 0.78rem; color: var(--stone-400); }
+.lt-label { font-weight: 700; font-size: 1rem; color: #111827; }
+.lt-desc { font-size: 0.78rem; color: #4b5563; }
 .dropship-section { border-color: var(--cyan); border-width: 2px; }
 .dropship-notice {
   margin-top: 12px; padding: 12px 14px;
-  background: rgba(0, 224, 255, 0.05); border: 1px solid rgba(0, 224, 255, 0.15);
-  border-radius: var(--radius); font-size: 0.85rem; color: var(--stone-300); line-height: 1.6;
+  background: #effbff; border: 1px solid #9fd9ff;
+  border-radius: var(--radius); font-size: 0.85rem; color: #1f2937; line-height: 1.6;
 }
 .dropship-provider-card {
   margin-bottom: 14px;
