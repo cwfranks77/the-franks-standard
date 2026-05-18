@@ -30,6 +30,26 @@
         <p v-else class="text-muted">You are already using the installed app.</p>
       </div>
 
+      <div v-if="installHelpOpen && !isStandalone" class="dl-install-alert" role="status">
+        <h3>Install steps (this device)</h3>
+        <p v-if="isIos">
+          iPhone/iPad requires Safari: tap <strong>Share</strong> then <strong>Add to Home Screen</strong>.
+        </p>
+        <p v-else-if="isChromium">
+          In Chrome/Edge, open the <strong>three-dot menu</strong> then tap <strong>Install app</strong>, or use the
+          install icon in the address bar.
+        </p>
+        <p v-else>
+          This browser does not expose a direct install prompt. Open <strong>thefranksstandard.com</strong> in Chrome/Edge/Safari and install from browser menu.
+        </p>
+        <div class="dl-install-alert-actions">
+          <a v-if="!isChromium && !isIos" href="https://thefranksstandard.com/download" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">
+            Open in supported browser
+          </a>
+          <button type="button" class="btn btn-outline btn-sm" @click="installHelpOpen = false">Hide steps</button>
+        </div>
+      </div>
+
       <AppInstallBanner />
 
       <div id="browser-install" class="dl-grid">
@@ -91,9 +111,11 @@ useSeoMeta({
 const { canInstall, isIos, isChromium, isStandalone, promptInstall } = useAppInstall()
 const installMsg = ref('')
 const iosHelpOpen = ref(false)
+const installHelpOpen = ref(false)
 
 async function onInstallClick () {
   installMsg.value = ''
+  installHelpOpen.value = false
   // Always attempt native prompt first. Some environments can still open
   // install UI even when canInstall isn't currently true.
   const ok = await promptInstall()
@@ -107,6 +129,7 @@ async function onInstallClick () {
   } else {
     installMsg.value = 'Native install prompt not available in this browser. Follow the platform steps below.'
   }
+  installHelpOpen.value = true
 }
 </script>
 
@@ -120,6 +143,18 @@ h1 { font-size: 2rem; margin-bottom: 10px; }
 .dl-install-main { min-width: 220px; padding: 14px 28px; font-size: 1.05rem; }
 .dl-install-msg, .dl-install-hint { margin-top: 12px; font-size: 0.9rem; max-width: 420px; margin-left: auto; margin-right: auto; }
 .dl-install-msg { color: var(--gold, #ffd84d); }
+.dl-install-alert {
+  margin: 14px auto 0;
+  max-width: 640px;
+  text-align: left;
+  padding: 14px 16px;
+  border-radius: var(--radius-lg);
+  background: rgba(201, 168, 76, 0.08);
+  border: 1px solid rgba(201, 168, 76, 0.35);
+}
+.dl-install-alert h3 { margin: 0 0 8px; color: var(--gold); font-size: 1rem; }
+.dl-install-alert p { margin: 0; color: var(--stone-200); font-size: 0.9rem; line-height: 1.5; }
+.dl-install-alert-actions { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
 .dl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 28px; }
 @media (max-width: 768px) { .dl-grid { grid-template-columns: 1fr; } }
 .dl-card {
