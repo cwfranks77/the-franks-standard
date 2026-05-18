@@ -329,6 +329,17 @@ li,
 label {
   font-weight: 700;
 }
+
+/* Hard-safe launch mode: force bold readable body copy everywhere */
+p,
+li,
+label,
+a,
+span.text-muted,
+.text-muted {
+  font-weight: 800 !important;
+  color: #111827 !important;
+}
 .mt-1 { margin-top: 8px; }
 .mt-2 { margin-top: 16px; }
 .mt-3 { margin-top: 24px; }
