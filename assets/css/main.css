@@ -326,6 +326,13 @@ img { max-width: 100%; height: auto; }
 .mb-2 { margin-bottom: 16px; }
 .mb-4 { margin-bottom: 32px; }
 
+/* Emergency readability pass for light surfaces */
+:is(.card, .form-section, .page, .dl-page, .sell-page, .panel, .contact-card, .dl-install-alert, .dl-ios-help)
+  :is(p, li, label, .label, .text-muted, a, span) {
+  color: #111827 !important;
+  font-weight: 700 !important;
+}
+
 /* Route transitions (global, matches nuxt app.pageTransition name: page) */
 .page-enter-active,
 .page-leave-active {
