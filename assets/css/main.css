@@ -41,6 +41,7 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--stone-100);
   color: var(--stone-900);
+  font-weight: 600;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   position: relative;
@@ -318,7 +319,16 @@ img { max-width: 100%; height: auto; }
 /* Utility */
 .text-center { text-align: center; }
 .text-gold { color: var(--gold); }
-.text-muted { color: var(--stone-700); }
+.text-muted {
+  color: #111827 !important;
+  font-weight: 800 !important;
+}
+.section-subtitle,
+p,
+li,
+label {
+  font-weight: 700;
+}
 .mt-1 { margin-top: 8px; }
 .mt-2 { margin-top: 16px; }
 .mt-3 { margin-top: 24px; }
