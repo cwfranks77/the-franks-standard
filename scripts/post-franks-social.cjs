@@ -1,6 +1,6 @@
 /**
  * Post The Franks Standard to Telegram, Facebook, X.
- * Reuse the same TELEGRAM_*, FACEBOOK_*, TWITTER_* (or X_*) variables as token/scripts/post-social.js for ZFUEL if you want one bot and apps for both brands.
+ * Uses standard TELEGRAM_*, FACEBOOK_*, and X_* environment variables.
  *
  *   cd the-franks-standard
  *   npm run post:social
@@ -46,6 +46,15 @@ Join: ${SITE}`
 const X_TWEET = `The Franks Standard is live — every listing: COA or signed guarantee. Collectibles & gear, proof-first. ${SITE}
 
 #collectibles #TheFranksStandard`
+
+function assertFranksBrandCopy () {
+  const combined = `${TELEGRAM_TEXT}\n${FACEBOOK_TEXT}\n${X_TWEET}`.toLowerCase()
+  const blocked = ['zentrafuel', 'zfuel', 'zentramesh']
+  const hit = blocked.find((w) => combined.includes(w))
+  if (hit) {
+    throw new Error(`Brand guard blocked post copy containing "${hit}".`)
+  }
+}
 
 function encodeRFC3986 (str) {
   return encodeURIComponent(str).replace(/[!'()*]/g, c => '%' + c.charCodeAt(0).toString(16).toUpperCase())
@@ -126,6 +135,7 @@ async function postX () {
 const argv = process.argv.slice(2)
 const all = argv.length === 0
 ;(async () => {
+  assertFranksBrandCopy()
   if (all || argv.includes('--telegram')) await postTelegram().catch(e => { console.error(e); process.exitCode = 1 })
   if (all || argv.includes('--facebook')) await postFacebook().catch(e => { console.error(e); process.exitCode = 1 })
   if (all || argv.includes('--x')) await postX().catch(e => { console.error(e); process.exitCode = 1 })
