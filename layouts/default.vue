@@ -608,15 +608,16 @@ async function submitOpModal () {
 .op-hint code { color: var(--cyan); font-size: 0.8em; }
 
 .site-ribbon {
-  background: linear-gradient(90deg, rgba(255, 45, 122, 0.2), rgba(0, 224, 255, 0.08), rgba(139, 92, 255, 0.15));
+  background: linear-gradient(90deg, rgba(255, 45, 122, 0.28), rgba(0, 224, 255, 0.16), rgba(139, 92, 255, 0.22));
   border-bottom: 1px solid rgba(0, 224, 255, 0.2);
-  font-size: 0.72rem;
-  font-weight: 700;
+  font-size: 0.84rem;
+  font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--stone-200);
+  letter-spacing: 0.12em;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
 }
-.site-ribbon-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 20px; padding: 7px 12px; }
+.site-ribbon-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 22px; padding: 10px 12px; }
 .ribbon-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); opacity: 0.6; }
 
 .site-trust { background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--stone-800); }
