@@ -405,7 +405,8 @@ const categories = [
 .t-line { display: block; }
 .t-line.t-sub {
   font-size: 0.5em;
-  -webkit-text-fill-color: var(--stone-200);
+  -webkit-text-fill-color: #111827;
+  color: #111827;
   font-weight: 700;
   margin-top: 0.2em;
   line-height: 1.3;
@@ -415,7 +416,8 @@ const categories = [
 }
 .hero-sub-epic {
   font-size: 1.06rem;
-  color: var(--stone-200);
+  color: #111827;
+  font-weight: 700;
   line-height: 1.7;
   max-width: 560px;
   margin: 0 0 4px;
@@ -485,10 +487,11 @@ const categories = [
 .founder-bar-text {
   margin: 0;
   font-size: 0.95rem;
-  color: var(--stone-100, #e8e4f0);
+  color: #111827;
+  font-weight: 700;
   line-height: 1.5;
 }
-.founder-bar-text strong { color: var(--gold, #ffd84d); }
+.founder-bar-text strong { color: #111827; font-weight: 900; }
 .founder-bar-actions {
   display: flex;
   flex-wrap: wrap;
