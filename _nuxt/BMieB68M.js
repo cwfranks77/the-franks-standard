@@ -1,1 +1,0 @@
-import{u}from"./DmRkKMBD.js";function n(){const s=u();function t(r){if(!r)return"/img/hero-showcase-v2.svg";const{data:e}=s.storage.from("listings").getPublicUrl(r);return e.publicUrl}return{publicUrlForPath:t}}export{n as u};

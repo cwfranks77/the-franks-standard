@@ -1,1 +1,0 @@
-import{J as n}from"./DtohoFz0.js";const s="tfs_ops_session_v1";function u(){const e=n("ops-authed",()=>!1);e.value=sessionStorage.getItem(s)==="1";function t(){sessionStorage.setItem(s,"1"),e.value=!0}function o(){sessionStorage.removeItem(s),e.value=!1}return{isAuthed:e,grant:t,revoke:o}}export{u};
