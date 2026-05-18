@@ -106,6 +106,15 @@
               </select>
             </div>
 
+            <div class="form-group">
+              <label class="label">Sales Channel</label>
+              <select class="select" v-model="dropship.salesChannelKey">
+                <option v-for="channel in dropshipChannels" :key="channel.key" :value="channel.key">
+                  {{ channel.name }}
+                </option>
+              </select>
+            </div>
+
             <div v-if="selectedDropshipProvider" class="dropship-provider-card">
               <p class="dropship-provider-name">{{ selectedDropshipProvider.name }}</p>
               <p class="text-muted">{{ selectedDropshipProvider.note }}</p>
@@ -117,6 +126,9 @@
               >
                 Open provider website
               </a>
+              <p v-if="selectedDropshipChannel" class="dropship-provider-channel">
+                Channel for this listing: <strong>{{ selectedDropshipChannel.name }}</strong>
+              </p>
             </div>
 
             <div class="form-group">
@@ -302,6 +314,17 @@ const dropshipProviders = [
   },
 ]
 
+const dropshipChannels = [
+  {
+    key: 'the-franks-standard',
+    name: 'The Franks Standard (Custom)',
+  },
+  {
+    key: 'custom-api-csv',
+    name: 'Custom API / CSV Feed',
+  },
+]
+
 const form = reactive({
   title: '',
   description: '',
@@ -315,6 +338,7 @@ const form = reactive({
 
 const dropship = reactive({
   providerKey: '',
+  salesChannelKey: 'the-franks-standard',
   supplierName: '',
   supplierEmail: '',
   shipTime: '',
@@ -323,6 +347,10 @@ const dropship = reactive({
 
 const selectedDropshipProvider = computed(() => {
   return dropshipProviders.find((p) => p.key === dropship.providerKey) || null
+})
+
+const selectedDropshipChannel = computed(() => {
+  return dropshipChannels.find((c) => c.key === dropship.salesChannelKey) || null
 })
 
 const photoPreviews = ref([])
@@ -350,6 +378,11 @@ watch(() => dropship.providerKey, (providerKey) => {
   }
   if (!dropship.supplierEmail && provider.contactEmail) {
     dropship.supplierEmail = provider.contactEmail
+  }
+
+  // Keep Franks as the default listing channel for provider-connected dropship flows.
+  if (!dropship.salesChannelKey) {
+    dropship.salesChannelKey = 'the-franks-standard'
   }
 })
 
@@ -660,6 +693,11 @@ async function submitListing() {
   text-underline-offset: 2px;
 }
 .dropship-provider-link:hover { color: var(--gold); }
+.dropship-provider-channel {
+  margin-top: 8px;
+  font-size: 0.82rem;
+  color: #1f2937;
+}
 .sell-owner-banner {
   display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
   margin-bottom: 24px; padding: 18px 20px;
