@@ -130,7 +130,8 @@ async function shareListing () {
 }
 
 const config = useRuntimeConfig()
-const buyUrl = computed(() => config.public.payOrderDepositUrl || '')
+const fallbackOrderDepositUrl = 'https://buy.stripe.com/cNiaEQeBg1gnezY4Y4bII0b'
+const buyUrl = computed(() => config.public.payOrderDepositUrl || fallbackOrderDepositUrl)
 
 const messageSellerHref = computed(() => {
   const title = listing.value ? listing.value.title : 'Listing'

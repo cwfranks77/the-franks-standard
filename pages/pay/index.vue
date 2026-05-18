@@ -60,6 +60,12 @@ useSeoMeta({
 const { isOwner } = useOwnerMode()
 const config = useRuntimeConfig()
 const c = config.public
+const fallbackPaymentLinks = {
+  payListingFeeUrl: 'https://buy.stripe.com/5kQfZa78O7EL8bAcqwbII09',
+  payProSellerUrl: 'https://buy.stripe.com/5kQfZaeBgaQX0J8duAbII0a',
+  payOrderDepositUrl: 'https://buy.stripe.com/cNiaEQeBg1gnezY4Y4bII0b',
+  payDisputeFeeUrl: 'https://buy.stripe.com/bJe8wIal09MT8bAfCIbII0c',
+}
 
 const items = computed(() => [
   {
@@ -67,7 +73,7 @@ const items = computed(() => [
     badge: 'Sellers',
     title: 'Listing or renewal fee',
     body: 'Charged per listing or subscription window you set in your Stripe product.',
-    url: c.payListingFeeUrl || null,
+    url: c.payListingFeeUrl || fallbackPaymentLinks.payListingFeeUrl,
     envName: 'NUXT_PUBLIC_PAY_LISTING_FEE_URL',
   },
   {
@@ -75,7 +81,7 @@ const items = computed(() => [
     badge: 'Sellers',
     title: 'Pro seller (optional)',
     body: 'Monthly or annual upgrade for featured slots - wire your own Stripe product.',
-    url: c.payProSellerUrl || null,
+    url: c.payProSellerUrl || fallbackPaymentLinks.payProSellerUrl,
     envName: 'NUXT_PUBLIC_PAY_PRO_SELLER_URL',
   },
   {
@@ -83,7 +89,7 @@ const items = computed(() => [
     badge: 'Buyers',
     title: 'Order payment / deposit',
     body: 'Point this link at your checkout for item payment or a deposit. Final release follows your escrow rules.',
-    url: c.payOrderDepositUrl || null,
+    url: c.payOrderDepositUrl || fallbackPaymentLinks.payOrderDepositUrl,
     envName: 'NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL',
   },
   {
@@ -91,7 +97,7 @@ const items = computed(() => [
     badge: 'Either party',
     title: 'Dispute or mediation fee',
     body: 'If you add a small fee for escalated review, use a separate Payment Link here.',
-    url: c.payDisputeFeeUrl || null,
+    url: c.payDisputeFeeUrl || fallbackPaymentLinks.payDisputeFeeUrl,
     envName: 'NUXT_PUBLIC_PAY_DISPUTE_FEE_URL',
   },
 ])

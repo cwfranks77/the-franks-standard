@@ -46,10 +46,12 @@ jobs:
           NUXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NUXT_PUBLIC_SUPABASE_KEY }}
           NUXT_PUBLIC_OPS_ACCESS_KEY: ${{ secrets.NUXT_PUBLIC_OPS_ACCESS_KEY }}
           NUXT_PUBLIC_OPS_ACCESS_KEY_HASH: ${{ secrets.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH }}
-          NUXT_PUBLIC_PAY_LISTING_FEE_URL: ${{ secrets.NUXT_PUBLIC_PAY_LISTING_FEE_URL }}
-          NUXT_PUBLIC_PAY_PRO_SELLER_URL: ${{ secrets.NUXT_PUBLIC_PAY_PRO_SELLER_URL }}
-          NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL: ${{ secrets.NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL }}
-          NUXT_PUBLIC_PAY_DISPUTE_FEE_URL: ${{ secrets.NUXT_PUBLIC_PAY_DISPUTE_FEE_URL }}
+          # Keep payment links non-empty in production.
+          # If a secret is absent, fall back to the known Stripe links used by nuxt.config defaults.
+          NUXT_PUBLIC_PAY_LISTING_FEE_URL: ${{ secrets.NUXT_PUBLIC_PAY_LISTING_FEE_URL || 'https://buy.stripe.com/5kQfZa78O7EL8bAcqwbII09' }}
+          NUXT_PUBLIC_PAY_PRO_SELLER_URL: ${{ secrets.NUXT_PUBLIC_PAY_PRO_SELLER_URL || 'https://buy.stripe.com/5kQfZaeBgaQX0J8duAbII0a' }}
+          NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL: ${{ secrets.NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL || 'https://buy.stripe.com/cNiaEQeBg1gnezY4Y4bII0b' }}
+          NUXT_PUBLIC_PAY_DISPUTE_FEE_URL: ${{ secrets.NUXT_PUBLIC_PAY_DISPUTE_FEE_URL || 'https://buy.stripe.com/bJe8wIal09MT8bAfCIbII0c' }}
           NUXT_PUBLIC_SITE_URL: ${{ secrets.NUXT_PUBLIC_SITE_URL }}
           NUXT_PUBLIC_OG_IMAGE: ${{ secrets.NUXT_PUBLIC_OG_IMAGE }}
         run: npm run build
