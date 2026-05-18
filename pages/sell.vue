@@ -216,6 +216,7 @@ useSeoMeta({
 const { isOwner } = useOwnerMode()
 const applicationMailto = buildSellerApplicationMailto()
 const supabase = useSupabaseClient()
+const route = useRoute()
 const submitting = ref(false)
 const listingMode = ref('direct')
 
@@ -252,6 +253,15 @@ const photoPreviews = ref([])
 const photoFiles = ref([])
 const coaFile = ref(null)
 const coaFileName = ref('')
+
+onMounted(() => {
+  const mode = String(route.query.mode || '').toLowerCase()
+  if (mode === 'dropship') {
+    listingMode.value = 'dropship'
+  } else if (mode === 'direct') {
+    listingMode.value = 'direct'
+  }
+})
 
 function handlePhotos(e) {
   const files = Array.from(e.target.files)

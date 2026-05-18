@@ -29,6 +29,14 @@
         </div>
         <div class="free-access-actions">
           <NuxtLink to="/sell" class="btn btn-primary btn-lg">Sell an Item (Free)</NuxtLink>
+          <NuxtLink to="/sell?mode=dropship" class="btn btn-primary btn-lg">Dropship Setup</NuxtLink>
+          <NuxtLink to="/sell?mode=direct" class="btn btn-outline btn-lg">Direct Sale Setup</NuxtLink>
+          <NuxtLink to="/store-builder" class="btn btn-outline btn-lg">AI Store Builder</NuxtLink>
+          <NuxtLink to="/sellers" class="btn btn-outline btn-lg">Seller Program</NuxtLink>
+          <NuxtLink to="/pricing" class="btn btn-outline btn-lg">Pricing</NuxtLink>
+          <NuxtLink to="/pay" class="btn btn-outline btn-lg">Pay &amp; Fees</NuxtLink>
+          <NuxtLink to="/video" class="btn btn-outline btn-lg">Video Rooms</NuxtLink>
+          <NuxtLink to="/support" class="btn btn-outline btn-lg">Support</NuxtLink>
           <NuxtLink to="/dashboard" class="btn btn-outline btn-lg">My Dashboard</NuxtLink>
           <NuxtLink to="/browse" class="btn btn-dark btn-lg">Browse Floor</NuxtLink>
         </div>
