@@ -180,10 +180,16 @@ async function handleRegister() {
 }
 .fine { font-size: 0.88rem; margin-top: 16px; }
 .form-err {
-  color: var(--rose);
+  color: #7f1d1d;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 10px 12px;
   font-size: 0.9rem;
+  font-weight: 600;
   margin-top: 8px;
   text-align: left;
+  line-height: 1.45;
 }
 .auth-logo { max-width: 220px; width: 100%; height: auto; max-height: 100px; object-fit: contain; margin-bottom: 20px; border-radius: 6px; }
 .auth-card h1 { font-size: 1.5rem; margin-bottom: 4px; }

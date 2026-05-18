@@ -48,6 +48,6 @@ useSeoMeta({
 .legal { max-width: 800px; }
 .legal h1 { font-size: 2rem; margin-bottom: 8px; }
 .legal h2 { font-size: 1.15rem; color: var(--gold); margin: 28px 0 10px; }
-.legal p { color: var(--stone-300); line-height: 1.7; font-size: 0.95rem; }
+.legal p { color: #374151; line-height: 1.7; font-size: 0.95rem; }
 .updated { color: var(--stone-500); font-size: 0.86rem; margin-bottom: 24px; }
 </style>

@@ -114,9 +114,12 @@ useSeoMeta({
 @media (max-width: 720px) {
   .grid.two { grid-template-columns: 1fr; }
 }
-.voice-lane { padding: 22px 20px; margin-bottom: 24px; border: 1px solid rgba(201, 168, 76, 0.35); background: linear-gradient(135deg, rgba(201, 168, 76, 0.08), rgba(18, 8, 32, 0.95)); }
-.phone-lane { padding: 28px 24px; margin-bottom: 24px; border: 2px solid rgba(0, 245, 160, 0.35); background: linear-gradient(135deg, rgba(0, 245, 160, 0.06), rgba(18, 8, 32, 0.95)); }
-.phone-lane h2 { font-size: 1.3rem; margin-bottom: 14px; color: var(--trust-green); }
+.voice-lane { padding: 22px 20px; margin-bottom: 24px; border: 1px solid #fca5a5; background: #fef2f2; }
+.voice-lane h2 { color: #7f1d1d; }
+.voice-lane .text-muted { color: #1f2937 !important; }
+.phone-lane { padding: 28px 24px; margin-bottom: 24px; border: 2px solid #86efac; background: #ecfdf5; }
+.phone-lane h2 { font-size: 1.3rem; margin-bottom: 14px; color: #14532d; }
+.phone-lane .text-muted { color: #1f2937 !important; }
 .phone-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
 .phone-number { font-size: 1.6rem; font-weight: 800; color: var(--trust-green); font-family: 'Cinzel', serif; text-decoration: none; }
 .phone-number:hover { color: var(--gold); }
@@ -128,12 +131,12 @@ useSeoMeta({
 .phone-badge-rec {
   background: rgba(255, 77, 106, 0.1); color: var(--alert-red); border-color: rgba(255, 77, 106, 0.3);
 }
-.voice-lane h2 { font-size: 1.2rem; margin-bottom: 12px; color: var(--gold); }
+.voice-lane h2 { font-size: 1.2rem; margin-bottom: 12px; }
 .voice-lane p { line-height: 1.6; font-size: 0.95rem; }
 .alias-note { margin-top: 10px; font-size: 0.88rem; }
 .lane { padding: 22px 20px; }
 .lane h2 { font-size: 1.25rem; margin-bottom: 8px; color: var(--gold); }
-.checklist { margin: 14px 0 0; padding-left: 1.15rem; line-height: 1.55; color: var(--stone-200); }
+.checklist { margin: 14px 0 0; padding-left: 1.15rem; line-height: 1.55; color: #374151; font-weight: 600; }
 .checklist li { margin-bottom: 10px; }
 .quick { padding: 22px 20px; margin-bottom: 28px; }
 .quick h2 { font-size: 1.15rem; margin-bottom: 12px; }

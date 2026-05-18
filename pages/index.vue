@@ -60,12 +60,13 @@
       </div>
     </section>
 
-    <div class="activity-ticker" aria-label="What the Standard stands for">
-      <div class="ticker-track">
-        <span v-for="(b, j) in tickerBelt" :key="`a-${j}`" class="ticker-bubble">{{ b }}</span>
-        <span v-for="(b, j) in tickerBelt" :key="`b-${j}`" class="ticker-bubble">{{ b }}</span>
+    <section class="activity-ticker" aria-label="What the Standard stands for">
+      <div class="container">
+        <ul class="ticker-list">
+          <li v-for="(b, j) in tickerBelt" :key="j" class="ticker-bubble">{{ b }}</li>
+        </ul>
       </div>
-    </div>
+    </section>
 
     <section class="section sig-section">
       <div class="container">
@@ -131,7 +132,7 @@
       </div>
     </section>
 
-    <section class="section section-dark">
+    <section class="section section-categories">
       <div class="container">
         <h2 class="section-title text-center">Curated for serious inventory</h2>
         <p class="section-subtitle text-center text-muted">If it belongs on a stage, a slab, a wall, or a rack — and it is real</p>
@@ -426,12 +427,14 @@ const categories = [
 .hero-help {
   margin: 12px 0 0;
   font-size: 0.9rem;
+  color: #111827;
+  font-weight: 700;
 }
 .hero-help a {
-  color: var(--gold);
-  font-weight: 600;
+  color: #146eb4;
+  font-weight: 700;
 }
-.hero-help a:hover { color: var(--gold-light); }
+.hero-help a:hover { color: #0f5f9c; }
 .hero-avatars {
   display: flex;
   flex-wrap: wrap;
@@ -455,11 +458,25 @@ const categories = [
 }
 .hero-badges { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
 .coa-badge-bright {
-  border-color: rgba(0, 224, 255, 0.45) !important;
-  color: var(--stone-100) !important;
-  background: rgba(255, 45, 122, 0.1) !important;
+  border-color: #fca5a5 !important;
+  color: #7f1d1d !important;
+  background: #fef2f2 !important;
+  font-weight: 700;
 }
-.coa-badge.soft { border-color: rgba(0, 224, 255, 0.25); color: var(--stone-200); }
+.coa-badge-bright::before {
+  background: #b91c1c !important;
+  color: #fff !important;
+}
+.coa-badge.soft {
+  border-color: #86efac;
+  color: #14532d !important;
+  background: #ecfdf5 !important;
+  font-weight: 700;
+}
+.coa-badge.soft::before {
+  background: #15803d !important;
+  color: #fff !important;
+}
 @media (max-width: 1024px) {
   .hero-grid { grid-template-columns: 1fr; }
 }
@@ -505,26 +522,34 @@ const categories = [
 }
 
 .activity-ticker {
-  overflow: hidden;
-  border-block: 1px solid rgba(0, 224, 255, 0.15);
-  background: linear-gradient(90deg, rgba(10,5,24,0.5), rgba(18,8,32,0.4));
+  border-block: 1px solid rgba(0, 224, 255, 0.22);
+  background: #0f0a1a;
   margin-bottom: 8px;
-  padding: 10px 0;
+  padding: 16px 0;
 }
-.ticker-track {
-  display: flex; gap: 2rem; width: max-content;
-  animation: ticker 34s linear infinite;
-}
-@keyframes ticker {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+.ticker-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 12px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 .ticker-bubble {
-  flex: 0 0 auto; white-space: nowrap; font-size: 0.85rem; font-weight: 600; color: var(--stone-200);
-}
-.ticker-bubble::before { content: '  '; }
-@media (prefers-reduced-motion: reduce) {
-  .ticker-track { animation: none; }
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.45;
+  color: #ffffff;
+  -webkit-text-fill-color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(0, 224, 255, 0.35);
+  border-radius: 999px;
+  padding: 8px 14px;
+  user-select: text;
+  -webkit-user-select: text;
+  cursor: text;
+  pointer-events: auto;
 }
 .sig-section {
   padding: 56px 0 24px;
@@ -590,13 +615,26 @@ const categories = [
 @media (min-width: 1024px) { .bento { grid-template-columns: repeat(2, 1fr); } }
 .inline-link { display: inline-block; margin-top: 20px; color: var(--gold); font-weight: 600; }
 .category-card {
-  padding: 24px; border: 1px solid var(--stone-800);
-  border-radius: var(--radius-lg); background: var(--stone-900); text-align: center; transition: border-color 0.2s;
+  padding: 24px;
+  border: 1px solid #d7dde6;
+  border-radius: var(--radius-lg);
+  background: #fff;
+  text-align: center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(17, 24, 39, 0.06);
 }
-.category-card:hover { border-color: var(--gold); }
+.category-card:hover { border-color: var(--gold); box-shadow: 0 8px 20px rgba(17, 24, 39, 0.1); }
 .category-emoji { font-size: 2.1rem; margin-bottom: 10px; }
-.category-card h4 { font-size: 0.9rem; margin-bottom: 6px; }
-.category-card p { color: var(--stone-400); font-size: 0.78rem; }
+.category-card h4 {
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+  color: #111827;
+  font-weight: 700;
+  font-family: 'Cinzel', serif;
+}
+.category-card p { color: #1f2937; font-size: 0.85rem; font-weight: 700; line-height: 1.5; }
+.section-categories .section-title { color: #111827 !important; }
+.section-categories .section-subtitle { color: #374151 !important; font-weight: 700 !important; }
 .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 .comp-col { padding: 28px; border-radius: var(--radius-lg); }
 .comp-bad { background: rgba(231, 76, 60, 0.05); border: 1px solid rgba(231, 76, 60, 0.18); }
@@ -605,7 +643,7 @@ const categories = [
 .comp-bad h3 { color: var(--alert-red); }
 .comp-good h3 { color: var(--trust-green); }
 .comp-col ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
-.comp-col li { color: var(--stone-300); font-size: 0.92rem; padding-left: 24px; position: relative; }
+.comp-col li { color: #1f2937; font-size: 0.92rem; font-weight: 600; padding-left: 24px; position: relative; }
 .comp-bad li::before { content: '\00d7'; position: absolute; left: 0; color: var(--alert-red); font-size: 1.1rem; }
 .comp-good li::before { content: '\2713'; position: absolute; left: 0; color: var(--trust-green); }
 .comp-cta { margin-top: 20px; }

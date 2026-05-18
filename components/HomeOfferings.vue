@@ -41,8 +41,16 @@ const offerings = [
 
 <style scoped>
 .offerings-section {
-  background: linear-gradient(180deg, rgba(12, 6, 25, 0.4) 0%, rgba(0, 0, 0, 0.15) 100%);
+  background: linear-gradient(180deg, rgba(12, 6, 25, 0.92) 0%, rgba(20, 14, 38, 0.88) 100%);
   border-block: 1px solid rgba(255, 216, 77, 0.08);
+}
+.offerings-section .section-title {
+  color: #f9fafb;
+  -webkit-text-fill-color: #f9fafb;
+}
+.offerings-section .section-subtitle {
+  color: #e5e7eb;
+  -webkit-text-fill-color: #e5e7eb;
 }
 .eyebrow {
   font-size: 0.72rem;
@@ -66,25 +74,19 @@ const offerings = [
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: linear-gradient(155deg, rgba(160, 124, 255, 0.06), rgba(20, 14, 38, 0.95));
   text-decoration: none;
-  color: inherit;
+  color: #f3f4f6;
+  user-select: text;
+  -webkit-user-select: text;
 }
 .offer-icon {
   font-size: 1.75rem;
   margin-bottom: 12px;
   display: inline-block;
-  animation: offer-float 4s ease-in-out infinite;
-  animation-delay: calc(var(--stagger, 0) * 0.15s);
-}
-@keyframes offer-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .offer-icon { animation: none; }
 }
 .offer-card h3 {
   font-size: 1.05rem;
-  color: var(--stone-50);
+  color: #ffffff;
+  -webkit-text-fill-color: #ffffff;
   margin: 0 0 8px;
   font-family: 'Cinzel', serif;
 }
@@ -93,7 +95,9 @@ const offerings = [
   margin: 0;
   font-size: 0.88rem;
   line-height: 1.55;
-  color: var(--stone-400);
+  color: #e5e7eb;
+  -webkit-text-fill-color: #e5e7eb;
+  font-weight: 600;
 }
 .offer-cta {
   margin-top: 14px;

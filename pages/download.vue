@@ -3,7 +3,7 @@
     <div class="container narrow">
       <div class="dl-hero text-center">
         <h1>Install The Franks Standard</h1>
-        <p class="text-muted lead">One install spot. Tap the button below.</p>
+        <p class="text-muted lead">One install spot for Android, iPhone/iPad, and desktop.</p>
 
         <div v-if="!isStandalone" class="dl-install-hero">
           <button
@@ -57,25 +57,13 @@ useSeoMeta({
 
 const { canInstall, isIos, isChromium, isStandalone, promptInstall } = useAppInstall()
 const installMsg = ref('')
-const iosHelpOpen = ref(false)
 const installHelpOpen = ref(false)
-
-onMounted(async () => {
-  if (!import.meta.client) {
-    return
+const iosNeedsSafari = computed(() => {
+  if (!import.meta.client || !isIos.value) {
+    return false
   }
-  try {
-    if ('serviceWorker' in navigator) {
-      const regs = await navigator.serviceWorker.getRegistrations()
-      await Promise.all(regs.map((r) => r.unregister()))
-    }
-    if ('caches' in window) {
-      const names = await caches.keys()
-      await Promise.all(names.map((n) => caches.delete(n)))
-    }
-  } catch {
-    // Ignore cache reset errors; install flow should still work.
-  }
+  const ua = navigator.userAgent || ''
+  return /CriOS|FxiOS|EdgiOS|OPiOS/i.test(ua)
 })
 
 async function onInstallClick () {
@@ -83,9 +71,10 @@ async function onInstallClick () {
   installHelpOpen.value = false
 
   if (isIos.value) {
-    iosHelpOpen.value = true
     installHelpOpen.value = true
-    installMsg.value = 'iPhone/iPad cannot auto-download from a button. Use Safari -> Share -> Add to Home Screen.'
+    installMsg.value = iosNeedsSafari.value
+      ? 'On iPhone/iPad, open this site in Safari first, then Share -> Add to Home Screen.'
+      : 'iPhone/iPad cannot auto-download from a button. Use Safari -> Share -> Add to Home Screen.'
     return
   }
 

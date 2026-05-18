@@ -52,7 +52,7 @@
 .legal-page { padding: 60px 0; }
 .legal-page h1 { font-size: 2rem; }
 .legal-content h2 { font-size: 1.2rem; color: var(--gold); margin: 28px 0 12px; }
-.legal-content p { color: var(--stone-300); margin-bottom: 12px; line-height: 1.7; }
-.legal-content ul { padding-left: 24px; color: var(--stone-300); margin-bottom: 16px; }
+.legal-content p { color: #374151; margin-bottom: 12px; line-height: 1.7; }
+.legal-content ul { padding-left: 24px; color: #374151; margin-bottom: 16px; }
 .legal-content li { margin-bottom: 8px; line-height: 1.6; }
 </style>

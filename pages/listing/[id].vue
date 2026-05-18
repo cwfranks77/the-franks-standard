@@ -130,8 +130,7 @@ async function shareListing () {
 }
 
 const config = useRuntimeConfig()
-const fallbackOrderDepositUrl = 'https://buy.stripe.com/cNiaEQeBg1gnezY4Y4bII0b'
-const buyUrl = computed(() => config.public.payOrderDepositUrl || fallbackOrderDepositUrl)
+const buyUrl = computed(() => config.public.payOrderDepositUrl || '')
 
 const messageSellerHref = computed(() => {
   const title = listing.value ? listing.value.title : 'Listing'
@@ -282,7 +281,7 @@ watch(
   margin-bottom: 8px;
   color: var(--gold);
 }
-.listing-description p { color: var(--stone-300); font-size: 0.9rem; line-height: 1.7; }
+.listing-description p { color: #374151; font-size: 0.9rem; line-height: 1.7; font-weight: 600; }
 .seller-card {
   display: flex;
   align-items: center;

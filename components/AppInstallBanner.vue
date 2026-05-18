@@ -97,9 +97,9 @@ async function doInstall () {
 <style scoped>
 .install-banner {
   padding: 20px;
-  border: 1px solid rgba(0, 224, 255, 0.25);
+  border: 1px solid #c6ced8;
   border-radius: var(--radius-lg, 12px);
-  background: linear-gradient(135deg, rgba(0, 224, 255, 0.06), rgba(139, 92, 255, 0.06));
+  background: #fff;
 }
 .install-inner {
   display: flex; align-items: center; justify-content: space-between;
@@ -107,19 +107,19 @@ async function doInstall () {
 }
 .install-title {
   font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.1rem;
-  color: var(--stone-100); margin: 0 0 4px;
+  color: #111827; margin: 0 0 4px;
 }
 .install-sub {
-  font-size: 0.85rem; color: var(--stone-400); margin: 0; line-height: 1.4;
+  font-size: 0.85rem; color: #374151; margin: 0; line-height: 1.4; font-weight: 600;
 }
 .install-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
 .install-btn { white-space: nowrap; }
 .install-help {
   margin-top: 14px; padding: 14px;
-  background: rgba(0, 0, 0, 0.2); border-radius: var(--radius, 8px);
-  font-size: 0.88rem; color: var(--stone-200); line-height: 1.6;
+  background: #f3f4f6; border: 1px solid #d7dde6; border-radius: var(--radius, 8px);
+  font-size: 0.88rem; color: #111827; line-height: 1.6; font-weight: 600;
 }
 .install-help ol { margin: 8px 0 0; padding-left: 1.2rem; }
-.install-help li { margin-bottom: 6px; }
-.install-note { margin: 10px 0 0; font-size: 0.82rem; color: var(--stone-400); }
+.install-help li { margin-bottom: 6px; color: #1f2937; }
+.install-note { margin: 10px 0 0; font-size: 0.82rem; color: #374151; font-weight: 600; }
 </style>

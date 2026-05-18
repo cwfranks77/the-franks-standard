@@ -60,12 +60,6 @@ useSeoMeta({
 const { isOwner } = useOwnerMode()
 const config = useRuntimeConfig()
 const c = config.public
-const fallbackPaymentLinks = {
-  payListingFeeUrl: 'https://buy.stripe.com/5kQfZa78O7EL8bAcqwbII09',
-  payProSellerUrl: 'https://buy.stripe.com/5kQfZaeBgaQX0J8duAbII0a',
-  payOrderDepositUrl: 'https://buy.stripe.com/cNiaEQeBg1gnezY4Y4bII0b',
-  payDisputeFeeUrl: 'https://buy.stripe.com/bJe8wIal09MT8bAfCIbII0c',
-}
 
 const items = computed(() => [
   {
@@ -73,7 +67,7 @@ const items = computed(() => [
     badge: 'Sellers',
     title: 'Listing or renewal fee',
     body: 'Charged per listing or subscription window you set in your Stripe product.',
-    url: c.payListingFeeUrl || fallbackPaymentLinks.payListingFeeUrl,
+    url: c.payListingFeeUrl || null,
     envName: 'NUXT_PUBLIC_PAY_LISTING_FEE_URL',
   },
   {
@@ -81,7 +75,7 @@ const items = computed(() => [
     badge: 'Sellers',
     title: 'Pro seller (optional)',
     body: 'Monthly or annual upgrade for featured slots - wire your own Stripe product.',
-    url: c.payProSellerUrl || fallbackPaymentLinks.payProSellerUrl,
+    url: c.payProSellerUrl || null,
     envName: 'NUXT_PUBLIC_PAY_PRO_SELLER_URL',
   },
   {
@@ -89,7 +83,7 @@ const items = computed(() => [
     badge: 'Buyers',
     title: 'Order payment / deposit',
     body: 'Point this link at your checkout for item payment or a deposit. Final release follows your escrow rules.',
-    url: c.payOrderDepositUrl || fallbackPaymentLinks.payOrderDepositUrl,
+    url: c.payOrderDepositUrl || null,
     envName: 'NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL',
   },
   {
@@ -97,7 +91,7 @@ const items = computed(() => [
     badge: 'Either party',
     title: 'Dispute or mediation fee',
     body: 'If you add a small fee for escalated review, use a separate Payment Link here.',
-    url: c.payDisputeFeeUrl || fallbackPaymentLinks.payDisputeFeeUrl,
+    url: c.payDisputeFeeUrl || null,
     envName: 'NUXT_PUBLIC_PAY_DISPUTE_FEE_URL',
   },
 ])
@@ -109,17 +103,17 @@ const items = computed(() => [
 .pay-hero h1 { font-size: 1.85rem; margin-bottom: 0.5rem; }
 .pay-quick-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .lede { font-size: 1.02rem; line-height: 1.7; }
-.lede strong { color: var(--stone-200); }
-.lede code { color: var(--gold-light); font-size: 0.85em; }
-.pay-card h2 { font-size: 1.1rem; margin: 0.5rem 0; color: var(--stone-100); }
-.pay-card .text-muted { font-size: 0.92rem; }
+.lede strong { color: #111827; }
+.lede code { color: #9a6b00; font-size: 0.85em; }
+.pay-card h2 { font-size: 1.1rem; margin: 0.5rem 0; color: #111827; }
+.pay-card .text-muted { font-size: 0.92rem; color: #374151; }
 .op-warn-inline {
   font-size: 0.82rem;
   background: rgba(255, 61, 92, 0.1);
   border: 1px solid rgba(255, 61, 92, 0.2);
   border-radius: 8px;
   padding: 8px 10px;
-  color: var(--stone-200);
+  color: #7f1d1d;
 }
 .fine { font-size: 0.85rem; margin-top: 2rem; }
 .pay-owner-banner {
@@ -128,7 +122,7 @@ const items = computed(() => [
   border-radius: var(--radius-lg, 12px);
   border: 2px solid rgba(0, 245, 160, 0.35);
   background: linear-gradient(135deg, rgba(0, 245, 160, 0.08), rgba(201, 168, 76, 0.06));
-  color: var(--stone-200); line-height: 1.6;
+  color: #111827; line-height: 1.6;
 }
 .pay-owner-badge {
   display: inline-flex; align-items: center;

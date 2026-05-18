@@ -268,12 +268,13 @@ const quickFacts = [
 }
 .hub-strip-item {
   font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--stone-300);
+  font-weight: 700;
+  color: #111827;
+  -webkit-text-fill-color: #111827;
   padding: 8px 14px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid #d7dde6;
+  background: #f3f4f6;
   animation: strip-pop 0.6s ease backwards;
   animation-delay: calc(var(--i, 0) * 0.08s);
 }

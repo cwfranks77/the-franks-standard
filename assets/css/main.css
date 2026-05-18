@@ -1,15 +1,25 @@
 :root {
+  /*
+   * stone-50/800/900 = surfaces. stone-100–500 = legacy TEXT tokens (written for dark UI).
+   * .site-main remaps 100–500 for light pages; dark panels remap again locally.
+   */
   --stone-50: #ffffff;
-  --stone-100: #f8f9fb;
-  --stone-200: #eceff3;
-  --stone-300: #d7dde6;
-  --stone-400: #a7b1bf;
-  --stone-500: #6b7687;
-  --stone-600: #4f596a;
-  --stone-700: #394250;
+  --stone-100: #f3f4f6;
+  --stone-200: #e5e7eb;
+  --stone-300: #d1d5db;
+  --stone-400: #9ca3af;
+  --stone-500: #6b7280;
+  --stone-600: #4b5563;
+  --stone-700: #374151;
   --stone-800: #252b34;
-  --stone-900: #181d25;
+  --stone-900: #111827;
   --stone-950: #0e1116;
+
+  --text-primary: #111827;
+  --text-secondary: #374151;
+  --text-muted: #4b5563;
+  --text-on-dark: #f3f4f6;
+  --text-muted-on-dark: #c5cdd8;
 
   --gold: #ffb300;
   --gold-light: #ffce5d;
@@ -39,7 +49,7 @@
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--stone-100);
+  background: #f8f9fb;
   color: var(--stone-900);
   font-weight: 600;
   line-height: 1.65;
@@ -204,10 +214,99 @@ img { max-width: 100%; height: auto; }
   color: #4a4360;
 }
 .auth-card .form-err {
-  color: #b91c3c;
+  color: #7f1d1d;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-weight: 600;
+  line-height: 1.45;
 }
 .auth-card .form-ok {
-  color: #047857;
+  color: #14532d;
+  background: #ecfdf5;
+  border: 1px solid #86efac;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+/* Homepage hero trust badges (below “Need help getting in?”) */
+.hero-badges .coa-badge {
+  font-weight: 700;
+}
+.hero-badges .coa-badge.coa-badge-bright {
+  color: #7f1d1d !important;
+  background: #fef2f2 !important;
+  border-color: #fca5a5 !important;
+}
+.hero-badges .coa-badge.coa-badge-bright::before {
+  background: #b91c1c !important;
+  color: #fff !important;
+}
+.hero-badges .coa-badge.soft {
+  color: #14532d !important;
+  background: #ecfdf5 !important;
+  border-color: #86efac !important;
+}
+.hero-badges .coa-badge.soft::before {
+  background: #15803d !important;
+  color: #fff !important;
+}
+
+/* eBay/Amazon comparison boxes on light page */
+.comparison .comp-col li {
+  color: #1f2937 !important;
+  font-weight: 600 !important;
+}
+
+/* Category grid (“Curated for serious inventory”) — isolated from dark-section token remaps */
+.site-main .section-categories {
+  color: #111827;
+}
+.site-main .section-categories .section-title {
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+}
+.site-main .section-categories .section-subtitle,
+.site-main .section-categories .text-muted {
+  color: #374151 !important;
+  -webkit-text-fill-color: #374151 !important;
+  font-weight: 700 !important;
+}
+.site-main .section-categories .category-card {
+  background: #fff !important;
+  border: 1px solid #d7dde6 !important;
+  color: #111827 !important;
+  box-shadow: 0 2px 10px rgba(17, 24, 39, 0.08) !important;
+}
+.site-main .section-categories .category-card h4 {
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+  font-weight: 800 !important;
+}
+.site-main .section-categories .category-card p {
+  color: #1f2937 !important;
+  -webkit-text-fill-color: #1f2937 !important;
+  font-weight: 700 !important;
+  font-size: 0.85rem !important;
+  line-height: 1.5 !important;
+}
+.category-card,
+.page .cat {
+  background: #fff !important;
+  border-color: #d7dde6 !important;
+}
+.category-card h4,
+.page .cat .name {
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+}
+.category-card p,
+.page .cat .hint {
+  color: #1f2937 !important;
+  -webkit-text-fill-color: #1f2937 !important;
 }
 
 /* Cards */
@@ -320,8 +419,28 @@ img { max-width: 100%; height: auto; }
 .text-center { text-align: center; }
 .text-gold { color: var(--gold); }
 .text-muted {
-  color: #111827 !important;
-  font-weight: 800 !important;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+.site-main :is(
+  .sig-card,
+  .pillar-card,
+  .bento-card,
+  .hub-card,
+  .plan-card,
+  .faq-item,
+  .od-card,
+  .offer-card,
+  .stat-card,
+  .dash-section,
+  .preview-result,
+  .timeline-content,
+  .sec-item,
+  .reel-card,
+  .section-dark,
+  .section-muted
+) .text-muted {
+  color: var(--stone-300) !important;
 }
 .section-subtitle,
 p,
@@ -330,15 +449,96 @@ label {
   font-weight: 700;
 }
 
-/* Hard-safe launch mode: force bold readable body copy everywhere */
-p,
-li,
-label,
-a,
-span.text-muted,
-.text-muted {
-  font-weight: 800 !important;
-  color: #111827 !important;
+/* Default: light page shell — legacy var(--stone-100/300) resolves to dark readable text */
+.site-main {
+  --stone-100: #111827;
+  --stone-200: #374151;
+  --stone-300: #4b5563;
+  --stone-400: #6b7280;
+  --stone-500: #4b5563;
+}
+
+/* Dark panels — restore light-on-dark stone tokens for all nested scoped CSS */
+.site-main :is(
+  .sig-card,
+  .pillar-card,
+  .bento-card,
+  .stats-row,
+  .offer-card,
+  .plan-card,
+  .faq-item,
+  .hub-card,
+  .od-card,
+  .timeline-content,
+  .sec-item,
+  .stat-card,
+  .dash-section,
+  .preview-result,
+  .builder-page .form-section,
+  .result-section,
+  .matrix thead,
+  .promo-perk,
+  .attract-item,
+  .reel-card,
+  .about-card,
+  .video-card,
+  .section-dark,
+  .section-muted,
+  .activity-ticker,
+  .pricing-toggle,
+  .seller-card,
+  .only-here,
+  .contact-banner,
+  .ai-panel,
+  .ai-msg.is-bot
+) {
+  --stone-100: #f3f4f6;
+  --stone-200: #e5e7eb;
+  --stone-300: #d1d5db;
+  --stone-400: #b8c5d4;
+  --stone-500: #9ca3af;
+}
+
+/* Header / footer / modals (outside .site-main) */
+.site-header,
+.site-footer,
+.nav-more-panel,
+.header-nav.open,
+.op-modal {
+  --stone-100: #f3f4f6;
+  --stone-200: #e5e7eb;
+  --stone-300: #d1d5db;
+  --stone-400: #b8c5d4;
+  --stone-500: #9ca3af;
+}
+
+/* Support lanes — explicit light panels */
+.phone-lane,
+.voice-lane {
+  --stone-100: #111827;
+  --stone-200: #374151;
+  --stone-300: #4b5563;
+  --stone-400: #6b7280;
+}
+
+.site-main p:not(.reel-cat):not(.sig-desc):not(.hub-lead):not(.hub-note):not(.tc-label),
+.site-main li,
+.site-main label,
+.site-main span.text-muted,
+.site-main .text-muted {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.site-main :is(.sig-card, .pillar-card, .bento-card, .hub-card) .sig-desc,
+.site-main :is(.sig-card, .pillar-card, .bento-card, .hub-card) p:not(.hub-lead):not(.hub-note) {
+  color: #d1d5db !important;
+  -webkit-text-fill-color: #d1d5db !important;
+}
+.site-main .pillar-card h3,
+.site-main .bento-card h3,
+.site-main .sig-card h3 {
+  color: #f9fafb !important;
+  -webkit-text-fill-color: #f9fafb !important;
 }
 .mt-1 { margin-top: 8px; }
 .mt-2 { margin-top: 16px; }
@@ -347,11 +547,133 @@ span.text-muted,
 .mb-2 { margin-bottom: 16px; }
 .mb-4 { margin-bottom: 32px; }
 
-/* Emergency readability pass for light surfaces */
-:is(.card, .form-section, .page, .dl-page, .sell-page, .panel, .contact-card, .dl-install-alert, .dl-ios-help)
-  :is(p, li, label, .label, .text-muted, a, span) {
+/* Safety nets (gradients / special components) */
+.site-main .matrix tbody th,
+.site-main .matrix tbody td {
+  color: #374151 !important;
+  background: #fff !important;
+  font-weight: 600;
+}
+.site-main .matrix .row-label {
   color: #111827 !important;
   font-weight: 700 !important;
+}
+.site-main .matrix .tfs-cell {
+  color: #0d8a43 !important;
+  font-weight: 700 !important;
+}
+.site-main .section-dark .unique,
+.site-main .section-dark .unique li {
+  color: #e5e7eb !important;
+}
+.site-main :is(.legal, .legal-content, .legal-page) h2 {
+  color: var(--gold) !important;
+}
+.site-main .card:not(.phone-lane):not(.voice-lane):not(.od-card) a:not(.btn):not(.badge) {
+  color: #146eb4 !important;
+  font-weight: 700 !important;
+}
+.hero-title-epic .t-gold-shine {
+  -webkit-text-fill-color: transparent;
+}
+.hero-title-epic .t-line:not(.t-gold-shine) {
+  -webkit-text-fill-color: #111827;
+}
+
+/* Trust strip + product reel — static / user-scroll (selectable, readable) */
+.site-main .activity-ticker {
+  color: #ffffff;
+  background: #0f0a1a;
+  border-block-color: rgba(0, 224, 255, 0.22);
+}
+.site-main .ticker-list,
+.site-main .ticker-bubble {
+  user-select: text;
+  -webkit-user-select: text;
+  pointer-events: auto;
+}
+.site-main .ticker-bubble {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  font-weight: 700;
+}
+.site-main .reel-scroll {
+  user-select: text;
+  -webkit-user-select: text;
+  pointer-events: auto;
+}
+.site-main .reel-card {
+  color: #f9fafb !important;
+  user-select: text;
+  -webkit-user-select: text;
+}
+.site-main .reel-card h4 {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  font-weight: 800;
+}
+.site-main .reel-card .reel-cat {
+  color: #e5e7eb !important;
+  -webkit-text-fill-color: #e5e7eb !important;
+  font-weight: 600;
+}
+.site-main .reel-hint {
+  color: #374151 !important;
+  -webkit-text-fill-color: #374151 !important;
+}
+.site-main .showcase .section-title {
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+}
+.site-main .showcase .section-subtitle.text-muted {
+  color: #374151 !important;
+  -webkit-text-fill-color: #374151 !important;
+}
+.site-main .hub-section .hub-strip-item {
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+  background: #f3f4f6 !important;
+  border-color: #d7dde6 !important;
+  font-weight: 700;
+}
+
+/* Dark band: offerings grid (floating icon cards) */
+.site-main .offerings-section .section-title {
+  color: #f9fafb !important;
+  -webkit-text-fill-color: #f9fafb !important;
+}
+.site-main .offerings-section .section-subtitle.text-muted {
+  color: #e5e7eb !important;
+  -webkit-text-fill-color: #e5e7eb !important;
+}
+.site-main .offer-card {
+  color: #f3f4f6 !important;
+  user-select: text;
+  -webkit-user-select: text;
+  pointer-events: auto;
+}
+.site-main .offer-card h3 {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+.site-main .offer-card p {
+  color: #e5e7eb !important;
+  -webkit-text-fill-color: #e5e7eb !important;
+  font-weight: 600;
+}
+.site-main .offer-card .offer-cta {
+  color: #ffb300 !important;
+  -webkit-text-fill-color: #ffb300 !important;
+}
+
+/* Trust counters (animated numbers) */
+.site-main .tc-item .tc-label {
+  color: #d1d5db !important;
+  -webkit-text-fill-color: #d1d5db !important;
+}
+.site-main .trust-counter-section .tc-note.text-muted {
+  color: #4b5563 !important;
+  -webkit-text-fill-color: #4b5563 !important;
 }
 
 /* Route transitions (global, matches nuxt app.pageTransition name: page) */

@@ -56,7 +56,7 @@ useSeoMeta({
 h1 { font-size: 2rem; margin-bottom: 0.5rem; }
 .callout { padding: 1.5rem; margin: 1.5rem 0; }
 .callout h2 { font-size: 1.15rem; color: var(--gold); margin-bottom: 0.75rem; }
-.callout ul { color: var(--stone-300); line-height: 1.7; margin: 0; padding-left: 1.25rem; }
+.callout ul { color: #374151; line-height: 1.7; margin: 0; padding-left: 1.25rem; font-weight: 600; }
 .callout li { margin-bottom: 0.5rem; }
 .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 1.5rem; }
 .small { line-height: 1.5; }

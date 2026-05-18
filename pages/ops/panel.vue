@@ -30,6 +30,7 @@
         <div class="free-access-actions">
           <NuxtLink to="/sell" class="btn btn-primary btn-lg">Sell an Item (Free)</NuxtLink>
           <NuxtLink to="/sell?mode=dropship" class="btn btn-primary btn-lg">Dropship Setup</NuxtLink>
+          <NuxtLink to="/ops/dropship" class="btn btn-primary btn-lg">Dropship Automation</NuxtLink>
           <NuxtLink to="/sell?mode=direct" class="btn btn-outline btn-lg">Direct Sale Setup</NuxtLink>
           <NuxtLink to="/store-builder" class="btn btn-outline btn-lg">AI Store Builder</NuxtLink>
           <NuxtLink to="/sellers" class="btn btn-outline btn-lg">Seller Program</NuxtLink>
@@ -64,6 +65,7 @@
             <li><NuxtLink to="/support">Support</NuxtLink></li>
             <li><NuxtLink to="/compare">Compare to eBay / Amazon</NuxtLink></li>
             <li><NuxtLink to="/contact">Contact</NuxtLink></li>
+            <li><NuxtLink to="/ops/dropship"><strong>Dropship automation</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/ads"><strong>Social Media Ads</strong></NuxtLink></li>
           </ul>
         </section>

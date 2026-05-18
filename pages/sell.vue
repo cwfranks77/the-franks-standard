@@ -141,6 +141,19 @@
               <input class="input" type="email" v-model="dropship.supplierEmail" placeholder="supplier@example.com" />
             </div>
 
+            <div class="form-group">
+              <label class="label">Supplier SKU (Doba / automated feeds)</label>
+              <input
+                class="input"
+                v-model="dropship.supplierSku"
+                :required="listingMode === 'dropship' && dropship.providerKey === 'doba'"
+                placeholder="e.g. DOBA-12345"
+              />
+              <p v-if="dropship.providerKey === 'doba'" class="text-muted small mt-1">
+                Doba automation requires a supplier SKU so order line items can be forwarded automatically.
+              </p>
+            </div>
+
             <div class="form-row">
               <div class="form-group">
                 <label class="label">Estimated Ship Time</label>
@@ -341,6 +354,7 @@ const dropship = reactive({
   salesChannelKey: 'the-franks-standard',
   supplierName: '',
   supplierEmail: '',
+  supplierSku: '',
   shipTime: '',
   shipsFrom: '',
 })
@@ -438,6 +452,10 @@ async function submitListing() {
     alert('Add at least one item photo (first image is the cover).')
     return
   }
+  if (listingMode.value === 'dropship' && dropship.providerKey === 'doba' && !String(dropship.supplierSku || '').trim()) {
+    alert('Doba dropship listings require Supplier SKU before publishing.')
+    return
+  }
   submitting.value = true
   try {
     const { data: { user } } = await supabase.auth.getUser()
@@ -459,6 +477,15 @@ async function submitListing() {
         seller_legal_name: form.coaType === 'guarantee' ? form.sellerName.trim() : null,
         coa_storage_path: null,
         image_paths: [],
+        listing_mode: listingMode.value,
+        dropship_provider_key: listingMode.value === 'dropship' ? (dropship.providerKey || null) : null,
+        dropship_provider_name: listingMode.value === 'dropship' ? (selectedDropshipProvider.value?.name || null) : null,
+        dropship_sales_channel_key: listingMode.value === 'dropship' ? (dropship.salesChannelKey || 'the-franks-standard') : null,
+        dropship_supplier_name: listingMode.value === 'dropship' ? (dropship.supplierName.trim() || null) : null,
+        dropship_supplier_email: listingMode.value === 'dropship' ? (dropship.supplierEmail.trim() || null) : null,
+        dropship_supplier_sku: listingMode.value === 'dropship' ? (dropship.supplierSku.trim() || null) : null,
+        dropship_ship_time: listingMode.value === 'dropship' ? (dropship.shipTime || null) : null,
+        dropship_ships_from: listingMode.value === 'dropship' ? (dropship.shipsFrom.trim() || null) : null,
         status: 'published',
       })
       .select('id')
@@ -556,7 +583,7 @@ async function submitListing() {
   border: 2px dashed var(--stone-600);
   border-radius: var(--radius);
   cursor: pointer;
-  color: var(--stone-400);
+  color: #6b7280;
   font-size: 0.85rem;
   transition: border-color 0.2s;
 }
@@ -704,7 +731,7 @@ async function submitListing() {
   border-radius: var(--radius-lg);
   border: 2px solid rgba(0, 245, 160, 0.35);
   background: linear-gradient(135deg, rgba(0, 245, 160, 0.08), rgba(201, 168, 76, 0.06));
-  font-size: 0.92rem; line-height: 1.6; color: var(--stone-200);
+  font-size: 0.92rem; line-height: 1.6; color: #111827;
 }
 .sell-owner-badge {
   display: inline-flex; align-items: center; gap: 4px;

@@ -5,26 +5,26 @@
       <p class="section-subtitle text-center text-muted max-w">
         A non-stop reel: streetwear, slabs, chrono, gallery work. The Standard is a lookbook, not a grid of gray boxes.
       </p>
+      <p class="reel-hint text-center text-muted">Scroll sideways to browse — you can select and copy any label.</p>
     </div>
-    <div class="reel-wrap" aria-label="Product examples">
-      <div class="reel-mask">
-        <div class="reel-line">
-          <article v-for="(item, i) in lineDoubled" :key="`x-${i}`" class="reel-card">
-            <div class="reel-card-img">
-              <img
-                :src="item.src"
-                :alt="i < items.length ? item.alt : ''"
-                width="400"
-                height="260"
-                loading="lazy"
-                @error="onReelImgError"
-              />
-              <span class="reel-coa">COA</span>
-            </div>
-            <h4>{{ item.title }}</h4>
-            <p class="reel-cat">{{ item.tag }}</p>
-          </article>
-        </div>
+    <div class="reel-scroll" tabindex="0" aria-label="Product examples — scroll horizontally">
+      <div class="reel-line">
+        <article v-for="(item, i) in items" :key="item.title" class="reel-card">
+          <div class="reel-card-img">
+            <img
+              :src="item.src"
+              :alt="item.alt"
+              width="400"
+              height="260"
+              loading="lazy"
+              draggable="false"
+              @error="onReelImgError"
+            />
+            <span class="reel-coa">COA</span>
+          </div>
+          <h4>{{ item.title }}</h4>
+          <p class="reel-cat">{{ item.tag }}</p>
+        </article>
       </div>
     </div>
   </section>
@@ -46,50 +46,81 @@ const items = [
   { title: 'Deadstock', tag: 'Sneakers', alt: 'Sneakers', src: '/img/hero-showcase-v2.svg' },
   { title: 'Gallery & estate', tag: 'Art', alt: 'Art and antiques', src: '/img/hero-showcase-v2.svg' },
 ]
-const lineDoubled = computed(() => [...items, ...items])
 </script>
 
 <style scoped>
 .showcase { background: linear-gradient(180deg, rgba(0,0,0,0.18) 0%, transparent 50%); }
 .max-w { max-width: 700px; margin: 0 auto; }
-.reel-wrap { margin-top: 20px; overflow: hidden; }
-.reel-mask {
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+.reel-hint {
+  font-size: 0.82rem;
+  margin: 8px auto 0;
+  max-width: 520px;
+  color: #374151;
+  font-weight: 600;
+}
+.reel-scroll {
+  margin-top: 20px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+  padding: 10px 16px 18px;
+  user-select: text;
+  -webkit-user-select: text;
+  cursor: auto;
 }
 .reel-line {
-  display: flex; gap: 20px; width: max-content;
-  padding: 10px 0;
-  animation: reel-infinite 36s linear infinite;
-  will-change: transform;
-}
-@keyframes reel-infinite {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  display: flex;
+  gap: 20px;
+  width: max-content;
+  min-width: 100%;
 }
 .reel-card {
   flex: 0 0 280px;
-  background: linear-gradient(180deg, rgba(18, 8, 32, 0.8), var(--stone-900));
-  border: 1px solid rgba(0, 224, 255, 0.2);
+  scroll-snap-align: start;
+  background: linear-gradient(180deg, rgba(18, 8, 32, 0.95), #111827);
+  border: 1px solid rgba(0, 224, 255, 0.35);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 0 0 1px rgba(255, 45, 122, 0.12) inset, 0 10px 36px rgba(0,0,0,0.4);
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s;
+  box-shadow: 0 10px 36px rgba(0,0,0,0.25);
+  color: #f9fafb;
+  user-select: text;
+  -webkit-user-select: text;
+  pointer-events: auto;
 }
 .reel-card:hover {
-  transform: translateY(-4px) scale(1.01);
-  border-color: rgba(0, 224, 255, 0.45);
-  box-shadow: 0 0 32px rgba(255, 45, 122, 0.15), 0 12px 40px rgba(0,0,0,0.45);
+  border-color: rgba(0, 224, 255, 0.55);
 }
-.reel-card h4 { font-size: 0.95rem; padding: 12px 12px 4px; }
-.reel-cat { color: var(--stone-500); font-size: 0.8rem; padding: 0 12px 12px; margin: 0; }
+.reel-card h4 {
+  font-size: 0.95rem;
+  padding: 12px 12px 4px;
+  color: #ffffff;
+  -webkit-text-fill-color: #ffffff;
+  font-weight: 800;
+}
+.reel-cat {
+  color: #e5e7eb;
+  -webkit-text-fill-color: #e5e7eb;
+  font-size: 0.8rem;
+  padding: 0 12px 14px;
+  margin: 0;
+  font-weight: 600;
+}
 .reel-card-img { position: relative; aspect-ratio: 400/260; background: #111; }
-.reel-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.reel-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+}
 .reel-coa {
   position: absolute; bottom: 6px; right: 6px; font-size: 0.62rem; font-weight: 800;
-  letter-spacing: 0.12em; color: var(--gold); background: rgba(0,0,0,0.6); padding: 3px 6px; border-radius: 4px;
+  letter-spacing: 0.12em; color: var(--gold); background: rgba(0,0,0,0.75); padding: 3px 6px; border-radius: 4px;
 }
-@media (prefers-reduced-motion: reduce) {
-  .reel-line { animation: none; }
+.reel-scroll:focus-visible {
+  outline: 2px solid #146eb4;
+  outline-offset: 2px;
 }
 </style>

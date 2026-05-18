@@ -48,11 +48,12 @@ useSeoMeta({
 h1 { font-size: 2rem; margin-bottom: 8px; }
 .cat {
   display: flex; flex-direction: column; align-items: center; text-align: center;
-  padding: 28px 16px; border: 1px solid var(--stone-800); border-radius: var(--radius-lg);
-  background: var(--stone-900); text-decoration: none; color: inherit; transition: border-color 0.2s, transform 0.2s;
+  padding: 28px 16px; border: 1px solid #d7dde6; border-radius: var(--radius-lg);
+  background: #fff; text-decoration: none; color: inherit; transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(17, 24, 39, 0.06);
 }
-.cat:hover { border-color: var(--gold); transform: translateY(-2px); color: inherit; }
+.cat:hover { border-color: var(--gold); transform: translateY(-2px); color: inherit; box-shadow: 0 8px 20px rgba(17, 24, 39, 0.1); }
 .icon { font-size: 2rem; margin-bottom: 10px; }
-.name { font-family: 'Cinzel', serif; font-weight: 600; color: var(--stone-100); }
-.hint { font-size: 0.78rem; color: var(--stone-500); margin-top: 6px; }
+.name { font-family: 'Cinzel', serif; font-weight: 700; color: #111827; }
+.hint { font-size: 0.78rem; color: #374151; font-weight: 600; margin-top: 6px; }
 </style>

@@ -130,30 +130,30 @@ useSeoMeta({
   font-size: 0.75rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px;
 }
 .lead { font-size: 1.08rem; line-height: 1.7; max-width: 720px; }
-.lead strong { color: var(--stone-200); }
+.lead strong { color: #111827; }
 .section { padding: 64px 0; }
 .matrix-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: var(--radius-lg); border: 1px solid var(--stone-800); }
 .matrix { width: 100%; min-width: 700px; border-collapse: separate; border-spacing: 0; }
 .matrix th, .matrix td {
   padding: 14px 16px; font-size: 0.88rem; line-height: 1.45; text-align: left; vertical-align: top;
-  border-bottom: 1px solid var(--stone-800); color: var(--stone-300);
+  border-bottom: 1px solid #d7dde6; color: #374151;
 }
 .matrix thead th {
-  background: var(--stone-900); color: var(--stone-200); font-family: 'Cinzel', serif; font-size: 0.88rem;
+  background: #181d25; color: #f3f4f6; font-family: 'Cinzel', serif; font-size: 0.88rem;
 }
 .topic { width: 20%; }
 .tfs-col { color: var(--gold); }
-.row-label { color: var(--stone-200); font-weight: 600; }
-.tfs-cell { color: var(--stone-100); }
+.row-label { color: #111827; font-weight: 700; }
+.tfs-cell { color: #0d8a43; font-weight: 700; }
 .foot-note { font-size: 0.86rem; max-width: 900px; }
 @media (max-width: 900px) {
   .matrix { min-width: 640px; }
   .matrix-wrap { margin: 0 -4px; }
 }
 .fraud-table .tfs-cell { color: var(--trust-green); }
-.fraud-table td:nth-child(3), .fraud-table td:nth-child(4) { color: var(--stone-400); font-size: 0.85rem; }
+.fraud-table td:nth-child(3), .fraud-table td:nth-child(4) { color: #6b7280; font-size: 0.85rem; }
 .section-dark { background: rgba(0, 0, 0, 0.18); }
-.unique { max-width: 800px; margin: 0; padding-left: 1.1rem; color: var(--stone-300); line-height: 1.65; }
+.unique { max-width: 800px; margin: 0; padding-left: 1.1rem; color: #e5e7eb; line-height: 1.65; font-weight: 600; }
 .unique li { margin-bottom: 10px; }
 .cta-section { background: radial-gradient(ellipse at 50% 100%, rgba(201, 168, 76, 0.1) 0%, transparent 55%); }
 </style>

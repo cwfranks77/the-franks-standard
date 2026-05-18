@@ -198,7 +198,7 @@ const filteredListings = computed(() => {
   font-size: 0.95rem;
   font-weight: 600;
   margin: 4px 0 10px;
-  color: var(--stone-100);
+  color: #111827;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;

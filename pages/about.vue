@@ -88,7 +88,7 @@ h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); margin-bottom: 16px; }
 .about-card-gold { border-color: rgba(255,216,77,0.3); }
 .about-card h2 { font-size: 1.15rem; color: var(--gold); margin: 0 0 12px; }
 .pill-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 800px; margin: 0 auto; }
-.pill { padding: 10px 18px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.12); color: var(--stone-200); font-weight: 600; text-decoration: none; }
+.pill { padding: 10px 18px; border-radius: 999px; border: 1px solid #d7dde6; color: #374151; font-weight: 700; text-decoration: none; background: #fff; }
 .pill:hover { border-color: var(--gold); color: var(--gold); }
 .contact-banner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; margin-top: 48px; padding: 28px 32px; border-radius: var(--radius-xl); border: 1px solid rgba(16,255,176,0.25); }
 .banner-phone { font-family: Cinzel, serif; font-size: 1.2rem; color: var(--trust-green); text-decoration: none; display: block; margin-bottom: 10px; }

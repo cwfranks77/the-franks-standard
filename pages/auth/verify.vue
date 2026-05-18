@@ -106,8 +106,13 @@ onMounted(async () => {
   margin-bottom: 12px;
 }
 .err {
-  color: var(--rose);
+  color: #7f1d1d;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 10px 12px;
   font-size: 0.95rem;
+  font-weight: 600;
   line-height: 1.5;
 }
 .mt-2 {

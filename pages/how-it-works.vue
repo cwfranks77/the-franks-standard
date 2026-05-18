@@ -97,7 +97,7 @@ const faqs = reactive([
   font-size: 1.2rem;
 }
 .step-content h2 { font-size: 1.15rem; margin-bottom: 6px; }
-.step-content p { color: var(--stone-400); font-size: 0.9rem; }
+.step-content p { color: #374151; font-size: 0.9rem; font-weight: 600; }
 
 .faq-section { max-width: 700px; margin: 60px auto 0; }
 .faq {
@@ -111,13 +111,13 @@ const faqs = reactive([
   padding: 18px 0;
   background: none;
   border: none;
-  color: var(--stone-100);
+  color: #111827;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 700;
   cursor: pointer;
   text-align: left;
 }
 .faq-arrow { color: var(--gold); font-size: 1.3rem; flex-shrink: 0; }
 .faq-answer { padding: 0 0 18px; }
-.faq-answer p { color: var(--stone-400); font-size: 0.9rem; line-height: 1.6; }
+.faq-answer p { color: #374151; font-size: 0.9rem; line-height: 1.6; font-weight: 600; }
 </style>

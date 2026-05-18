@@ -167,14 +167,25 @@ async function handleLogin() {
   text-align: center;
 }
 .form-err {
-  color: var(--rose);
+  color: #7f1d1d;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 10px 12px;
   font-size: 0.9rem;
+  font-weight: 600;
   margin-top: 8px;
   text-align: left;
+  line-height: 1.45;
 }
 .form-ok {
-  color: var(--emerald);
+  color: #14532d;
+  background: #ecfdf5;
+  border: 1px solid #86efac;
+  border-radius: 8px;
+  padding: 10px 12px;
   font-size: 0.88rem;
+  font-weight: 600;
   margin-top: 8px;
   text-align: left;
   line-height: 1.45;
