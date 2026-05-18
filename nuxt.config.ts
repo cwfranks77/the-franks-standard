@@ -75,7 +75,6 @@ export default defineNuxtConfig({
       ],
     },
     workbox: {
-      navigateFallback: '/index.html',
       globPatterns: ['**/*.{js,css,html,png,svg,ico,json,woff2,webmanifest}'],
       // Force a newly built SW to take over immediately, so users do not
       // get stuck on a stale cached bundle after a deploy. Without these
@@ -83,7 +82,6 @@ export default defineNuxtConfig({
       // every tab is closed -- which looks like "site shows new content
       // for a second then reverts to the old version."
       skipWaiting: true,
-      clientsClaim: true,
       cleanupOutdatedCaches: true,
       runtimeCaching: [
         {
