@@ -26,26 +26,63 @@ function resolveRasterLogoPath () {
   return null
 }
 const SITE = 'https://thefranksstandard.com'
+const LINK_REGISTER = `${SITE}/auth/register`
+const LINK_SELL = `${SITE}/sell`
+const LINK_BROWSE = `${SITE}/browse`
+const LINK_SELLERS = `${SITE}/sellers`
+const LINK_PRICING = `${SITE}/pricing`
+const LINK_VIDEO = `${SITE}/video`
+const LINK_SUPPORT = `${SITE}/support`
+const LINK_DOWNLOAD = `${SITE}/download`
 
-const TELEGRAM_TEXT = `The Franks Standard is open — the authenticity-first marketplace for collectibles, gear, and high-trust inventory.
+const TELEGRAM_TEXT = `The Franks Standard is live - the authenticity-first marketplace for collectibles, gear, and high-trust inventory.
 
-COA or signed in-platform guarantee on every listing. Zero tolerance for fakes. Built for what bazaar marketplaces are not: proof, not just volume.
+What the platform offers:
+- COA or signed in-platform authenticity guarantee on every listing
+- Escrow flow: buyer confirms before final release
+- Seller onboarding with store-focused tools
+- AI Store Builder for faster listing setup
+- Integrated video rooms for live buyer/seller meetings
+- Buyer/seller support paths (chat, phone, email)
+- Pricing and launch offer pages for transparent seller costs
+- Installable app/PWA experience for mobile-first access
 
-${SITE}
+Direct links:
+Join free: ${LINK_REGISTER}
+Start selling: ${LINK_SELL}
+Browse now: ${LINK_BROWSE}
+For stores: ${LINK_SELLERS}
+Pricing: ${LINK_PRICING}
+Video rooms: ${LINK_VIDEO}
+Support: ${LINK_SUPPORT}
+Install app: ${LINK_DOWNLOAD}
 
-Sellers: join free. Buyers: know what you are getting.
+Main site: ${SITE}`
 
-— Charles Franks / The Franks Standard`
+const FACEBOOK_TEXT = `The Franks Standard is live: a proof-first marketplace built for serious buyers and sellers.
 
-const FACEBOOK_TEXT = `The Franks Standard is live. A new marketplace where every public listing is backed by a Certificate of Authenticity or a signed in-platform guarantee — not optional paperwork buried in a listing.
+Every listing requires a COA or signed in-platform authenticity guarantee, and the checkout flow is designed around buyer confidence with escrow-style confirmation.
 
-If you sell high-trust items, this is a floor for reputation, not a flood of fakes.
+Platform highlights:
+- Collectibles and high-trust inventory marketplace
+- Seller onboarding and store-first tools
+- AI Store Builder to accelerate setup
+- Built-in video rooms for real-time buyer/seller sessions
+- Dedicated pricing, support, and install flows
+- Zero-tolerance stance on fakes
 
-Join: ${SITE}`
+Direct links:
+Join: ${LINK_REGISTER}
+Sell: ${LINK_SELL}
+Browse: ${LINK_BROWSE}
+For stores: ${LINK_SELLERS}
+Support: ${LINK_SUPPORT}
+Install app: ${LINK_DOWNLOAD}
 
-const X_TWEET = `The Franks Standard is live — every listing: COA or signed guarantee. Collectibles & gear, proof-first. ${SITE}
+Main site: ${SITE}`
 
-#collectibles #TheFranksStandard`
+const X_TWEET = `The Franks Standard is live: COA/signed guarantee listings, escrow-style buyer confirmation, AI Store Builder, video rooms, seller onboarding, and installable app. Join now: ${LINK_REGISTER}
+#TheFranksStandard #collectibles`
 
 function assertFranksBrandCopy () {
   const combined = `${TELEGRAM_TEXT}\n${FACEBOOK_TEXT}\n${X_TWEET}`.toLowerCase()
@@ -54,6 +91,15 @@ function assertFranksBrandCopy () {
   if (hit) {
     throw new Error(`Brand guard blocked post copy containing "${hit}".`)
   }
+}
+
+function safeErrorMessage (error, platform) {
+  const msg = error?.response?.data?.error?.message
+    || error?.response?.data?.description
+    || error?.response?.statusText
+    || error?.message
+    || 'Unknown error'
+  return `${platform} post failed: ${msg}`
 }
 
 function encodeRFC3986 (str) {
@@ -136,7 +182,7 @@ const argv = process.argv.slice(2)
 const all = argv.length === 0
 ;(async () => {
   assertFranksBrandCopy()
-  if (all || argv.includes('--telegram')) await postTelegram().catch(e => { console.error(e); process.exitCode = 1 })
-  if (all || argv.includes('--facebook')) await postFacebook().catch(e => { console.error(e); process.exitCode = 1 })
-  if (all || argv.includes('--x')) await postX().catch(e => { console.error(e); process.exitCode = 1 })
+  if (all || argv.includes('--telegram')) await postTelegram().catch(e => { console.error(safeErrorMessage(e, 'Telegram')); process.exitCode = 1 })
+  if (all || argv.includes('--facebook')) await postFacebook().catch(e => { console.error(safeErrorMessage(e, 'Facebook')); process.exitCode = 1 })
+  if (all || argv.includes('--x')) await postX().catch(e => { console.error(safeErrorMessage(e, 'X')); process.exitCode = 1 })
 })()
