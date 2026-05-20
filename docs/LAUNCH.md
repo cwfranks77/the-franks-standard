@@ -86,7 +86,7 @@ cd the-franks-standard
 npm run post:social
 ```
 
-Uses `scripts/post-franks-social.cjs` (Telegram channel, Facebook Page, X). Env vars are documented in `.env.example` under “Social launch (optional)”.
+Uses `scripts/post-franks-social.cjs` (Telegram channel, Facebook Page, X). Env vars are in `.env.example`; Facebook token setup: **`docs/META-FACEBOOK-SETUP.md`**.
 
 **Option B — paste yourself** (works even without API keys): copy the site link and one line you believe in, e.g.  
 *The Franks Standard is live — proof-first marketplace for collectibles & gear. Every public listing: COA or signed guarantee. https://thefranksstandard.com*

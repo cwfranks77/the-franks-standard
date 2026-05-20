@@ -22,6 +22,7 @@ jobs:
       TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
       FACEBOOK_PAGE_ACCESS_TOKEN: ${{ secrets.FACEBOOK_PAGE_ACCESS_TOKEN }}
       FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID }}
+      FACEBOOK_USER_ACCESS_TOKEN: ${{ secrets.FACEBOOK_USER_ACCESS_TOKEN }}
       X_API_KEY: ${{ secrets.X_API_KEY }}
       X_API_SECRET: ${{ secrets.X_API_SECRET }}
       X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
@@ -42,6 +43,10 @@ jobs:
       - name: Post to Telegram
         continue-on-error: true
         run: node scripts/post-franks-social.cjs --telegram
+
+      - name: Validate Facebook token
+        continue-on-error: true
+        run: node scripts/validate-facebook-setup.cjs
 
       - name: Post to Facebook
         continue-on-error: true

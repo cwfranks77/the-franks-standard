@@ -150,11 +150,40 @@ async function postTelegram () {
   return true
 }
 
-async function postFacebook () {
-  const pageToken = process.env.FACEBOOK_PAGE_ACCESS_TOKEN
+const GRAPH = 'https://graph.facebook.com/v22.0'
+
+async function resolveFacebookPageToken () {
   const pageId = process.env.FACEBOOK_PAGE_ID
-  if (!pageToken || !pageId) { console.error('Missing Facebook Page env'); return false }
-  const res = await axios.post(`https://graph.facebook.com/v18.0/${pageId}/feed`, {
+  const direct = process.env.FACEBOOK_PAGE_ACCESS_TOKEN
+  const user = process.env.FACEBOOK_USER_ACCESS_TOKEN
+  if (!pageId) { return null }
+
+  if (user) {
+    try {
+      const { data } = await axios.get(`${GRAPH}/me/accounts`, {
+        params: { access_token: user, fields: 'id,name,access_token,tasks' }
+      })
+      const page = (data.data || []).find((p) => String(p.id) === String(pageId))
+      if (page?.access_token) {
+        console.log(`Resolved Page token for ${page.name || pageId}`)
+        return page.access_token
+      }
+      console.warn('FACEBOOK_USER_ACCESS_TOKEN: Page not found in me/accounts')
+    } catch (e) {
+      console.warn('me/accounts:', e.response?.data?.error?.message || e.message)
+    }
+  }
+  return direct || null
+}
+
+async function postFacebook () {
+  const pageId = process.env.FACEBOOK_PAGE_ID
+  const pageToken = await resolveFacebookPageToken()
+  if (!pageToken || !pageId) {
+    console.error('Missing Facebook Page env (FACEBOOK_PAGE_ACCESS_TOKEN or FACEBOOK_USER_ACCESS_TOKEN + FACEBOOK_PAGE_ID)')
+    return false
+  }
+  const res = await axios.post(`${GRAPH}/${pageId}/feed`, {
     message: FACEBOOK_TEXT,
     link: SITE,
     access_token: pageToken

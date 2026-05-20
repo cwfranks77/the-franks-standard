@@ -12,6 +12,7 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "post:social": "node scripts/post-franks-social.cjs",
+    "validate:facebook": "node scripts/validate-facebook-setup.cjs",
     "notify:telegram": "node scripts/notify-telegram.cjs",
     "verify": "npm run generate",
     "env:vercel": "node scripts/push-vercel-env.cjs",
