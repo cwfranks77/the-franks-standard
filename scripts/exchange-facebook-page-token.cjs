@@ -13,7 +13,10 @@ const appSecret = process.env.FACEBOOK_APP_SECRET
 const userToken = process.env.FACEBOOK_USER_ACCESS_TOKEN
 const pageId = process.env.FACEBOOK_PAGE_ID || '1018067851385482'
 const pushGithub = process.argv.includes('--push-github')
+const outIdx = process.argv.indexOf('--output-file')
+const outputFile = outIdx >= 0 ? process.argv[outIdx + 1] : null
 const repo = process.env.GITHUB_REPO || 'cwfranks77/the-franks-standard'
+const fs = require('fs')
 
 async function debugToken (token) {
   const { data } = await axios.get(`${GRAPH}/debug_token`, {
@@ -66,9 +69,16 @@ async function main () {
     console.log('OK: Page token is long-lived (no expiry)')
   }
 
+  if (outputFile) {
+    fs.writeFileSync(outputFile, pageToken, 'utf8')
+    console.log(`OK: wrote Page token to ${outputFile}`)
+  }
+
   if (!pushGithub) {
-    console.log('')
-    console.log(`"${pageToken}" | gh secret set FACEBOOK_PAGE_ACCESS_TOKEN --repo ${repo}`)
+    if (!outputFile) {
+      console.log('')
+      console.log(`"${pageToken}" | gh secret set FACEBOOK_PAGE_ACCESS_TOKEN --repo ${repo}`)
+    }
     return
   }
 
