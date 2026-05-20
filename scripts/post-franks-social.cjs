@@ -152,25 +152,32 @@ async function postTelegram () {
 
 const GRAPH = 'https://graph.facebook.com/v22.0'
 
+async function fetchPageTokenFromUser (userTok, pageId) {
+  const { data } = await axios.get(`${GRAPH}/me/accounts`, {
+    params: { access_token: userTok, fields: 'id,name,access_token,tasks' }
+  })
+  const page = (data.data || []).find((p) => String(p.id) === String(pageId))
+  return page?.access_token || null
+}
+
 async function resolveFacebookPageToken () {
   const pageId = process.env.FACEBOOK_PAGE_ID
   const direct = process.env.FACEBOOK_PAGE_ACCESS_TOKEN
   const user = process.env.FACEBOOK_USER_ACCESS_TOKEN
   if (!pageId) { return null }
 
-  if (user) {
+  for (const label of ['FACEBOOK_USER_ACCESS_TOKEN', 'FACEBOOK_PAGE_ACCESS_TOKEN']) {
+    const candidate = label === 'FACEBOOK_USER_ACCESS_TOKEN' ? user : direct
+    if (!candidate) { continue }
     try {
-      const { data } = await axios.get(`${GRAPH}/me/accounts`, {
-        params: { access_token: user, fields: 'id,name,access_token,tasks' }
-      })
-      const page = (data.data || []).find((p) => String(p.id) === String(pageId))
-      if (page?.access_token) {
-        console.log(`Resolved Page token for ${page.name || pageId}`)
-        return page.access_token
+      const pageToken = await fetchPageTokenFromUser(candidate, pageId)
+      if (pageToken) {
+        console.log(`Resolved Page token for ${pageId} (from ${label} via me/accounts)`)
+        return pageToken
       }
-      console.warn('FACEBOOK_USER_ACCESS_TOKEN: Page not found in me/accounts')
+      console.warn(`${label}: Page not in me/accounts`)
     } catch (e) {
-      console.warn('me/accounts:', e.response?.data?.error?.message || e.message)
+      console.warn(`${label} me/accounts:`, e.response?.data?.error?.message || e.message)
     }
   }
   return direct || null
