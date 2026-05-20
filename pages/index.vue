@@ -37,8 +37,12 @@
             />
           </div>
           <div class="hero-badges">
-            <span class="coa-badge coa-badge-bright">COA or platform guarantee on every public listing</span>
-            <span class="coa-badge soft">Zero room for fakes</span>
+            <NuxtLink to="/how-it-works" class="coa-badge coa-badge-bright coa-badge-link">
+              COA or platform guarantee on every public listing
+            </NuxtLink>
+            <NuxtLink to="/prohibited-items" class="coa-badge soft coa-badge-link">
+              Zero room for fakes
+            </NuxtLink>
           </div>
         </div>
       </div>
@@ -232,6 +236,8 @@
 </template>
 
 <script setup>
+import { CATEGORY_CATALOG } from '~/utils/marketplaceCategories'
+
 function onHeroMosaicError (e) {
   const el = e?.target
   if (!el || el.dataset?.fallbackHeroMosaic) { return }
@@ -317,16 +323,7 @@ const exclusives = [
   },
 ]
 
-const categories = [
-  { icon: '🏆', name: 'Sports cards and memorabilia', desc: 'Graded cards, signed jerseys, game-used gear' },
-  { icon: '🎸', name: 'Musical instruments', desc: 'Vintage guitars, amps, pro audio equipment' },
-  { icon: '🔧', name: 'Firearms accessories', desc: 'Parts, optics, triggers — no ATF-reportable items' },
-  { icon: '🪙', name: 'Coins and currency', desc: 'Rare coins, bullion, graded numismatics' },
-  { icon: '🎨', name: 'Art and antiques', desc: 'Original artwork, vintage collectibles, estate pieces' },
-  { icon: '⌚', name: 'Watches and jewelry', desc: 'Luxury watches, certified gems' },
-  { icon: '👟', name: 'Sneakers and streetwear', desc: 'Authenticated kicks, limited drops' },
-  { icon: '🎮', name: 'Retro tech and games', desc: 'Rare consoles, sealed software' },
-]
+const categories = CATEGORY_CATALOG
 </script>
 
 <style scoped>
@@ -359,6 +356,10 @@ const categories = [
 }
 @media (prefers-reduced-motion: reduce) {
   .hero-aurora { opacity: 0.75; }
+}
+.hero-copy {
+  position: relative;
+  z-index: 2;
 }
 .hero-grid {
   position: relative;
@@ -457,6 +458,23 @@ const categories = [
   .t-gold-shine { animation: none; }
 }
 .hero-badges { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+.coa-badge-link {
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.coa-badge-link:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+.hero-help a {
+  position: relative;
+  z-index: 2;
+}
+.hero-actions :deep(a) {
+  position: relative;
+  z-index: 2;
+}
 .coa-badge-bright {
   border-color: #fca5a5 !important;
   color: #7f1d1d !important;

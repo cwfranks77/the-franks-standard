@@ -84,10 +84,10 @@
 
     <div class="site-trust" aria-label="Why buyers and sellers use this marketplace">
       <div class="container site-trust-inner">
-        <div class="trust-pill">Secure checkout (Stripe links)</div>
-        <div class="trust-pill">Seller &amp; buyer tools</div>
-        <div class="trust-pill">Video meet built in</div>
-        <div class="trust-pill">Help with mic, email, or live Video</div>
+        <NuxtLink to="/pay" class="trust-pill">Secure checkout (Stripe links)</NuxtLink>
+        <NuxtLink to="/sell" class="trust-pill">Seller &amp; buyer tools</NuxtLink>
+        <NuxtLink to="/video" class="trust-pill">Video meet built in</NuxtLink>
+        <NuxtLink to="/support" class="trust-pill">Help with mic, email, or live Video</NuxtLink>
       </div>
     </div>
 
@@ -619,8 +619,14 @@ async function submitOpModal () {
   padding: 4px 12px; border-radius: 999px;
   background: var(--stone-900); border: 1px solid rgba(0, 224, 255, 0.2);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+  cursor: pointer;
 }
-.trust-pill:hover { transform: translateY(-1px); box-shadow: 0 0 20px rgba(0, 224, 255, 0.12); }
+.trust-pill:hover {
+  color: var(--stone-100);
+  transform: translateY(-1px);
+  box-shadow: 0 0 20px rgba(0, 224, 255, 0.12);
+}
 
 .nav-link.nav-highlight { color: var(--gold-light); }
 

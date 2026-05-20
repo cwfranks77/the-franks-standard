@@ -46,6 +46,7 @@ const SHARED_FOOTER = `
 const SHARED_STYLE = `<style id="fss-static-boot-style">
 #fss-static-boot,.fss-static-aur,.fss-static-footer{box-sizing:border-box}
 #fss-static-boot{min-height:60vh;position:relative;overflow:hidden;padding:clamp(1rem,4vw,2.5rem);color:#e8e4f0;font-family:Inter,system-ui,sans-serif}
+html.nuxt-ready #fss-static-boot,html.nuxt-ready #fss-static-boot-style{display:none!important}
 .fss-static-aur{position:absolute;inset:0;pointer-events:none;opacity:.7;background:radial-gradient(ellipse 80% 50% at 0% 0%,rgba(255,45,122,.28) 0%,transparent 50%),radial-gradient(ellipse 60% 40% at 100% 10%,rgba(0,224,255,.14) 0%,transparent 45%),linear-gradient(180deg,#0a0518 0%,#120a22 100%)}
 .fss-static-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1;display:grid;gap:1.5rem;align-items:center;padding-top:1rem;grid-template-columns:1fr}
 @media(min-width:900px){.fss-static-inner{grid-template-columns:1.1fr 0.9fr;padding-top:2rem}.fss-static-h1{font-size:clamp(1.5rem,3vw,2.6rem)}}
@@ -209,7 +210,7 @@ function patchFile (file) {
   if (!s.includes(START)) {
     if (s.includes(NUXT_EMPTY)) {
       const injection = fallbackForRoute(route)
-      s = s.split(NUXT_EMPTY).join(`<div id="__nuxt">\n${injection}\n</div>`)
+      s = s.split(NUXT_EMPTY).join(`${injection}\n${NUXT_EMPTY}`)
     } else {
       console.warn('inject-spa-fallback: no #__nuxt div in', path.relative(ROOT, file))
     }
