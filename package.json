@@ -14,6 +14,7 @@
     "post:social": "node scripts/post-franks-social.cjs",
     "validate:facebook": "node scripts/validate-facebook-setup.cjs",
     "facebook:exchange": "node scripts/exchange-facebook-page-token.cjs",
+    "facebook:long-lived": "node scripts/exchange-facebook-page-token.cjs --push-github",
     "notify:telegram": "node scripts/notify-telegram.cjs",
     "verify": "npm run generate",
     "env:vercel": "node scripts/push-vercel-env.cjs",
