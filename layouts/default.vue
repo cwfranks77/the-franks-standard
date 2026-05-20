@@ -210,6 +210,8 @@
 </template>
 
 <script setup>
+import { normalizeOpsPhrase } from '~/utils/opsPhrase'
+
 const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
@@ -316,16 +318,6 @@ async function sha256Hex (input) {
   return Array.from(new Uint8Array(digest))
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('')
-}
-
-function normalizeOpsPhrase (input) {
-  return String(input || '')
-    .trim()
-    .toLowerCase()
-    .replace(/[\u200B-\u200D\uFEFF]/g, '')
-    .replace(/[\u2010-\u2015\u2212\uFE58\uFE63\uFF0D]/g, '-')
-    .replace(/\s*-\s*/g, '-')
-    .replace(/\s+/g, '-')
 }
 
 async function submitOpModal () {

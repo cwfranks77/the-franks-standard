@@ -1,3 +1,5 @@
+import { normalizeOpsPhrase } from '~/utils/opsPhrase'
+
 export const useOpsAccess = () => {
   const logoClicks = ref(0)
   const showModal = ref(false)
@@ -20,22 +22,6 @@ export const useOpsAccess = () => {
       showModal.value = true
       resetClicks()
     }
-  }
-
-  // Normalize user input from mobile keyboards:
-  // - trim
-  // - lowercase
-  // - convert unicode dashes to ASCII hyphen
-  // - remove zero-width chars
-  // - treat spaces as separators (equivalent to hyphens)
-  function normalizeOpsPhrase (input: string): string {
-    return String(input || '')
-      .trim()
-      .toLowerCase()
-      .replace(/[\u200B-\u200D\uFEFF]/g, '')
-      .replace(/[\u2010-\u2015\u2212\uFE58\uFE63\uFF0D]/g, '-')
-      .replace(/\s*-\s*/g, '-')
-      .replace(/\s+/g, '-')
   }
 
   // Hash the normalized phrase in the browser and compare against the stored hash.

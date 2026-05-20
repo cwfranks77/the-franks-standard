@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto'
+import { normalizeOpsPhrase } from './utils/opsPhrase'
 
 const rawSite = process.env.NUXT_PUBLIC_SITE_URL
 const siteUrl = (rawSite && String(rawSite).trim())
@@ -7,14 +8,13 @@ const siteUrl = (rawSite && String(rawSite).trim())
 const rawOg = process.env.NUXT_PUBLIC_OG_IMAGE
 const ogImage = (rawOg && String(rawOg).trim()) ? String(rawOg).trim() : `${siteUrl}/franks-pavilion.png`
 
-// Operator unlock: hash the phrase at BUILD time on the server so the plaintext
-// never ships to the browser. Backward-compatible: accepts either
-// NUXT_PUBLIC_OPS_ACCESS_KEY_HASH (preferred) or the legacy
-// NUXT_PUBLIC_OPS_ACCESS_KEY (plaintext, hashed here before shipping).
+// Operator unlock: hash the phrase at BUILD time (normalized, same as the modal).
+// NUXT_PUBLIC_OPS_ACCESS_KEY is the source of truth when set; HASH is fallback only.
 const opsKeyPlain = String(process.env.NUXT_PUBLIC_OPS_ACCESS_KEY || '').trim()
 const opsKeyHashFromEnv = String(process.env.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH || '').trim().toLowerCase()
-const opsAccessKeyHash = opsKeyHashFromEnv
-  || (opsKeyPlain ? createHash('sha256').update(opsKeyPlain).digest('hex') : '')
+const opsAccessKeyHash = opsKeyPlain
+  ? createHash('sha256').update(normalizeOpsPhrase(opsKeyPlain)).digest('hex')
+  : opsKeyHashFromEnv
 // IMPORTANT: write the computed hash back into process.env so Nuxt's
 // automatic runtimeConfig override (NUXT_PUBLIC_OPS_ACCESS_KEY_HASH ->
 // runtimeConfig.public.opsAccessKeyHash) picks up our computed value
