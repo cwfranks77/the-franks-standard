@@ -190,9 +190,9 @@ async function postFacebook () {
     console.error('Missing Facebook Page env (FACEBOOK_PAGE_ACCESS_TOKEN or FACEBOOK_USER_ACCESS_TOKEN + FACEBOOK_PAGE_ID)')
     return false
   }
+  // Message-only post (URLs in text). Omit `link` — it often requires pages_read_engagement.
   const res = await axios.post(`${GRAPH}/${pageId}/feed`, {
     message: FACEBOOK_TEXT,
-    link: SITE,
     access_token: pageToken
   })
   console.log('OK: Facebook', res.data?.id || res.data)
