@@ -7,12 +7,14 @@
         <p class="text-muted">Up to 70% cheaper than eBay. No hidden fees. No percentage-on-percentage stacking.</p>
       </div>
 
-      <div class="pricing-toggle">
-        <button :class="{ active: billing === 'monthly' }" @click="billing = 'monthly'">Monthly</button>
-        <button :class="{ active: billing === 'annual' }" @click="billing = 'annual'">Annual <span class="save-tag">Save 20%</span></button>
+      <div class="pricing-billing-wrap">
+        <div class="pricing-toggle">
+          <button :class="{ active: billing === 'monthly' }" @click="billing = 'monthly'">Monthly</button>
+          <button :class="{ active: billing === 'annual' }" @click="billing = 'annual'">Annual <span class="save-tag">Save 20%</span></button>
+        </div>
       </div>
 
-      <div class="grid grid-3 mt-4">
+      <div class="grid grid-3 pricing-plans">
         <div v-for="plan in plans" :key="plan.id" class="plan-card" :class="{ featured: plan.featured, promo: plan.promo }">
           <div v-if="plan.promo" class="plan-promo-tag">{{ plan.promoLabel }}</div>
           <div v-if="plan.featured" class="plan-popular-tag">Most popular</div>
@@ -236,10 +238,24 @@ const faqs = [
   color: var(--trust-green); border: 1px solid rgba(0, 245, 160, 0.3);
   margin-bottom: 16px;
 }
+.pricing-billing-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+  position: relative;
+  z-index: 3;
+}
 .pricing-toggle {
   display: flex; justify-content: center; gap: 4px;
   background: var(--stone-900); border: 1px solid var(--stone-800); border-radius: 999px;
-  padding: 4px; width: fit-content; margin: 0 auto;
+  padding: 4px; width: fit-content;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+.pricing-plans {
+  margin-top: 0;
+  position: relative;
+  z-index: 1;
+  align-items: stretch;
 }
 .pricing-toggle button {
   padding: 10px 24px; border: none; border-radius: 999px; background: none;
@@ -252,14 +268,19 @@ const faqs = [
   font-size: 0.65rem; background: rgba(0, 245, 160, 0.15); color: var(--trust-green);
 }
 .plan-card {
-  position: relative; padding: 28px 24px;
+  position: relative;
+  padding: 28px 24px;
+  margin-top: 0;
   border: 1px solid var(--stone-800); border-radius: var(--radius-lg);
   background: var(--stone-900); display: flex; flex-direction: column;
+  overflow: visible;
 }
 .plan-card.featured { border-color: var(--gold); border-width: 2px; }
 .plan-card.promo { border-color: rgba(0, 245, 160, 0.3); }
 .plan-promo-tag, .plan-popular-tag {
-  position: absolute; top: -12px; left: 20px;
+  display: inline-block;
+  align-self: flex-start;
+  margin-bottom: 10px;
   padding: 3px 12px; border-radius: 999px;
   font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
 }

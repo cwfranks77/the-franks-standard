@@ -111,7 +111,7 @@ function fallbackForRoute (route) {
       body = `
       <p class="fss-static-ribbon">Install the app</p>
       <h1 class="fss-static-h1"><span class="fss-s1">Install</span> <span class="fss-s2">The Franks Standard</span></h1>
-      <p class="fss-static-sub">Add the app to your home screen or desktop &mdash; full screen, fast, no app store. Android, iPhone, iPad, and desktop instructions inside.</p>
+      <p class="fss-static-sub">Download the Android APK or Windows installer &mdash; real apps, same account as the website.</p>
       ${contactBlock}`
       break
     case '/sell':

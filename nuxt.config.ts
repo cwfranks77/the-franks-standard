@@ -46,6 +46,8 @@ export default defineNuxtConfig({
       payOrderDepositUrl: process.env.NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL || 'https://buy.stripe.com/cNiaEQeBg1gnezY4Y4bII0b',
       payDisputeFeeUrl: process.env.NUXT_PUBLIC_PAY_DISPUTE_FEE_URL || 'https://buy.stripe.com/bJe8wIal09MT8bAfCIbII0c',
       customerServicePhone: process.env.NUXT_PUBLIC_CUSTOMER_SERVICE_PHONE || '(877) 837-0527',
+      androidApkUrl: process.env.NUXT_PUBLIC_ANDROID_APK_URL || '',
+      windowsInstallerUrl: process.env.NUXT_PUBLIC_WINDOWS_INSTALLER_URL || '',
     },
   },
 
@@ -99,7 +101,6 @@ export default defineNuxtConfig({
       ],
     },
     client: {
-      // Custom capture in plugins/pwa-capture.client.ts (vite-pwa hides prompt after dismiss in localStorage).
       installPrompt: false,
       periodicSyncForUpdates: 3600,
     },

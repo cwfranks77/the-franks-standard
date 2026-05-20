@@ -211,12 +211,11 @@
           <div class="app-promo-copy">
             <h2 class="section-title">Take the Standard with you</h2>
             <p class="text-muted">
-              Install The Franks Standard on your phone. Browse, buy, sell, and get notifications — just like a native app
-              on Android and iPhone. No app store download, no waiting for approval.
+              Download the app for Android or Windows. Browse, buy, sell, and get notifications — same account as the website.
             </p>
           </div>
           <div class="app-promo-install">
-            <AppInstallBanner />
+            <AppDownloadCards />
           </div>
         </div>
       </div>

@@ -1,0 +1,14 @@
+// Init script to force AndroidX flags very early so AGP dependency checks see them
+// Place in gradle/init.d so Gradle executes it before settings/project evaluation.
+
+gradle.settingsEvaluated { settings ->
+    // Set as JVM system properties (AGP reads system props early)
+    System.setProperty('android.useAndroidX', 'true')
+    System.setProperty('android.enableJetifier', 'false')
+
+    // Also expose as project extra properties for completeness
+    settings.rootProject?.allprojects { p ->
+        p.extensions.extraProperties.set('android.useAndroidX', 'true')
+        p.extensions.extraProperties.set('android.enableJetifier', 'false')
+    }
+}

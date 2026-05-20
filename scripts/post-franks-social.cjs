@@ -55,7 +55,7 @@ For stores: ${LINK_SELLERS}
 Pricing: ${LINK_PRICING}
 Video rooms: ${LINK_VIDEO}
 Support: ${LINK_SUPPORT}
-Install app: ${LINK_DOWNLOAD}
+Download app: ${LINK_DOWNLOAD}
 
 Main site: ${SITE}`
 
@@ -77,7 +77,7 @@ Sell: ${LINK_SELL}
 Browse: ${LINK_BROWSE}
 For stores: ${LINK_SELLERS}
 Support: ${LINK_SUPPORT}
-Install app: ${LINK_DOWNLOAD}
+Download app: ${LINK_DOWNLOAD}
 
 Main site: ${SITE}`
 

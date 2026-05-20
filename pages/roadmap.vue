@@ -116,7 +116,7 @@ const phases = [
       { text: 'Pricing tiers: Starter (free), Pro ($9.99), Store ($24.99)', done: true },
       { text: 'Owner mode with free full access (hidden room)', done: true },
       { text: 'Launch offer: 10 free listings, 3% promo fee, referral program', done: true },
-      { text: 'PWA install for Android and iOS', done: true },
+      { text: 'Native Android and Windows app downloads', done: true },
       { text: 'AI customer service chatbot with 20+ topics', done: true },
       { text: 'Seller dashboard with listing management', done: true },
       { text: 'Stripe Connect for seller payouts', done: false, tag: 'next' },

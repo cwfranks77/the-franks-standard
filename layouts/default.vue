@@ -66,12 +66,12 @@
               <NuxtLink to="/privacy" class="nav-drop-link" @click="closeAllNav">Privacy</NuxtLink>
               <NuxtLink to="/prohibited-items" class="nav-drop-link" @click="closeAllNav">Prohibited items</NuxtLink>
               <NuxtLink to="/pay" class="nav-drop-link" @click="closeAllNav">Pay &amp; fees (Stripe)</NuxtLink>
-              <NuxtLink to="/download" class="nav-drop-link" @click="closeAllNav">Install app</NuxtLink>
+              <NuxtLink to="/download" class="nav-drop-link" @click="closeAllNav">Download app</NuxtLink>
               <NuxtLink to="/roadmap" class="nav-drop-link" @click="closeAllNav">Launch Roadmap</NuxtLink>
             </div>
           </div>
           <NuxtLink to="/sell" class="nav-link" @click="closeAllNav">Sell</NuxtLink>
-          <NuxtLink to="/download" class="nav-link nav-highlight" @click="closeAllNav">Install app</NuxtLink>
+          <NuxtLink to="/download" class="nav-link nav-highlight" @click="closeAllNav">Download app</NuxtLink>
           <NuxtLink to="/auth/login" class="btn btn-outline btn-sm" @click="closeAllNav">Sign In</NuxtLink>
           <NuxtLink to="/auth/register" class="btn btn-primary btn-sm" @click="closeAllNav">Join Free</NuxtLink>
         </nav>

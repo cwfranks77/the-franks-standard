@@ -1,3 +1,5 @@
+import { categoryListForAi } from '~/utils/marketplaceCategories'
+
 /**
  * AI Customer Service Assistant for The Franks Standard.
  * Comprehensive rule-based assistant with conversational flow,
@@ -269,10 +271,8 @@ export function getAiReply (message: string): string {
   if (matchAny(q, [/categor|what.*(sell|buy|list|items|types)|which items|can i sell|allowed|what kind/])) {
     ctx.lastTopic = 'categories'
     return '**What you can buy and sell:**\n\n' +
-      '• 🏆 Sports Cards & Memorabilia\n• 🎸 Musical Instruments\n' +
-      '• 🔧 Firearms Accessories (no ATF-reportable items)\n• 🪙 Coins & Currency\n' +
-      '• 🎨 Art & Antiques\n• ⌚ Watches & Jewelry\n• 👟 Sneakers & Streetwear\n' +
-      '• 🎮 Retro Tech & Games\n\n' +
+      `${categoryListForAi()}\n\n` +
+      '• 🔧 Firearms Accessories: no ATF-reportable items\n\n' +
       'Everything requires a COA or signed guarantee. ' +
       'See **Prohibited Items** in the footer for what\'s not allowed.\n\n' +
       'Visit **Categories** for the full breakdown.'
@@ -362,22 +362,14 @@ export function getAiReply (message: string): string {
       'Have a great day! 👋'
   }
 
-  // App download / install
-  if (matchAny(q, [/app|download|install|android|iphone|ipad|ios|mobile|home screen|pwa|play store|app store|google play|apple store/])) {
+  // App download
+  if (matchAny(q, [/app|download|install|android|windows|mobile|apk|exe|play store|google play/])) {
     ctx.lastTopic = 'app'
-    return '**Install The Franks Standard app:**\n\n' +
-      '**Android (Chrome):**\n' +
-      '1. Open thefranksstandard.com in Chrome\n' +
-      '2. Tap the menu (three dots) at the top right\n' +
-      '3. Tap **"Install app"** or **"Add to Home screen"**\n' +
-      '4. The app icon appears on your home screen\n\n' +
-      '**iPhone / iPad (Safari):**\n' +
-      '1. Open thefranksstandard.com in Safari\n' +
-      '2. Tap the **Share** button (square with arrow)\n' +
-      '3. Scroll down and tap **"Add to Home Screen"**\n' +
-      '4. Tap **"Add"**\n\n' +
-      'The app works just like a native app — full screen, fast, no app store needed. ' +
-      'You can also scroll to the bottom of the homepage to find the install button.'
+    return '**Download The Franks Standard app:**\n\n' +
+      'Go to **thefranksstandard.com/download** (or tap **Download app** in the menu).\n\n' +
+      '**Android:** download the APK, open it, and allow install from this source if prompted.\n\n' +
+      '**Windows:** download the installer and run it on Windows 10 or 11.\n\n' +
+      'Sign in with the same account you use on the website.'
   }
 
   // Catch-all with intelligent follow-up
