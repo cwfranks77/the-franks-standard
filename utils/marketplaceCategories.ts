@@ -18,6 +18,8 @@ export const LISTING_CATEGORIES = [
   'Photography & Film Gear',
   'Tools & Workshop Equipment',
   'Home & Estate Collectibles',
+  'General Merchandise',
+  'General Store',
   'Other (describe in listing)',
 ] as const
 
@@ -41,6 +43,8 @@ export const CATEGORY_CATALOG: { icon: string; name: ListingCategory; desc: stri
   { icon: '📷', name: 'Photography & Film Gear', desc: 'Cameras, lenses, cinema and studio equipment' },
   { icon: '🛠️', name: 'Tools & Workshop Equipment', desc: 'Pro tools, vintage machines, specialty gear' },
   { icon: '🏠', name: 'Home & Estate Collectibles', desc: 'Decor, glassware, estate finds with documentation' },
+  { icon: '🛒', name: 'General Merchandise', desc: 'Variety retail, mixed SKUs, gifts, home goods, and everyday products' },
+  { icon: '🏪', name: 'General Store', desc: 'Multi-category shop — general retail across several product lines' },
   { icon: '📦', name: 'Other (describe in listing)', desc: 'Specialty inventory — explain in your listing copy' },
 ]
 
@@ -62,6 +66,8 @@ export const STORE_CATEGORY_TAGLINES: Partial<Record<ListingCategory, string>> =
   'Photography & Film Gear': 'Working glass and bodies, honestly graded and described.',
   'Tools & Workshop Equipment': 'Pro-grade tools for makers who need the real thing.',
   'Home & Estate Collectibles': 'Estate pieces with story and proof where it matters.',
+  'General Merchandise': 'Everyday goods and variety retail — clear descriptions and honest condition notes.',
+  'General Store': 'Your one-stop shop on The Franks Standard — multiple categories, one trusted seller.',
   'Other (describe in listing)': 'Specialty inventory with clear authenticity standards.',
 }
 

@@ -25,16 +25,9 @@
 </template>
 
 <script setup>
-const cats = [
-  { icon: '🏆', name: 'Sports cards and memorabilia' },
-  { icon: '🎸', name: 'Musical instruments' },
-  { icon: '🔧', name: 'Firearms accessories' },
-  { icon: '🪙', name: 'Coins and currency' },
-  { icon: '🎨', name: 'Art and antiques' },
-  { icon: '⌚', name: 'Watches and jewelry' },
-  { icon: '👟', name: 'Sneakers and streetwear' },
-  { icon: '🎮', name: 'Retro games and tech' },
-]
+import { CATEGORY_CATALOG } from '~/utils/marketplaceCategories'
+
+const cats = CATEGORY_CATALOG
 
 useSeoMeta({
   title: 'Categories - The Franks Standard',

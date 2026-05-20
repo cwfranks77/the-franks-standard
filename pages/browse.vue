@@ -79,6 +79,8 @@
 </template>
 
 <script setup>
+import { LISTING_CATEGORIES } from '~/utils/marketplaceCategories'
+
 const { publicUrlForPath } = useListingImageUrl()
 const supabase = useSupabaseClient()
 
@@ -88,16 +90,7 @@ const selectedCondition = ref('')
 const sortBy = ref('newest')
 const loadError = ref('')
 
-const categories = [
-  'Sports Cards & Memorabilia',
-  'Musical Instruments',
-  'Firearms Accessories',
-  'Coins & Currency',
-  'Art & Antiques',
-  'Watches & Jewelry',
-  'Sneakers & Streetwear',
-  'Vintage Electronics & Games',
-]
+const categories = LISTING_CATEGORIES
 
 const listings = ref([])
 

@@ -255,6 +255,8 @@
 </template>
 
 <script setup>
+import { LISTING_CATEGORIES } from '~/utils/marketplaceCategories'
+
 definePageMeta({ middleware: 'requires-auth' })
 
 useSeoMeta({
@@ -271,16 +273,7 @@ const submitting = ref(false)
 const listingMode = ref('direct')
 const modeNotice = ref('')
 
-const categories = [
-  'Sports Cards & Memorabilia',
-  'Musical Instruments',
-  'Firearms Accessories',
-  'Coins & Currency',
-  'Art & Antiques',
-  'Watches & Jewelry',
-  'Sneakers & Streetwear',
-  'Vintage Electronics & Games',
-]
+const categories = LISTING_CATEGORIES
 
 const dropshipProviders = [
   {
