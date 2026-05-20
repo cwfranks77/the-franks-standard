@@ -129,8 +129,8 @@ async function shareListing () {
   } catch { /* clipboard not available */ }
 }
 
-const config = useRuntimeConfig()
-const buyUrl = computed(() => config.public.payOrderDepositUrl || '')
+const { orderDepositUrl } = usePaymentLinks()
+const buyUrl = computed(() => orderDepositUrl)
 
 const messageSellerHref = computed(() => {
   const title = listing.value ? listing.value.title : 'Listing'

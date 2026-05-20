@@ -239,35 +239,80 @@ export function buildStoreSeoPack (s: StoreBuilderInput, store: StoreBuildResult
 
   const searchChecklist = [
     {
-      engine: 'Google',
+      engine: 'Google (largest — US & worldwide)',
       steps: [
-        'Open Google Search Console: https://search.google.com/search-console',
-        `Add property: ${SITE} (domain or URL prefix)`,
-        'Verify ownership (HTML tag or DNS — use your domain host)',
+        'Google Search Console: https://search.google.com/search-console',
+        `Add property ${SITE} — verify via DNS or HTML tag`,
         `Submit sitemap: ${SITE}/sitemap.xml`,
-        'Use URL Inspection on your browse/listing URLs after you publish',
-        'Request indexing for new listings when inventory changes',
+        'URL Inspection → request indexing for /browse, /sell, and each new /listing/[id]',
+        'Monitor Performance report for clicks and average position on your keywords',
       ],
     },
     {
-      engine: 'Bing (+ Yahoo / DuckDuckGo via Bing index)',
+      engine: 'Bing (also feeds Yahoo, DuckDuckGo, Ecosia, many partners)',
       steps: [
-        'Open Bing Webmaster Tools: https://www.bing.com/webmasters',
-        `Import from Google Search Console or add ${SITE} manually`,
+        'Bing Webmaster Tools: https://www.bing.com/webmasters',
+        'Import from Google Search Console (fastest) or add site manually',
         `Submit sitemap: ${SITE}/sitemap.xml`,
-        'Enable IndexNow in Bing for faster updates (optional API key)',
-        'Check URL coverage weekly for crawl errors',
+        'Turn on IndexNow for faster listing updates',
+        'Review Site Scan for SEO issues monthly',
       ],
     },
     {
-      engine: 'All search engines (on-page)',
+      engine: 'Yahoo Search',
       steps: [
-        `Use this meta title (${metaTitle.length}/60 chars) on every page you control`,
-        `Use this meta description (${metaDescription.length}/160 chars) — unique per main landing page`,
-        'Put focus keyword in first 40 characters of each listing title',
-        'Write 150+ word unique descriptions — avoid duplicate supplier text',
-        'Use 3+ original photos per listing (search engines favor unique media)',
-        `Link to ${SITE}/browse from Instagram, Facebook, and your website`,
+        'Yahoo results are powered by Bing — no separate submit needed',
+        'Complete Bing Webmaster Tools setup above',
+        `Ensure ${SITE}/robots.txt allows crawlers and points to your sitemap`,
+      ],
+    },
+    {
+      engine: 'DuckDuckGo',
+      steps: [
+        'Uses Bing and its own crawler — submit via Bing Webmaster Tools',
+        'Optional: DuckDuckGo sitemap ping at https://duckduckgo.com/newbingajax (after Bing verifies you)',
+        'Strong privacy audience — use clear, honest listing titles (no clickbait)',
+      ],
+    },
+    {
+      engine: 'Yandex (Russia / CIS / international)',
+      steps: [
+        'Yandex Webmaster: https://webmaster.yandex.com/',
+        `Add ${SITE} and verify ownership`,
+        'Submit sitemap and set geographic region if you ship internationally',
+      ],
+    },
+    {
+      engine: 'Brave Search',
+      steps: [
+        'Brave Web Discovery: https://search.brave.com/webmasters',
+        'Submit your domain and key pages',
+        'Brave has its own index — worth registering in addition to Google/Bing',
+      ],
+    },
+    {
+      engine: 'Ecosia & other Bing syndication partners',
+      steps: [
+        'Ecosia uses Bing — Bing Webmaster submission covers most syndicated partners',
+        'Keep unique product photos and descriptions (all engines penalize duplicate content)',
+      ],
+    },
+    {
+      engine: 'Apple (Safari / Spotlight suggestions)',
+      steps: [
+        'Register business at Apple Business Connect if you have a physical location',
+        'Safari uses Google/Bing depending on user settings — cover Google + Bing first',
+        'Use Apple Pay–friendly Stripe checkout (already enabled via Stripe links)',
+      ],
+    },
+    {
+      engine: 'On-page SEO (every major engine)',
+      steps: [
+        `Meta title (${metaTitle.length}/60): ${metaTitle}`,
+        `Meta description (${metaDescription.length}/160 chars) — paste on site and social bios`,
+        'Keyword in first 40 characters of every listing title',
+        '150+ word unique descriptions per listing; 3+ original photos',
+        `Share ${SITE}/browse and your listing URLs on social — builds crawl signals`,
       ],
     },
   ]
@@ -285,7 +330,7 @@ export function buildStoreSeoPack (s: StoreBuilderInput, store: StoreBuildResult
     htmlMetaBlock,
     listingTitleFormulas,
     searchChecklist,
-    indexNowTip: `Bing IndexNow: after publishing new listings, ping Bing with your URLs (Webmaster Tools → IndexNow). Listing URLs on Franks Standard follow ${SITE}/listing/[id] — request indexing in GSC/Bing when live.`,
+    indexNowTip: `Get on all major search engines: submit ${SITE}/sitemap.xml to Google Search Console and Bing Webmaster Tools first (covers Yahoo, DuckDuckGo, Ecosia). Then add Yandex and Brave Webmaster. After each new listing, request indexing in Google URL Inspection and Bing IndexNow. Listing URLs: ${SITE}/listing/[id].`,
     sitemapUrls: [SITE, `${SITE}/browse`, `${SITE}/sell`, `${SITE}/store-builder`, `${SITE}/sitemap.xml`],
   }
 }
@@ -325,10 +370,11 @@ export function formatFullStoreExport (store: StoreBuildResult, seo: StoreSeoPac
     '--- Launch steps ---',
     ...store.launchSteps.map((step, i) => `${i + 1}. ${step}`),
     '',
-    '--- Get on Google ---',
-    ...seo.searchChecklist[0].steps.map((step) => `• ${step}`),
-    '',
-    '--- Get on Bing ---',
-    ...seo.searchChecklist[1].steps.map((step) => `• ${step}`),
+    '--- Get on all major search engines ---',
+    ...seo.searchChecklist.flatMap((block) => [
+      '',
+      block.engine + ':',
+      ...block.steps.map((step) => `  • ${step}`),
+    ]),
   ].join('\n')
 }

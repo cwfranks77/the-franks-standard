@@ -28,9 +28,22 @@
           <ul class="plan-features">
             <li v-for="f in plan.features" :key="f"><span class="check">✓</span> {{ f }}</li>
           </ul>
-          <NuxtLink :to="plan.cta.to" class="btn" :class="plan.featured ? 'btn-primary' : 'btn-outline'" style="width: 100%;">
-            {{ plan.cta.label }}
-          </NuxtLink>
+          <a
+            v-if="plan.cta.external"
+            :href="plan.cta.external"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn"
+            :class="plan.featured ? 'btn-primary' : 'btn-outline'"
+            style="width: 100%; text-align: center;"
+          >{{ plan.cta.label }}</a>
+          <NuxtLink
+            v-else
+            :to="plan.cta.to"
+            class="btn"
+            :class="plan.featured ? 'btn-primary' : 'btn-outline'"
+            style="width: 100%;"
+          >{{ plan.cta.label }}</NuxtLink>
         </div>
       </div>
 
@@ -125,6 +138,12 @@
         </div>
       </section>
 
+      <section class="section pay-links-section">
+        <h2 class="section-title text-center">Pay with Stripe</h2>
+        <p class="text-muted text-center pay-links-lede">Secure checkout for listing fees, Pro plan, orders, and disputes.</p>
+        <PaymentLinksPanel :show-status="true" />
+      </section>
+
       <section class="section faq-section">
         <h2 class="section-title text-center">Pricing FAQ</h2>
         <div class="faq-list">
@@ -139,6 +158,8 @@
 </template>
 
 <script setup>
+const { proSellerUrl } = usePaymentLinks()
+
 useSeoMeta({
   title: 'Pricing — The Franks Standard',
   description: 'Fair, transparent pricing. Up to 70% cheaper than eBay. 5% transaction fee. Free listings to start.',
@@ -189,7 +210,7 @@ const plans = [
       'Dropship dashboard',
       'Priority customer service',
     ],
-    cta: { label: 'Go Pro', to: '/pay' },
+    cta: { label: 'Go Pro — pay in Stripe', to: '/pay', external: proSellerUrl },
   },
   {
     id: 'store',
@@ -337,4 +358,6 @@ const faqs = [
 }
 .faq-item summary { cursor: pointer; font-weight: 600; color: var(--stone-100); font-size: 0.95rem; }
 .faq-item p { margin-top: 10px; font-size: 0.88rem; color: var(--stone-300); line-height: 1.6; }
+.pay-links-section { padding-top: 48px; max-width: 900px; margin: 0 auto; }
+.pay-links-lede { max-width: 560px; margin: 0 auto 20px; font-size: 0.95rem; }
 </style>

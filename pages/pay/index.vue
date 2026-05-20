@@ -3,49 +3,32 @@
     <div class="pay-hero">
       <h1>Pay &amp; fees</h1>
       <p class="lede text-muted">
-        All payments are handled by <strong>Stripe</strong> — the same payment processor used by Shopify, Amazon, and millions of businesses.
-        Your funds are collected securely and deposited to The Franks Standard operating account. Seller payouts go through Stripe Connect.
+        All payments run through <strong>Stripe</strong> — secure checkout with major cards, Apple Pay, and Google Pay.
+        Each button below opens a live Stripe Payment Link.
       </p>
       <div class="pay-quick-links">
         <NuxtLink to="/pricing" class="btn btn-outline btn-sm">See pricing plans</NuxtLink>
-        <NuxtLink to="/launch-offer" class="btn btn-outline btn-sm">Launch offer (new sellers)</NuxtLink>
+        <NuxtLink to="/launch-offer" class="btn btn-outline btn-sm">Launch offer</NuxtLink>
+        <a href="https://dashboard.stripe.com/" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">Stripe Dashboard</a>
       </div>
     </div>
 
     <div v-if="isOwner" class="pay-owner-banner">
       <span class="pay-owner-badge">Owner mode</span>
       <div>
-        <p><strong>All fees are waived for you.</strong> As the site owner, you have free full access to sell on The Franks Standard.</p>
-        <p class="text-muted" style="font-size: 0.85rem; margin-top: 4px;">These payment links are for regular sellers and buyers. Your listings are fee-free.</p>
+        <p><strong>All fees are waived for you.</strong> These links are for buyers and regular sellers.</p>
       </div>
     </div>
 
-    <div class="grid grid-2 pay-grid">
-      <article
-        v-for="item in items"
-        :key="item.key"
-        class="card pay-card hover-lift"
-      >
-        <div class="card-body">
-          <span class="badge badge-gold">{{ item.badge }}</span>
-          <h2>{{ item.title }}</h2>
-          <p class="text-muted">{{ item.body }}</p>
-          <a
-            v-if="item.url"
-            :href="item.url"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="btn btn-primary btn-sm mt-2"
-          >Pay in Stripe &rarr;</a>
-          <p v-else class="op-warn-inline mt-2" role="status">
-            Add <code>{{ item.envName }}</code> in <code>.env</code> to enable this link after you create it in Stripe.
-          </p>
-        </div>
-      </article>
-    </div>
+    <PaymentLinksPanel
+      intro="Click any button to pay — you will be taken to Stripe checkout. Links are tested and active."
+      :show-status="true"
+    />
 
     <p class="text-muted fine text-center">
-      This site does not store your card number. Orders and escrow are described in <NuxtLink to="/how-it-works">How it works</NuxtLink>.
+      We never store your full card number. Escrow rules are in
+      <NuxtLink to="/how-it-works">How it works</NuxtLink>.
+      Questions? Call <a href="tel:+18778370527">(877) 837-0527</a>.
     </p>
   </div>
 </template>
@@ -54,68 +37,21 @@
 definePageMeta({ layout: 'default' })
 useSeoMeta({
   title: 'Pay and fees - The Franks Standard',
-  description: 'Pay selling fees, buyer protection, and order holds via Stripe.',
+  description: 'Pay listing fees, Pro seller plan, order deposits, and dispute fees via secure Stripe checkout.',
 })
 
 const { isOwner } = useOwnerMode()
-const config = useRuntimeConfig()
-const c = config.public
-
-const items = computed(() => [
-  {
-    key: 'list',
-    badge: 'Sellers',
-    title: 'Listing or renewal fee',
-    body: 'Charged per listing or subscription window you set in your Stripe product.',
-    url: c.payListingFeeUrl || null,
-    envName: 'NUXT_PUBLIC_PAY_LISTING_FEE_URL',
-  },
-  {
-    key: 'pro',
-    badge: 'Sellers',
-    title: 'Pro seller (optional)',
-    body: 'Monthly or annual upgrade for featured slots - wire your own Stripe product.',
-    url: c.payProSellerUrl || null,
-    envName: 'NUXT_PUBLIC_PAY_PRO_SELLER_URL',
-  },
-  {
-    key: 'order',
-    badge: 'Buyers',
-    title: 'Order payment / deposit',
-    body: 'Point this link at your checkout for item payment or a deposit. Final release follows your escrow rules.',
-    url: c.payOrderDepositUrl || null,
-    envName: 'NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL',
-  },
-  {
-    key: 'dispute',
-    badge: 'Either party',
-    title: 'Dispute or mediation fee',
-    body: 'If you add a small fee for escalated review, use a separate Payment Link here.',
-    url: c.payDisputeFeeUrl || null,
-    envName: 'NUXT_PUBLIC_PAY_DISPUTE_FEE_URL',
-  },
-])
 </script>
 
 <style scoped>
 .pay-page { padding: 2.5rem 0 3.5rem; }
-.pay-hero { max-width: 700px; margin-bottom: 2rem; }
-.pay-hero h1 { font-size: 1.85rem; margin-bottom: 0.5rem; }
+.pay-hero { max-width: 720px; margin-bottom: 2rem; }
+.pay-hero h1 { font-size: 1.85rem; margin-bottom: 0.5rem; color: #111827; }
 .pay-quick-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .lede { font-size: 1.02rem; line-height: 1.7; }
 .lede strong { color: #111827; }
-.lede code { color: #9a6b00; font-size: 0.85em; }
-.pay-card h2 { font-size: 1.1rem; margin: 0.5rem 0; color: #111827; }
-.pay-card .text-muted { font-size: 0.92rem; color: #374151; }
-.op-warn-inline {
-  font-size: 0.82rem;
-  background: rgba(255, 61, 92, 0.1);
-  border: 1px solid rgba(255, 61, 92, 0.2);
-  border-radius: 8px;
-  padding: 8px 10px;
-  color: #7f1d1d;
-}
 .fine { font-size: 0.85rem; margin-top: 2rem; }
+.fine a { color: var(--gold); font-weight: 600; }
 .pay-owner-banner {
   display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px;
   margin-bottom: 1.5rem; padding: 18px 20px;

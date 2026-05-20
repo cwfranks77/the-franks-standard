@@ -234,7 +234,8 @@
 
             <div v-show="activeTab === 'search'" class="tab-panel">
               <div class="result-section">
-                <h4>Get your store on search engines</h4>
+                <h4>Get your store on all major search engines</h4>
+                <p class="text-muted search-intro">Google, Bing, Yahoo, DuckDuckGo, Yandex, Brave, Ecosia, and Apple — follow each checklist below.</p>
                 <p class="index-tip">{{ result.seo.indexNowTip }}</p>
               </div>
               <div v-for="block in result.seo.searchChecklist" :key="block.engine" class="result-section">
@@ -317,7 +318,7 @@ const copyMsg = ref('')
 const previewTabs = [
   { id: 'profile', label: 'Store' },
   { id: 'seo', label: 'SEO' },
-  { id: 'search', label: 'Get found' },
+  { id: 'search', label: 'All search engines' },
 ]
 
 function syncSlug () {
@@ -445,6 +446,7 @@ async function copyAll () {
 .result-checklist { padding-left: 1.2rem; margin: 0; }
 .result-checklist li { font-size: 0.86rem; color: var(--stone-200); margin-bottom: 8px; line-height: 1.45; }
 .index-tip { font-size: 0.88rem; color: var(--stone-300); }
+.search-intro { font-size: 0.88rem; margin-bottom: 12px; line-height: 1.5; }
 .result-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--stone-800); }
 .copy-toast { margin-top: 10px; font-size: 0.85rem; color: var(--trust-green); font-weight: 600; }
 </style>

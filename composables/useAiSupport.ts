@@ -127,12 +127,15 @@ export function getAiReply (message: string): string {
   if (matchAny(q, [/payment|pay |paying|stripe|checkout|card|debit|credit|wallet|apple pay|google pay|billing/])) {
     ctx.lastTopic = 'payment'
     return '**Payments on The Franks Standard:**\n\n' +
-      'All payments are processed securely through **Stripe**. We never see or store your full card number.\n\n' +
-      '• Go to **Pay & Fees** in the menu to pay listing fees or deposits\n' +
-      '• Stripe accepts all major cards, Apple Pay, and Google Pay\n' +
-      '• Payment issues? Check with your bank first, then email us\n\n' +
-      'If your payment fails, try a different card or clear your browser cookies. ' +
-      'For persistent issues, call (877) 837-0527.'
+      'All payments use live **Stripe Payment Links** (secure checkout).\n\n' +
+      '• **Pay & Fees** in the menu — four working links:\n' +
+      '  - Listing / renewal fee (sellers)\n' +
+      '  - Pro seller plan $9.99/mo (sellers)\n' +
+      '  - Order payment / deposit (buyers)\n' +
+      '  - Dispute fee (either party)\n' +
+      '• On a listing page, tap **Buy now (Stripe)**\n' +
+      '• Pricing page **Go Pro** opens Stripe directly\n\n' +
+      'Cards, Apple Pay, and Google Pay accepted. Issues? Try another card or call (877) 837-0527.'
   }
 
   // Payment failed / declined
