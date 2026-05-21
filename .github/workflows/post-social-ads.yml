@@ -2,6 +2,16 @@ name: Post Franks Social Ads
 
 on:
   workflow_dispatch:
+    inputs:
+      campaign:
+        description: Which post to publish
+        required: true
+        default: default
+        type: choice
+        options:
+          - default
+          - founders
+          - honor
   schedule:
     # Mon/Wed/Fri at 9:00 AM America/Chicago (14:00 UTC during standard time)
     - cron: "0 14 * * 1,3,5"
@@ -40,9 +50,21 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
+      - name: Resolve campaign flag
+        id: campaign
+        run: |
+          CAMPAIGN="${{ github.event.inputs.campaign }}"
+          if [ -z "$CAMPAIGN" ]; then CAMPAIGN="default"; fi
+          case "$CAMPAIGN" in
+            founders) echo "flag=--founders" >> "$GITHUB_OUTPUT" ;;
+            honor) echo "flag=--honor" >> "$GITHUB_OUTPUT" ;;
+            *) echo "flag=" >> "$GITHUB_OUTPUT" ;;
+          esac
+          echo "Using campaign: $CAMPAIGN (flag: $(cat $GITHUB_OUTPUT | grep flag=))"
+
       - name: Post to Telegram
         continue-on-error: true
-        run: node scripts/post-franks-social.cjs --telegram
+        run: node scripts/post-franks-social.cjs ${{ steps.campaign.outputs.flag }} --telegram
 
       - name: Validate Facebook token
         continue-on-error: true
@@ -50,8 +72,8 @@ jobs:
 
       - name: Post to Facebook
         continue-on-error: true
-        run: node scripts/post-franks-social.cjs --facebook
+        run: node scripts/post-franks-social.cjs ${{ steps.campaign.outputs.flag }} --facebook
 
       - name: Post to X
         continue-on-error: true
-        run: node scripts/post-franks-social.cjs --x
+        run: node scripts/post-franks-social.cjs ${{ steps.campaign.outputs.flag }} --x

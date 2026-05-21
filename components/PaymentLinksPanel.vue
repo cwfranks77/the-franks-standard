@@ -3,7 +3,7 @@
     <p v-if="intro" class="pay-links-intro">{{ intro }}</p>
     <div class="grid grid-2 pay-links-grid">
       <article
-        v-for="item in links"
+        v-for="item in visibleLinks"
         :key="item.key"
         class="card pay-link-card"
       >
@@ -34,12 +34,18 @@
 </template>
 
 <script setup>
-defineProps({
+const props = defineProps({
   intro: { type: String, default: '' },
   showStatus: { type: Boolean, default: true },
+  hideKeys: { type: Array, default: () => [] },
 })
 
 const { links, allConfigured, configuredCount } = usePaymentLinks()
+
+const visibleLinks = computed(() => {
+  const hide = new Set(props.hideKeys || [])
+  return links.value.filter((l) => !hide.has(l.key))
+})
 </script>
 
 <style scoped>

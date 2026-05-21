@@ -12,6 +12,8 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "post:social": "node scripts/post-franks-social.cjs",
+    "post:social:founders": "node scripts/post-franks-social.cjs --founders",
+    "post:social:honor": "node scripts/post-franks-social.cjs --honor",
     "email:campaign": "node scripts/send-email-campaign.cjs",
     "mail:lob-sample": "node scripts/lob-send-postcard.cjs",
     "seo:ping": "node scripts/seo-ping.cjs",

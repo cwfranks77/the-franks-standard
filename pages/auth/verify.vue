@@ -62,8 +62,29 @@ onMounted(async () => {
 
     const { data: { user } } = await supabase.auth.getUser()
     const accountType = user && user.user_metadata ? user.user_metadata.account_type : undefined
+
+    const { redeemPendingIfAny, redeemCode } = usePromoCode()
+    const pendingMeta = user?.user_metadata?.pending_promo
+    let promoResult = null
+    const serviceCat = user?.user_metadata?.service_category
+      || user?.user_metadata?.honor_category
+    const redeemExtra = serviceCat ? { service_category: String(serviceCat) } : {}
+    if (pendingMeta) {
+      promoResult = await redeemCode(String(pendingMeta), redeemExtra)
+    } else {
+      promoResult = await redeemPendingIfAny()
+    }
+    if (promoResult?.ok) {
+      message.value = promoResult.honors_member
+        ? 'Email confirmed — thank you for your service. Honors Pro is active. Redirecting...'
+        : 'Email confirmed — your seller benefits are active. Redirecting...'
+    } else if (promoResult?.error === 'sold_out') {
+      message.value = 'Email confirmed. That promo is full — you can still sell on Starter. Redirecting...'
+    } else {
+      message.value = 'You are signed in. Redirecting...'
+    }
+
     phase.value = 'done'
-    message.value = 'You are signed in. Redirecting...'
     if (accountType === 'sell' || accountType === 'seller') await router.replace('/sell')
     else await router.replace('/dashboard')
   } catch (err) {

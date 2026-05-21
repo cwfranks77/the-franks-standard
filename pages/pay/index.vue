@@ -15,6 +15,9 @@
 
     <TransactionReadinessBanner :show-owner-link="isOwner" />
 
+    <PromoCodePanel v-if="!isOwner" program="honors" />
+    <PromoCodePanel v-if="!isOwner" program="founding" />
+
     <div v-if="isOwner" class="pay-owner-banner">
       <span class="pay-owner-badge">Owner mode</span>
       <div>
@@ -22,9 +25,15 @@
       </div>
     </div>
 
+    <p v-if="proWaived" class="pro-waived-banner" role="status">
+      <strong>{{ profileLabel }}:</strong> your Pro plan is covered until {{ proWaivedUntil }}.
+      You do not need to pay the monthly Pro subscription during this period.
+    </p>
+
     <PaymentLinksPanel
       intro="Click any button to pay — you will be taken to Stripe checkout. Links are tested and active."
       :show-status="true"
+      :hide-keys="proWaived ? ['pro'] : []"
     />
 
     <p class="text-muted fine text-center">
@@ -43,6 +52,38 @@ useSeoMeta({
 })
 
 const { isOwner } = useOwnerMode()
+const supabase = useSupabaseClient()
+const proWaived = ref(false)
+const proWaivedUntil = ref('')
+const profileLabel = ref('Pro member')
+
+function formatDate (iso) {
+  if (!iso) return ''
+  try {
+    return new Date(iso).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })
+  } catch {
+    return iso
+  }
+}
+
+onMounted(async () => {
+  if (isOwner.value) return
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('founding_seller, honors_member, pro_free_until')
+    .eq('id', user.id)
+    .maybeSingle()
+  if ((profile?.founding_seller || profile?.honors_member) && profile?.pro_free_until) {
+    const until = new Date(profile.pro_free_until)
+    if (until > new Date()) {
+      proWaived.value = true
+      proWaivedUntil.value = formatDate(profile.pro_free_until)
+      profileLabel.value = profile.honors_member ? 'Honors member' : 'Founding seller'
+    }
+  }
+})
 </script>
 
 <style scoped>
@@ -61,6 +102,16 @@ const { isOwner } = useOwnerMode()
   border: 2px solid rgba(0, 245, 160, 0.35);
   background: linear-gradient(135deg, rgba(0, 245, 160, 0.08), rgba(201, 168, 76, 0.06));
   color: #111827; line-height: 1.6;
+}
+.pro-waived-banner {
+  margin-bottom: 1.25rem;
+  padding: 14px 18px;
+  border-radius: var(--radius-lg, 12px);
+  border: 1px solid rgba(4, 120, 87, 0.35);
+  background: rgba(4, 120, 87, 0.08);
+  color: #047857;
+  font-size: 0.95rem;
+  line-height: 1.55;
 }
 .pay-owner-badge {
   display: inline-flex; align-items: center;

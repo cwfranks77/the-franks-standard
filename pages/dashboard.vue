@@ -4,6 +4,16 @@
       <h1>Dashboard</h1>
       <p class="text-muted">Manage your listings, orders, and account</p>
 
+      <div v-if="honorsMember" class="honors-banner">
+        <span class="honors-badge">Honors member</span>
+        <span>Thank you for your service{{ honorsLabel }} — Pro free until {{ honorsUntil }}.</span>
+      </div>
+
+      <div v-else-if="foundingSeller" class="founding-banner">
+        <span class="founding-badge">Founding seller</span>
+        <span>Pro plan free until {{ foundingUntil }} — unlimited listings &amp; featured placement during this period.</span>
+      </div>
+
       <div v-if="isOwner" class="owner-banner">
         <span class="owner-badge-dash">Owner mode</span>
         <span class="owner-fee-text">All fees waived — list freely, sell without charges</span>
@@ -100,6 +110,30 @@ const recentOrders = ref([])
 const showConnectBanner = ref(false)
 const removingId = ref(null)
 const removeMessage = ref('')
+const foundingSeller = ref(false)
+const foundingUntil = ref('')
+const honorsMember = ref(false)
+const honorsUntil = ref('')
+const honorsLabel = ref('')
+
+const HONOR_LABELS = {
+  veteran: ' (U.S. Military Veteran)',
+  police: ' (Law Enforcement)',
+  fire: ' (Firefighter)',
+  ems: ' (EMS / Paramedic)',
+  dispatcher: ' (911 Dispatcher)',
+  corrections: ' (Corrections)',
+  other: ' (First Responder)',
+}
+
+function formatFoundingDate (iso) {
+  if (!iso) return ''
+  try {
+    return new Date(iso).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })
+  } catch {
+    return iso
+  }
+}
 
 async function removeListing (id) {
   if (!id || removingId.value) return
@@ -142,9 +176,23 @@ onMounted(async () => {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('stripe_account_id, stripe_charges_enabled, account_type')
+    .select('stripe_account_id, stripe_charges_enabled, account_type, founding_seller, honors_member, service_category, pro_free_until')
     .eq('id', user.id)
     .maybeSingle()
+
+  if (profile?.pro_free_until) {
+    const until = new Date(profile.pro_free_until)
+    if (until > new Date()) {
+      if (profile.honors_member) {
+        honorsMember.value = true
+        honorsUntil.value = formatFoundingDate(profile.pro_free_until)
+        honorsLabel.value = HONOR_LABELS[profile.service_category] || ''
+      } else if (profile.founding_seller) {
+        foundingSeller.value = true
+        foundingUntil.value = formatFoundingDate(profile.pro_free_until)
+      }
+    }
+  }
 
   showConnectBanner.value = !isOwner.value
     && !profile?.stripe_charges_enabled
@@ -224,6 +272,30 @@ onMounted(async () => {
   background: rgba(201, 168, 76, 0.18); color: var(--gold); border: 1px solid rgba(201, 168, 76, 0.4);
 }
 .owner-fee-text { font-size: 0.88rem; color: var(--trust-green); font-weight: 600; }
+.founding-banner {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+  margin-top: 14px; padding: 14px 18px;
+  background: linear-gradient(135deg, rgba(4, 120, 87, 0.1), rgba(201, 168, 76, 0.08));
+  border: 1px solid rgba(4, 120, 87, 0.3); border-radius: var(--radius-lg);
+  font-size: 0.88rem; color: var(--stone-200); line-height: 1.5;
+}
+.founding-badge {
+  display: inline-flex; padding: 4px 12px; border-radius: 999px;
+  font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
+  background: rgba(4, 120, 87, 0.2); color: #6ee7b7; border: 1px solid rgba(4, 120, 87, 0.4);
+}
+.honors-banner {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+  margin-top: 14px; padding: 14px 18px;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(201, 168, 76, 0.08));
+  border: 1px solid rgba(147, 197, 253, 0.35); border-radius: var(--radius-lg);
+  font-size: 0.88rem; color: var(--stone-200); line-height: 1.5;
+}
+.honors-badge {
+  display: inline-flex; padding: 4px 12px; border-radius: 999px;
+  font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
+  background: rgba(37, 99, 235, 0.25); color: #93c5fd; border: 1px solid rgba(147, 197, 253, 0.45);
+}
 .connect-banner {
   padding: 18px 20px; border-radius: var(--radius-lg);
   border: 1px solid rgba(201, 168, 76, 0.35);

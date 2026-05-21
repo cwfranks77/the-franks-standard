@@ -5,6 +5,8 @@
  *   cd the-franks-standard
  *   npm run post:social
  *   # or: node scripts/post-franks-social.cjs [--telegram|--facebook|--x]
+ *   # founding seller promo: node scripts/post-franks-social.cjs --founders [--telegram|--facebook|--x]
+ *   # honors program: node scripts/post-franks-social.cjs --honor [--telegram|--facebook|--x]
  *
  * Requires: npm i axios form-data dotenv
  */
@@ -34,6 +36,56 @@ const LINK_PRICING = `${SITE}/pricing`
 const LINK_VIDEO = `${SITE}/video`
 const LINK_SUPPORT = `${SITE}/support`
 const LINK_DOWNLOAD = `${SITE}/download`
+const LINK_FOUNDERS = `${SITE}/join/founders10`
+const LINK_HONOR = `${SITE}/honor`
+
+const HONOR_TELEGRAM = `The Franks Standard honors those who serve.
+
+Veterans, law enforcement, firefighters, EMS, 911 dispatchers, and corrections officers: sell on our authenticity-first marketplace with 6 months of Pro Seller free.
+
+- Unlimited listings and featured placement
+- AI Store Builder included
+- COA-backed authenticity on every listing
+- One honor redemption per person
+
+Learn more and claim benefits: ${LINK_HONOR}
+Promo code: HONOR26
+
+Start selling: ${LINK_SELL}
+${SITE}`
+
+const HONOR_FACEBOOK = `We built The Franks Standard on trust — and we want to give back to the people who keep our communities safe.
+
+If you are a veteran, police officer, firefighter, EMS professional, dispatcher, or corrections officer, you can sell on our marketplace with 6 months of Pro free.
+
+Visit ${LINK_HONOR} and use promo code HONOR26 when you register.
+
+Thank you for your service.
+${SITE}`
+
+const HONOR_X = `Honoring veterans, police, fire, EMS & first responders: 6 months Pro free on The Franks Standard. ${LINK_HONOR} Code HONOR26 #ThankYouForYourService #TheFranksStandard`
+
+const FOUNDERS_TELEGRAM = `Founding seller offer on The Franks Standard — only 10 spots.
+
+The first 10 people who sign up to SELL get 3 months of Pro free (unlimited listings, featured placement, AI Store Builder). One redemption per person — when the 10 spots are gone, the link stops working.
+
+Claim your spot: ${LINK_FOUNDERS}
+Promo code at signup: FOUNDERS10
+
+Join to sell: ${LINK_SELL}
+Main site: ${SITE}`
+
+const FOUNDERS_FACEBOOK = `We're opening 10 founding seller spots on The Franks Standard.
+
+Sign up to sell and get 3 months of Pro free — no monthly Pro fee during that period. Limited to the first 10 sellers; one offer per person.
+
+Claim your spot: ${LINK_FOUNDERS}
+Use promo code FOUNDERS10 when you register or at checkout.
+
+Start selling: ${LINK_SELL}
+${SITE}`
+
+const FOUNDERS_X = `First 10 sellers on The Franks Standard get 3 months Pro free. Limited spots — claim yours: ${LINK_FOUNDERS} Code: FOUNDERS10 #TheFranksStandard`
 
 const TELEGRAM_TEXT = `The Franks Standard is live - the authenticity-first marketplace for collectibles, gear, and high-trust inventory.
 
@@ -127,7 +179,7 @@ function buildOAuthHeader (method, url, _body, apiKey, apiSecret, accessToken, a
   return 'OAuth ' + Object.keys(oauthParams).sort().map(k => `${encodeRFC3986(k)}="${encodeRFC3986(oauthParams[k])}"`).join(', ')
 }
 
-async function postTelegram () {
+async function postTelegram (text = TELEGRAM_TEXT) {
   const botToken = process.env.TELEGRAM_BOT_TOKEN
   const channelId = process.env.TELEGRAM_CHANNEL_ID
   if (!botToken || !channelId) { console.error('Missing TELEGRAM_BOT_TOKEN or TELEGRAM_CHANNEL_ID'); return false }
@@ -137,14 +189,14 @@ async function postTelegram () {
     const form = new FormData()
     form.append('chat_id', channelId)
     form.append('photo', fs.createReadStream(rasterLogo))
-    form.append('caption', TELEGRAM_TEXT.substring(0, 1024))
+    form.append('caption', text.substring(0, 1024))
     await axios.post(`${base}/sendPhoto`, form, { headers: form.getHeaders(), maxContentLength: Infinity })
-    if (TELEGRAM_TEXT.length > 1024) {
-      await axios.post(`${base}/sendMessage`, { chat_id: channelId, text: TELEGRAM_TEXT })
+    if (text.length > 1024) {
+      await axios.post(`${base}/sendMessage`, { chat_id: channelId, text })
     }
   } else {
     console.warn('No franks-pavilion.png or logo.png/jpg in public/; posting text only. Add a PNG for Telegram sendPhoto.')
-    await axios.post(`${base}/sendMessage`, { chat_id: channelId, text: TELEGRAM_TEXT })
+    await axios.post(`${base}/sendMessage`, { chat_id: channelId, text })
   }
   console.log('OK: Telegram')
   return true
@@ -183,7 +235,7 @@ async function resolveFacebookPageToken () {
   return direct || null
 }
 
-async function postFacebook () {
+async function postFacebook (text = FACEBOOK_TEXT) {
   const pageId = process.env.FACEBOOK_PAGE_ID
   const pageToken = await resolveFacebookPageToken()
   if (!pageToken || !pageId) {
@@ -192,21 +244,21 @@ async function postFacebook () {
   }
   // Message-only post (URLs in text). Omit `link` — it often requires pages_read_engagement.
   const res = await axios.post(`${GRAPH}/${pageId}/feed`, {
-    message: FACEBOOK_TEXT,
+    message: text,
     access_token: pageToken
   })
   console.log('OK: Facebook', res.data?.id || res.data)
   return true
 }
 
-async function postX () {
+async function postX (tweet = X_TWEET) {
   const apiKey = process.env.X_API_KEY
   const apiSecret = process.env.X_API_SECRET
   const accessToken = process.env.X_ACCESS_TOKEN
   const accessSecret = process.env.X_ACCESS_SECRET
   if (![apiKey, apiSecret, accessToken, accessSecret].every(Boolean)) { console.error('Missing X API env'); return false }
   const tweetUrl = 'https://api.twitter.com/2/tweets'
-  const text = X_TWEET.length > 280 ? X_TWEET.slice(0, 276) + '...' : X_TWEET
+  const text = tweet.length > 280 ? tweet.slice(0, 276) + '...' : tweet
   const body = { text }
   const auth = buildOAuthHeader('POST', tweetUrl, body, apiKey, apiSecret, accessToken, accessSecret)
   const res = await axios.post(tweetUrl, body, { headers: { Authorization: auth, 'Content-Type': 'application/json' } })
@@ -215,8 +267,34 @@ async function postX () {
 }
 
 const argv = process.argv.slice(2)
-const all = argv.length === 0
+const CAMPAIGN_FLAGS = new Set(['--founders', '--honor'])
+const founders = argv.includes('--founders')
+const honor = argv.includes('--honor')
+const channels = argv.filter((a) => a.startsWith('--') && !CAMPAIGN_FLAGS.has(a))
+const all = channels.length === 0
+
+function assertCampaignBrandCopy (text) {
+  const combined = String(text || '').toLowerCase()
+  const blocked = ['zentrafuel', 'zfuel', 'zentramesh']
+  const hit = blocked.find((w) => combined.includes(w))
+  if (hit) throw new Error(`Brand guard blocked post copy containing "${hit}".`)
+}
+
 ;(async () => {
+  if (founders) {
+    assertCampaignBrandCopy(`${FOUNDERS_TELEGRAM}\n${FOUNDERS_FACEBOOK}\n${FOUNDERS_X}`)
+    if (all || argv.includes('--telegram')) await postTelegram(FOUNDERS_TELEGRAM).catch(e => { console.error(safeErrorMessage(e, 'Telegram')); process.exitCode = 1 })
+    if (all || argv.includes('--facebook')) await postFacebook(FOUNDERS_FACEBOOK).catch(e => { console.error(safeErrorMessage(e, 'Facebook')); process.exitCode = 1 })
+    if (all || argv.includes('--x')) await postX(FOUNDERS_X).catch(e => { console.error(safeErrorMessage(e, 'X')); process.exitCode = 1 })
+    return
+  }
+  if (honor) {
+    assertCampaignBrandCopy(`${HONOR_TELEGRAM}\n${HONOR_FACEBOOK}\n${HONOR_X}`)
+    if (all || argv.includes('--telegram')) await postTelegram(HONOR_TELEGRAM).catch(e => { console.error(safeErrorMessage(e, 'Telegram')); process.exitCode = 1 })
+    if (all || argv.includes('--facebook')) await postFacebook(HONOR_FACEBOOK).catch(e => { console.error(safeErrorMessage(e, 'Facebook')); process.exitCode = 1 })
+    if (all || argv.includes('--x')) await postX(HONOR_X).catch(e => { console.error(safeErrorMessage(e, 'X')); process.exitCode = 1 })
+    return
+  }
   assertFranksBrandCopy()
   if (all || argv.includes('--telegram')) await postTelegram().catch(e => { console.error(safeErrorMessage(e, 'Telegram')); process.exitCode = 1 })
   if (all || argv.includes('--facebook')) await postFacebook().catch(e => { console.error(safeErrorMessage(e, 'Facebook')); process.exitCode = 1 })

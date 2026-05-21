@@ -18,6 +18,14 @@
       <h1>Join The Franks Standard</h1>
       <p class="text-muted">Create your free account to buy and sell</p>
 
+      <div v-if="promoBanner" class="promo-banner" role="status">
+        <strong>Founding seller offer:</strong> first 10 sellers get 3 months Pro free.
+        <span v-if="spotsRemaining !== null"> — <strong>{{ spotsRemaining }}</strong> spots left.</span>
+      </div>
+      <div v-if="honorBanner" class="promo-banner honor-banner" role="status">
+        <strong>Honors program:</strong> thank you for your service — 6 months of Pro free when you sell on our marketplace.
+      </div>
+
       <p v-if="formError" class="form-err" role="alert">{{ formError }}</p>
 
       <form @submit.prevent="handleRegister" class="mt-3">
@@ -32,6 +40,18 @@
         <div class="form-group">
           <label class="label">Password</label>
           <input class="input" type="password" v-model="password" placeholder="At least 8 characters" autocomplete="new-password" minlength="8" required />
+        </div>
+        <div class="form-group">
+          <label class="label">Promo code <span class="optional">(optional)</span></label>
+          <input class="input" v-model="promoCode" :placeholder="promoPlaceholder" autocomplete="off" />
+          <p v-if="promoBanner" class="promo-hint text-muted">Limited to 10 redemptions — one per person.</p>
+        </div>
+        <div v-if="honorBanner" class="form-group">
+          <label class="label">I serve as</label>
+          <select v-model="serviceCategory" class="select" required>
+            <option value="">Select your service</option>
+            <option v-for="c in SERVICE_CATEGORIES" :key="c.value" :value="c.value">{{ c.label }}</option>
+          </select>
         </div>
         <div class="form-group">
           <label class="label">I want to...</label>
@@ -68,14 +88,52 @@
 </template>
 
 <script setup>
+import { FOUNDING_PROMO_CODE } from '~/utils/foundingPromo.js'
+import {
+  HONOR_PROMO_CODE,
+  SERVICE_CATEGORIES,
+  getPendingHonorCategory,
+  savePendingHonorCategory,
+} from '~/utils/honorPromo.js'
+
+const route = useRoute()
+const { savePendingPromo, fetchAvailability, redeemCode } = usePromoCode()
+
 function postRegisterPath (type) {
   if (type === 'sell' || type === 'seller') return '/sell'
   if (type === 'both') return '/dashboard'
   return '/dashboard'
 }
 
-onMounted(() => {
+const promoCode = ref('')
+const promoBanner = ref(false)
+const honorBanner = ref(false)
+const spotsRemaining = ref(null)
+const serviceCategory = ref('')
+const promoPlaceholder = computed(() =>
+  honorBanner.value ? HONOR_PROMO_CODE : 'FOUNDERS10 or HONOR26'
+)
+
+onMounted(async () => {
   useGuestOnly()
+  const qPromo = String(route.query.promo || '').trim().toUpperCase()
+  const qAccount = String(route.query.account || '').trim().toLowerCase()
+  const qHonor = String(route.query.honor || getPendingHonorCategory() || '').trim().toLowerCase()
+  if (qPromo) {
+    promoCode.value = qPromo
+    savePendingPromo(qPromo)
+    promoBanner.value = qPromo === FOUNDING_PROMO_CODE
+    honorBanner.value = qPromo === HONOR_PROMO_CODE
+  }
+  if (qAccount === 'sell') accountType.value = 'sell'
+  if (honorBanner.value && qHonor && SERVICE_CATEGORIES.some((c) => c.value === qHonor)) {
+    serviceCategory.value = qHonor
+    savePendingHonorCategory(qHonor)
+  }
+  if (promoBanner.value) {
+    const avail = await fetchAvailability('founders10')
+    if (avail) spotsRemaining.value = avail.remaining
+  }
 })
 
 function onAuthLogoError (e) {
@@ -123,12 +181,16 @@ async function handleRegister() {
         data: {
           full_name: fullName.value,
           account_type: accountType.value,
+          pending_promo: promoCode.value ? promoCode.value.trim().toUpperCase() : null,
+          service_category: serviceCategory.value || null,
+          honor_category: serviceCategory.value || null,
         },
       },
     })
     if (error) {
       throw error
     }
+    if (promoCode.value) savePendingPromo(promoCode.value)
     if (data.user && !data.session) {
       registeredPending.value = true
       const confirmed = data.user.email_confirmed_at || data.user.confirmed_at
@@ -138,6 +200,12 @@ async function handleRegister() {
           'Supabase may not have sent mail yet. On the free default sender, only org team emails receive mail — set up SMTP in Supabase (Authentication → SMTP) or add your Gmail to the Supabase org team.'
       }
       return
+    }
+    if (data.session && promoCode.value) {
+      const extra = honorBanner.value && serviceCategory.value
+        ? { service_category: serviceCategory.value }
+        : {}
+      await redeemCode(promoCode.value, extra).catch(() => {})
     }
     await navigateTo(postRegisterPath(accountType.value))
   } catch (err) {
@@ -216,4 +284,21 @@ async function handleRegister() {
 }
 .terms-check input { margin-top: 3px; accent-color: var(--gold); }
 .email-hint { margin-top: 12px; line-height: 1.45; }
+.promo-banner {
+  margin: 12px 0 0;
+  padding: 12px 14px;
+  text-align: left;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  background: rgba(201, 168, 76, 0.12);
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  border-radius: 8px;
+  color: #1f2937;
+}
+.promo-hint { font-size: 0.8rem; margin-top: 6px; text-align: left; }
+.honor-banner {
+  background: rgba(37, 99, 235, 0.1);
+  border-color: rgba(147, 197, 253, 0.45);
+}
+.optional { font-weight: 400; color: var(--ink-3); }
 </style>
