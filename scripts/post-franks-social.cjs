@@ -218,18 +218,21 @@ async function resolveFacebookPageToken () {
   const user = process.env.FACEBOOK_USER_ACCESS_TOKEN
   if (!pageId) { return null }
 
-  for (const label of ['FACEBOOK_USER_ACCESS_TOKEN', 'FACEBOOK_PAGE_ACCESS_TOKEN']) {
-    const candidate = label === 'FACEBOOK_USER_ACCESS_TOKEN' ? user : direct
-    if (!candidate) { continue }
+  // Prefer permanent Page token stored in GitHub (non-expiring).
+  if (direct && direct.length > 50) {
+    return direct
+  }
+
+  if (user) {
     try {
-      const pageToken = await fetchPageTokenFromUser(candidate, pageId)
+      const pageToken = await fetchPageTokenFromUser(user, pageId)
       if (pageToken) {
-        console.log(`Resolved Page token for ${pageId} (from ${label} via me/accounts)`)
+        console.log(`Resolved Page token for ${pageId} (from FACEBOOK_USER_ACCESS_TOKEN via me/accounts)`)
         return pageToken
       }
-      console.warn(`${label}: Page not in me/accounts`)
+      console.warn('FACEBOOK_USER_ACCESS_TOKEN: Page not in me/accounts')
     } catch (e) {
-      console.warn(`${label} me/accounts:`, e.response?.data?.error?.message || e.message)
+      console.warn('FACEBOOK_USER_ACCESS_TOKEN me/accounts:', e.response?.data?.error?.message || e.message)
     }
   }
   return direct || null

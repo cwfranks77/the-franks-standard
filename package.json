@@ -14,6 +14,8 @@
     "post:social": "node scripts/post-franks-social.cjs",
     "post:social:founders": "node scripts/post-franks-social.cjs --founders",
     "post:social:honor": "node scripts/post-franks-social.cjs --honor",
+    "secrets:push-x": "powershell -ExecutionPolicy Bypass -File scripts/push-x-secrets.ps1",
+    "setup:all": "powershell -ExecutionPolicy Bypass -File scripts/execute-all-setup.ps1",
     "email:campaign": "node scripts/send-email-campaign.cjs",
     "mail:lob-sample": "node scripts/lob-send-postcard.cjs",
     "seo:ping": "node scripts/seo-ping.cjs",

@@ -37,23 +37,41 @@ async function resolvePageToken () {
     fail('Missing FACEBOOK_PAGE_ID (expected 1018067851385482 for ZentraFuel Page).')
     return null
   }
-  for (const [label, candidate] of [
-    ['FACEBOOK_USER_ACCESS_TOKEN', USER_TOKEN],
-    ['FACEBOOK_PAGE_ACCESS_TOKEN', PAGE_TOKEN]
-  ]) {
-    if (!candidate) { continue }
+
+  // Permanent Page token (from push-facebook-long-lived.ps1) — use directly, do not require user token.
+  if (PAGE_TOKEN && PAGE_TOKEN.length > 50) {
     try {
-      const pageToken = await fetchPageTokenFromUser(candidate)
-      if (pageToken) {
-        console.log(`OK: resolved Page token from me/accounts (${label})`)
-        return pageToken
+      const info = await debugToken(PAGE_TOKEN)
+      if (info?.type === 'PAGE') {
+        console.log('OK: using FACEBOOK_PAGE_ACCESS_TOKEN (permanent Page token)')
+        if (info.expires_at === 0) {
+          console.log('OK: token does not expire (expires_at=0)')
+        } else if (info.expires_at) {
+          console.warn('WARN: Page token has expiry:', new Date(info.expires_at * 1000).toISOString())
+          console.warn('      Re-run scripts/push-facebook-long-lived.ps1 for a non-expiring token.')
+        }
+        return PAGE_TOKEN
       }
-      console.warn(`${label}: Page not in me/accounts`)
+      console.warn('FACEBOOK_PAGE_ACCESS_TOKEN is not type PAGE; trying me/accounts fallback.')
     } catch (e) {
-      console.warn(`${label} me/accounts:`, e.response?.data?.error?.message || e.message)
+      console.warn('FACEBOOK_PAGE_ACCESS_TOKEN debug failed:', e.response?.data?.error?.message || e.message)
     }
   }
-  fail('Missing FACEBOOK_PAGE_ACCESS_TOKEN (paste Explorer top Access Token box — we resolve the Page token in CI).')
+
+  if (USER_TOKEN) {
+    try {
+      const pageToken = await fetchPageTokenFromUser(USER_TOKEN)
+      if (pageToken) {
+        console.log('OK: resolved Page token from FACEBOOK_USER_ACCESS_TOKEN via me/accounts')
+        return pageToken
+      }
+      console.warn('FACEBOOK_USER_ACCESS_TOKEN: Page not in me/accounts (token may be expired — use long-lived Page token instead).')
+    } catch (e) {
+      console.warn('FACEBOOK_USER_ACCESS_TOKEN me/accounts:', e.response?.data?.error?.message || e.message)
+    }
+  }
+
+  fail('Missing or invalid FACEBOOK_PAGE_ACCESS_TOKEN. Run scripts/push-facebook-long-lived.ps1 once. See docs/META-FACEBOOK-SETUP.md')
   return null
 }
 

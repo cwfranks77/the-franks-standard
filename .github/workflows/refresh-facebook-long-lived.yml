@@ -26,11 +26,7 @@ jobs:
 
       - run: npm install --no-audit --no-fund
 
-      - name: Exchange for long-lived Page token
-        run: node scripts/exchange-facebook-page-token.cjs --output-file page-token.txt
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: facebook-page-token
-          path: page-token.txt
-          retention-days: 1
+      - name: Exchange and save permanent Page token to GitHub
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: node scripts/exchange-facebook-page-token.cjs --push-github
