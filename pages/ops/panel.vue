@@ -67,6 +67,7 @@
             <li><NuxtLink to="/contact">Contact</NuxtLink></li>
             <li><NuxtLink to="/ops/dropship"><strong>Dropship automation</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/ads"><strong>Social Media Ads</strong></NuxtLink></li>
+            <li><NuxtLink to="/ops/marketing"><strong>Marketing &amp; get found</strong></NuxtLink></li>
           </ul>
         </section>
 
