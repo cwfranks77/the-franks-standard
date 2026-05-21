@@ -3,12 +3,15 @@
     <div class="container">
       <header class="test-head">
         <p class="eyebrow">Owner toolkit</p>
-        <h1>Test Stripe checkout &amp; tax</h1>
+        <h1>Owner QA &amp; tests</h1>
         <p class="text-muted lede">
-          You are not blocked — this page walks you through each flow. Use the buttons below; Stripe opens in a new step.
+          Run automated checks after every deploy. Catches broken modules (like charities), API errors, and checkout issues before buyers hit them.
         </p>
         <div class="test-actions">
           <NuxtLink to="/ops/panel" class="btn btn-outline btn-sm">&larr; Operator console</NuxtLink>
+          <button type="button" class="btn btn-primary btn-sm" :disabled="running" @click="runAll">
+            {{ running ? 'Running tests…' : 'Run all automated tests' }}
+          </button>
           <NuxtLink to="/pay" class="btn btn-outline btn-sm">Pay &amp; fees</NuxtLink>
           <a href="https://dashboard.stripe.com/test/checkout" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">Stripe test payments</a>
         </div>
@@ -18,8 +21,36 @@
         {{ checkoutBanner }}
       </p>
 
+      <section class="test-card smoke-card">
+        <div class="smoke-head">
+          <h2>Automated smoke tests</h2>
+          <p v-if="lastRunAt" class="small text-muted">Last run: {{ lastRunAt }} — {{ passCount }} passed, {{ failCount }} failed</p>
+        </div>
+        <ul class="smoke-list">
+          <li v-for="row in results" :key="row.id" class="smoke-row" :class="row.status">
+            <span class="smoke-icon" aria-hidden="true">{{ smokeIcon(row.status) }}</span>
+            <div class="smoke-body">
+              <strong>{{ row.label }}</strong>
+              <span class="smoke-msg">{{ row.message || (row.status === 'pending' ? 'Not run yet' : '') }}</span>
+            </div>
+          </li>
+        </ul>
+        <p class="small text-muted">Sign in with your site account before running API tests. After deploy, hard-refresh (Ctrl+Shift+R) to clear cached JS.</p>
+      </section>
+
+      <section class="test-card">
+        <h2>Open critical pages</h2>
+        <p class="small text-muted">Click each — page should load without a 500 or blank screen.</p>
+        <div class="page-chips">
+          <NuxtLink v-for="p in criticalPages" :key="p.path" :to="p.path" class="btn btn-outline btn-sm" target="_blank">
+            {{ p.label }}
+          </NuxtLink>
+          <NuxtLink to="/sell" class="btn btn-outline btn-sm" target="_blank">Sell (charity dropdown)</NuxtLink>
+        </div>
+      </section>
+
       <section class="test-card highlight">
-        <h2>1. Easiest — $1 tax smoke test</h2>
+        <h2>Stripe — $1 tax smoke test</h2>
         <p>
           One-time <strong>$1.00</strong> checkout with billing address + sales tax (same code path as Pro).
           Cancel on Stripe or refund yourself in the Dashboard after you confirm tax lines appear.
@@ -44,7 +75,7 @@
       </section>
 
       <section class="test-card">
-        <h2>2. Pro subscription ($14.99/mo + tax)</h2>
+        <h2>Pro subscription ($14.99/mo + tax)</h2>
         <p>Same as buyers on <NuxtLink to="/pay">Pay &amp; fees</NuxtLink> — uses API checkout, not the old Payment Link.</p>
         <button
           type="button"
@@ -58,7 +89,7 @@
       </section>
 
       <section class="test-card">
-        <h2>3. Buy now on a listing (marketplace + tax)</h2>
+        <h2>Buy now on a listing (marketplace + tax)</h2>
         <p>
           You <strong>cannot</strong> buy your own listing (by design). Use a second account or ask someone to click Buy now.
         </p>
@@ -78,7 +109,7 @@
       </section>
 
       <section class="test-card">
-        <h2>4. Stripe test mode (no real charges)</h2>
+        <h2>Stripe test mode (no real charges)</h2>
         <p>Optional. Only works if your Supabase secret <code>STRIPE_SECRET_KEY</code> starts with <code>sk_test_</code>.</p>
         <ul class="bullet-list">
           <li>Dashboard → toggle <strong>Test mode</strong> (top right).</li>
@@ -106,7 +137,7 @@
 definePageMeta({ layout: 'default', middleware: 'ops-auth' })
 
 useSeoMeta({
-  title: 'Test checkout - Owner',
+  title: 'Owner QA and tests',
   robots: 'noindex, nofollow',
 })
 
@@ -114,6 +145,24 @@ const route = useRoute()
 const supabase = useSupabaseClient()
 const { published, error: statsError, refresh } = useOpsStats()
 const { loading: platformLoading, error: platformError, startCheckout } = usePlatformCheckout()
+const {
+  results,
+  running,
+  lastRunAt,
+  passCount,
+  failCount,
+  criticalPages,
+  runAll,
+} = useOpsSmokeTests()
+
+function smokeIcon (status) {
+  if (status === 'pass') return '✓'
+  if (status === 'fail') return '✕'
+  if (status === 'skip') return '○'
+  if (status === 'warn') return '!'
+  if (status === 'running') return '…'
+  return '·'
+}
 
 const signedIn = ref(false)
 const signedInLabel = ref('Not signed in')
@@ -199,4 +248,21 @@ onMounted(async () => {
   padding: 10px 0; border-bottom: 1px solid #eee;
 }
 code { font-size: 0.85em; }
+.smoke-card { border-color: #2563eb; background: #f8fafc; }
+.smoke-head { margin-bottom: 12px; }
+.smoke-list { list-style: none; padding: 0; margin: 0; }
+.smoke-row {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px; margin-bottom: 8px; border-radius: 8px;
+  border: 1px solid #e5e7eb; background: #fff;
+}
+.smoke-row.pass { border-color: #86efac; background: #ecfdf5; }
+.smoke-row.fail { border-color: #fca5a5; background: #fef2f2; }
+.smoke-row.skip { border-color: #d1d5db; opacity: 0.85; }
+.smoke-row.warn { border-color: #fcd34d; background: #fffbeb; }
+.smoke-row.running { border-color: #93c5fd; }
+.smoke-icon { font-weight: 800; width: 1.2rem; flex-shrink: 0; }
+.smoke-body { display: flex; flex-direction: column; gap: 2px; }
+.smoke-msg { font-size: 0.82rem; color: #4b5563; font-weight: 600; }
+.page-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 </style>

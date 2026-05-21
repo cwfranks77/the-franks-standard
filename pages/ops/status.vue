@@ -9,7 +9,7 @@
         </p>
         <div class="status-actions">
           <NuxtLink to="/ops/panel" class="btn btn-outline btn-sm">&larr; Operator console</NuxtLink>
-          <NuxtLink to="/ops/test-checkout" class="btn btn-outline btn-sm">Test checkout &amp; tax</NuxtLink>
+          <NuxtLink to="/ops/test-checkout" class="btn btn-outline btn-sm">Owner QA tests</NuxtLink>
           <NuxtLink to="/pay" class="btn btn-outline btn-sm">Pay &amp; fees</NuxtLink>
           <a href="https://dashboard.stripe.com/" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">Stripe Dashboard</a>
         </div>
