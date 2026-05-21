@@ -19,11 +19,9 @@ export function billingCountriesForTax (): string[] {
 function checkoutTaxOptions () {
   if (!stripeTaxEnabled()) return {}
   return {
-    automatic_tax: {
-      enabled: true,
-      liability: { type: 'self' },
-    },
+    automatic_tax: { enabled: true },
     billing_address_collection: 'required' as const,
+    customer_creation: 'always' as const,
   }
 }
 
