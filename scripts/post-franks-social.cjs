@@ -63,7 +63,11 @@ Visit ${LINK_HONOR} and use promo code HONOR26 when you register.
 Thank you for your service.
 ${SITE}`
 
-const HONOR_X = `Honoring veterans, police, fire, EMS & first responders: 6 months Pro free on The Franks Standard. ${LINK_HONOR} Code HONOR26 #ThankYouForYourService #TheFranksStandard`
+const HONOR_X_BASE = `Honoring veterans, police, fire, EMS & first responders: 6 months Pro free on The Franks Standard. ${LINK_HONOR} Code HONOR26`
+function honorXTweet () {
+  const day = new Date().toISOString().slice(0, 10)
+  return `${HONOR_X_BASE} #ThankYouForYourService #TheFranksStandard ${day}`
+}
 
 const FOUNDERS_TELEGRAM = `Founding seller offer on The Franks Standard — only 10 spots.
 
@@ -300,10 +304,10 @@ function assertCampaignBrandCopy (text) {
     return
   }
   if (honor) {
-    assertCampaignBrandCopy(`${HONOR_TELEGRAM}\n${HONOR_FACEBOOK}\n${HONOR_X}`)
+    assertCampaignBrandCopy(`${HONOR_TELEGRAM}\n${HONOR_FACEBOOK}\n${honorXTweet()}`)
     if (all || argv.includes('--telegram')) await postTelegram(HONOR_TELEGRAM).catch(e => { console.error(safeErrorMessage(e, 'Telegram')); process.exitCode = 1 })
     if (all || argv.includes('--facebook')) await postFacebook(HONOR_FACEBOOK).catch(e => { console.error(safeErrorMessage(e, 'Facebook')); process.exitCode = 1 })
-    if (all || argv.includes('--x')) await postX(HONOR_X).catch(e => { console.error(safeErrorMessage(e, 'X')); process.exitCode = 1 })
+    if (all || argv.includes('--x')) await postX(honorXTweet()).catch(e => { console.error(safeErrorMessage(e, 'X')); process.exitCode = 1 })
     return
   }
   assertFranksBrandCopy()
