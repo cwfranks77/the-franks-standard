@@ -181,7 +181,7 @@ const emailTemplates = reactive([
 
 Hi {{name}},
 
-Authenticated marketplace — COA required, 5% fees, escrow, video inspect.
+Authenticated marketplace — COA required, 4–5% sale fees by plan, escrow, video inspect.
 List free: https://thefranksstandard.com/sell
 (877) 837-0527`,
   },
