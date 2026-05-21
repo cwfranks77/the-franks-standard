@@ -563,13 +563,39 @@ label {
   --stone-400: #6b7280;
 }
 
-.site-main p:not(.reel-cat):not(.sig-desc):not(.hub-lead):not(.hub-note):not(.tc-label),
+.site-main p:not(.reel-cat):not(.sig-desc):not(.hub-lead):not(.hub-note):not(.tc-label):not(.stat-label):not(.stat-value),
 .site-main li,
 .site-main label,
 .site-main span.text-muted,
 .site-main .text-muted {
   font-weight: 700;
   color: var(--text-primary);
+}
+.site-main .stat-card .stat-label,
+.site-main .stat-card .stat-value,
+.site-main .stat-card p {
+  -webkit-text-fill-color: unset;
+}
+.site-main .stat-card .stat-label {
+  color: #d1d5db !important;
+  -webkit-text-fill-color: #d1d5db !important;
+  font-weight: 700;
+}
+.site-main .stat-card .stat-value {
+  color: var(--gold) !important;
+  -webkit-text-fill-color: var(--gold) !important;
+}
+.site-main .dash-section .text-muted,
+.site-main .dash-section .empty-state p.text-muted {
+  color: #d1d5db !important;
+  -webkit-text-fill-color: #d1d5db !important;
+}
+.site-main .dash-section a {
+  color: #f3f4f6;
+}
+.site-main .dash-section h2 {
+  color: var(--gold) !important;
+  -webkit-text-fill-color: var(--gold) !important;
 }
 .site-main :is(.sig-card, .pillar-card, .bento-card, .hub-card) .sig-desc,
 .site-main :is(.sig-card, .pillar-card, .bento-card, .hub-card) p:not(.hub-lead):not(.hub-note) {

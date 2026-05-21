@@ -141,11 +141,16 @@
         <h2 class="section-title text-center">Curated for serious inventory</h2>
         <p class="section-subtitle text-center text-muted">If it belongs on a stage, a slab, a wall, or a rack — and it is real</p>
         <div class="grid grid-4 mt-4">
-          <div class="category-card" v-for="cat in categories" :key="cat.name">
+          <NuxtLink
+            v-for="cat in categories"
+            :key="cat.name"
+            :to="{ path: '/browse', query: { category: cat.name } }"
+            class="category-card"
+          >
             <div class="category-emoji">{{ cat.icon }}</div>
             <h4>{{ cat.name }}</h4>
             <p>{{ cat.desc }}</p>
-          </div>
+          </NuxtLink>
         </div>
       </div>
     </section>
@@ -632,15 +637,24 @@ const categories = CATEGORY_CATALOG
 @media (min-width: 1024px) { .bento { grid-template-columns: repeat(2, 1fr); } }
 .inline-link { display: inline-block; margin-top: 20px; color: var(--gold); font-weight: 600; }
 .category-card {
+  display: block;
   padding: 24px;
   border: 1px solid #d7dde6;
   border-radius: var(--radius-lg);
   background: #fff;
   text-align: center;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
   box-shadow: 0 2px 8px rgba(17, 24, 39, 0.06);
 }
-.category-card:hover { border-color: var(--gold); box-shadow: 0 8px 20px rgba(17, 24, 39, 0.1); }
+.category-card:hover {
+  border-color: var(--gold);
+  box-shadow: 0 8px 20px rgba(17, 24, 39, 0.1);
+  transform: translateY(-2px);
+  color: inherit;
+}
 .category-emoji { font-size: 2.1rem; margin-bottom: 10px; }
 .category-card h4 {
   font-size: 0.9rem;

@@ -10,7 +10,7 @@
         <NuxtLink
           v-for="c in cats"
           :key="c.name"
-          to="/browse"
+          :to="{ path: '/browse', query: { category: c.name } }"
           class="cat"
         >
           <span class="icon">{{ c.icon }}</span>

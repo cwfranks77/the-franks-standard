@@ -123,8 +123,22 @@ async function loadListings() {
   }))
 }
 
+const route = useRoute()
+
+function applyCategoryFromRoute () {
+  const q = route.query.category
+  if (q && typeof q === 'string') {
+    selectedCategory.value = decodeURIComponent(q)
+  }
+}
+
 onMounted(() => {
+  applyCategoryFromRoute()
   loadListings()
+})
+
+watch(() => route.query.category, () => {
+  applyCategoryFromRoute()
 })
 
 const filteredListings = computed(() => {
