@@ -1,1 +1,0 @@
-import{a2 as o,a3 as i,z as n}from"./BDEYtje6.js";import{u as p}from"./BVR4A-oy.js";import{u as c}from"./Bj5SNRVs.js";const h=o(async a=>{let e,t;const{isAuthed:s}=p();if(s.value)return;const u=c(),{data:{user:r}}=([e,t]=i(()=>u.auth.getUser()),e=await e,t(),e);if(!r)return n({path:"/auth/login",query:{redirect:a.fullPath}})});export{h as default};
