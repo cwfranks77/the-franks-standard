@@ -25,7 +25,9 @@ export function usePromoCode () {
   async function fetchAvailability (slug = 'founders10') {
     const base = config.public.supabaseUrl
     if (!base) return null
-    const res = await fetch(`${base}/functions/v1/promo-availability?slug=${encodeURIComponent(slug)}`)
+    const key = config.public.supabaseKey
+    const headers = key ? { apikey: key, Authorization: `Bearer ${key}` } : {}
+    const res = await fetch(`${base}/functions/v1/promo-availability?slug=${encodeURIComponent(slug)}`, { headers })
     if (!res.ok) return null
     return res.json()
   }

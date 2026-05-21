@@ -155,6 +155,20 @@ function fallbackForRoute (route) {
       <p class="fss-static-sub"><strong>Reach us:</strong> general feedback, technical issues, partnership inquiries, or a direct call &mdash; all answered by a human on the team.</p>
       ${contactBlock}`
       break
+    case '/honor':
+      body = `
+      <p class="fss-static-ribbon">With gratitude</p>
+      <h1 class="fss-static-h1"><span class="fss-s1">Honor</span> <span class="fss-s2">Our Heroes</span></h1>
+      <p class="fss-static-sub">Veterans, police, fire, EMS, dispatchers, and corrections: <strong>6 months Pro Seller free</strong> on The Franks Standard. Promo code <strong>HONOR26</strong> at registration.</p>
+      ${contactBlock}`
+      break
+    case '/join/founders10':
+      body = `
+      <p class="fss-static-ribbon">Founding seller offer</p>
+      <h1 class="fss-static-h1"><span class="fss-s1">First 10 sellers</span> <span class="fss-s2">get Pro free</span></h1>
+      <p class="fss-static-sub"><strong>3 months Pro free</strong> for the first 10 people who sign up to sell. One redemption per person. Promo code <strong>FOUNDERS10</strong>.</p>
+      ${contactBlock}`
+      break
     case '/':
     default:
       body = `
