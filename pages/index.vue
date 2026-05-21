@@ -477,9 +477,15 @@ const categories = CATEGORY_CATALOG
   position: relative;
   z-index: 2;
 }
+.hero-actions {
+  position: relative;
+  z-index: 3;
+  pointer-events: auto;
+}
 .hero-actions :deep(a) {
   position: relative;
   z-index: 2;
+  pointer-events: auto;
 }
 .coa-badge-bright {
   border-color: #fca5a5 !important;

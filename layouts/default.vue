@@ -616,7 +616,12 @@ async function submitOpModal () {
 .site-ribbon-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 22px; padding: 10px 12px; }
 .ribbon-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); opacity: 0.6; }
 
-.site-trust { background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--stone-800); }
+.site-trust {
+  position: relative;
+  z-index: 50;
+  background: rgba(0,0,0,0.2);
+  border-bottom: 1px solid var(--stone-800);
+}
 .site-trust-inner { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 10px 0; }
 .trust-pill {
   font-size: 0.78rem; color: var(--stone-200);
@@ -625,6 +630,9 @@ async function submitOpModal () {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   text-decoration: none;
   cursor: pointer;
+  pointer-events: auto;
+  position: relative;
+  z-index: 1;
 }
 .trust-pill:hover {
   color: var(--stone-100);

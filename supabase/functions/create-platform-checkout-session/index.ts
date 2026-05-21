@@ -5,9 +5,13 @@ import { platformServiceTaxOptions, TAX_CODE_SERVICES } from '../_shared/stripeT
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.get('SERVICE_ROLE_KEY') ?? ''
 
-type CheckoutType = 'pro' | 'listing_fee' | 'dispute_fee'
+type CheckoutType = 'pro' | 'listing_fee' | 'dispute_fee' | 'tax_smoke'
 
 function centsFor (type: CheckoutType): number | null {
+  if (type === 'tax_smoke') {
+    const n = Number.parseInt(Deno.env.get('STRIPE_TAX_SMOKE_CENTS') ?? '100', 10)
+    return Number.isFinite(n) && n > 0 ? n : 100
+  }
   if (type === 'pro') {
     const n = Number.parseInt(Deno.env.get('STRIPE_PRO_MONTHLY_CENTS') ?? '1499', 10)
     return Number.isFinite(n) && n > 0 ? n : 1499
@@ -21,6 +25,20 @@ function centsFor (type: CheckoutType): number | null {
 }
 
 function lineItemFor (type: CheckoutType, amountCents: number) {
+  if (type === 'tax_smoke') {
+    return {
+      quantity: 1,
+      price_data: {
+        currency: 'usd',
+        unit_amount: amountCents,
+        tax_behavior: 'exclusive' as const,
+        product_data: {
+          name: 'Tax checkout smoke test (refundable)',
+          tax_code: TAX_CODE_SERVICES,
+        },
+      },
+    }
+  }
   if (type === 'pro') {
     return {
       quantity: 1,
@@ -79,7 +97,7 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => ({})) as { checkout_type?: string }
     const checkoutType = String(body.checkout_type ?? '').trim() as CheckoutType
-    if (!['pro', 'listing_fee', 'dispute_fee'].includes(checkoutType)) {
+    if (!['pro', 'listing_fee', 'dispute_fee', 'tax_smoke'].includes(checkoutType)) {
       return json({ error: 'checkout_type_required' }, 400)
     }
 
@@ -90,6 +108,7 @@ Deno.serve(async (req) => {
 
     const stripe = stripeClient()
     const base = siteUrl()
+    const isSmoke = checkoutType === 'tax_smoke'
     const sessionParams: Parameters<typeof stripe.checkout.sessions.create>[0] = {
       mode: checkoutType === 'pro' ? 'subscription' : 'payment',
       customer_email: user.email ?? undefined,
@@ -98,8 +117,12 @@ Deno.serve(async (req) => {
         checkout_type: checkoutType,
         user_id: user.id,
       },
-      success_url: `${base}/dashboard?checkout=success&type=${checkoutType}`,
-      cancel_url: `${base}/pay?checkout=cancelled&type=${checkoutType}`,
+      success_url: isSmoke
+        ? `${base}/ops/test-checkout?checkout=success`
+        : `${base}/dashboard?checkout=success&type=${checkoutType}`,
+      cancel_url: isSmoke
+        ? `${base}/ops/test-checkout?checkout=cancelled`
+        : `${base}/pay?checkout=cancelled&type=${checkoutType}`,
       ...platformServiceTaxOptions(),
     }
 

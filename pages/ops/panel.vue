@@ -41,6 +41,7 @@
           <NuxtLink to="/dashboard" class="btn btn-outline btn-lg">My Dashboard</NuxtLink>
           <NuxtLink to="/browse" class="btn btn-dark btn-lg">Browse Floor</NuxtLink>
           <NuxtLink to="/ops/status" class="btn btn-dark btn-lg">Transaction readiness</NuxtLink>
+          <NuxtLink to="/ops/test-checkout" class="btn btn-dark btn-lg">Test Stripe &amp; tax</NuxtLink>
         </div>
         <div class="free-access-perks">
           <div class="perk-item"><span class="perk-check">✓</span> Listing fees waived</div>

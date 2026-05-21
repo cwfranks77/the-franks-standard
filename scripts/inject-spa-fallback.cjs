@@ -43,11 +43,15 @@ const SHARED_FOOTER = `
   <p class="fss-static-tag">The Franks Standard &mdash; Authenticity-Guaranteed Marketplace &middot; ${SITE_URL.replace(/^https?:\/\//, '')}</p>
 </footer>`
 
+const EARLY_HIDE_SCRIPT = `<script id="fss-static-boot-hide">(function(){try{document.documentElement.classList.add("nuxt-ready");var b=document.getElementById("fss-static-boot");var s=document.getElementById("fss-static-boot-style");if(b)b.remove();if(s)s.remove();}catch(e){}})();</script>`
+
 const SHARED_STYLE = `<style id="fss-static-boot-style">
 #fss-static-boot,.fss-static-aur,.fss-static-footer{box-sizing:border-box}
-#fss-static-boot{min-height:60vh;position:relative;overflow:hidden;padding:clamp(1rem,4vw,2.5rem);color:#e8e4f0;font-family:Inter,system-ui,sans-serif;pointer-events:none}
-#fss-static-boot a{pointer-events:auto}
-html.nuxt-ready #fss-static-boot,html.nuxt-ready #fss-static-boot-style{display:none!important}
+/* Hidden from view and clicks — HTML stays in page source for crawlers */
+#fss-static-boot{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;pointer-events:none!important;opacity:0!important}
+#fss-static-boot a{pointer-events:none!important}
+#__nuxt{position:relative;z-index:1}
+html.nuxt-ready #fss-static-boot,html.nuxt-ready #fss-static-boot-style,html.nuxt-ready #fss-static-boot-hide{display:none!important}
 .fss-static-aur{position:absolute;inset:0;pointer-events:none;opacity:.7;background:radial-gradient(ellipse 80% 50% at 0% 0%,rgba(255,45,122,.28) 0%,transparent 50%),radial-gradient(ellipse 60% 40% at 100% 10%,rgba(0,224,255,.14) 0%,transparent 45%),linear-gradient(180deg,#0a0518 0%,#120a22 100%)}
 .fss-static-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1;display:grid;gap:1.5rem;align-items:center;padding-top:1rem;grid-template-columns:1fr}
 @media(min-width:900px){.fss-static-inner{grid-template-columns:1.1fr 0.9fr;padding-top:2rem}.fss-static-h1{font-size:clamp(1.5rem,3vw,2.6rem)}}
@@ -180,7 +184,7 @@ function fallbackForRoute (route) {
       break
   }
 
-  return `${START}\n${heroOpen}${body}\n${heroClose}\n${SHARED_STYLE}\n${END}`
+  return `${START}\n${heroOpen}${body}\n${heroClose}\n${SHARED_STYLE}\n${EARLY_HIDE_SCRIPT}\n${END}`
 }
 
 // Map an HTML file path inside .output/public to its public URL route.

@@ -9,7 +9,8 @@
         </p>
         <div class="status-actions">
           <NuxtLink to="/ops/panel" class="btn btn-outline btn-sm">&larr; Operator console</NuxtLink>
-          <NuxtLink to="/pay" class="btn btn-outline btn-sm">Test Stripe links</NuxtLink>
+          <NuxtLink to="/ops/test-checkout" class="btn btn-outline btn-sm">Test checkout &amp; tax</NuxtLink>
+          <NuxtLink to="/pay" class="btn btn-outline btn-sm">Pay &amp; fees</NuxtLink>
           <a href="https://dashboard.stripe.com/" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">Stripe Dashboard</a>
         </div>
       </header>
@@ -33,7 +34,7 @@
         <div class="status-card">
           <h2>What works (after deploy)</h2>
           <ul class="bullet-list">
-            <li><strong>Buy now</strong> — Stripe Checkout for exact listing price</li>
+            <li><strong>Buy now</strong> — Stripe Checkout for listing amount + billing-address tax when applicable</li>
             <li><strong>Orders</strong> — stored in Supabase; visible on dashboard</li>
             <li><strong>Escrow</strong> — paid → held → buyer confirms on order page</li>
             <li><strong>Connect</strong> — sellers set up payouts from dashboard</li>
@@ -57,7 +58,7 @@
           <h2>Buyer flow (live checkout)</h2>
           <ol class="numbered">
             <li>Sign in → open listing → <strong>Buy now</strong></li>
-            <li>Pay on Stripe Checkout (exact price + platform fee split if seller uses Connect)</li>
+            <li>Pay on Stripe Checkout (listing amount, tax from billing address, platform fee split if seller uses Connect)</li>
             <li>Seller ships → buyer opens <strong>Order</strong> → confirms receipt</li>
             <li>Escrow releases to seller (Connect transfer or manual transfer)</li>
           </ol>
