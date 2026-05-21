@@ -59,6 +59,32 @@
               <input class="input" v-model="form.title" placeholder="e.g. 2023 Topps Chrome Shohei Ohtani PSA 10" required />
             </div>
 
+            <div class="form-row">
+              <div class="form-group">
+                <label class="label">Category</label>
+                <select class="select" v-model="form.category" required>
+                  <option value="">Select Category</option>
+                  <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="label">Price ($)</label>
+                <input class="input" type="number" min="1" step="0.01" v-model="form.price" placeholder="0.00" required />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="label">Condition</label>
+              <select class="select" v-model="form.condition" required>
+                <option value="">Select Condition</option>
+                <option value="new">New / Sealed</option>
+                <option value="like-new">Like New</option>
+                <option value="excellent">Excellent</option>
+                <option value="good">Good</option>
+                <option value="fair">Fair</option>
+              </select>
+            </div>
+
             <div class="form-group ai-desc-group">
               <div class="ai-desc-head">
                 <label class="label">Description</label>
@@ -100,33 +126,7 @@
                 placeholder="Describe condition, history, and any details a buyer should know — or use Write with AI above."
                 required
               />
-              <p v-if="aiDescMessage" class="ai-desc-msg" role="status">{{ aiDescMessage }}</p>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label class="label">Category</label>
-                <select class="select" v-model="form.category" required>
-                  <option value="">Select Category</option>
-                  <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label class="label">Price ($)</label>
-                <input class="input" type="number" min="1" step="0.01" v-model="form.price" placeholder="0.00" required />
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label class="label">Condition</label>
-              <select class="select" v-model="form.condition" required>
-                <option value="">Select Condition</option>
-                <option value="new">New / Sealed</option>
-                <option value="like-new">Like New</option>
-                <option value="excellent">Excellent</option>
-                <option value="good">Good</option>
-                <option value="fair">Fair</option>
-              </select>
+              <p v-if="aiDescMessage" class="ai-desc-msg" :class="{ 'ai-desc-err': aiDescError }" role="status">{{ aiDescMessage }}</p>
             </div>
           </div>
 
@@ -295,7 +295,7 @@
 
 <script setup>
 import { LISTING_CATEGORIES } from '~/utils/marketplaceCategories'
-import { generateListingDescriptionAsync } from '~/utils/listingDescriptionAi'
+import { generateListingDescriptionAsync } from '~/utils/listingDescriptionAi.js'
 
 definePageMeta({ middleware: 'requires-auth' })
 
@@ -409,18 +409,26 @@ const aiDescTone = ref('professional')
 const aiDescNotes = ref('')
 const aiDescGenerating = ref(false)
 const aiDescMessage = ref('')
+const aiDescError = ref(false)
 
 const canGenerateAiDescription = computed(() => {
   return !!form.title.trim() && !!form.category
 })
 
 async function generateAiDescription () {
-  if (!canGenerateAiDescription.value) {
-    aiDescMessage.value = 'Enter a title and category first.'
+  if (!form.title.trim()) {
+    aiDescError.value = true
+    aiDescMessage.value = 'Enter a title first.'
+    return
+  }
+  if (!form.category) {
+    aiDescError.value = true
+    aiDescMessage.value = 'Select a category first (above the description).'
     return
   }
   aiDescGenerating.value = true
   aiDescMessage.value = ''
+  aiDescError.value = false
   try {
     const draft = await generateListingDescriptionAsync({
       title: form.title,
@@ -434,10 +442,15 @@ async function generateAiDescription () {
       shipTime: dropship.shipTime,
       shipsFrom: dropship.shipsFrom,
     })
+    if (!draft || !String(draft).trim()) {
+      throw new Error('Empty draft')
+    }
     form.description = draft
     aiDescMessage.value = 'Description drafted — review and edit before you publish.'
-  } catch {
-    aiDescMessage.value = 'Could not generate description. Try again.'
+  } catch (e) {
+    aiDescError.value = true
+    aiDescMessage.value = 'Could not generate description. Refresh the page and try again.'
+    console.error('[AI description]', e)
   } finally {
     aiDescGenerating.value = false
   }
@@ -664,6 +677,7 @@ async function submitListing() {
   font-weight: 600;
   color: #047857;
 }
+.ai-desc-msg.ai-desc-err { color: #b45309; }
 .ai-desc-group .textarea {
   font-size: 0.92rem;
   line-height: 1.55;
