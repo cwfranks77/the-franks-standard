@@ -38,7 +38,7 @@ Optional tax secrets (defaults shown):
 
 ```bash
 supabase secrets set STRIPE_TAX_ENABLED=true
-supabase secrets set STRIPE_TAX_SHIPPING_COUNTRIES=US
+supabase secrets set STRIPE_TAX_BILLING_COUNTRIES=US
 supabase secrets set STRIPE_PRO_MONTHLY_CENTS=1499
 # Optional — required for taxed listing/dispute buttons on /pay (else use Payment Links):
 supabase secrets set STRIPE_LISTING_FEE_CENTS=299
@@ -62,7 +62,7 @@ supabase functions deploy stripe-webhook --no-verify-jwt
 
 | Checkout | Address Stripe uses | Tax engine |
 |----------|---------------------|------------|
-| **Buy now** (listing) | **Shipping address** (required in Checkout) | Stripe Tax (`automatic_tax`) |
+| **Buy now** (listing) | **Billing address** (required in Checkout) | Stripe Tax (`automatic_tax`) |
 | **Pro / fees on /pay** | **Billing address** (required) | Stripe Tax |
 
 The site does not calculate tax locally. Stripe adds the correct rate from the address you collect at checkout.

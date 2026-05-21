@@ -39,7 +39,7 @@
     <p v-if="platformError" class="pay-links-error" role="alert">{{ platformError }}</p>
     <p v-if="showStatus" class="pay-links-status" :class="{ ok: allConfigured }" role="status">
       <template v-if="taxCheckoutEnabled">
-        Platform fees use Stripe Tax at checkout (billing address). Listing purchases use shipping address tax on Buy now.
+        Sales tax is calculated at checkout from your billing address (listings and platform fees).
       </template>
       <template v-else>
         {{ allConfigured ? 'All payment links are active and open Stripe checkout.' : `${configuredCount} of 4 payment links configured.` }}
