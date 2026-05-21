@@ -26,9 +26,10 @@ foreach ($p in $candidates) {
 $required = @('X_API_KEY','X_API_SECRET','X_ACCESS_TOKEN','X_ACCESS_SECRET')
 foreach ($name in $required) {
   $val = [Environment]::GetEnvironmentVariable($name)
-  if (-not $val -or $val.Length -lt 8) { Write-Error "Missing $name"; exit 1 }
-  $val | gh secret set $name --repo $Repo
+  if (-not $val) { Write-Error "Missing $name"; exit 1 }
+  $val = $val.Trim()
+  gh secret set $name --repo $Repo --body $val
   if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-  Write-Host "OK: $name"
+  Write-Host "OK: $name ($($val.Length) chars)"
 }
-Write-Host 'Done. X secrets updated on GitHub.'
+Write-Host 'Done.'

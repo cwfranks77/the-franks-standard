@@ -264,9 +264,17 @@ async function postX (tweet = X_TWEET) {
   const text = tweet.length > 280 ? tweet.slice(0, 276) + '...' : tweet
   const body = { text }
   const auth = buildOAuthHeader('POST', tweetUrl, body, apiKey, apiSecret, accessToken, accessSecret)
-  const res = await axios.post(tweetUrl, body, { headers: { Authorization: auth, 'Content-Type': 'application/json' } })
-  console.log('OK: X', res.data?.data?.id)
-  return true
+  try {
+    const res = await axios.post(tweetUrl, body, { headers: { Authorization: auth, 'Content-Type': 'application/json' } })
+    console.log('OK: X', res.data?.data?.id)
+    return true
+  } catch (e) {
+    const detail = e.response?.data?.detail || e.response?.data?.title || e.response?.data?.errors?.[0]?.message
+    const hint = /forbidden|403/i.test(String(detail || e.message))
+      ? ' Regenerate Access Token with Read+Write at developer.x.com, then run scripts/push-x-secrets.ps1'
+      : ''
+    throw new Error((detail || e.message) + hint)
+  }
 }
 
 const argv = process.argv.slice(2)
