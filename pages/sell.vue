@@ -324,9 +324,9 @@
 
 <script setup>
 import { LISTING_CATEGORIES } from '~/utils/marketplaceCategories'
-import { useCharities } from '~/composables/useCharities'
+import { CHARITY_OPTIONS, charityByKey } from '~/utils/charities.js'
 
-const { charities, charityByKey } = useCharities()
+const charities = CHARITY_OPTIONS
 
 definePageMeta({ middleware: 'requires-auth' })
 
