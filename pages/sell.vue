@@ -609,31 +609,38 @@ async function submitListing() {
       await navigateTo({ path: '/auth/login', query: { redirect: '/sell' } })
       return
     }
+    const listingPayload = {
+      seller_id: user.id,
+      title: form.title.trim(),
+      description: form.description.trim(),
+      category: form.category,
+      price: Number(form.price),
+      condition: form.condition,
+      coa_type: form.coaType,
+      guarantee_signed: !!form.guaranteeSigned,
+      seller_legal_name: form.coaType === 'guarantee' ? form.sellerName.trim() : null,
+      coa_storage_path: null,
+      image_paths: [],
+      status: 'published',
+    }
+    // Dropship columns only exist after migration 002 — do not send them for direct sale.
+    if (listingMode.value === 'dropship') {
+      Object.assign(listingPayload, {
+        listing_mode: 'dropship',
+        dropship_provider_key: dropship.providerKey || null,
+        dropship_provider_name: selectedDropshipProvider.value?.name || null,
+        dropship_sales_channel_key: dropship.salesChannelKey || 'the-franks-standard',
+        dropship_supplier_name: dropship.supplierName.trim() || null,
+        dropship_supplier_email: dropship.supplierEmail.trim() || null,
+        dropship_supplier_sku: dropship.supplierSku.trim() || null,
+        dropship_ship_time: dropship.shipTime || null,
+        dropship_ships_from: dropship.shipsFrom.trim() || null,
+      })
+    }
+
     const { data: row, error: insErr } = await supabase
       .from('listings')
-      .insert({
-        seller_id: user.id,
-        title: form.title.trim(),
-        description: form.description.trim(),
-        category: form.category,
-        price: Number(form.price),
-        condition: form.condition,
-        coa_type: form.coaType,
-        guarantee_signed: !!form.guaranteeSigned,
-        seller_legal_name: form.coaType === 'guarantee' ? form.sellerName.trim() : null,
-        coa_storage_path: null,
-        image_paths: [],
-        listing_mode: listingMode.value,
-        dropship_provider_key: listingMode.value === 'dropship' ? (dropship.providerKey || null) : null,
-        dropship_provider_name: listingMode.value === 'dropship' ? (selectedDropshipProvider.value?.name || null) : null,
-        dropship_sales_channel_key: listingMode.value === 'dropship' ? (dropship.salesChannelKey || 'the-franks-standard') : null,
-        dropship_supplier_name: listingMode.value === 'dropship' ? (dropship.supplierName.trim() || null) : null,
-        dropship_supplier_email: listingMode.value === 'dropship' ? (dropship.supplierEmail.trim() || null) : null,
-        dropship_supplier_sku: listingMode.value === 'dropship' ? (dropship.supplierSku.trim() || null) : null,
-        dropship_ship_time: listingMode.value === 'dropship' ? (dropship.shipTime || null) : null,
-        dropship_ships_from: listingMode.value === 'dropship' ? (dropship.shipsFrom.trim() || null) : null,
-        status: 'published',
-      })
+      .insert(listingPayload)
       .select('id')
       .single()
 
