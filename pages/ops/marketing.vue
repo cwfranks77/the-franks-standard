@@ -34,9 +34,21 @@
         </ol>
       </section>
 
+      <section class="mkt-card mkt-alert">
+        <h2>Email permission — required (not optional)</h2>
+        <p class="text-muted">You <strong>cannot</strong> blast random emails for advertising. U.S. CAN-SPAM rules (and good practice) require:</p>
+        <ul class="mkt-list">
+          <li><strong>Permission:</strong> They opted in on your site, replied asking for info, or you have an existing business relationship (e.g. shop you already work with).</li>
+          <li><strong>Honest subject line</strong> — no deceptive “Re:” or fake invoices.</li>
+          <li><strong>Physical address</strong> in the email (use your LLC mailing address).</li>
+          <li><strong>Unsubscribe:</strong> templates include “Reply STOP” — honor it immediately.</li>
+        </ul>
+        <p class="text-muted small"><strong>Safe list:</strong> card shops you visited, chamber members who agreed, waitlist signups from thefranksstandard.com — not scraped lists from the internet.</p>
+      </section>
+
       <section class="mkt-card">
         <h2>Email marketing (automated)</h2>
-        <p class="text-muted">Use SendGrid. Only email shops/contacts with permission (CAN-SPAM). Templates in <code>assets/email-campaign/</code>.</p>
+        <p class="text-muted">SendGrid free tier (~100 emails/day). Templates in <code>assets/email-campaign/</code>. Always <code>--dry-run</code> first.</p>
         <pre class="mkt-code">npm run email:campaign -- --template seller-outreach --to shop@example.com --name "Joe's Cards"
 npm run email:campaign -- --template seller-outreach --list ./recipients.csv --dry-run</pre>
         <p class="text-muted small">Set <code>SENDGRID_API_KEY</code>, <code>SENDGRID_FROM_EMAIL</code> in <code>.env</code>. Sign up: <a href="https://app.sendgrid.com/" target="_blank" rel="noopener noreferrer">SendGrid</a>.</p>
@@ -66,13 +78,20 @@ npm run email:campaign -- --template seller-outreach --list ./recipients.csv --d
       </section>
 
       <section class="mkt-card">
-        <h2>Automated flyers &amp; letters (US mail)</h2>
+        <h2>Automated flyers to mailboxes</h2>
         <p class="text-muted">
-          <strong>Lob</strong> sends postcards/letters via API. <strong>Click2Mail</strong> is no-code batch mail.
-          <strong>USPS EDDM</strong> saturates a ZIP with postcards (great for local card shops).
+          <strong>Real mail is never fully free</strong> — postage and printing always cost money (~$0.55–$1.25+ per postcard).
+          You <em>can</em> set up automation at no cost in <strong>test mode</strong>, then pay only when you send live mail.
         </p>
+        <ol class="mkt-steps">
+          <li>Free Lob account: <a href="https://dashboard.lob.com/register" target="_blank" rel="noopener noreferrer">lob.com/register</a> → copy <strong>test</strong> API key (<code>test_...</code>).</li>
+          <li>Upload a 4×6 postcard front in Lob → copy asset URL → <code>LOB_POSTCARD_FRONT_URL</code> in <code>.env</code>.</li>
+          <li>Test (no charge, no real mail): <code>npm run mail:lob-sample -- ... --dry-run</code></li>
+          <li>Live mail: switch to <code>live_...</code> key and fund Lob wallet (~$20 minimum).</li>
+        </ol>
+        <p class="text-muted"><strong>Cheapest real outreach:</strong> print 50 flyers at home/office, hand-deliver to local card shops — $0 postage. <strong>ZIP saturation:</strong> USPS Every Door Direct Mail (EDDM) — pays USPS per route, no names needed.</p>
         <pre class="mkt-code">npm run mail:lob-sample -- --to "Shop Name" --address-line1 "100 Main St" --city "Lake Charles" --state LA --zip 70601 --dry-run</pre>
-        <p class="text-muted small">Set <code>LOB_API_KEY</code> and <code>LOB_POSTCARD_FRONT_URL</code> (upload 4×6 design in Lob dashboard). Postcard text: <code>assets/email-campaign/postcard-copy.txt</code>.</p>
+        <p class="text-muted small"><code>LOB_API_KEY=test_...</code> for free API testing. Postcard text: <code>assets/email-campaign/postcard-copy.txt</code>.</p>
         <button type="button" class="btn btn-outline btn-sm" @click="copyText(postcardCopy)">Copy postcard back text</button>
       </section>
 

@@ -15,6 +15,7 @@
     "email:campaign": "node scripts/send-email-campaign.cjs",
     "mail:lob-sample": "node scripts/lob-send-postcard.cjs",
     "seo:ping": "node scripts/seo-ping.cjs",
+    "check:routes": "node scripts/check-site-routes.cjs",
     "validate:facebook": "node scripts/validate-facebook-setup.cjs",
     "facebook:exchange": "node scripts/exchange-facebook-page-token.cjs",
     "facebook:long-lived": "node scripts/exchange-facebook-page-token.cjs --push-github",
