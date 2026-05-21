@@ -49,13 +49,27 @@
         </ul>
       </div>
 
+      <div v-if="showConnectBanner" class="connect-banner mt-4">
+        <p><strong>Connect payouts.</strong> Link your bank via Stripe to receive sale proceeds automatically.</p>
+        <button type="button" class="btn btn-primary btn-sm" :disabled="connectLoading" @click="startOnboarding">
+          {{ connectLoading ? 'Loading…' : 'Set up Stripe payouts' }}
+        </button>
+        <p v-if="connectError" class="small" style="color: #b91c1c; margin-top: 8px;">{{ connectError }}</p>
+      </div>
+
       <div class="dash-section mt-4">
         <h2>Recent Orders</h2>
-        <div class="empty-state text-center" style="padding: 40px;">
+        <div v-if="!recentOrders.length" class="empty-state text-center" style="padding: 40px;">
           <p style="font-size: 2rem;">🛒</p>
-          <p class="text-muted mt-1">No orders yet. Start browsing the floor!</p>
+          <p class="text-muted mt-1">No orders yet.</p>
           <NuxtLink to="/browse" class="btn btn-outline btn-sm mt-2">Browse Marketplace</NuxtLink>
         </div>
+        <ul v-else class="dash-listings">
+          <li v-for="o in recentOrders" :key="o.id">
+            <NuxtLink :to="`/order/${o.id}`">{{ orderLabel(o) }}</NuxtLink>
+            <span class="text-muted small">${{ Number(o.amount).toLocaleString() }} — {{ o.status }}</span>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
@@ -67,8 +81,15 @@ useSeoMeta({ title: 'Dashboard - The Franks Standard' })
 
 const { isOwner } = useOwnerMode()
 const supabase = useSupabaseClient()
+const { loading: connectLoading, error: connectError, startOnboarding } = useStripeConnect()
 const stats = reactive({ count: 0, totalSales: '0.00', pendingOrders: 0 })
 const myListings = ref([])
+const recentOrders = ref([])
+const showConnectBanner = ref(false)
+
+function orderLabel (o) {
+  return o.listing_title || `Order ${o.id.slice(0, 8)}`
+}
 
 onMounted(async () => {
   const { data: { user } } = await supabase.auth.getUser()
@@ -80,11 +101,34 @@ onMounted(async () => {
     .select('id, title, price, status, created_at')
     .eq('seller_id', user.id)
     .order('created_at', { ascending: false })
-  if (error) {
-    return
+  if (!error) {
+    myListings.value = data || []
+    stats.count = myListings.value.filter((l) => l.status === 'published').length
   }
-  myListings.value = data || []
-  stats.count = myListings.value.filter((l) => l.status === 'published').length
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('stripe_account_id, stripe_charges_enabled, account_type')
+    .eq('id', user.id)
+    .maybeSingle()
+
+  showConnectBanner.value = !isOwner.value
+    && !profile?.stripe_charges_enabled
+    && (profile?.account_type === 'seller' || myListings.value.length > 0)
+
+  const { data: orders } = await supabase
+    .from('orders')
+    .select('id, amount, status, created_at, listing_id, buyer_id, seller_id')
+    .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
+    .order('created_at', { ascending: false })
+    .limit(20)
+
+  recentOrders.value = orders || []
+  stats.pendingOrders = recentOrders.value.filter((o) => ['pending', 'paid', 'shipped'].includes(o.status)).length
+  const paidTotal = recentOrders.value
+    .filter((o) => o.seller_id === user.id && ['paid', 'confirmed', 'shipped', 'delivered'].includes(o.status))
+    .reduce((sum, o) => sum + Number(o.amount || 0), 0)
+  stats.totalSales = paidTotal.toFixed(2)
 })
 </script>
 
@@ -139,4 +183,10 @@ onMounted(async () => {
   background: rgba(201, 168, 76, 0.18); color: var(--gold); border: 1px solid rgba(201, 168, 76, 0.4);
 }
 .owner-fee-text { font-size: 0.88rem; color: var(--trust-green); font-weight: 600; }
+.connect-banner {
+  padding: 18px 20px; border-radius: var(--radius-lg);
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  background: rgba(201, 168, 76, 0.08);
+}
+.connect-banner p { margin: 0 0 12px; color: #1f2937; }
 </style>

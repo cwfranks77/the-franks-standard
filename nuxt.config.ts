@@ -45,6 +45,7 @@ export default defineNuxtConfig({
       payProSellerUrl: process.env.NUXT_PUBLIC_PAY_PRO_SELLER_URL || 'https://buy.stripe.com/5kQfZaeBgaQX0J8duAbII0a',
       payOrderDepositUrl: process.env.NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL || 'https://buy.stripe.com/cNiaEQeBg1gnezY4Y4bII0b',
       payDisputeFeeUrl: process.env.NUXT_PUBLIC_PAY_DISPUTE_FEE_URL || 'https://buy.stripe.com/bJe8wIal09MT8bAfCIbII0c',
+      stripeCheckoutEnabled: process.env.NUXT_PUBLIC_STRIPE_CHECKOUT_ENABLED ?? 'true',
       customerServicePhone: process.env.NUXT_PUBLIC_CUSTOMER_SERVICE_PHONE || '(877) 837-0527',
       androidApkUrl: process.env.NUXT_PUBLIC_ANDROID_APK_URL || '',
       windowsInstallerUrl: process.env.NUXT_PUBLIC_WINDOWS_INSTALLER_URL || '',

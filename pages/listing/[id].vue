@@ -49,21 +49,22 @@
             <span class="listing-condition badge badge-gold">{{ conditionLabel(listing.condition) }}</span>
           </div>
 
+          <p class="checkout-notice text-muted">
+            <strong>Secure checkout:</strong>
+            Pay <strong>${{ listing.price.toLocaleString() }}</strong> through Stripe. Funds stay in escrow until you confirm delivery.
+            <NuxtLink to="/how-it-works">How escrow works</NuxtLink>
+          </p>
+
+          <p v-if="checkoutError" class="checkout-error">{{ checkoutError }}</p>
+
           <div class="listing-actions">
-            <a
-              v-if="buyUrl"
-              :href="buyUrl"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              type="button"
               class="btn btn-primary btn-lg"
               style="flex: 1;"
-            >Buy now (Stripe) &rarr;</a>
-            <NuxtLink
-              v-else
-              to="/pay"
-              class="btn btn-primary btn-lg"
-              style="flex: 1;"
-            >Buy — go to checkout</NuxtLink>
+              :disabled="checkoutLoading"
+              @click="buyNow"
+            >{{ checkoutLoading ? 'Opening checkout…' : `Buy now — $${listing.price.toLocaleString()}` }}</button>
             <a
               :href="messageSellerHref"
               class="btn btn-outline btn-lg"
@@ -129,8 +130,12 @@ async function shareListing () {
   } catch { /* clipboard not available */ }
 }
 
-const { orderDepositUrl } = usePaymentLinks()
-const buyUrl = computed(() => orderDepositUrl)
+const { loading: checkoutLoading, error: checkoutError, startCheckout } = useMarketplaceCheckout()
+
+async function buyNow () {
+  const id = (route.params.id || '').toString()
+  if (id) await startCheckout(id)
+}
 
 const messageSellerHref = computed(() => {
   const title = listing.value ? listing.value.title : 'Listing'
@@ -275,6 +280,13 @@ watch(
   margin-bottom: 20px;
 }
 .listing-price { font-size: 2rem; font-weight: 700; color: var(--gold); font-family: 'Cinzel', serif; }
+.checkout-notice {
+  font-size: 0.85rem; line-height: 1.55; margin-bottom: 14px;
+  padding: 12px 14px; background: rgba(201, 168, 76, 0.08);
+  border: 1px solid rgba(201, 168, 76, 0.25); border-radius: var(--radius);
+}
+.checkout-notice a { color: var(--gold); font-weight: 600; }
+.checkout-error { color: #b91c1c; font-size: 0.88rem; margin-bottom: 10px; }
 .listing-actions { display: flex; flex-wrap: wrap; gap: 12px; }
 .listing-description h3, .seller-info h3 {
   font-size: 1rem;

@@ -10,6 +10,7 @@ apps/android/build
 .cache
 .output
 .env
+.env.supabase-secrets
 dist
 .DS_Store
 .vercel

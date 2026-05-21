@@ -13,6 +13,8 @@
       </div>
     </div>
 
+    <TransactionReadinessBanner :show-owner-link="isOwner" />
+
     <div v-if="isOwner" class="pay-owner-banner">
       <span class="pay-owner-badge">Owner mode</span>
       <div>

@@ -115,6 +115,8 @@ npm run email:campaign -- --template seller-outreach --list ./recipients.csv --d
 
       <p class="text-muted small text-center">
         <NuxtLink to="/ops/panel">← Operator console</NuxtLink>
+        ·
+        <NuxtLink to="/ops/status">Transaction readiness</NuxtLink>
         · <NuxtLink to="/ops/ads">Social ads</NuxtLink>
       </p>
     </div>

@@ -40,6 +40,7 @@
           <NuxtLink to="/support" class="btn btn-outline btn-lg">Support</NuxtLink>
           <NuxtLink to="/dashboard" class="btn btn-outline btn-lg">My Dashboard</NuxtLink>
           <NuxtLink to="/browse" class="btn btn-dark btn-lg">Browse Floor</NuxtLink>
+          <NuxtLink to="/ops/status" class="btn btn-dark btn-lg">Transaction readiness</NuxtLink>
         </div>
         <div class="free-access-perks">
           <div class="perk-item"><span class="perk-check">✓</span> Listing fees waived</div>
@@ -50,6 +51,36 @@
           <div class="perk-item"><span class="perk-check">✓</span> Priority everything</div>
         </div>
         <p class="free-access-note">This access is your backdoor inside the hidden room. Tap the logo 5 times on the homepage to unlock anytime.</p>
+      </section>
+
+      <section class="platform-snapshot">
+        <div class="platform-snapshot-head">
+          <h2>Platform snapshot</h2>
+          <NuxtLink to="/ops/status" class="btn btn-primary btn-sm">Full readiness report</NuxtLink>
+        </div>
+        <TransactionReadinessBanner :show-owner-link="false" />
+        <div class="snapshot-stats">
+          <div class="snapshot-stat">
+            <span class="snapshot-num">{{ published }}</span>
+            <span class="snapshot-label">Published listings</span>
+          </div>
+          <div class="snapshot-stat">
+            <span class="snapshot-num">{{ drafts }}</span>
+            <span class="snapshot-label">Drafts</span>
+          </div>
+          <div class="snapshot-stat">
+            <span class="snapshot-num">{{ profiles }}</span>
+            <span class="snapshot-label">Profiles</span>
+          </div>
+          <div class="snapshot-stat">
+            <span class="snapshot-num">{{ paymentLinkCount }}/4</span>
+            <span class="snapshot-label">Stripe links live</span>
+          </div>
+        </div>
+        <p v-if="statsError" class="small text-muted">{{ statsError }}</p>
+        <button type="button" class="btn btn-outline btn-sm" :disabled="statsLoading" @click="refreshStats">
+          {{ statsLoading ? 'Refreshing…' : 'Refresh snapshot' }}
+        </button>
       </section>
 
       <div class="grid">
@@ -68,6 +99,7 @@
             <li><NuxtLink to="/ops/dropship"><strong>Dropship automation</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/ads"><strong>Social Media Ads</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/marketing"><strong>Marketing &amp; get found</strong></NuxtLink></li>
+            <li><NuxtLink to="/ops/status"><strong>Transaction readiness</strong></NuxtLink></li>
           </ul>
         </section>
 
@@ -268,8 +300,13 @@ definePageMeta({ layout: 'default', middleware: 'ops-auth' })
 const router = useRouter()
 const { revoke } = useOpsSession()
 const { violations: coaViolations, lastCheck: coaLastCheck, checking: coaChecking, scan: runCoaScan } = useCoaMonitor()
+const { published, drafts, profiles, loading: statsLoading, error: statsError, refresh: refreshStats } = useOpsStats()
+const { configuredCount: paymentLinkCount } = usePaymentLinks()
 
-onMounted(() => { runCoaScan() })
+onMounted(() => {
+  runCoaScan()
+  refreshStats()
+})
 
 const copied = ref(false)
 let copiedTimer = null
@@ -386,6 +423,27 @@ function flashCopied () {
   background: #f8f9fb; border-radius: var(--radius, 8px); border: 1px solid #d7dde6;
 }
 .call-feat span { font-size: 1.1rem; flex: 0 0 auto; }
+.platform-snapshot {
+  margin-bottom: 28px; padding: 22px 20px;
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  border-radius: var(--radius-lg, 12px);
+  background: linear-gradient(135deg, rgba(201, 168, 76, 0.06), rgba(0, 245, 160, 0.04));
+}
+.platform-snapshot-head {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: 12px; margin-bottom: 14px;
+}
+.platform-snapshot-head h2 { margin: 0; font-size: 1.15rem; color: #111827; }
+.snapshot-stats {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px; margin: 16px 0 14px;
+}
+.snapshot-stat {
+  padding: 14px; background: #fff; border: 1px solid #d7dde6; border-radius: var(--radius, 8px);
+  text-align: center;
+}
+.snapshot-num { display: block; font-size: 1.5rem; font-weight: 800; color: #111827; }
+.snapshot-label { font-size: 0.78rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.06em; }
 .coa-monitor-card { border-color: rgba(255, 77, 142, 0.25); }
 .coa-monitor-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
 .coa-monitor-header h2 { margin: 0; }
