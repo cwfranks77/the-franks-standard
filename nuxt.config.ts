@@ -25,6 +25,25 @@ const opsAccessKeyHash = opsKeyPlain
 process.env.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH = opsAccessKeyHash
 console.log('[ops] opsAccessKeyHash length:', opsAccessKeyHash.length)
 
+// Stripe Payment Link defaults — CI passes empty secrets when unset; write back so Nuxt
+// does not override runtimeConfig.public.pay*Url with "" (same gotcha as ops hash above).
+const PAY_DEFAULTS = {
+  NUXT_PUBLIC_PAY_LISTING_FEE_URL: 'https://buy.stripe.com/5kQfZa78O7EL8bAcqwbII09',
+  NUXT_PUBLIC_PAY_PRO_SELLER_URL: 'https://buy.stripe.com/5kQfZaeBgaQX0J8duAbII0a',
+  NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL: 'https://buy.stripe.com/cNiaEQeBg1gnezY4Y4bII0b',
+  NUXT_PUBLIC_PAY_DISPUTE_FEE_URL: 'https://buy.stripe.com/bJe8wIal09MT8bAfCIbII0c',
+} as const
+function payUrl (envKey: keyof typeof PAY_DEFAULTS): string {
+  const v = String(process.env[envKey] || '').trim()
+  const url = v || PAY_DEFAULTS[envKey]
+  process.env[envKey] = url
+  return url
+}
+const payListingFeeUrl = payUrl('NUXT_PUBLIC_PAY_LISTING_FEE_URL')
+const payProSellerUrl = payUrl('NUXT_PUBLIC_PAY_PRO_SELLER_URL')
+const payOrderDepositUrl = payUrl('NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL')
+const payDisputeFeeUrl = payUrl('NUXT_PUBLIC_PAY_DISPUTE_FEE_URL')
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
   // Off by default: the floating Nuxt DevTools bubble looks like a stray "moving blue outline" on the page in dev.
@@ -41,10 +60,10 @@ export default defineNuxtConfig({
     public: {
       siteUrl: siteUrl,
       opsAccessKeyHash,
-      payListingFeeUrl: process.env.NUXT_PUBLIC_PAY_LISTING_FEE_URL || 'https://buy.stripe.com/5kQfZa78O7EL8bAcqwbII09',
-      payProSellerUrl: process.env.NUXT_PUBLIC_PAY_PRO_SELLER_URL || 'https://buy.stripe.com/5kQfZaeBgaQX0J8duAbII0a',
-      payOrderDepositUrl: process.env.NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL || 'https://buy.stripe.com/cNiaEQeBg1gnezY4Y4bII0b',
-      payDisputeFeeUrl: process.env.NUXT_PUBLIC_PAY_DISPUTE_FEE_URL || 'https://buy.stripe.com/bJe8wIal09MT8bAfCIbII0c',
+      payListingFeeUrl,
+      payProSellerUrl,
+      payOrderDepositUrl,
+      payDisputeFeeUrl,
       stripeCheckoutEnabled: process.env.NUXT_PUBLIC_STRIPE_CHECKOUT_ENABLED ?? 'true',
       customerServicePhone: process.env.NUXT_PUBLIC_CUSTOMER_SERVICE_PHONE || '(877) 837-0527',
       androidApkUrl: process.env.NUXT_PUBLIC_ANDROID_APK_URL || '',
