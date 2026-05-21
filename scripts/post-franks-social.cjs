@@ -65,8 +65,8 @@ ${SITE}`
 
 const HONOR_X_BASE = `Honoring veterans, police, fire, EMS & first responders: 6 months Pro free on The Franks Standard. ${LINK_HONOR} Code HONOR26`
 function honorXTweet () {
-  const day = new Date().toISOString().slice(0, 10)
-  return `${HONOR_X_BASE} #ThankYouForYourService #TheFranksStandard ${day}`
+  const uniq = process.env.GITHUB_RUN_ID || Date.now().toString(36)
+  return `${HONOR_X_BASE} #ThankYouForYourService #TheFranksStandard ·${uniq}`
 }
 
 const FOUNDERS_TELEGRAM = `Founding seller offer on The Franks Standard — only 10 spots.
