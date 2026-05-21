@@ -66,7 +66,8 @@
             </template>
             <template v-else>
               <strong>Secure checkout:</strong>
-              Pay <strong>${{ listing.price.toLocaleString() }}</strong> through Stripe. Funds stay in escrow until you confirm delivery.
+              Pay <strong>${{ listing.price.toLocaleString() }}</strong> through Stripe; sales tax (if any) is calculated from your shipping address at checkout.
+              Funds stay in escrow until you confirm delivery.
               <NuxtLink to="/how-it-works">How escrow works</NuxtLink>
             </template>
           </p>

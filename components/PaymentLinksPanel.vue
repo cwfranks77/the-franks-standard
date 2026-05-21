@@ -12,8 +12,17 @@
           <h3>{{ item.title }}</h3>
           <p class="pay-link-desc">{{ item.body }}</p>
           <p v-if="item.amountHint" class="pay-link-hint">{{ item.amountHint }}</p>
+          <button
+            v-if="usesTaxCheckout(item.key)"
+            type="button"
+            class="btn btn-primary btn-sm pay-link-btn"
+            :disabled="platformLoading"
+            @click="startPlatformCheckout(item.key)"
+          >
+            {{ platformLoading ? 'Opening checkout…' : 'Pay in Stripe →' }}
+          </button>
           <a
-            v-if="item.url"
+            v-else-if="item.url"
             :href="item.url"
             target="_blank"
             rel="noopener noreferrer"
@@ -27,8 +36,14 @@
         </div>
       </article>
     </div>
+    <p v-if="platformError" class="pay-links-error" role="alert">{{ platformError }}</p>
     <p v-if="showStatus" class="pay-links-status" :class="{ ok: allConfigured }" role="status">
-      {{ allConfigured ? 'All payment links are active and open Stripe checkout.' : `${configuredCount} of 4 payment links configured.` }}
+      <template v-if="taxCheckoutEnabled">
+        Platform fees use Stripe Tax at checkout (billing address). Listing purchases use shipping address tax on Buy now.
+      </template>
+      <template v-else>
+        {{ allConfigured ? 'All payment links are active and open Stripe checkout.' : `${configuredCount} of 4 payment links configured.` }}
+      </template>
     </p>
   </div>
 </template>
@@ -41,6 +56,7 @@ const props = defineProps({
 })
 
 const { links, allConfigured, configuredCount } = usePaymentLinks()
+const { loading: platformLoading, error: platformError, taxCheckoutEnabled, usesTaxCheckout, startCheckout: startPlatformCheckout } = usePlatformCheckout()
 
 const visibleLinks = computed(() => {
   const hide = new Set(props.hideKeys || [])
@@ -63,4 +79,9 @@ const visibleLinks = computed(() => {
 .pay-link-missing code { font-size: 0.78rem; }
 .pay-links-status { margin-top: 14px; font-size: 0.88rem; font-weight: 700; color: #b45309; text-align: center; }
 .pay-links-status.ok { color: #047857; }
+.pay-links-error {
+  margin-top: 12px; padding: 10px 12px; border-radius: 8px;
+  background: rgba(255, 61, 92, 0.08); border: 1px solid rgba(255, 61, 92, 0.25);
+  color: #7f1d1d; font-size: 0.88rem; font-weight: 600;
+}
 </style>

@@ -15,6 +15,9 @@ function friendlyCheckoutError (raw, detail) {
     const msg = CHECKOUT_ERROR_MESSAGES[code]
     return detail && code === 'order_create_failed' ? `${msg} (${detail})` : msg
   }
+  if (/tax/i.test(code)) {
+    return 'Sales tax is calculated at checkout from your shipping address. Enable Stripe Tax in the Stripe Dashboard (Settings → Tax) if checkout fails.'
+  }
   if (code) return code
   if (detail) return String(detail)
   return 'Checkout could not start. Sign in, refresh the page, and try again.'

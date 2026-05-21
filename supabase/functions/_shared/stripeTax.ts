@@ -1,11 +1,11 @@
-/** Stripe Tax — optional; off by default when Stripe products are non-taxable. */
+/** Stripe Tax at checkout from buyer address (Stripe calculates; products can stay non-taxable in catalog). */
 
 export const TAX_CODE_TANGIBLE = 'txcd_99999999'
 export const TAX_CODE_SERVICES = 'txcd_20030000'
 
 export function stripeTaxEnabled (): boolean {
-  const raw = (Deno.env.get('STRIPE_TAX_ENABLED') ?? 'false').trim().toLowerCase()
-  return raw === 'true' || raw === '1' || raw === 'on'
+  const raw = (Deno.env.get('STRIPE_TAX_ENABLED') ?? 'true').trim().toLowerCase()
+  return raw !== 'false' && raw !== '0' && raw !== 'off'
 }
 
 export function shippingCountriesForTax (): string[] {
