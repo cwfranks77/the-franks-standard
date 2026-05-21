@@ -66,7 +66,8 @@
             </template>
             <template v-else>
               <strong>Secure checkout:</strong>
-              Pay <strong>${{ listing.price.toLocaleString() }}</strong> through Stripe; sales tax (if any) is calculated from your billing address at checkout.
+              Listed price <strong>${{ listing.price.toLocaleString() }}</strong> is the item subtotal only.
+              <strong>Sales tax is added at checkout</strong> from your billing address — your total may be higher than the list price.
               Funds stay in escrow until you confirm delivery.
               <NuxtLink to="/how-it-works">How escrow works</NuxtLink>
             </template>
@@ -89,7 +90,7 @@
               style="flex: 1;"
               :disabled="checkoutLoading || isOwnListing"
               @click="buyNow"
-            >{{ checkoutLoading ? 'Opening checkout…' : `Buy now — $${listing.price.toLocaleString()}` }}</button>
+            >{{ checkoutLoading ? 'Opening checkout…' : `Buy now — $${listing.price.toLocaleString()} + tax at checkout` }}</button>
             <a
               :href="messageSellerHref"
               class="btn btn-outline btn-lg"

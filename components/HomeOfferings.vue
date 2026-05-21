@@ -29,7 +29,7 @@ const offerings = [
   { icon: '🛡️', title: 'COA & signed guarantee', desc: 'Every public listing needs proof before it goes live — upload a COA or sign our in-platform guarantee.', to: '/how-it-works', cta: 'How it works' },
   { icon: '🏛️', title: 'Browse the floor', desc: 'Cards, watches, gear, art, sneakers, and more — curated categories for high-trust inventory.', to: '/browse', cta: 'Browse' },
   { icon: '📦', title: 'Sell & list', desc: 'Create listings with photos, COA flow, and seller tools. Stores onboard through For sellers.', to: '/sell', cta: 'Start listing' },
-  { icon: '🔒', title: 'Escrow & Stripe checkout', desc: 'Payments held until the buyer confirms. Seller payouts through Stripe when a sale completes.', to: '/pay', cta: 'Pay & fees' },
+  { icon: '🔒', title: 'Escrow & Stripe checkout', desc: 'Listed price is the item subtotal; sales tax is added at checkout from the buyer billing address. Funds held until the buyer confirms.', to: '/pay', cta: 'Pay & fees' },
   { icon: '📹', title: 'Video meet', desc: 'Face-to-face rooms in the browser — inspect items with buyers or sellers without another app.', to: '/video', cta: 'Open video' },
   { icon: '🤖', title: 'AI Help & support', desc: 'Instant answers on fees, COA, and tech from the Help button. Escalate to humans when you need to.', to: '/support', cta: 'Support' },
   { icon: '🏪', title: 'Stores & pro sellers', desc: 'Volume sellers and shops apply with inventory proof. Same authenticity rules, white-glove onboarding.', to: '/sellers', cta: 'For sellers' },

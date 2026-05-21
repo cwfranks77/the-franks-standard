@@ -86,7 +86,7 @@
 
     <div class="site-trust" aria-label="Why buyers and sellers use this marketplace">
       <div class="container site-trust-inner">
-        <NuxtLink to="/pay" class="trust-pill">Secure checkout (Stripe links)</NuxtLink>
+        <NuxtLink to="/pay" class="trust-pill">Stripe checkout + tax at billing address</NuxtLink>
         <NuxtLink to="/sell" class="trust-pill">Seller &amp; buyer tools</NuxtLink>
         <NuxtLink to="/video" class="trust-pill">Video meet built in</NuxtLink>
         <NuxtLink to="/support" class="trust-pill">Help with mic, email, or live Video</NuxtLink>

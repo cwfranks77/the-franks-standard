@@ -34,7 +34,7 @@
         <div class="status-card">
           <h2>What works (after deploy)</h2>
           <ul class="bullet-list">
-            <li><strong>Buy now</strong> — Stripe Checkout for listing amount + billing-address tax when applicable</li>
+            <li><strong>Buy now</strong> — listed price + sales tax added at checkout from billing address</li>
             <li><strong>Orders</strong> — stored in Supabase; visible on dashboard</li>
             <li><strong>Escrow</strong> — paid → held → buyer confirms on order page</li>
             <li><strong>Connect</strong> — sellers set up payouts from dashboard</li>
