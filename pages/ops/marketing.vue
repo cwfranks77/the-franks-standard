@@ -46,6 +46,18 @@
         <p class="text-muted small"><strong>Safe list:</strong> card shops you visited, chamber members who agreed, waitlist signups from thefranksstandard.com — not scraped lists from the internet.</p>
       </section>
 
+      <section class="mkt-card mkt-alert">
+        <h2>API secrets — you must add these (not in chat)</h2>
+        <p class="text-muted">Email and postcard scripts need <strong>your</strong> keys in a local <code>.env</code> file. Never paste API keys into Cursor or git.</p>
+        <ol class="mkt-steps">
+          <li>Copy <code>.env.example</code> → <code>.env</code> on your PC.</li>
+          <li>Add <code>SENDGRID_API_KEY</code> (starts with <code>SG.</code>) from <a href="https://app.sendgrid.com/settings/api_keys" target="_blank" rel="noopener noreferrer">SendGrid</a>.</li>
+          <li>Add <code>LOB_API_KEY</code> (<code>test_...</code> free) from <a href="https://dashboard.lob.com/settings/api" target="_blank" rel="noopener noreferrer">Lob</a>.</li>
+          <li>Run in repo: <code>npm run secrets:check</code> — shows what is missing without showing values.</li>
+        </ol>
+        <p class="text-muted small">Full guide: <code>docs/API-SECRETS-SETUP.md</code></p>
+      </section>
+
       <section class="mkt-card">
         <h2>Email marketing (automated)</h2>
         <p class="text-muted">SendGrid free tier (~100 emails/day). Templates in <code>assets/email-campaign/</code>. Always <code>--dry-run</code> first.</p>
