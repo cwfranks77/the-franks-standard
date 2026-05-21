@@ -324,6 +324,7 @@
 
 <script setup>
 import { LISTING_CATEGORIES } from '~/utils/marketplaceCategories'
+import { useCharities } from '~/composables/useCharities'
 
 const { charities, charityByKey } = useCharities()
 
