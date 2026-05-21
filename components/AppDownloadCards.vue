@@ -19,7 +19,10 @@
 </template>
 
 <script setup>
-const { androidApkUrl, windowsInstallerUrl } = useNativeAppDownloads()
+const config = useRuntimeConfig()
+const siteUrl = (config.public.siteUrl || 'https://thefranksstandard.com').replace(/\/$/, '')
+const androidApkUrl = (config.public.androidApkUrl || '').trim() || `${siteUrl}/downloads/TheFranksStandard-android.apk`
+const windowsInstallerUrl = (config.public.windowsInstallerUrl || '').trim() || `${siteUrl}/downloads/TheFranksStandard-windows-setup.exe`
 </script>
 
 <style scoped>
