@@ -44,6 +44,7 @@
             :to="registerHref"
             class="btn btn-primary btn-lg"
             :class="{ disabled: !selectedCategory }"
+            :aria-disabled="!selectedCategory"
             @click="onClaimClick"
           >
             Sign up to sell — honors pricing
@@ -81,9 +82,13 @@ const serviceCards = [
 
 const registerHref = computed(() => honorPromoRegisterPath(selectedCategory.value || undefined))
 
-function onClaimClick () {
+function onClaimClick (e) {
+  if (!selectedCategory.value) {
+    e.preventDefault()
+    return
+  }
   savePendingPromo(HONOR_PROMO_CODE)
-  if (selectedCategory.value) savePendingHonorCategory(selectedCategory.value)
+  savePendingHonorCategory(selectedCategory.value)
 }
 
 onMounted(() => {

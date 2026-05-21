@@ -45,6 +45,8 @@
         <p class="text-muted">Create your account, use the AI Store Builder, and list your first items — all free.</p>
         <div class="cta-actions">
           <NuxtLink to="/auth/register" class="btn btn-primary btn-lg">Create free account</NuxtLink>
+          <NuxtLink to="/join/founders10" class="btn btn-outline btn-lg">Founding sellers — FOUNDERS10</NuxtLink>
+          <NuxtLink to="/honor" class="btn btn-outline btn-lg">Military &amp; heroes — HONOR26</NuxtLink>
           <NuxtLink to="/store-builder" class="btn btn-outline btn-lg">Try AI Store Builder</NuxtLink>
           <NuxtLink to="/pricing" class="btn btn-dark btn-lg">See all pricing</NuxtLink>
         </div>

@@ -9,6 +9,8 @@
       <div class="pay-quick-links">
         <NuxtLink to="/pricing" class="btn btn-outline btn-sm">See pricing plans</NuxtLink>
         <NuxtLink to="/launch-offer" class="btn btn-outline btn-sm">Launch offer</NuxtLink>
+        <NuxtLink to="/join/founders10" class="btn btn-outline btn-sm">Founding sellers</NuxtLink>
+        <NuxtLink to="/honor" class="btn btn-outline btn-sm">Honor program</NuxtLink>
         <a href="https://dashboard.stripe.com/" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">Stripe Dashboard</a>
       </div>
     </div>

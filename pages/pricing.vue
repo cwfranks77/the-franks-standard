@@ -120,7 +120,7 @@
             <div class="promo-perk"><span class="promo-icon">🤝</span> Refer a seller, both get 1 month Pro free</div>
             <div class="promo-perk"><span class="promo-icon">📦</span> Dropship tools included at every tier</div>
           </div>
-          <NuxtLink to="/auth/register" class="btn btn-primary btn-lg mt-3">Claim your launch offer</NuxtLink>
+          <NuxtLink to="/launch-offer" class="btn btn-primary btn-lg mt-3">Claim your launch offer</NuxtLink>
         </div>
       </section>
 

@@ -57,7 +57,8 @@
               <NuxtLink to="/how-it-works" class="nav-drop-link" @click="closeAllNav">How it works</NuxtLink>
               <NuxtLink to="/pricing" class="nav-drop-link" @click="closeAllNav">Pricing</NuxtLink>
               <NuxtLink to="/launch-offer" class="nav-drop-link" @click="closeAllNav">Launch offer (new sellers)</NuxtLink>
-              <NuxtLink to="/honor" class="nav-drop-link" @click="closeAllNav">Honor our heroes</NuxtLink>
+              <NuxtLink to="/join/founders10" class="nav-drop-link" @click="closeAllNav">Founding sellers (FOUNDERS10)</NuxtLink>
+              <NuxtLink to="/honor" class="nav-drop-link" @click="closeAllNav">Honor our heroes (HONOR26)</NuxtLink>
               <NuxtLink to="/store-builder" class="nav-drop-link" @click="closeAllNav">AI Store Builder</NuxtLink>
               <NuxtLink to="/about" class="nav-drop-link" @click="closeAllNav">Our story and mission</NuxtLink>
               <NuxtLink to="/support" class="nav-drop-link" @click="closeAllNav">Support and tech</NuxtLink>
@@ -122,7 +123,8 @@
             <NuxtLink to="/sellers">For Stores &amp; Sellers</NuxtLink>
             <NuxtLink to="/store-builder">AI Store Builder</NuxtLink>
             <NuxtLink to="/launch-offer">Launch Offer</NuxtLink>
-            <NuxtLink to="/honor">Honor Our Heroes</NuxtLink>
+            <NuxtLink to="/join/founders10">Founding Sellers (3 mo Pro)</NuxtLink>
+            <NuxtLink to="/honor">Honor Our Heroes (6 mo Pro)</NuxtLink>
             <NuxtLink to="/how-it-works">How It Works</NuxtLink>
             <NuxtLink to="/support">Support</NuxtLink>
           </div>
