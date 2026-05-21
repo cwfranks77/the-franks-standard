@@ -1,4 +1,44 @@
 /** Start Stripe Checkout for a listing (Supabase Edge Function). */
+const CHECKOUT_ERROR_MESSAGES = {
+  unauthorized: 'Sign in again, then try Buy now.',
+  listing_id_required: 'Listing not found. Refresh the page and try again.',
+  listing_not_found: 'This listing is not available for purchase.',
+  cannot_buy_own_listing: 'You cannot buy your own listing. Sign in as a different account or share the link with a buyer.',
+  invalid_listing_price: 'This listing has an invalid price.',
+  order_create_failed: 'Could not start checkout (orders database). Run supabase/migrations/003_stripe_payments.sql in Supabase SQL Editor, then try again.',
+  method_not_allowed: 'Checkout service error. Try again in a moment.',
+}
+
+function friendlyCheckoutError (raw, detail) {
+  const code = String(raw || '').trim()
+  if (CHECKOUT_ERROR_MESSAGES[code]) {
+    const msg = CHECKOUT_ERROR_MESSAGES[code]
+    return detail && code === 'order_create_failed' ? `${msg} (${detail})` : msg
+  }
+  if (code) return code
+  if (detail) return String(detail)
+  return 'Checkout could not start. Sign in, refresh the page, and try again.'
+}
+
+async function parseFunctionError (fnError, data) {
+  if (data?.error) {
+    return friendlyCheckoutError(data.error, data.detail)
+  }
+  const ctx = fnError?.context
+  if (ctx && typeof ctx.json === 'function') {
+    try {
+      const body = await ctx.json()
+      if (body?.error) {
+        return friendlyCheckoutError(body.error, body.detail)
+      }
+    } catch { /* ignore */ }
+  }
+  const msg = fnError?.message || ''
+  if (msg && !/non-2xx/i.test(msg)) return msg
+  return friendlyCheckoutError('checkout_failed')
+}
+
+/** @param {import('@supabase/supabase-js').SupabaseClient} supabase */
 export function useMarketplaceCheckout () {
   const supabase = useSupabaseClient()
   const router = useRouter()
@@ -12,24 +52,29 @@ export function useMarketplaceCheckout () {
     try {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) {
-        router.push({ path: '/auth/login', query: { redirect: `/listing/${listingId}` } })
+        await router.push({ path: '/auth/login', query: { redirect: `/listing/${listingId}` } })
         return
       }
+
       const { data, error: fnError } = await supabase.functions.invoke('create-checkout-session', {
         body: { listing_id: listingId },
       })
+
       if (fnError) {
-        throw new Error(fnError.message || 'Checkout could not start')
+        const message = await parseFunctionError(fnError, data)
+        throw new Error(message)
       }
       if (data?.error) {
-        throw new Error(String(data.error))
+        throw new Error(friendlyCheckoutError(data.error, data.detail))
       }
       if (!data?.url) {
-        throw new Error('No checkout URL returned. Deploy create-checkout-session and set STRIPE_SECRET_KEY in Supabase.')
+        throw new Error('No checkout URL returned. Confirm create-checkout-session is deployed and STRIPE_SECRET_KEY is set in Supabase Edge secrets.')
       }
-      window.location.href = data.url
+      window.location.assign(data.url)
     } catch (e) {
-      error.value = e?.message || 'Checkout failed'
+      const message = e?.message || 'Checkout failed'
+      error.value = message
+      console.error('[checkout]', message, e)
     } finally {
       loading.value = false
     }

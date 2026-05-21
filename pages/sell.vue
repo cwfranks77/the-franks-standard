@@ -135,6 +135,30 @@
             </div>
           </div>
 
+          <!-- Charity donation -->
+          <div class="form-section charity-section">
+            <h2>Donate sale proceeds</h2>
+            <p class="text-muted mb-2">
+              Optional. When your item sells, you keep $0 — the full sale (minus payment processing) is earmarked for your chosen charity.
+              The Franks Standard disburses donations to registered nonprofits.
+            </p>
+            <label class="charity-toggle">
+              <input v-model="charity.donateProceeds" type="checkbox" />
+              <span>Donate 100% of this sale to a charity</span>
+            </label>
+            <div v-if="charity.donateProceeds" class="charity-pick mt-2">
+              <label class="label">Choose a charity</label>
+              <select v-model="charity.key" class="select" required>
+                <option value="">Select a charity</option>
+                <option v-for="c in charities" :key="c.key" :value="c.key">{{ c.name }}</option>
+              </select>
+              <p v-if="selectedCharity" class="charity-detail text-muted small mt-1">
+                {{ selectedCharity.tagline }}
+                <a :href="selectedCharity.website" target="_blank" rel="noopener noreferrer">Learn more</a>
+              </p>
+            </div>
+          </div>
+
           <!-- Dropship details -->
           <div v-if="listingMode === 'dropship'" class="form-section dropship-section">
             <h2>Dropship Details</h2>
@@ -301,6 +325,8 @@
 <script setup>
 import { LISTING_CATEGORIES } from '~/utils/marketplaceCategories'
 
+const { charities, charityByKey } = useCharities()
+
 definePageMeta({ middleware: 'requires-auth' })
 
 useSeoMeta({
@@ -385,6 +411,13 @@ const form = reactive({
   sellerName: '',
   guaranteeSigned: false,
 })
+
+const charity = reactive({
+  donateProceeds: false,
+  key: '',
+})
+
+const selectedCharity = computed(() => charityByKey(charity.key))
 
 const dropship = reactive({
   providerKey: '',
@@ -602,6 +635,10 @@ async function submitListing() {
     alert('Doba dropship listings require Supplier SKU before publishing.')
     return
   }
+  if (charity.donateProceeds && !charity.key) {
+    alert('Choose a charity or turn off "Donate sale proceeds".')
+    return
+  }
   submitting.value = true
   try {
     const { data: { user } } = await supabase.auth.getUser()
@@ -623,6 +660,15 @@ async function submitListing() {
       image_paths: [],
       status: 'published',
     }
+    const pickedCharity = charity.donateProceeds ? charityByKey(charity.key) : null
+    if (pickedCharity) {
+      Object.assign(listingPayload, {
+        donate_proceeds: true,
+        charity_key: pickedCharity.key,
+        charity_name: pickedCharity.name,
+      })
+    }
+
     // Dropship columns only exist after migration 002 — do not send them for direct sale.
     if (listingMode.value === 'dropship') {
       Object.assign(listingPayload, {
@@ -747,6 +793,18 @@ async function submitListing() {
   color: #047857;
 }
 .ai-desc-msg.ai-desc-err { color: #b45309; }
+
+.charity-section { border-color: rgba(0, 245, 160, 0.25); }
+.charity-toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.charity-toggle input { margin-top: 4px; accent-color: var(--gold); }
+.charity-detail a { color: var(--gold); font-weight: 600; }
+.charity-pick .select { max-width: 100%; }
 .ai-desc-group .textarea {
   font-size: 0.92rem;
   line-height: 1.55;

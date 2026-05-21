@@ -55,6 +55,7 @@
           <div class="listing-image">
             <img :src="item.image" :alt="item.title" />
             <span class="coa-badge listing-coa">COA Verified</span>
+            <span v-if="item.donateProceeds" class="charity-badge listing-coa">Charity</span>
           </div>
           <div class="card-body">
             <p class="listing-category text-muted">{{ item.category }}</p>
@@ -98,7 +99,7 @@ async function loadListings() {
   loadError.value = ''
   const { data, error } = await supabase
     .from('listings')
-    .select('id, title, category, price, condition, coa_type, image_paths, created_at, seller:profiles(full_name)')
+    .select('id, title, category, price, condition, coa_type, image_paths, created_at, donate_proceeds, charity_name, seller:profiles(full_name)')
 
     .eq('status', 'published')
     .order('created_at', { ascending: false })
@@ -117,6 +118,8 @@ async function loadListings() {
     createdAt: r.created_at,
     image: publicUrlForPath(r.image_paths?.[0]),
     seller: (r.seller && r.seller.full_name) ? r.seller.full_name : 'Seller',
+    donateProceeds: !!r.donate_proceeds,
+    charityName: r.charity_name || '',
   }))
 }
 
@@ -184,6 +187,12 @@ const filteredListings = computed(() => {
   left: 10px;
   font-size: 0.7rem;
   padding: 4px 10px;
+}
+.charity-badge {
+  left: auto;
+  right: 10px;
+  background: rgba(0, 245, 160, 0.9);
+  color: #0c0619;
 }
 .listing-category { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
 .listing-title {

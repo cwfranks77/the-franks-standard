@@ -42,11 +42,23 @@
           <NuxtLink to="/sell" class="btn btn-outline btn-sm mt-2">Create Your First Listing</NuxtLink>
         </div>
         <ul v-else class="dash-listings">
-          <li v-for="l in myListings" :key="l.id">
-            <NuxtLink :to="`/listing/${l.id}`">{{ l.title }}</NuxtLink>
-            <span class="text-muted small">${{ Number(l.price).toLocaleString() }} — {{ l.status }}</span>
+          <li v-for="l in myListings" :key="l.id" class="dash-listing-row">
+            <div class="dash-listing-main">
+              <NuxtLink :to="`/listing/${l.id}`">{{ l.title }}</NuxtLink>
+              <span class="text-muted small">${{ Number(l.price).toLocaleString() }} — {{ l.status }}</span>
+            </div>
+            <button
+              v-if="l.status === 'published'"
+              type="button"
+              class="btn btn-outline btn-sm dash-remove-btn"
+              :disabled="removingId === l.id"
+              @click="removeListing(l.id)"
+            >
+              {{ removingId === l.id ? 'Removing…' : 'Remove' }}
+            </button>
           </li>
         </ul>
+        <p v-if="removeMessage" class="dash-remove-msg" role="status">{{ removeMessage }}</p>
       </div>
 
       <div v-if="showConnectBanner" class="connect-banner mt-4">
@@ -86,6 +98,28 @@ const stats = reactive({ count: 0, totalSales: '0.00', pendingOrders: 0 })
 const myListings = ref([])
 const recentOrders = ref([])
 const showConnectBanner = ref(false)
+const removingId = ref(null)
+const removeMessage = ref('')
+
+async function removeListing (id) {
+  if (!id || removingId.value) return
+  removingId.value = id
+  removeMessage.value = ''
+  const { error } = await supabase
+    .from('listings')
+    .update({ status: 'archived' })
+    .eq('id', id)
+  removingId.value = null
+  if (error) {
+    removeMessage.value = error.message || 'Could not remove listing.'
+    return
+  }
+  myListings.value = myListings.value.map((l) =>
+    l.id === id ? { ...l, status: 'archived' } : l
+  )
+  stats.count = myListings.value.filter((l) => l.status === 'published').length
+  removeMessage.value = 'Listing removed from the marketplace.'
+}
 
 function orderLabel (o) {
   return o.listing_title || `Order ${o.id.slice(0, 8)}`
@@ -153,10 +187,17 @@ onMounted(async () => {
 }
 .dash-section h2 { font-size: 1.2rem; color: var(--gold); }
 .dash-listings { list-style: none; margin: 0; padding: 0; }
-.dash-listings li {
+.dash-listing-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.dash-listing-main { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.dash-remove-btn { flex-shrink: 0; }
+.dash-remove-msg { margin-top: 10px; font-size: 0.88rem; color: var(--gold); }
+.dash-listings li {
   gap: 12px;
   padding: 10px 0;
   border-bottom: 1px solid var(--stone-800);

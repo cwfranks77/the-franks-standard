@@ -49,20 +49,44 @@
             <span class="listing-condition badge badge-gold">{{ conditionLabel(listing.condition) }}</span>
           </div>
 
+          <div v-if="listing.donateProceeds && listing.charityName" class="charity-banner" role="status">
+            <span class="charity-banner-icon" aria-hidden="true">💚</span>
+            <div>
+              <strong>Charity sale</strong>
+              <p class="text-muted small" style="margin: 4px 0 0;">
+                100% of proceeds go to <strong>{{ listing.charityName }}</strong> after this sale completes.
+              </p>
+            </div>
+          </div>
+
           <p class="checkout-notice text-muted">
-            <strong>Secure checkout:</strong>
-            Pay <strong>${{ listing.price.toLocaleString() }}</strong> through Stripe. Funds stay in escrow until you confirm delivery.
-            <NuxtLink to="/how-it-works">How escrow works</NuxtLink>
+            <template v-if="listing.donateProceeds">
+              <strong>Secure checkout:</strong>
+              Pay <strong>${{ listing.price.toLocaleString() }}</strong> through Stripe. Funds are held in escrow, then disbursed to the charity — not the seller.
+            </template>
+            <template v-else>
+              <strong>Secure checkout:</strong>
+              Pay <strong>${{ listing.price.toLocaleString() }}</strong> through Stripe. Funds stay in escrow until you confirm delivery.
+              <NuxtLink to="/how-it-works">How escrow works</NuxtLink>
+            </template>
           </p>
 
-          <p v-if="checkoutError" class="checkout-error">{{ checkoutError }}</p>
+          <p v-if="checkoutCancelled" class="checkout-notice-banner" role="status">
+            Checkout was cancelled. You can try again when ready.
+          </p>
+
+          <p v-if="isOwnListing" class="checkout-notice-banner checkout-own-listing" role="status">
+            <strong>This is your listing.</strong> Buyers use Buy now after signing in with another account. Share this page link to sell.
+          </p>
+
+          <p v-if="checkoutError" class="checkout-error" role="alert">{{ checkoutError }}</p>
 
           <div class="listing-actions">
             <button
               type="button"
               class="btn btn-primary btn-lg"
               style="flex: 1;"
-              :disabled="checkoutLoading"
+              :disabled="checkoutLoading || isOwnListing"
               @click="buyNow"
             >{{ checkoutLoading ? 'Opening checkout…' : `Buy now — $${listing.price.toLocaleString()}` }}</button>
             <a
@@ -101,7 +125,15 @@ import { createRoomSlug } from '~/composables/useVideoRoom'
 
 const route = useRoute()
 const supabase = useSupabaseClient()
+const user = useSupabaseUser()
 const { publicUrlForPath } = useListingImageUrl()
+
+const checkoutCancelled = computed(() => route.query.checkout === 'cancelled')
+const isOwnListing = computed(() => {
+  const uid = user.value?.id
+  const sellerId = listing.value?.sellerId
+  return !!(uid && sellerId && uid === sellerId)
+})
 
 const selectedImage = ref(0)
 const loading = ref(true)
@@ -195,7 +227,7 @@ async function load() {
 
   const { data, error } = await supabase
     .from('listings')
-    .select('id, title, description, category, price, condition, coa_type, guarantee_signed, seller_legal_name, image_paths, status, created_at, seller:profiles(full_name, created_at)')
+    .select('id, title, description, category, price, condition, coa_type, guarantee_signed, seller_legal_name, image_paths, status, created_at, seller_id, donate_proceeds, charity_key, charity_name, seller:profiles(full_name, created_at)')
     .eq('id', id)
     .eq('status', 'published')
     .maybeSingle()
@@ -213,6 +245,7 @@ async function load() {
 
   listing.value = {
     id: data.id,
+    sellerId: data.seller_id,
     title: data.title,
     description: data.description,
     category: data.category,
@@ -223,6 +256,8 @@ async function load() {
     images,
     profileName: data.seller && data.seller.full_name,
     sellerMemberSince: data.seller ? memberSince(data.seller.created_at) : '',
+    donateProceeds: !!data.donate_proceeds,
+    charityName: data.charity_name || '',
   }
   useSeoMeta({ title: `${data.title} — The Franks Standard` })
   loading.value = false
@@ -286,7 +321,35 @@ watch(
   border: 1px solid rgba(201, 168, 76, 0.25); border-radius: var(--radius);
 }
 .checkout-notice a { color: var(--gold); font-weight: 600; }
-.checkout-error { color: #b91c1c; font-size: 0.88rem; margin-bottom: 10px; }
+.checkout-error {
+  color: #fecaca;
+  background: rgba(185, 28, 28, 0.2);
+  border: 1px solid rgba(248, 113, 113, 0.45);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+}
+.checkout-notice-banner {
+  font-size: 0.88rem;
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.checkout-own-listing { border-color: rgba(255, 216, 77, 0.35); }
+.charity-banner {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin: 12px 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(0, 245, 160, 0.08);
+  border: 1px solid rgba(0, 245, 160, 0.35);
+}
+.charity-banner-icon { font-size: 1.4rem; line-height: 1; }
 .listing-actions { display: flex; flex-wrap: wrap; gap: 12px; }
 .listing-description h3, .seller-info h3 {
   font-size: 1rem;
