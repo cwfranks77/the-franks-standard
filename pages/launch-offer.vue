@@ -16,7 +16,7 @@
         <div class="offer-card">
           <span class="offer-icon">💰</span>
           <h3>3% transaction fee for 90 days</h3>
-          <p>Our normal 5% is already well below typical marketplace rates (often 10–15%+). For your first 90 days, it's 3%. You keep even more.</p>
+          <p>Our normal {{ txRange }} by plan is already well below typical marketplace rates (often {{ competitorTypical }}). For your first 90 days, it's 3%. You keep even more.</p>
         </div>
         <div class="offer-card">
           <span class="offer-icon">🏪</span>
@@ -26,7 +26,7 @@
         <div class="offer-card">
           <span class="offer-icon">🤝</span>
           <h3>Refer and earn</h3>
-          <p>Invite another seller — you both get 1 month of Pro Seller ($9.99 value) free. No limit on referrals.</p>
+          <p>Invite another seller — you both get 1 month of Pro Seller ({{ proValue }} value) free. No limit on referrals.</p>
         </div>
         <div class="offer-card">
           <span class="offer-icon">📦</span>
@@ -79,7 +79,7 @@
         <div class="attract-grid">
           <div class="attract-item">
             <h4>Lower fees, more profit</h4>
-            <p>5% vs typical 13%+ elsewhere. On a $100 sale, you keep $95 instead of about $87. That adds up fast.</p>
+            <p>From {{ storeTx }}% (Store) to {{ starterTx }}% (Starter) on sales vs typical {{ competitorTypical }} elsewhere. On a $100 sale at 4.5% Pro, you keep $95.50 instead of about $87 at 13%. That adds up fast.</p>
           </div>
           <div class="attract-item">
             <h4>Authenticity attracts premium buyers</h4>
@@ -108,9 +108,17 @@
 </template>
 
 <script setup>
+import { PRICING_PUBLIC } from '~/utils/pricingPublic.js'
+
+const competitorTypical = PRICING_PUBLIC.competitorTypical
+const txRange = PRICING_PUBLIC.txRangeLabel
+const proValue = PRICING_PUBLIC.proValueLabel
+const starterTx = PRICING_PUBLIC.starterTxPercent
+const storeTx = PRICING_PUBLIC.storeTxPercent
+
 useSeoMeta({
   title: 'Launch Offer — The Franks Standard',
-  description: '10 free listings, 3% fees for 90 days, AI Store Builder, referral bonuses. Start selling on the authenticity-first marketplace.',
+  description: `10 free listings, ${PRICING_PUBLIC.launchTxPromoPercent}% fees for 90 days, then ${PRICING_PUBLIC.txRangeLabel} by plan. AI Store Builder and referral bonuses.`,
 })
 </script>
 

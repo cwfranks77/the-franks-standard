@@ -100,7 +100,8 @@ What the platform offers:
 - AI Store Builder for faster listing setup
 - Integrated video rooms for live buyer/seller meetings
 - Buyer/seller support paths (chat, phone, email)
-- Pricing and launch offer pages for transparent seller costs
+- Sale fees 4–5% by plan (3% for new sellers' first 90 days) — well below typical 13%+ marketplaces
+- Pro $14.99/mo · Store $32.99/mo — see pricing page
 - Installable app/PWA experience for mobile-first access
 
 Direct links:
@@ -124,7 +125,7 @@ Platform highlights:
 - Seller onboarding and store-first tools
 - AI Store Builder to accelerate setup
 - Built-in video rooms for real-time buyer/seller sessions
-- Dedicated pricing, support, and install flows
+- Transparent pricing: 4–5% sale fees by plan, 3% launch promo, Pro $14.99/mo
 - Zero-tolerance stance on fakes
 
 Direct links:

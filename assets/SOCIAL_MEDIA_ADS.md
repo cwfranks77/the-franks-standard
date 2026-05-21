@@ -56,7 +56,7 @@ On The Franks Standard:
 - Buyers purchase with zero doubt
 - You keep more of what you earn
 
-No monthly fees. No listing fees. Just trust.
+Starter is free. Pro from $14.99/mo. Sale fees 4–5% by plan (3% launch) — well below typical 13%+ marketplaces. Just trust.
 
 **CTA:** Join the Standard → thefranksstandard.com/auth/register
 **Image concept:** Close-up of the gold authenticity badge on a listing card with "VERIFIED AUTHENTIC" stamp

@@ -131,7 +131,7 @@ const postcardCopy = `THE FRANKS STANDARD
 Authenticated collectibles & gear — proof before publish.
 
 • COA or signed guarantee on every listing
-• 5% seller fees · escrow · video inspect
+• 4–5% sale fees by plan (3% launch) · escrow · video inspect
 • List free: thefranksstandard.com/sell
 
 Charles Franks · (877) 837-0527
@@ -155,7 +155,7 @@ I built The Franks Standard because collectors and serious sellers deserve a flo
 
 What we offer your shop:
 • Required COA or signed in-platform guarantee on every listing
-• Seller fees at 5% (3% for new sellers' first 90 days) — not stacked 13%+ fees
+• Sale fees 4–5% by plan (3% for new sellers' first 90 days) — not stacked 13%+ fees
 • Escrow until the buyer confirms the item
 • Built-in video calls so buyers can inspect before they buy
 • AI tools to draft listing descriptions and store SEO
@@ -196,7 +196,7 @@ const paidAds = reactive([
     copied: false,
     copy: `Headline 1: Authenticated Collectibles Marketplace
 Headline 2: COA Required On Every Listing
-Headline 3: 5% Seller Fees — List Free
+Headline 3: 4–5% Sale Fees — List Free
 
 Description: The Franks Standard — proof before publish. Escrow, video calls, zero tolerance for fakes. New sellers: 10 free listings.
 
@@ -219,7 +219,7 @@ Text: COA or signed guarantee required. Lower fees than typical marketplaces. Es
     copied: false,
     copy: `Title: Marketplace that requires proof before publish
 
-Body: Built for sellers tired of fakes and fee stacking. COA or signed guarantee on every listing. 5% fees, escrow, video calls. 10 free listings for new sellers.
+Body: Built for sellers tired of fakes and fee stacking. COA or signed guarantee on every listing. 4–5% sale fees by plan (3% launch), escrow, video calls. 10 free listings for new sellers.
 
 Link: thefranksstandard.com/auth/register`,
   },

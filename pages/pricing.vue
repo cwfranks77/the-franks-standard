@@ -70,7 +70,7 @@
               </tr>
               <tr>
                 <td>Transaction fee</td>
-                <td class="us"><strong>5%</strong></td>
+                <td class="us"><strong>{{ txRangeLabel }} by plan</strong></td>
                 <td>Often 10–15%+ stacked</td>
                 <td>Often 8–15% by category</td>
               </tr>
@@ -82,7 +82,13 @@
               </tr>
               <tr>
                 <td>Pro plan</td>
-                <td class="us"><strong>$9.99/mo</strong></td>
+                <td class="us"><strong>${{ proMonthly }}/mo</strong></td>
+                <td>Varies by tier</td>
+                <td>Varies by tier</td>
+              </tr>
+              <tr>
+                <td>Store plan</td>
+                <td class="us"><strong>${{ storeMonthly }}/mo</strong></td>
                 <td>Varies by tier</td>
                 <td>Varies by tier</td>
               </tr>
@@ -115,7 +121,7 @@
           <p class="text-muted">Get started with zero risk — we want you to see the difference before you commit.</p>
           <div class="promo-perks">
             <div class="promo-perk"><span class="promo-icon">🎁</span> First 10 listings free — no card needed</div>
-            <div class="promo-perk"><span class="promo-icon">💰</span> 3% transaction fee for first 90 days (then 5%)</div>
+            <div class="promo-perk"><span class="promo-icon">💰</span> {{ launchPromoFeeLineText }}</div>
             <div class="promo-perk"><span class="promo-icon">🏪</span> Free AI Store Builder to design your shop</div>
             <div class="promo-perk"><span class="promo-icon">🤝</span> Refer a seller, both get 1 month Pro free</div>
             <div class="promo-perk"><span class="promo-icon">📦</span> Dropship tools included at every tier</div>
@@ -144,11 +150,18 @@
 </template>
 
 <script setup>
+import { PRICING_PUBLIC, launchPromoFeeLine } from '~/utils/pricingPublic.js'
+
 const { proSellerUrl } = usePaymentLinks()
+
+const txRangeLabel = PRICING_PUBLIC.txRangeLabel
+const proMonthly = PRICING_PUBLIC.proMonthly
+const storeMonthly = PRICING_PUBLIC.storeMonthly
+const launchPromoFeeLineText = launchPromoFeeLine()
 
 useSeoMeta({
   title: 'Pricing — The Franks Standard',
-  description: 'Fair, transparent pricing. Up to 70% lower fees than typical marketplaces. 5% transaction fee. Free listings to start.',
+  description: `Fair, transparent pricing. Sale fees from ${PRICING_PUBLIC.storeTxPercent}% (Store) to ${PRICING_PUBLIC.starterTxPercent}% (Starter) — well below typical ${PRICING_PUBLIC.competitorTypical} marketplace rates. Free listings to start.`,
 })
 
 const billing = ref('monthly')
@@ -160,13 +173,13 @@ const plans = [
     desc: 'Perfect for trying the floor. List your first items for free.',
     monthlyPrice: '0',
     annualPrice: '0',
-    txFee: '5',
+    txFee: String(PRICING_PUBLIC.starterTxPercent),
     promo: true,
     promoLabel: 'First 10 listings free',
     featured: false,
     features: [
       '10 free listings',
-      '5% transaction fee',
+      `${PRICING_PUBLIC.starterTxPercent}% transaction fee`,
       'COA and guarantee tools',
       'Video call rooms',
       'Dropship support',
@@ -179,14 +192,14 @@ const plans = [
     id: 'pro',
     name: 'Pro Seller',
     desc: 'For serious sellers. Unlimited listings, featured placement, priority support.',
-    monthlyPrice: '9.99',
-    annualPrice: '95.88',
-    txFee: '5',
+    monthlyPrice: PRICING_PUBLIC.proMonthly,
+    annualPrice: PRICING_PUBLIC.proAnnual,
+    txFee: String(PRICING_PUBLIC.proTxPercent),
     promo: false,
     featured: true,
     features: [
       'Unlimited listings',
-      '5% transaction fee',
+      `${PRICING_PUBLIC.proTxPercent}% transaction fee`,
       'Featured placement in browse',
       'AI Store Builder',
       'Priority COA review',
@@ -202,14 +215,14 @@ const plans = [
     id: 'store',
     name: 'Store',
     desc: 'For businesses and high-volume sellers. Everything in Pro plus white-glove onboarding.',
-    monthlyPrice: '24.99',
-    annualPrice: '239.88',
-    txFee: '4',
+    monthlyPrice: PRICING_PUBLIC.storeMonthly,
+    annualPrice: PRICING_PUBLIC.storeAnnual,
+    txFee: String(PRICING_PUBLIC.storeTxPercent),
     promo: false,
     featured: false,
     features: [
       'Everything in Pro',
-      '4% transaction fee (lower)',
+      `${PRICING_PUBLIC.storeTxPercent}% transaction fee (lowest)`,
       'Dedicated store URL',
       'Team accounts (up to 5)',
       'API access',
@@ -229,7 +242,7 @@ const faqs = [
   { q: 'Is there a contract or commitment?', a: 'No contracts. Monthly plans cancel anytime. Annual plans are billed once and lock in the discounted rate for 12 months.' },
   { q: 'How do I get paid when something sells?', a: 'Payments go through Stripe. You connect your bank account or debit card in your Stripe dashboard. Payouts are automatic after buyer confirmation.' },
   { q: 'Are dropshipping fees different?', a: 'No. Same pricing for direct and dropship listings. The only difference is you provide supplier info at listing time.' },
-  { q: 'What does the launch offer include?', a: 'First 10 listings free (no card needed), 3% transaction fee for the first 90 days (instead of 5%), free AI Store Builder access, and a referral bonus: invite another seller and both get 1 month of Pro free.' },
+  { q: 'What does the launch offer include?', a: `First 10 listings free (no card needed), ${PRICING_PUBLIC.launchTxPromoPercent}% transaction fee for the first 90 days (then ${PRICING_PUBLIC.txRangeLabel} by plan), free AI Store Builder access, and a referral bonus: invite another seller and both get 1 month of Pro free (${PRICING_PUBLIC.proValueLabel} value).` },
   { q: 'Where do my fees go?', a: 'All payments are collected through Stripe and go directly to The Franks Standard operating account. Stripe handles PCI compliance, fraud detection, and secure processing. You can see all transactions in your Stripe dashboard.' },
 ]
 </script>

@@ -31,7 +31,7 @@ supabase secrets set SITE_URL=https://thefranksstandard.com
 supabase secrets set STRIPE_PLATFORM_FEE_BPS=500
 ```
 
-`STRIPE_PLATFORM_FEE_BPS=500` = 5% platform fee.
+`STRIPE_PLATFORM_FEE_BPS=500` = default 5% platform fee (Starter). Pro sellers use 450 bps (4.5%); Store uses 400 bps (4%). Launch promo: 300 bps (3%) for 90 days. Update the **Pro Payment Link** in Stripe to **$14.99/mo** to match the pricing page.
 
 ## 4. Deploy functions
 

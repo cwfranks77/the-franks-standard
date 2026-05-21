@@ -104,7 +104,7 @@ export function getAiReply (message: string): string {
     ctx.lastTopic = 'promo'
     return '**New Seller Launch Offer:**\n\n' +
       '• **10 free listings** — no card needed\n' +
-      '• **3% transaction fee** for first 90 days (then 5%)\n' +
+      '• **3% transaction fee** for first 90 days (then 4–5% by plan: Starter 5%, Pro 4.5%, Store 4%)\n' +
       '• **Free AI Store Builder** to design your shop\n' +
       '• **Referral bonus** — invite a seller, both get 1 month Pro free\n\n' +
       'Go to **Launch Offer** in the Explore menu for full details, or create your free account to get started.'
@@ -130,7 +130,7 @@ export function getAiReply (message: string): string {
       'All payments use live **Stripe Payment Links** (secure checkout).\n\n' +
       '• **Pay & Fees** in the menu — four working links:\n' +
       '  - Listing / renewal fee (sellers)\n' +
-      '  - Pro seller plan $9.99/mo (sellers)\n' +
+      '  - Pro seller plan $14.99/mo (sellers); Store plan $32.99/mo\n' +
       '  - Order payment / deposit (buyers)\n' +
       '  - Dispute fee (either party)\n' +
       '• On a listing page, tap **Buy now (Stripe)**\n' +

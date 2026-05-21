@@ -31,7 +31,7 @@ export function usePaymentLinks () {
     {
       key: 'pro',
       badge: 'Sellers',
-      title: 'Pro seller plan ($9.99/mo)',
+      title: 'Pro seller plan ($14.99/mo)',
       body: 'Upgrade to Pro for unlimited listings, featured placement, and AI Store Builder.',
       url: proSeller,
       envName: 'NUXT_PUBLIC_PAY_PRO_SELLER_URL',

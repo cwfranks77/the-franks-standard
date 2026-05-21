@@ -16,7 +16,7 @@
           </p>
           <div class="hero-actions">
             <NuxtLink to="/auth/register" class="btn btn-primary btn-lg">Start free — 10 listings on us</NuxtLink>
-            <NuxtLink to="/pricing" class="btn btn-outline btn-lg">See pricing (5% vs 13%)</NuxtLink>
+            <NuxtLink to="/pricing" class="btn btn-outline btn-lg">See pricing (from 4% on sales)</NuxtLink>
             <NuxtLink to="/browse" class="btn btn-dark btn-lg">Hit the floor</NuxtLink>
           </div>
           <p class="hero-help text-muted">
