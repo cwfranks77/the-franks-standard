@@ -98,7 +98,12 @@
                 </button>
               </div>
               <p class="text-muted small ai-desc-hint">
-                Add a title and category first. AI drafts condition, authenticity, shipping, and buyer-trust copy — you edit before publishing.
+                <template v-if="canGenerateAiDescription">
+                  AI drafts condition, authenticity, shipping, and buyer-trust copy — you edit before publishing.
+                </template>
+                <template v-else>
+                  Enter a <strong>title</strong> and <strong>category</strong> above to enable Write with AI.
+                </template>
               </p>
               <div class="ai-desc-options">
                 <div class="form-group ai-desc-tone">
@@ -295,7 +300,6 @@
 
 <script setup>
 import { LISTING_CATEGORIES } from '~/utils/marketplaceCategories'
-import { generateListingDescriptionAsync } from '~/utils/listingDescriptionAi.js'
 
 definePageMeta({ middleware: 'requires-auth' })
 
@@ -414,6 +418,64 @@ const aiDescError = ref(false)
 const canGenerateAiDescription = computed(() => {
   return !!form.title.trim() && !!form.category
 })
+
+/** Inlined — OneDrive was corrupting utils/listingDescriptionAi.js (UTF-16). */
+function buildListingDescription (input) {
+  const title = (input.title || '').trim() || 'Item'
+  const category = (input.category || '').trim() || 'collectibles'
+  const condition = input.condition || ''
+  const tone = input.tone || 'professional'
+  const notes = (input.sellerNotes || '').trim()
+  const coaType = input.coaType || ''
+  const listingMode = input.listingMode || 'direct'
+  const CONDITION = { new: 'New / Sealed', 'like-new': 'Like New', excellent: 'Excellent', good: 'Good', fair: 'Fair' }
+  const TONE_OPENER = {
+    professional: 'Offered with full transparency on The Franks Standard.',
+    friendly: 'Happy to answer questions — message or start a Video Call from this listing.',
+    collector: 'Built for serious collectors who want proof before they buy.',
+    luxury: 'Presented with careful attention to condition, provenance, and presentation.',
+  }
+  let priceStr = null
+  if (input.price != null && input.price !== '') {
+    const n = typeof input.price === 'number' ? input.price : parseFloat(String(input.price))
+    if (Number.isFinite(n) && n > 0) {
+      priceStr = n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 })
+    }
+  }
+  const hook = category.toLowerCase()
+  const conditionLabel = CONDITION[condition] || condition || 'As described'
+  let auth = 'Authenticity: COA uploaded or signed Franks Standard guarantee required — add proof in the COA section below.'
+  if (coaType === 'upload') auth = 'Authenticity: Certificate of Authenticity (COA) on file with this listing.'
+  if (coaType === 'guarantee') auth = 'Authenticity: Backed by The Franks Standard in-platform seller guarantee.'
+  let ship = 'Shipping: Ships within 2 business days after escrow — insured and tracked when applicable.'
+  if (listingMode === 'dropship') {
+    ship = 'Shipping: Dropship — supplier ships direct to buyer.'
+    if (input.shipTime) ship += ` Estimated handling: ${input.shipTime}.`
+    if (input.shipsFrom) ship += ` Ships from: ${input.shipsFrom}.`
+  }
+  const lines = [
+    title,
+    '',
+    `Category: ${category}. This listing is for ${hook}. ${TONE_OPENER[tone] || TONE_OPENER.professional}`,
+  ]
+  if (priceStr) lines.push(`Price: ${priceStr} — message the seller for bundle offers.`)
+  lines.push('', 'Condition & details', `• Condition: ${conditionLabel}.`, '• Includes: Everything shown in photos unless noted.', '• Packaging: See photos for wear and completeness.')
+  if (notes) {
+    lines.push('', 'Seller notes')
+    for (const line of notes.split(/\n+/)) {
+      const t = line.trim()
+      if (t) lines.push(`• ${t}`)
+    }
+  }
+  lines.push('', auth, '', ship, '', 'Buyer protection: Escrow until you confirm the item matches this listing.', 'Listed on The Franks Standard — proof-first marketplace.')
+  return lines.join('\n')
+}
+
+function generateListingDescriptionAsync (input, delayMs = 700) {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(buildListingDescription(input)), delayMs)
+  })
+}
 
 async function generateAiDescription () {
   if (!form.title.trim()) {
