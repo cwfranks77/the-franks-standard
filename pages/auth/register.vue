@@ -260,45 +260,85 @@ async function handleRegister() {
   line-height: 1.45;
 }
 .auth-logo { max-width: 220px; width: 100%; height: auto; max-height: 100px; object-fit: contain; margin-bottom: 20px; border-radius: 6px; }
-.auth-card h1 { font-size: 1.5rem; margin-bottom: 4px; }
-.auth-footer { font-size: 0.9rem; }
+.auth-card h1 {
+  font-size: 1.5rem;
+  margin-bottom: 4px;
+  color: #111827;
+  font-weight: 800;
+}
+.auth-card > p.text-muted {
+  color: #374151 !important;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.auth-footer {
+  font-size: 0.9rem;
+  color: #374151;
+  font-weight: 600;
+}
 .auth-help {
   margin-top: 12px;
-  font-size: 0.85rem;
-  line-height: 1.45;
+  font-size: 0.88rem;
+  line-height: 1.5;
   text-align: left;
+  color: #374151 !important;
+  font-weight: 600;
 }
 .auth-help a {
-  color: var(--gold-dark);
-  font-weight: 600;
+  color: #b45309;
+  font-weight: 700;
 }
 .terms-check {
   display: flex;
   gap: 8px;
   align-items: flex-start;
-  font-size: 0.85rem;
-  color: var(--ink-3);
+  font-size: 0.88rem;
+  color: #1f2937;
+  font-weight: 600;
   cursor: pointer;
   text-align: left;
   margin-bottom: 8px;
 }
 .terms-check input { margin-top: 3px; accent-color: var(--gold); }
-.email-hint { margin-top: 12px; line-height: 1.45; }
+.terms-check a {
+  color: #146eb4;
+  font-weight: 700;
+}
+.email-hint { margin-top: 12px; line-height: 1.5; color: #7f1d1d; font-weight: 600; }
 .promo-banner {
   margin: 12px 0 0;
   padding: 12px 14px;
   text-align: left;
-  font-size: 0.88rem;
-  line-height: 1.5;
-  background: rgba(201, 168, 76, 0.12);
-  border: 1px solid rgba(201, 168, 76, 0.35);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  font-weight: 600;
+  background: rgba(201, 168, 76, 0.15);
+  border: 1px solid rgba(201, 168, 76, 0.45);
   border-radius: 8px;
-  color: #1f2937;
+  color: #111827;
 }
-.promo-hint { font-size: 0.8rem; margin-top: 6px; text-align: left; }
+.promo-banner strong {
+  color: #111827;
+  font-weight: 800;
+}
+.promo-hint {
+  font-size: 0.85rem;
+  margin-top: 6px;
+  text-align: left;
+  color: #374151 !important;
+  font-weight: 700;
+}
 .honor-banner {
-  background: rgba(37, 99, 235, 0.1);
-  border-color: rgba(147, 197, 253, 0.45);
+  background: rgba(37, 99, 235, 0.12);
+  border-color: rgba(37, 99, 235, 0.35);
+  color: #111827;
 }
-.optional { font-weight: 400; color: var(--ink-3); }
+.optional {
+  font-weight: 600;
+  color: #6b7280;
+}
+.fine {
+  color: #374151 !important;
+  font-weight: 600;
+}
 </style>

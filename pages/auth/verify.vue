@@ -125,6 +125,14 @@ onMounted(async () => {
 .auth-card h1 {
   font-size: 1.5rem;
   margin-bottom: 12px;
+  color: #111827;
+  font-weight: 800;
+}
+.auth-card p,
+.auth-card .text-muted {
+  color: #374151 !important;
+  font-weight: 600;
+  line-height: 1.55;
 }
 .err {
   color: #7f1d1d;

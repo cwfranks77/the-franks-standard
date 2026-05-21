@@ -204,14 +204,28 @@ img { max-width: 100%; height: auto; }
   color: #322c44;
 }
 .auth-card .text-muted,
-.auth-card p.text-muted {
-  color: #4a4360;
+.auth-card p.text-muted,
+.auth-card p {
+  color: #374151;
+  font-weight: 600;
 }
 .auth-card h1 {
-  color: #150f24;
+  color: #111827;
+  font-weight: 800;
 }
 .auth-card .terms-check {
-  color: #4a4360;
+  color: #374151;
+  font-weight: 600;
+}
+.auth-card .fine,
+.auth-card .promo-hint,
+.auth-card .optional {
+  color: #4b5563 !important;
+  font-weight: 600 !important;
+}
+.auth-card strong {
+  color: #111827;
+  font-weight: 700;
 }
 .auth-card .form-err {
   color: #7f1d1d;
@@ -326,14 +340,42 @@ img { max-width: 100%; height: auto; }
 .card-body { padding: 18px; }
 
 /* Emergency readability fallback on light surfaces */
+.card,
+.promo-panel.card,
+.auth-card {
+  color: #1f2937;
+}
+.card p,
+.card li,
+.card .card-body,
+.promo-panel p,
+.promo-panel li,
+.promo-panel .promo-intro,
+.promo-panel .promo-signin {
+  color: #374151;
+  font-weight: 600;
+}
 .card .text-muted,
 .form-section .text-muted,
 .listing-type-btn .lt-desc,
 .sell-notice .text-muted,
 .dl-card .text-muted,
 .dl-ios-help .text-muted,
-.dl-install-alert .text-muted {
-  color: #4b5563 !important;
+.dl-install-alert .text-muted,
+.promo-panel .text-muted,
+.promo-panel .promo-intro.text-muted {
+  color: #374151 !important;
+  font-weight: 700 !important;
+  -webkit-text-fill-color: #374151 !important;
+}
+.card h1, .card h2, .card h3, .card h4,
+.promo-panel .promo-title {
+  color: #111827 !important;
+  font-weight: 800 !important;
+}
+.card strong, .promo-panel strong {
+  color: #111827;
+  font-weight: 700;
 }
 
 /* Badge */
@@ -672,8 +714,220 @@ label {
   -webkit-text-fill-color: #d1d5db !important;
 }
 .site-main .trust-counter-section .tc-note.text-muted {
-  color: #4b5563 !important;
-  -webkit-text-fill-color: #4b5563 !important;
+  color: #374151 !important;
+  -webkit-text-fill-color: #374151 !important;
+  font-weight: 700 !important;
+}
+
+/* Light / white page shells — pay, legal, founders, forms */
+.site-main .pay-page .text-muted,
+.site-main .pay-page .lede,
+.site-main .pay-page .fine,
+.site-main :is(.legal, .legal-content, .legal-page) p,
+.site-main :is(.legal, .legal-content, .legal-page) li,
+.site-main :is(.legal, .legal-content, .legal-page) .updated {
+  color: #374151 !important;
+  font-weight: 600 !important;
+  -webkit-text-fill-color: #374151 !important;
+}
+.site-main .pay-page h1 {
+  color: #111827 !important;
+  font-weight: 800 !important;
+}
+
+/* Founding seller landing (light page) */
+.founders-page,
+.founders-page p,
+.founders-page li {
+  color: #374151;
+  font-weight: 600;
+}
+.founders-page h1 {
+  color: #111827;
+  font-weight: 800;
+}
+.founders-page .founders-tag {
+  color: #92400e;
+  font-weight: 700;
+}
+.founders-page .founders-card {
+  background: #fff;
+  border: 1px solid #d7dde6;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 10px rgba(17, 24, 39, 0.08);
+}
+.founders-page .founders-card .spots-label {
+  color: #4b5563;
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+.founders-page .founders-card .spots-count {
+  color: #047857;
+  font-weight: 800;
+  font-size: 2.25rem;
+}
+.founders-page .founders-card .spots-count.sold-out {
+  color: #6b7280;
+}
+.founders-page .founders-card .spots-denom {
+  color: #4b5563;
+  font-weight: 600;
+}
+.founders-page .founders-card .promo-line {
+  color: #1f2937;
+  font-weight: 600;
+}
+.founders-page code {
+  background: #f3f4f6;
+  color: #111827;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+/* Light UI panels / windows — dark, bold text (fixes illegible gray on white) */
+.site-main :is(
+  .auth-card,
+  .card,
+  .card-body,
+  .form-section,
+  .promo-panel,
+  .pay-page,
+  .founders-page,
+  .readiness-banner,
+  .pay-links-panel,
+  .listing-type-btn,
+  .coa-option,
+  .sell-notice,
+  .mode-notice,
+  .guarantee-box,
+  .guarantee-text,
+  .dropship-notice,
+  .serp
+) {
+  color: #1f2937;
+}
+.site-main :is(
+  .auth-card,
+  .card,
+  .card-body,
+  .form-section,
+  .promo-panel,
+  .pay-page,
+  .founders-page,
+  .readiness-banner,
+  .pay-links-panel,
+  .listing-type-btn,
+  .coa-option,
+  .sell-notice,
+  .mode-notice,
+  .guarantee-box,
+  .guarantee-text,
+  .dropship-notice
+) :is(p, li, span, label, td, th, small, div, .text-muted, .promo-intro, .promo-hint, .promo-signin, .lede, .fine, .lt-desc, .section-intro, .field-hint, .ai-desc-hint) {
+  -webkit-text-fill-color: currentColor !important;
+}
+.site-main :is(
+  .auth-card,
+  .card,
+  .form-section,
+  .promo-panel,
+  .pay-page,
+  .founders-page,
+  .readiness-banner,
+  .pay-links-panel
+) :is(p, li, span, label, .text-muted) {
+  color: #1f2937 !important;
+  font-weight: 600 !important;
+}
+.site-main :is(.auth-card, .card, .form-section, .promo-panel) .text-muted {
+  color: #374151 !important;
+  font-weight: 700 !important;
+}
+.site-main :is(.auth-card, .card, .form-section, .promo-panel) .label {
+  color: #111827 !important;
+  font-weight: 700 !important;
+}
+.site-main :is(.auth-card, .card, .form-section, .promo-panel) :is(h1, h2, h3, h4) {
+  color: #111827 !important;
+  font-weight: 800 !important;
+  -webkit-text-fill-color: #111827 !important;
+}
+.site-main :is(.auth-card, .card, .form-section, .promo-panel) .input,
+.site-main :is(.auth-card, .card, .form-section, .promo-panel) .textarea,
+.site-main :is(.auth-card, .card, .form-section, .promo-panel) .select {
+  color: #111827 !important;
+  background: #fff !important;
+  -webkit-text-fill-color: #111827 !important;
+  border-color: #9ca3af !important;
+}
+.site-main :is(.auth-card, .card, .form-section, .promo-panel) .input::placeholder,
+.site-main :is(.auth-card, .card, .form-section, .promo-panel) .textarea::placeholder {
+  color: #6b7280 !important;
+  opacity: 1 !important;
+}
+.site-main .form-section :is(h2, h3, h4) {
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+}
+.site-main .sell-notice,
+.site-main .sell-notice p,
+.site-main .sell-notice a {
+  color: #1f2937 !important;
+  font-weight: 600 !important;
+}
+
+/* Dark modals (operator unlock) — light text on dark panel */
+.op-modal {
+  color: #e5e7eb;
+}
+.op-modal-h {
+  color: #f9fafb !important;
+  font-weight: 800;
+  -webkit-text-fill-color: #f9fafb !important;
+}
+.op-modal .text-muted,
+.op-modal-sub,
+.op-hint,
+.op-lost {
+  color: #d1d5db !important;
+  font-weight: 600 !important;
+  -webkit-text-fill-color: #d1d5db !important;
+}
+.op-modal .input {
+  color: #111827 !important;
+  background: #fff !important;
+  -webkit-text-fill-color: #111827 !important;
+}
+.op-modal code {
+  color: #fcd34d;
+  font-weight: 700;
+}
+
+/* Help drawer — readable on dark panel */
+.ai-panel {
+  color: #e5e7eb;
+}
+.ai-panel .ai-head h2 {
+  color: var(--gold);
+  -webkit-text-fill-color: currentColor;
+}
+.ai-panel .ai-sub {
+  color: #d1d5db !important;
+  font-weight: 600;
+}
+.ai-panel .ai-msg.is-bot {
+  color: #f3f4f6 !important;
+  -webkit-text-fill-color: #f3f4f6 !important;
+  font-weight: 600;
+}
+.ai-panel .ai-msg.is-user {
+  color: #111827 !important;
+}
+.ai-panel .input {
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
 }
 
 /* Route transitions (global, matches nuxt app.pageTransition name: page) */

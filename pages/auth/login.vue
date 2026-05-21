@@ -214,16 +214,35 @@ async function handleLogin() {
   text-decoration: none;
 }
 .auth-logo { max-width: 220px; width: 100%; height: auto; max-height: 100px; object-fit: contain; margin-bottom: 20px; border-radius: 6px; }
-.auth-card h1 { font-size: 1.5rem; margin-bottom: 4px; }
-.auth-footer { font-size: 0.9rem; }
+.auth-card h1 {
+  font-size: 1.5rem;
+  margin-bottom: 4px;
+  color: #111827;
+  font-weight: 800;
+}
+.auth-card > p.text-muted {
+  color: #374151 !important;
+  font-weight: 600;
+}
+.auth-footer {
+  font-size: 0.9rem;
+  color: #374151;
+  font-weight: 600;
+}
 .auth-help {
   margin-top: 10px;
-  font-size: 0.84rem;
+  font-size: 0.88rem;
   text-align: left;
-  line-height: 1.45;
+  line-height: 1.5;
+  color: #374151 !important;
+  font-weight: 600;
 }
 .auth-help a {
-  color: var(--gold-dark);
+  color: #b45309;
+  font-weight: 700;
+}
+.resend-row {
+  color: #374151;
   font-weight: 600;
 }
 </style>
