@@ -40,9 +40,8 @@ Optional tax secrets (defaults shown):
 supabase secrets set STRIPE_TAX_ENABLED=true
 supabase secrets set STRIPE_TAX_BILLING_COUNTRIES=US
 supabase secrets set STRIPE_PRO_MONTHLY_CENTS=1499
-# Optional — required for taxed listing/dispute buttons on /pay (else use Payment Links):
+# Optional — required for taxed listing-fee API checkout on /pay (else use Payment Links):
 supabase secrets set STRIPE_LISTING_FEE_CENTS=299
-supabase secrets set STRIPE_DISPUTE_FEE_CENTS=2500
 ```
 
 Run SQL migration `supabase/migrations/007_order_tax_fields.sql` in Supabase SQL Editor.

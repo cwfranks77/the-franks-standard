@@ -46,7 +46,7 @@
         <div class="free-access-perks">
           <div class="perk-item"><span class="perk-check">✓</span> Listing fees waived</div>
           <div class="perk-item"><span class="perk-check">✓</span> Pro seller included</div>
-          <div class="perk-item"><span class="perk-check">✓</span> Dispute fees waived</div>
+          <div class="perk-item"><span class="perk-check">✓</span> Free dispute &amp; mediation review</div>
           <div class="perk-item"><span class="perk-check">✓</span> No Supabase login needed</div>
           <div class="perk-item"><span class="perk-check">✓</span> Dropship and direct sell</div>
           <div class="perk-item"><span class="perk-check">✓</span> Priority everything</div>

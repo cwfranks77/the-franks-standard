@@ -42,7 +42,7 @@
         Sales tax is calculated at checkout from your billing address (listings and platform fees).
       </template>
       <template v-else>
-        {{ allConfigured ? 'All payment links are active and open Stripe checkout.' : `${configuredCount} of 4 payment links configured.` }}
+        {{ allConfigured ? 'All payment links are active and open Stripe checkout.' : `${configuredCount} of ${links.length} payment links configured.` }}
       </template>
     </p>
   </div>

@@ -110,6 +110,12 @@
                 <td>Not standard</td>
                 <td>Not standard</td>
               </tr>
+              <tr>
+                <td>Dispute / mediation fee</td>
+                <td class="us"><strong>Free — included</strong></td>
+                <td>Often charged per case</td>
+                <td>Varies</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -132,7 +138,7 @@
 
       <section class="section pay-links-section">
         <h2 class="section-title text-center">Pay with Stripe</h2>
-        <p class="text-muted text-center pay-links-lede">Secure checkout for listing fees, Pro plan, orders, and disputes.</p>
+        <p class="text-muted text-center pay-links-lede">Secure checkout for listing fees, Pro plan, and buyer order payment. Dispute review is never billed.</p>
         <PaymentLinksPanel :show-status="true" />
       </section>
 
@@ -244,6 +250,7 @@ const faqs = [
   { q: 'Are dropshipping fees different?', a: 'No. Same pricing for direct and dropship listings. The only difference is you provide supplier info at listing time.' },
   { q: 'What does the launch offer include?', a: `First 10 listings free (no card needed), ${PRICING_PUBLIC.launchTxPromoPercent}% transaction fee for the first 90 days (then ${PRICING_PUBLIC.txRangeLabel} by plan), free AI Store Builder access, and a referral bonus: invite another seller and both get 1 month of Pro free (${PRICING_PUBLIC.proValueLabel} value).` },
   { q: 'Where do my fees go?', a: 'All payments are collected through Stripe and go directly to The Franks Standard operating account. Stripe handles PCI compliance, fraud detection, and secure processing. You can see all transactions in your Stripe dashboard.' },
+  { q: 'Do you charge for disputes or mediation?', a: 'No. Escalated review, authenticity checks, and mediation are included — we do not charge a dispute fee. Revenue comes from transaction fees on completed sales, optional Pro or Store subscriptions, and listing fees after your free listings.' },
 ]
 </script>
 

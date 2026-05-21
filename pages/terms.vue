@@ -36,6 +36,8 @@
       <h2>5. Payments and disputes</h2>
       <p>
         Payment processing and escrow (where applicable) will follow the flows and provider terms we describe at checkout.
+        Platform fees are transaction fees on completed sales, optional subscription plans, and listing fees as shown on
+        <NuxtLink to="/pricing">Pricing</NuxtLink> — we do not charge buyers or sellers a separate dispute or mediation fee.
         We take counterfeit and misrepresentation seriously; see our <NuxtLink to="/how-it-works">How it works</NuxtLink> page
         for our standards.
       </p>

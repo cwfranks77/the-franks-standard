@@ -31,7 +31,6 @@ const PAY_DEFAULTS = {
   NUXT_PUBLIC_PAY_LISTING_FEE_URL: 'https://buy.stripe.com/5kQfZa78O7EL8bAcqwbII09',
   NUXT_PUBLIC_PAY_PRO_SELLER_URL: 'https://buy.stripe.com/7sY14gct82kr1Nc628bII0d',
   NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL: 'https://buy.stripe.com/cNiaEQeBg1gnezY4Y4bII0b',
-  NUXT_PUBLIC_PAY_DISPUTE_FEE_URL: 'https://buy.stripe.com/bJe8wIal09MT8bAfCIbII0c',
 } as const
 function payUrl (envKey: keyof typeof PAY_DEFAULTS): string {
   const v = String(process.env[envKey] || '').trim()
@@ -42,7 +41,6 @@ function payUrl (envKey: keyof typeof PAY_DEFAULTS): string {
 const payListingFeeUrl = payUrl('NUXT_PUBLIC_PAY_LISTING_FEE_URL')
 const payProSellerUrl = payUrl('NUXT_PUBLIC_PAY_PRO_SELLER_URL')
 const payOrderDepositUrl = payUrl('NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL')
-const payDisputeFeeUrl = payUrl('NUXT_PUBLIC_PAY_DISPUTE_FEE_URL')
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
@@ -63,7 +61,6 @@ export default defineNuxtConfig({
       payListingFeeUrl,
       payProSellerUrl,
       payOrderDepositUrl,
-      payDisputeFeeUrl,
       stripeCheckoutEnabled: process.env.NUXT_PUBLIC_STRIPE_CHECKOUT_ENABLED ?? 'true',
       stripeTaxCheckoutEnabled: process.env.NUXT_PUBLIC_STRIPE_TAX_CHECKOUT_ENABLED ?? 'true',
       customerServicePhone: process.env.NUXT_PUBLIC_CUSTOMER_SERVICE_PHONE || '(877) 837-0527',

@@ -19,7 +19,6 @@ const GROUPS = [
       ['NUXT_PUBLIC_PAY_LISTING_FEE_URL', false],
       ['NUXT_PUBLIC_PAY_PRO_SELLER_URL', false],
       ['NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL', false],
-      ['NUXT_PUBLIC_PAY_DISPUTE_FEE_URL', false],
     ],
     note: 'Need Supabase URL + anon key. Ops: set OPS_ACCESS_KEY or its HASH (hash preferred).',
   },

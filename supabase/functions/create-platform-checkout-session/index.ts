@@ -5,7 +5,7 @@ import { platformServiceTaxOptions, TAX_CODE_SERVICES } from '../_shared/stripeT
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.get('SERVICE_ROLE_KEY') ?? ''
 
-type CheckoutType = 'pro' | 'listing_fee' | 'dispute_fee' | 'tax_smoke'
+type CheckoutType = 'pro' | 'listing_fee' | 'tax_smoke'
 
 function centsFor (type: CheckoutType): number | null {
   if (type === 'tax_smoke') {
@@ -16,11 +16,7 @@ function centsFor (type: CheckoutType): number | null {
     const n = Number.parseInt(Deno.env.get('STRIPE_PRO_MONTHLY_CENTS') ?? '1499', 10)
     return Number.isFinite(n) && n > 0 ? n : 1499
   }
-  if (type === 'listing_fee') {
-    const n = Number.parseInt(Deno.env.get('STRIPE_LISTING_FEE_CENTS') ?? '', 10)
-    return Number.isFinite(n) && n > 0 ? n : null
-  }
-  const n = Number.parseInt(Deno.env.get('STRIPE_DISPUTE_FEE_CENTS') ?? '', 10)
+  const n = Number.parseInt(Deno.env.get('STRIPE_LISTING_FEE_CENTS') ?? '', 10)
   return Number.isFinite(n) && n > 0 ? n : null
 }
 
@@ -54,9 +50,8 @@ function lineItemFor (type: CheckoutType, amountCents: number) {
       },
     }
   }
-  const names: Record<Exclude<CheckoutType, 'pro'>, string> = {
+  const names: Record<'listing_fee', string> = {
     listing_fee: 'Listing or renewal fee',
-    dispute_fee: 'Dispute or mediation fee',
   }
   return {
     quantity: 1,
@@ -97,7 +92,7 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => ({})) as { checkout_type?: string }
     const checkoutType = String(body.checkout_type ?? '').trim() as CheckoutType
-    if (!['pro', 'listing_fee', 'dispute_fee', 'tax_smoke'].includes(checkoutType)) {
+    if (!['pro', 'listing_fee', 'tax_smoke'].includes(checkoutType)) {
       return json({ error: 'checkout_type_required' }, 400)
     }
 

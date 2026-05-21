@@ -6,6 +6,11 @@
         All payments run through <strong>Stripe</strong> — secure checkout with major cards, Apple Pay, and Google Pay.
         Each button below opens a live Stripe Payment Link.
       </p>
+      <p class="standards-fee-note text-muted">
+        <strong>We do not charge dispute or mediation fees.</strong> Standing behind the Standard is included for every buyer and seller.
+        Platform revenue comes from <strong>transaction fees on completed sales</strong>, optional <strong>Pro / Store</strong> plans, and
+        <strong>listing fees</strong> after your free tier — not from charging you to resolve a problem.
+      </p>
       <div class="pay-quick-links">
         <NuxtLink to="/pricing" class="btn btn-outline btn-sm">See pricing plans</NuxtLink>
         <NuxtLink to="/launch-offer" class="btn btn-outline btn-sm">Launch offer</NuxtLink>
@@ -50,7 +55,7 @@
 definePageMeta({ layout: 'default' })
 useSeoMeta({
   title: 'Pay and fees - The Franks Standard',
-  description: 'Pay listing fees, Pro seller plan, order deposits, and dispute fees via secure Stripe checkout.',
+  description: 'Pay listing fees, Pro seller plan, and order checkout via secure Stripe. Dispute and mediation review are free.',
 })
 
 const { isOwner } = useOwnerMode()
@@ -94,6 +99,12 @@ onMounted(async () => {
 .pay-hero h1 { font-size: 1.85rem; margin-bottom: 0.5rem; color: #111827; }
 .pay-quick-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .lede { font-size: 1.02rem; line-height: 1.7; }
+.standards-fee-note {
+  margin-top: 12px; padding: 14px 16px; border-radius: 10px;
+  border: 1px solid rgba(4, 120, 87, 0.25); background: rgba(4, 120, 87, 0.06);
+  font-size: 0.92rem; line-height: 1.6; max-width: 720px;
+}
+.standards-fee-note strong { color: #047857; }
 .lede strong { color: #111827; }
 .fine { font-size: 0.85rem; margin-top: 2rem; }
 .fine a { color: var(--gold); font-weight: 600; }

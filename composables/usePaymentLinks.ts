@@ -16,7 +16,6 @@ export function usePaymentLinks () {
   const listingFee = String(c.payListingFeeUrl || '').trim()
   const proSeller = String(c.payProSellerUrl || '').trim()
   const orderDeposit = String(c.payOrderDepositUrl || '').trim()
-  const disputeFee = String(c.payDisputeFeeUrl || '').trim()
 
   const links = computed<PaymentLinkItem[]>(() => [
     {
@@ -46,15 +45,6 @@ export function usePaymentLinks () {
       envName: 'NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL',
       amountHint: 'Per order',
     },
-    {
-      key: 'dispute',
-      badge: 'Either party',
-      title: 'Dispute or mediation fee',
-      body: 'Optional fee for escalated review or mediation on a transaction.',
-      url: disputeFee,
-      envName: 'NUXT_PUBLIC_PAY_DISPUTE_FEE_URL',
-      amountHint: 'Per dispute',
-    },
   ])
 
   const allConfigured = computed(() => links.value.every((l) => !!l.url))
@@ -72,6 +62,5 @@ export function usePaymentLinks () {
     listingFeeUrl: listingFee,
     proSellerUrl: proSeller,
     orderDepositUrl: orderDeposit,
-    disputeFeeUrl: disputeFee,
   }
 }

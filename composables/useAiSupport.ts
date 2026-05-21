@@ -114,13 +114,13 @@ export function getAiReply (message: string): string {
   if (matchAny(q, [/fee|fees|cost|price|charge|how much|pricing|commission|percentage|listing fee|seller fee|pro seller/])) {
     ctx.lastTopic = 'fees'
     return '**Fees on The Franks Standard:**\n\n' +
-      '• **Listing fee** — per listing or subscription. Pay via Stripe on the Pay & Fees page.\n' +
-      '• **Pro Seller** (optional) — monthly/annual upgrade for featured placement\n' +
-      '• **Dispute fee** — small fee for escalated mediation (either party)\n' +
-      '• **Buyer deposits** — order payment via Stripe\n\n' +
+      '• **Transaction fee** — percentage on completed sales (by plan; see Pricing)\n' +
+      '• **Listing fee** — after your free listings; pay via Pay & Fees\n' +
+      '• **Pro / Store** (optional) — monthly plans for more tools and lower sale fees\n' +
+      '• **Buyer checkout** — item price + sales tax at Stripe on each listing\n\n' +
+      '**No dispute or mediation fee** — standing behind the Standard is included.\n\n' +
       '**Owner/operator?** All fees are waived in Owner Mode.\n\n' +
-      'All payments go through Stripe — we never store your card number. ' +
-      'Visit **Pay & Fees** in the menu for payment links, or call (877) 837-0527 for billing questions.'
+      'Visit **Pay & Fees** or **Pricing**, or call (877) 837-0527 for billing questions.'
   }
 
   // Payment / Stripe / checkout / card
@@ -128,11 +128,11 @@ export function getAiReply (message: string): string {
     ctx.lastTopic = 'payment'
     return '**Payments on The Franks Standard:**\n\n' +
       'All payments use live **Stripe Payment Links** (secure checkout).\n\n' +
-      '• **Pay & Fees** in the menu — four working links:\n' +
+      '• **Pay & Fees** in the menu:\n' +
       '  - Listing / renewal fee (sellers)\n' +
       '  - Pro seller plan $14.99/mo (sellers); Store plan $32.99/mo\n' +
-      '  - Order payment / deposit (buyers)\n' +
-      '  - Dispute fee (either party)\n' +
+      '  - Order payment (buyers)\n' +
+      '  - Disputes and mediation — **no fee**\n' +
       '• On a listing page, tap **Buy now (Stripe)**\n' +
       '• Pricing page **Go Pro** opens Stripe directly\n\n' +
       'Cards, Apple Pay, and Google Pay accepted. Issues? Try another card or call (877) 837-0527.'
@@ -253,7 +253,7 @@ export function getAiReply (message: string): string {
       '3. **Try a Video call** — sometimes face-to-face resolves things faster\n' +
       '4. **Formal dispute** — email info@thefranksstandard.com with:\n' +
       '   - Order ID\n   - Photos of the issue\n   - What resolution you want\n\n' +
-      'A small mediation fee applies for escalated reviews (see Pay & Fees).\n' +
+      '**No mediation or dispute fee** — review is included when you stand behind the Standard.\n' +
       'Call **(877) 837-0527** for urgent disputes.'
   }
 
