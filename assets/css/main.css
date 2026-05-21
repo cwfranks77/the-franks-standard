@@ -597,6 +597,30 @@ label {
   color: var(--gold) !important;
   -webkit-text-fill-color: var(--gold) !important;
 }
+.site-main .site-promo-offers .site-promo-card,
+.site-main .site-promo-offers .site-promo-card h3,
+.site-main .site-promo-offers .site-promo-card p,
+.site-main .site-promo-offers .site-promo-code,
+.site-main .site-promo-offers .site-promo-cta,
+.site-main .site-promo-offers .site-promo-badge,
+.site-main .site-promo-offers .site-promo-spots {
+  -webkit-text-fill-color: unset;
+}
+.site-main .site-promo-offers .site-promo-card {
+  background: #0f172a !important;
+}
+.site-main .site-promo-offers .site-promo-card h3 {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+.site-main .site-promo-offers .site-promo-card p {
+  color: #e5e7eb !important;
+  -webkit-text-fill-color: #e5e7eb !important;
+}
+.site-main .site-promo-offers .site-promo-code {
+  color: #fde68a !important;
+  -webkit-text-fill-color: #fde68a !important;
+}
 .site-main :is(.sig-card, .pillar-card, .bento-card, .hub-card) .sig-desc,
 .site-main :is(.sig-card, .pillar-card, .bento-card, .hub-card) p:not(.hub-lead):not(.hub-note) {
   color: #d1d5db !important;
@@ -739,7 +763,8 @@ label {
   color: #d1d5db !important;
   -webkit-text-fill-color: #d1d5db !important;
 }
-.site-main .trust-counter-section .tc-note.text-muted {
+.site-main .trust-counter-section .tc-note,
+.site-main .trust-counter-section .tc-eyebrow {
   color: #374151 !important;
   -webkit-text-fill-color: #374151 !important;
   font-weight: 700 !important;

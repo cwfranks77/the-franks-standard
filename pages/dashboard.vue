@@ -26,20 +26,7 @@
         <NuxtLink to="/video" class="btn btn-outline btn-sm">Start a video call</NuxtLink>
       </div>
 
-      <div v-if="showPromoStrip" class="dash-promos mt-4">
-        <NuxtLink v-if="!foundingSeller" to="/join/founders10" class="dash-promo-card dash-promo-founding">
-          <span class="dash-promo-badge">Limited — 10 spots</span>
-          <h3>3 months Pro free for founding sellers</h3>
-          <p>First 10 people who sign up to sell get Pro free. Use code <strong>FOUNDERS10</strong> at registration.</p>
-          <span class="dash-promo-cta">Claim your spot →</span>
-        </NuxtLink>
-        <NuxtLink v-if="!honorsMember" to="/honor" class="dash-promo-card dash-promo-honor">
-          <span class="dash-promo-badge">Honors program</span>
-          <h3>6 months Pro for military &amp; first responders</h3>
-          <p>Veterans, police, fire, EMS, dispatch, corrections. Code <strong>HONOR26</strong>.</p>
-          <span class="dash-promo-cta">Honor our heroes →</span>
-        </NuxtLink>
-      </div>
+      <SitePromoOffers class="mt-4" :compact="true" :show-heading="false" />
 
       <div class="grid grid-3 mt-4">
         <div class="stat-card hover-lift">
@@ -130,8 +117,6 @@ const foundingUntil = ref('')
 const honorsMember = ref(false)
 const honorsUntil = ref('')
 const honorsLabel = ref('')
-
-const showPromoStrip = computed(() => !foundingSeller.value || !honorsMember.value)
 
 const HONOR_LABELS = {
   veteran: ' (U.S. Military Veteran)',
@@ -255,61 +240,6 @@ onMounted(async () => {
   color: var(--gold) !important;
   -webkit-text-fill-color: var(--gold) !important;
   font-family: 'Cinzel', serif;
-}
-.dash-promos {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 16px;
-}
-.dash-promo-card {
-  display: block;
-  padding: 20px 22px;
-  border-radius: var(--radius-lg);
-  text-decoration: none;
-  border: 1px solid rgba(201, 168, 76, 0.35);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-.dash-promo-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
-}
-.dash-promo-founding {
-  background: linear-gradient(135deg, rgba(4, 120, 87, 0.15), rgba(201, 168, 76, 0.1));
-}
-.dash-promo-honor {
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(201, 168, 76, 0.08));
-}
-.dash-promo-badge {
-  display: inline-block;
-  font-size: 0.7rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding: 4px 10px;
-  border-radius: 999px;
-  margin-bottom: 10px;
-  color: var(--gold);
-  border: 1px solid rgba(201, 168, 76, 0.45);
-}
-.dash-promo-card h3 {
-  font-size: 1.05rem;
-  color: #f9fafb !important;
-  -webkit-text-fill-color: #f9fafb !important;
-  margin: 0 0 8px;
-  font-family: 'Cinzel', serif;
-}
-.dash-promo-card p {
-  margin: 0 0 12px;
-  font-size: 0.88rem;
-  color: #e5e7eb !important;
-  -webkit-text-fill-color: #e5e7eb !important;
-  line-height: 1.5;
-}
-.dash-promo-card strong { color: var(--gold); }
-.dash-promo-cta {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--gold);
 }
 .dash-section {
   background: var(--stone-900);

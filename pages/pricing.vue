@@ -7,6 +7,8 @@
         <p class="text-muted">Up to 70% lower fees than typical marketplaces. No hidden fees. No percentage-on-percentage stacking.</p>
       </div>
 
+      <SitePromoOffers :compact="true" class="pricing-promos" />
+
       <div class="pricing-billing-wrap">
         <div class="pricing-toggle">
           <button :class="{ active: billing === 'monthly' }" @click="billing = 'monthly'">Monthly</button>

@@ -8,6 +8,8 @@
         in stages so quality stays ahead of scale.
       </p>
 
+      <SitePromoOffers :compact="true" class="sellers-promos" />
+
       <div class="card callout">
         <h2>What we need from you</h2>
         <ul>
@@ -53,6 +55,7 @@ useSeoMeta({
 .page { padding: 48px 16px 100px; }
 .narrow { max-width: 720px; margin: 0 auto; }
 .lead { font-size: 1.08rem; line-height: 1.65; margin: 1rem 0 1.5rem; }
+.sellers-promos { margin: 0 0 28px; }
 h1 { font-size: 2rem; margin-bottom: 0.5rem; }
 .callout { padding: 1.5rem; margin: 1.5rem 0; }
 .callout h2 { font-size: 1.15rem; color: var(--gold); margin-bottom: 0.75rem; }
