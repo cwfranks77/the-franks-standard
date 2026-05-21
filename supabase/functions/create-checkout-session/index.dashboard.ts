@@ -35,6 +35,43 @@ export function calcFees (amountUsd: number) {
   return { platformFee, sellerPayout, platformFeeCents: Math.round(platformFee * 100) }
 }
 
+export const TAX_CODE_TANGIBLE = 'txcd_99999999'
+export const TAX_CODE_SERVICES = 'txcd_20030000'
+
+export function stripeTaxEnabled (): boolean {
+  const raw = (Deno.env.get('STRIPE_TAX_ENABLED') ?? 'true').trim().toLowerCase()
+  return raw !== 'false' && raw !== '0' && raw !== 'off'
+}
+
+export function shippingCountriesForTax (): string[] {
+  const raw = Deno.env.get('STRIPE_TAX_SHIPPING_COUNTRIES') ?? 'US'
+  const list = raw.split(',').map((s) => s.trim().toUpperCase()).filter(Boolean)
+  return list.length ? list : ['US']
+}
+
+export function marketplaceListingTaxOptions () {
+  if (!stripeTaxEnabled()) return {}
+  return {
+    automatic_tax: {
+      enabled: true,
+      liability: { type: 'self' },
+    },
+    shipping_address_collection: {
+      allowed_countries: shippingCountriesForTax(),
+    },
+  }
+}
+
+export function platformServiceTaxOptions () {
+  if (!stripeTaxEnabled()) return {}
+  return {
+    automatic_tax: {
+      enabled: true,
+      liability: { type: 'self' },
+    },
+    billing_address_collection: 'required' as const,
+  }
+}
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.get('SERVICE_ROLE_KEY') ?? ''
@@ -143,10 +180,12 @@ Deno.serve(async (req) => {
         price_data: {
           currency: 'usd',
           unit_amount: amountCents,
+          ...(stripeTaxEnabled() ? { tax_behavior: 'exclusive' as const } : {}),
           product_data: {
             name: isCharitySale
               ? `${String(listing.title).slice(0, 80)} — charity sale`
               : String(listing.title).slice(0, 120),
+            ...(stripeTaxEnabled() ? { tax_code: TAX_CODE_TANGIBLE } : {}),
             metadata: {
               listing_id: listing.id,
               charity: isCharitySale ? String(listing.charity_key) : '',
@@ -165,8 +204,10 @@ Deno.serve(async (req) => {
       },
       success_url: `${base}/order/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${base}/listing/${listing.id}?checkout=cancelled`,
+      ...marketplaceListingTaxOptions(),
     }
 
+    let connectCheckout = useConnect
     if (useConnect && sellerProfile?.stripe_account_id) {
       sessionParams.payment_intent_data = {
         application_fee_amount: platformFeeCents,
@@ -175,13 +216,25 @@ Deno.serve(async (req) => {
       }
     }
 
-    const session = await stripe.checkout.sessions.create(sessionParams)
+    let session
+    try {
+      session = await stripe.checkout.sessions.create(sessionParams)
+    } catch (firstErr) {
+      // Connect + Stripe Tax can fail on some accounts; retry platform-held checkout with tax.
+      if (connectCheckout && stripeTaxEnabled() && sessionParams.payment_intent_data) {
+        delete sessionParams.payment_intent_data
+        connectCheckout = false
+        session = await stripe.checkout.sessions.create(sessionParams)
+      } else {
+        throw firstErr
+      }
+    }
 
     await admin
       .from('orders')
       .update({
         stripe_checkout_session_id: session.id,
-        connect_checkout: useConnect,
+        connect_checkout: connectCheckout,
       })
       .eq('id', order.id)
 
@@ -189,7 +242,7 @@ Deno.serve(async (req) => {
       url: session.url,
       order_id: order.id,
       session_id: session.id,
-      connect_payout: useConnect,
+      connect_payout: connectCheckout,
       charity_sale: isCharitySale,
       charity_name: isCharitySale ? listing.charity_name : null,
     })

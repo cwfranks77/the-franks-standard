@@ -1,4 +1,4 @@
-/** Stripe Tax at checkout from buyer address (Stripe calculates; products can stay non-taxable in catalog). */
+/** Stripe Tax at checkout from buyer address (catalog products may stay non-taxable). */
 
 export const TAX_CODE_TANGIBLE = 'txcd_99999999'
 export const TAX_CODE_SERVICES = 'txcd_20030000'
@@ -17,7 +17,10 @@ export function shippingCountriesForTax (): string[] {
 export function marketplaceListingTaxOptions () {
   if (!stripeTaxEnabled()) return {}
   return {
-    automatic_tax: { enabled: true },
+    automatic_tax: {
+      enabled: true,
+      liability: { type: 'self' },
+    },
     shipping_address_collection: {
       allowed_countries: shippingCountriesForTax(),
     },
@@ -27,7 +30,10 @@ export function marketplaceListingTaxOptions () {
 export function platformServiceTaxOptions () {
   if (!stripeTaxEnabled()) return {}
   return {
-    automatic_tax: { enabled: true },
+    automatic_tax: {
+      enabled: true,
+      liability: { type: 'self' },
+    },
     billing_address_collection: 'required' as const,
   }
 }
