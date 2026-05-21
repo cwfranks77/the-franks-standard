@@ -132,7 +132,7 @@
             </div>
           </article>
         </div>
-        <NuxtLink to="/compare" class="inline-link">See a straight comparison to eBay and Amazon</NuxtLink>
+        <NuxtLink to="/compare" class="inline-link">See how we compare to other marketplaces</NuxtLink>
       </div>
     </section>
 
@@ -152,7 +152,7 @@
 
     <section class="section">
       <div class="container">
-        <h2 class="section-title text-center">eBay, Amazon, and the big platforms</h2>
+        <h2 class="section-title text-center">Other marketplaces vs. the Standard</h2>
         <p class="section-subtitle text-center text-muted">They are built for size. We are built for what cannot be faked on purpose.</p>
         <div class="comparison mt-4">
           <div class="comp-col comp-bad">
@@ -261,7 +261,7 @@ const tickerBelt = [
   'Escrow and confirm on every handoff. ',
   'We ban fraud for life, not strikes. ',
   'Art, watches, games: the floor is the story. ',
-  'See how we differ from eBay and Amazon. ',
+  'See how we differ from other marketplaces. ',
 ]
 
 const stats = [

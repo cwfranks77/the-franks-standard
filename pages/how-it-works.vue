@@ -61,7 +61,7 @@ const faqs = reactive([
     open: false,
   },
   { q: 'Is it free to sign up?', a: 'Yes, creating an account is completely free for buyers and sellers.', open: false },
-  { q: 'What fees does The Franks Standard charge?', a: 'Sellers pay a small transaction fee (lower than eBay\'s 13%) when an item sells. Buyers pay no extra fees.', open: false },
+  { q: 'What fees does The Franks Standard charge?', a: 'Sellers pay a small transaction fee (often well below typical marketplace rates of 10–15%+) when an item sells. Buyers pay no extra fees.', open: false },
   { q: 'What is the Franks Standard Guarantee?', a: 'It\'s a legally binding digital signature where the seller stakes their name and reputation on the authenticity of the item. If the item is proven fake, the seller is permanently banned and the buyer is refunded.', open: false },
   { q: 'What if I don\'t have a COA?', a: 'You can sign The Franks Standard Guarantee instead. You\'re personally vouching for the item. This puts your name and account on the line.', open: false },
   { q: 'Can I sell firearms?', a: 'We do not allow firearms or items that require ATF/FBI reporting. Accessories like optics, parts, triggers (non-NFA items), and gear are welcome.', open: false },

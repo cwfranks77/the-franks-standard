@@ -61,7 +61,7 @@
               <NuxtLink to="/about" class="nav-drop-link" @click="closeAllNav">Our story and mission</NuxtLink>
               <NuxtLink to="/support" class="nav-drop-link" @click="closeAllNav">Support and tech</NuxtLink>
               <NuxtLink to="/contact" class="nav-drop-link" @click="closeAllNav">Get in touch</NuxtLink>
-              <NuxtLink to="/compare" class="nav-drop-link" @click="closeAllNav">Us vs eBay and Amazon</NuxtLink>
+              <NuxtLink to="/compare" class="nav-drop-link" @click="closeAllNav">How we compare</NuxtLink>
               <NuxtLink to="/terms" class="nav-drop-link" @click="closeAllNav">Terms</NuxtLink>
               <NuxtLink to="/privacy" class="nav-drop-link" @click="closeAllNav">Privacy</NuxtLink>
               <NuxtLink to="/prohibited-items" class="nav-drop-link" @click="closeAllNav">Prohibited items</NuxtLink>

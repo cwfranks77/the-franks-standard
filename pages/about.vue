@@ -56,7 +56,7 @@
       </ScrollReveal>
 
       <div class="row-btns mt-4">
-        <NuxtLink to="/compare" class="btn btn-outline btn-lg">How we differ from eBay and Amazon</NuxtLink>
+        <NuxtLink to="/compare" class="btn btn-outline btn-lg">How we compare</NuxtLink>
         <NuxtLink to="/auth/register" class="btn btn-primary btn-lg">Join free</NuxtLink>
       </div>
     </div>

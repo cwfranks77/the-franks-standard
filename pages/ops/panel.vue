@@ -63,7 +63,7 @@
             <li><NuxtLink to="/pay">Pay and fees</NuxtLink></li>
             <li><NuxtLink to="/video">Video (Jitsi)</NuxtLink></li>
             <li><NuxtLink to="/support">Support</NuxtLink></li>
-            <li><NuxtLink to="/compare">Compare to eBay / Amazon</NuxtLink></li>
+            <li><NuxtLink to="/compare">How we compare</NuxtLink></li>
             <li><NuxtLink to="/contact">Contact</NuxtLink></li>
             <li><NuxtLink to="/ops/dropship"><strong>Dropship automation</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/ads"><strong>Social Media Ads</strong></NuxtLink></li>
@@ -173,15 +173,15 @@
             Real certified appraisals come from licensed professionals. Use these as <strong>starting research</strong> for comps and education only.
           </p>
           <ul class="link-list external">
-            <li><a href="https://www.ebay.com/sch/i.html?_from=R40&_nkw=&_sacat=0&LH_Sold=1&LH_Complete=1" target="_blank" rel="noopener noreferrer">eBay — sold listings (add your keyword in eBay search)</a></li>
+            <li><a href="https://www.ebay.com/sch/i.html?_from=R40&_nkw=&_sacat=0&LH_Sold=1&LH_Complete=1" target="_blank" rel="noopener noreferrer">Sold listings research (C2C marketplace)</a></li>
             <li><a href="https://www.psacard.com/" target="_blank" rel="noopener noreferrer">PSA — trading cards grading / pop reports</a></li>
             <li><a href="https://www.pcgs.com/" target="_blank" rel="noopener noreferrer">PCGS — coins</a></li>
             <li><a href="https://www.tcgplayer.com/" target="_blank" rel="noopener noreferrer">TCGplayer — sealed / singles pricing</a></li>
             <li><a href="https://www.discogs.com/" target="_blank" rel="noopener noreferrer">Discogs — music / vinyl</a></li>
-            <li><a href="https://stockx.com/" target="_blank" rel="noopener noreferrer">StockX — sneakers / streetwear comps</a></li>
+            <li><a href="https://stockx.com/" target="_blank" rel="noopener noreferrer">Sneakers / streetwear comps</a></li>
             <li><a href="https://reverb.com/price-guide" target="_blank" rel="noopener noreferrer">Reverb — instrument price guide</a></li>
-            <li><a href="https://www.chrono24.com/" target="_blank" rel="noopener noreferrer">Chrono24 — watch listings</a></li>
-            <li><a href="https://www.goat.com/" target="_blank" rel="noopener noreferrer">GOAT — sneaker marketplace</a></li>
+            <li><a href="https://www.chrono24.com/" target="_blank" rel="noopener noreferrer">Watch listings research</a></li>
+            <li><a href="https://www.goat.com/" target="_blank" rel="noopener noreferrer">Sneaker marketplace comps</a></li>
             <li><a href="https://www.worthpoint.com/" target="_blank" rel="noopener noreferrer">WorthPoint — sold archive (often paid)</a></li>
             <li><a href="https://ha.com/" target="_blank" rel="noopener noreferrer">Heritage Auctions — realized prices</a></li>
           </ul>

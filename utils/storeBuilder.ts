@@ -150,7 +150,7 @@ Returns: Escrow on The Franks Standard — buyer confirms before payout.
 Keywords to weave in: ${s.focusKeywords.trim() || cat}
 
 Questions? Message us or start a Video call from the listing.`,
-    pricingTip: `For ${cat.toLowerCase()} (${priceRange}): check sold comps on eBay, StockX, or Chrono24. Price 5–10% below big platforms — our 5% fee beats 13%+ elsewhere. Use Pro for featured placement. Put your top keyword (“${s.focusKeywords.split(',')[0]?.trim() || cat}”) in the first 40 characters of each listing title for Google and Bing.`,
+    pricingTip: `For ${cat.toLowerCase()} (${priceRange}): check sold comps on major resale sites in your category. Price 5–10% below typical big-marketplace listings — our 5% fee beats 13%+ elsewhere. Use Pro for featured placement. Put your top keyword (“${s.focusKeywords.split(',')[0]?.trim() || cat}”) in the first 40 characters of each listing title for Google and Bing.`,
     launchSteps: [
       `Set your store name to “${name}” and upload a clear logo or photo`,
       `Publish 3+ listings with your focus keyword in each title`,

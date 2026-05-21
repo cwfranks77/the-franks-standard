@@ -34,7 +34,7 @@ const offerings = [
   { icon: '✨', title: 'AI Store Builder', desc: 'Generate bios, listing copy, and launch checklists tuned for authenticity-backed selling.', to: '/store-builder', cta: 'Try builder' },
   { icon: '💎', title: 'Pricing & launch offer', desc: 'Lower fees than big-box marketplaces. New sellers: free listings and launch pricing on the floor.', to: '/pricing', cta: 'See pricing' },
   { icon: '📱', title: 'Download the app', desc: 'Android APK and Windows installer — browse, sell, and get help like a native app.', to: '/download', cta: 'Download' },
-  { icon: '⚖️', title: 'Us vs eBay & Amazon', desc: 'Side-by-side on proof, escrow, and how we handle fakes — built for collectors, not SKU floods.', to: '/compare', cta: 'Compare' },
+  { icon: '⚖️', title: 'How we compare', desc: 'Side-by-side on proof, escrow, and how we handle fakes — built for collectors, not SKU floods.', to: '/compare', cta: 'Compare' },
   { icon: '🚪', title: 'Open Door policy', desc: 'How we listen to buyers and sellers — feedback, partnerships, and improving the Standard.', to: '/open-door', cta: 'Open Door' },
 ]
 </script>

@@ -5,7 +5,7 @@
         <p class="eyebrow">Why it is different</p>
         <h1>Not another clone of the big marketplaces</h1>
         <p class="lead text-muted">
-          eBay, Amazon, and other giants optimize for everything being listed — volume first. The Franks Standard
+          Large general marketplaces optimize for everything being listed — volume first. The Franks Standard
           is built for buyers and sellers who will not move high-value or collectible inventory without
           <strong>proof, accountability, and protection</strong>.
         </p>
@@ -23,22 +23,22 @@
               <tr>
                 <th scope="col" class="topic">Topic</th>
                 <th scope="col" class="tfs-col">The Franks Standard</th>
-                <th scope="col">eBay and similar C2C</th>
-                <th scope="col">Amazon and retail-first</th>
+                <th scope="col">Typical C2C marketplace</th>
+                <th scope="col">Typical retail marketplace</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="row in rows" :key="row.label">
                 <th scope="row" class="row-label">{{ row.label }}</th>
                 <td><span class="tfs-cell">{{ row.tfs }}</span></td>
-                <td>{{ row.ebay }}</td>
-                <td>{{ row.amazon }}</td>
+                <td>{{ row.otherC2c }}</td>
+                <td>{{ row.retailMarket }}</td>
               </tr>
             </tbody>
           </table>
         </div>
         <p class="foot-note text-muted mt-2">
-          Amazon is built for new retail scale; eBay is a broad bazaar. The Franks Standard limits participation to what can be backed
+          Retail giants are built for new-in-box scale; broad C2C sites are built for volume. The Franks Standard limits participation to what can be backed
           with documentation — so the catalog stays authentic-first.
         </p>
       </div>
@@ -54,16 +54,16 @@
               <tr>
                 <th scope="col" class="topic">Protection step</th>
                 <th scope="col" class="tfs-col">The Franks Standard</th>
-                <th scope="col">eBay</th>
-                <th scope="col">Amazon</th>
+                <th scope="col">Typical C2C marketplace</th>
+                <th scope="col">Typical retail marketplace</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="r in fraudRows" :key="r.step">
                 <th scope="row" class="row-label">{{ r.step }}</th>
                 <td><span class="tfs-cell">{{ r.tfs }}</span></td>
-                <td>{{ r.ebay }}</td>
-                <td>{{ r.amazon }}</td>
+                <td>{{ r.otherC2c }}</td>
+                <td>{{ r.retailMarket }}</td>
               </tr>
             </tbody>
           </table>
@@ -100,25 +100,25 @@
 
 <script setup>
 const fraudRows = [
-  { step: 'Before listing', tfs: 'COA or signed guarantee required — no proof, no publish', ebay: 'No verification — anyone can list anything', amazon: 'Brand registry optional — most sellers skip it' },
-  { step: 'Verification method', tfs: 'COA upload or legally-binding in-platform guarantee with seller\'s real name', ebay: 'Optional "Authenticity Guarantee" on select categories ($100+)', amazon: 'No built-in authenticity check for third-party sellers' },
-  { step: 'Payment protection', tfs: 'Escrow hold — funds stay locked until buyer confirms item matches listing', ebay: 'PayPal/managed payments — refund via case system after dispute', amazon: 'A-to-z Guarantee — refund possible but seller keeps strike' },
-  { step: 'Dispute process', tfs: 'Fraud-first review: photos, COA check, video call option — resolved in days', ebay: 'Case opened → seller responds → eBay decides (can take weeks)', amazon: 'A-to-z claim → automated decision → appeal process' },
-  { step: 'Fake item found', tfs: 'Permanent ban for seller, full refund for buyer, potential legal referral', ebay: '3-strike system — seller can relist after warning', amazon: 'Account warning or temporary suspension — reinstatement possible' },
-  { step: 'Repeat offenders', tfs: 'Cannot return — ban is permanent, no appeals for proven fakes', ebay: 'May lose selling privileges after multiple strikes', amazon: 'Account suspended but can create new seller account' },
-  { step: 'Buyer recourse', tfs: 'Escrow refund + video call + direct seller contact + 1-800-TFS-HELP', ebay: 'Money Back Guarantee claim (limited window)', amazon: 'A-to-z claim + return (shipping often buyer\'s cost)' },
+  { step: 'Before listing', tfs: 'COA or signed guarantee required — no proof, no publish', otherC2c: 'No verification — anyone can list anything', retailMarket: 'Brand registry optional — most sellers skip it' },
+  { step: 'Verification method', tfs: 'COA upload or legally-binding in-platform guarantee with seller\'s real name', otherC2c: 'Optional paid authenticity programs on select categories only', retailMarket: 'No built-in authenticity check for third-party sellers' },
+  { step: 'Payment protection', tfs: 'Escrow hold — funds stay locked until buyer confirms item matches listing', otherC2c: 'Managed payments — refund via case system after dispute', retailMarket: 'Buyer guarantee — refund possible but seller may keep strike' },
+  { step: 'Dispute process', tfs: 'Fraud-first review: photos, COA check, video call option — resolved in days', otherC2c: 'Case opened → seller responds → platform decides (can take weeks)', retailMarket: 'Claim → automated decision → appeal process' },
+  { step: 'Fake item found', tfs: 'Permanent ban for seller, full refund for buyer, potential legal referral', otherC2c: 'Strike system — seller can relist after warning', retailMarket: 'Account warning or temporary suspension — reinstatement possible' },
+  { step: 'Repeat offenders', tfs: 'Cannot return — ban is permanent, no appeals for proven fakes', otherC2c: 'May lose selling privileges after multiple strikes', retailMarket: 'Account suspended but new seller accounts possible' },
+  { step: 'Buyer recourse', tfs: 'Escrow refund + video call + direct seller contact + 1-800-TFS-HELP', otherC2c: 'Money-back claim (limited window)', retailMarket: 'Return claim (shipping often buyer\'s cost)' },
 ]
 
 const rows = [
-  { label: 'Listing gate', tfs: 'COA or signed platform guarantee to publish', ebay: 'Open listing for most items', amazon: 'Retail/brand and SKUs' },
-  { label: 'Trust model', tfs: 'Auth-first; bans for proven fakes', ebay: 'Varies; heavy catalog', amazon: 'Prime trust is logistics, not provenance' },
-  { label: 'Best for', tfs: 'High-trust collectibles and vetted resellers', ebay: 'Broad variety and volume', amazon: 'Fast commodity shipping' },
-  { label: 'Disputes', tfs: 'Escrow hold until you confirm, fraud-first', ebay: 'Case system with mixed outcomes', amazon: 'A-to-z style retail policies' },
-  { label: 'Scope', tfs: 'Niche, curated, authenticity-led', ebay: 'Everything market', amazon: 'First-party and marketplace retail' },
+  { label: 'Listing gate', tfs: 'COA or signed platform guarantee to publish', otherC2c: 'Open listing for most items', retailMarket: 'Retail/brand and SKUs' },
+  { label: 'Trust model', tfs: 'Auth-first; bans for proven fakes', otherC2c: 'Varies; heavy catalog', retailMarket: 'Shipping speed trust, not provenance' },
+  { label: 'Best for', tfs: 'High-trust collectibles and vetted resellers', otherC2c: 'Broad variety and volume', retailMarket: 'Fast commodity shipping' },
+  { label: 'Disputes', tfs: 'Escrow hold until you confirm, fraud-first', otherC2c: 'Case system with mixed outcomes', retailMarket: 'Retail-style return policies' },
+  { label: 'Scope', tfs: 'Niche, curated, authenticity-led', otherC2c: 'Everything market', retailMarket: 'First-party and marketplace retail' },
 ]
 
 useSeoMeta({
-  title: 'eBay, Amazon, and the Standard — The Franks Standard',
+  title: 'How we compare — The Franks Standard',
   description: 'How The Franks Standard is different: authenticity, COA, and accountability versus broad marketplaces.',
 })
 </script>

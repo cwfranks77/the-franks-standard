@@ -306,12 +306,12 @@ export function getAiReply (message: string): string {
       '• Or call **(877) 837-0527**'
   }
 
-  // Compare / why us / eBay / Amazon / other marketplaces
-  if (matchAny(q, [/ebay|amazon|etsy|mercari|poshmark|stockx|goat|compare|better than|why (this|you|here)|different|advantage|vs |versus/])) {
+  // Compare / why us / other marketplaces
+  if (matchAny(q, [/compare|better than|why (this|you|here)|different|advantage|vs |versus|other marketplace|another platform/])) {
     ctx.lastTopic = 'compare'
     return '**Why The Franks Standard vs. other marketplaces:**\n\n' +
-      '| Feature | Us | eBay/Amazon |\n' +
-      '|---------|-----|-------------|\n' +
+      '| Feature | Us | Typical marketplace |\n' +
+      '|---------|-----|---------------------|\n' +
       '| Authenticity | Required (COA/guarantee) | Optional |\n' +
       '| Fakes policy | Permanent ban | Strike system |\n' +
       '| Video calls | Built in | Not available |\n' +

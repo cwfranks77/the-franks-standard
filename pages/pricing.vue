@@ -4,7 +4,7 @@
       <div class="pricing-hero text-center">
         <span class="launch-ribbon">Launch pricing — locked in for early sellers</span>
         <h1>Simple, fair pricing</h1>
-        <p class="text-muted">Up to 70% cheaper than eBay. No hidden fees. No percentage-on-percentage stacking.</p>
+        <p class="text-muted">Up to 70% lower fees than typical marketplaces. No hidden fees. No percentage-on-percentage stacking.</p>
       </div>
 
       <div class="pricing-billing-wrap">
@@ -55,68 +55,52 @@
               <tr>
                 <th>Fee type</th>
                 <th class="us">The Franks Standard</th>
-                <th>eBay</th>
-                <th>Amazon</th>
-                <th>Mercari</th>
-                <th>StockX</th>
+                <th>Typical C2C marketplace</th>
+                <th>Typical retail marketplace</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>Listing fee</td>
                 <td class="us"><strong>Free</strong> (first 10)</td>
-                <td>$0.35 after 250 free</td>
-                <td>$0.99 per item</td>
-                <td>Free</td>
-                <td>Free</td>
+                <td>Often free tier, then per-listing fees</td>
+                <td>Per-item listing fees common</td>
               </tr>
               <tr>
                 <td>Transaction fee</td>
                 <td class="us"><strong>5%</strong></td>
-                <td>13.25%</td>
-                <td>8–15%</td>
-                <td>10%</td>
-                <td>8–9.5%</td>
+                <td>Often 10–15%+ stacked</td>
+                <td>Often 8–15% by category</td>
               </tr>
               <tr>
                 <td>Monthly subscription</td>
                 <td class="us"><strong>$0</strong> (Starter)</td>
-                <td>$0 (basic)</td>
-                <td>$39.99 (Pro)</td>
-                <td>$0</td>
-                <td>$0</td>
+                <td>Optional store subscriptions</td>
+                <td>Professional seller plans common</td>
               </tr>
               <tr>
                 <td>Pro plan</td>
                 <td class="us"><strong>$9.99/mo</strong></td>
-                <td>$21.95/mo (store)</td>
-                <td>$39.99/mo</td>
-                <td>N/A</td>
-                <td>N/A</td>
+                <td>Varies by tier</td>
+                <td>Varies by tier</td>
               </tr>
               <tr>
                 <td>COA / authenticity</td>
                 <td class="us"><strong>Built in (required)</strong></td>
-                <td>Optional (extra cost)</td>
-                <td>Not available</td>
-                <td>Not available</td>
-                <td>Required (their process)</td>
+                <td>Often optional (extra cost)</td>
+                <td>Not built for collectibles proof</td>
               </tr>
               <tr>
                 <td>Dropshipping</td>
                 <td class="us"><strong>Supported</strong></td>
-                <td>Allowed (risky)</td>
-                <td>Strict rules</td>
-                <td>Not allowed</td>
-                <td>Not allowed</td>
+                <td>Allowed with seller risk</td>
+                <td>Strict fulfillment rules</td>
               </tr>
               <tr>
                 <td>Video calls</td>
                 <td class="us"><strong>Built in (free)</strong></td>
-                <td>No</td>
-                <td>No</td>
-                <td>No</td>
-                <td>No</td>
+                <td>Not standard</td>
+                <td>Not standard</td>
               </tr>
             </tbody>
           </table>
@@ -162,7 +146,7 @@ const { proSellerUrl } = usePaymentLinks()
 
 useSeoMeta({
   title: 'Pricing — The Franks Standard',
-  description: 'Fair, transparent pricing. Up to 70% cheaper than eBay. 5% transaction fee. Free listings to start.',
+  description: 'Fair, transparent pricing. Up to 70% lower fees than typical marketplaces. 5% transaction fee. Free listings to start.',
 })
 
 const billing = ref('monthly')

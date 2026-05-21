@@ -70,7 +70,7 @@
         <NuxtLink to="/pay">Pay and fees</NuxtLink>
         <NuxtLink to="/video">Video calls</NuxtLink>
         <NuxtLink to="/how-it-works">How it works</NuxtLink>
-        <NuxtLink to="/compare">Us vs eBay and Amazon</NuxtLink>
+        <NuxtLink to="/compare">How we compare</NuxtLink>
         <NuxtLink to="/terms">Terms</NuxtLink>
         <NuxtLink to="/privacy">Privacy</NuxtLink>
       </div>

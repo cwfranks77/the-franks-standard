@@ -48,7 +48,7 @@ Here's what makes us different:
 
 🔒 Zero tolerance for counterfeits — permanent ban, not 3 strikes
 📜 COA or signed guarantee required on every single listing
-💰 5% fees vs eBay's 13.25% — you keep more
+💰 5% fees vs typical 13%+ elsewhere — you keep more
 🏪 Open your own store — AI builds it for you in minutes
 📞 Real customer service: (877) 837-0527
 🤝 Open Door Policy — founder Charles Franks reads every feedback email
@@ -76,13 +76,13 @@ Buy with proof. Sell with reputation.
 
 Every listing on @thefranksstandard requires proof — a real COA or a legally signed guarantee. No exceptions.
 
-eBay gives 3 strikes. Amazon gives warnings.
+Other platforms give strikes and warnings.
 We give a permanent ban. First offense. Done.
 
 The developer isn't hiding behind a corporation. Charles Franks built this and put his name on it. Open door policy — reach the founder anytime.
 
 Why sellers are switching:
-✅ 5% fees (eBay charges 13%)
+✅ 5% fees (typical marketplaces charge 13%+)
 ✅ AI builds your store in minutes
 ✅ Dropshipping supported
 ✅ Video calls built into every listing
@@ -111,7 +111,7 @@ Every collectible needs proof before it goes live. No COA = no listing.
 
 Fakes? Permanent ban. Not 3 strikes — one and done.
 
-5% fees vs eBay's 13%.
+5% fees vs typical 13%+ elsewhere.
 AI builds your store.
 Founder picks up the phone.
 
@@ -134,7 +134,7 @@ The marketplace where every item needs PROOF to be listed.
 What makes us different:
 🔒 No COA = No listing (zero exceptions)
 ❌ Fakes = Permanent ban (not 3 strikes)
-💰 5% fees (eBay takes 13.25%)
+💰 5% fees (typical marketplaces take 13%+)
 🏪 AI builds your store in minutes
 📞 (877) 837-0527 — real humans
 🤝 Founder Charles Franks — reachable anytime (open door policy)

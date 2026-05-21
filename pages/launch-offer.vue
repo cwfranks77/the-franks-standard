@@ -16,7 +16,7 @@
         <div class="offer-card">
           <span class="offer-icon">💰</span>
           <h3>3% transaction fee for 90 days</h3>
-          <p>Our normal 5% is already lower than eBay's 13%. For your first 90 days, it's 3%. You keep even more.</p>
+          <p>Our normal 5% is already well below typical marketplace rates (often 10–15%+). For your first 90 days, it's 3%. You keep even more.</p>
         </div>
         <div class="offer-card">
           <span class="offer-icon">🏪</span>
@@ -77,7 +77,7 @@
         <div class="attract-grid">
           <div class="attract-item">
             <h4>Lower fees, more profit</h4>
-            <p>5% vs eBay's 13.25%. On a $100 sale, you keep $95 instead of $86.75. That adds up fast.</p>
+            <p>5% vs typical 13%+ elsewhere. On a $100 sale, you keep $95 instead of about $87. That adds up fast.</p>
           </div>
           <div class="attract-item">
             <h4>Authenticity attracts premium buyers</h4>
