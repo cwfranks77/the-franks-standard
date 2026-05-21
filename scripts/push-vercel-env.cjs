@@ -14,7 +14,7 @@ const ENVS = ['production', 'preview', 'development']
 const DEFAULTS = {
   NUXT_PUBLIC_SITE_URL: 'https://thefranksstandard.com',
   NUXT_PUBLIC_PAY_LISTING_FEE_URL: 'https://buy.stripe.com/5kQfZa78O7EL8bAcqwbII09',
-  NUXT_PUBLIC_PAY_PRO_SELLER_URL: 'https://buy.stripe.com/5kQfZaeBgaQX0J8duAbII0a',
+  NUXT_PUBLIC_PAY_PRO_SELLER_URL: 'https://buy.stripe.com/7sY14gct82kr1Nc628bII0d',
   NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL: 'https://buy.stripe.com/cNiaEQeBg1gnezY4Y4bII0b',
   NUXT_PUBLIC_PAY_DISPUTE_FEE_URL: 'https://buy.stripe.com/bJe8wIal09MT8bAfCIbII0c',
   NUXT_PUBLIC_CUSTOMER_SERVICE_PHONE: '(877) 837-0527',

@@ -29,7 +29,7 @@ console.log('[ops] opsAccessKeyHash length:', opsAccessKeyHash.length)
 // does not override runtimeConfig.public.pay*Url with "" (same gotcha as ops hash above).
 const PAY_DEFAULTS = {
   NUXT_PUBLIC_PAY_LISTING_FEE_URL: 'https://buy.stripe.com/5kQfZa78O7EL8bAcqwbII09',
-  NUXT_PUBLIC_PAY_PRO_SELLER_URL: 'https://buy.stripe.com/5kQfZaeBgaQX0J8duAbII0a',
+  NUXT_PUBLIC_PAY_PRO_SELLER_URL: 'https://buy.stripe.com/7sY14gct82kr1Nc628bII0d',
   NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL: 'https://buy.stripe.com/cNiaEQeBg1gnezY4Y4bII0b',
   NUXT_PUBLIC_PAY_DISPUTE_FEE_URL: 'https://buy.stripe.com/bJe8wIal09MT8bAfCIbII0c',
 } as const
@@ -65,6 +65,7 @@ export default defineNuxtConfig({
       payOrderDepositUrl,
       payDisputeFeeUrl,
       stripeCheckoutEnabled: process.env.NUXT_PUBLIC_STRIPE_CHECKOUT_ENABLED ?? 'true',
+      stripeTaxCheckoutEnabled: process.env.NUXT_PUBLIC_STRIPE_TAX_CHECKOUT_ENABLED ?? 'true',
       customerServicePhone: process.env.NUXT_PUBLIC_CUSTOMER_SERVICE_PHONE || '(877) 837-0527',
       androidApkUrl: process.env.NUXT_PUBLIC_ANDROID_APK_URL || '',
       windowsInstallerUrl: process.env.NUXT_PUBLIC_WINDOWS_INSTALLER_URL || '',
