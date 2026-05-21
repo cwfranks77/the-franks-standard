@@ -66,7 +66,7 @@ export function getAiReply (message: string): string {
       '1. **Create a free account** — click "Join Free" in the header\n' +
       '2. **Go to Sell** — click "Sell" in the navigation\n' +
       '3. **Choose your type** — Direct Sale (you ship) or Dropship (supplier ships)\n' +
-      '4. **Fill in details** — title, description, photos, price\n' +
+      '4. **Fill in details** — title, photos, price; use **Write with AI** on the description field for a proof-first draft you can edit\n' +
       '5. **Add authenticity proof** — upload a COA or sign our guarantee\n' +
       '6. **Publish** — your listing goes live immediately\n\n' +
       'That\'s it! No approval wait. If you\'re the site owner, use Owner Mode for fee-free listing.\n\n' +

@@ -59,9 +59,48 @@
               <input class="input" v-model="form.title" placeholder="e.g. 2023 Topps Chrome Shohei Ohtani PSA 10" required />
             </div>
 
-            <div class="form-group">
-              <label class="label">Description</label>
-              <textarea class="textarea" v-model="form.description" rows="5" placeholder="Describe condition, history, and any details a buyer should know..." required></textarea>
+            <div class="form-group ai-desc-group">
+              <div class="ai-desc-head">
+                <label class="label">Description</label>
+                <button
+                  type="button"
+                  class="btn btn-outline btn-sm ai-desc-btn"
+                  :disabled="aiDescGenerating || !canGenerateAiDescription"
+                  @click="generateAiDescription"
+                >
+                  {{ aiDescGenerating ? 'Writing…' : (form.description.trim() ? 'Rewrite with AI' : 'Write with AI') }}
+                </button>
+              </div>
+              <p class="text-muted small ai-desc-hint">
+                Add a title and category first. AI drafts condition, authenticity, shipping, and buyer-trust copy — you edit before publishing.
+              </p>
+              <div class="ai-desc-options">
+                <div class="form-group ai-desc-tone">
+                  <label class="label">AI tone</label>
+                  <select v-model="aiDescTone" class="select">
+                    <option value="professional">Professional &amp; trusted</option>
+                    <option value="friendly">Friendly &amp; approachable</option>
+                    <option value="collector">Collector-focused</option>
+                    <option value="luxury">Luxury &amp; curated</option>
+                  </select>
+                </div>
+                <div class="form-group ai-desc-notes">
+                  <label class="label">Extra details for AI (optional)</label>
+                  <input
+                    v-model="aiDescNotes"
+                    class="input"
+                    placeholder="e.g. PSA 10, includes original box, minor corner wear"
+                  />
+                </div>
+              </div>
+              <textarea
+                v-model="form.description"
+                class="textarea"
+                rows="8"
+                placeholder="Describe condition, history, and any details a buyer should know — or use Write with AI above."
+                required
+              />
+              <p v-if="aiDescMessage" class="ai-desc-msg" role="status">{{ aiDescMessage }}</p>
             </div>
 
             <div class="form-row">
@@ -256,6 +295,10 @@
 
 <script setup>
 import { LISTING_CATEGORIES } from '~/utils/marketplaceCategories'
+import {
+  generateListingDescriptionAsync,
+  type ListingDescriptionTone,
+} from '~/utils/listingDescriptionAi'
 
 definePageMeta({ middleware: 'requires-auth' })
 
@@ -364,6 +407,44 @@ const photoPreviews = ref([])
 const photoFiles = ref([])
 const coaFile = ref(null)
 const coaFileName = ref('')
+
+const aiDescTone = ref<ListingDescriptionTone>('professional')
+const aiDescNotes = ref('')
+const aiDescGenerating = ref(false)
+const aiDescMessage = ref('')
+
+const canGenerateAiDescription = computed(() => {
+  return !!form.title.trim() && !!form.category
+})
+
+async function generateAiDescription () {
+  if (!canGenerateAiDescription.value) {
+    aiDescMessage.value = 'Enter a title and category first.'
+    return
+  }
+  aiDescGenerating.value = true
+  aiDescMessage.value = ''
+  try {
+    const draft = await generateListingDescriptionAsync({
+      title: form.title,
+      category: form.category,
+      condition: form.condition,
+      price: form.price,
+      coaType: form.coaType,
+      listingMode: listingMode.value,
+      sellerNotes: aiDescNotes.value,
+      tone: aiDescTone.value,
+      shipTime: dropship.shipTime,
+      shipsFrom: dropship.shipsFrom,
+    })
+    form.description = draft
+    aiDescMessage.value = 'Description drafted — review and edit before you publish.'
+  } catch {
+    aiDescMessage.value = 'Could not generate description. Try again.'
+  } finally {
+    aiDescGenerating.value = false
+  }
+}
 
 onMounted(() => {
   const mode = String(route.query.mode || '').toLowerCase()
@@ -559,6 +640,37 @@ async function submitListing() {
 }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
+
+.ai-desc-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.ai-desc-head .label { margin-bottom: 0; }
+.ai-desc-hint { margin: 0 0 12px; }
+.ai-desc-options {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+@media (max-width: 600px) {
+  .ai-desc-options { grid-template-columns: 1fr; }
+}
+.ai-desc-options .form-group { margin-bottom: 0; }
+.ai-desc-msg {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #047857;
+}
+.ai-desc-group .textarea {
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
 
 .photo-upload {
   display: flex;
