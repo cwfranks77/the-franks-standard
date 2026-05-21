@@ -295,10 +295,7 @@
 
 <script setup>
 import { LISTING_CATEGORIES } from '~/utils/marketplaceCategories'
-import {
-  generateListingDescriptionAsync,
-  type ListingDescriptionTone,
-} from '~/utils/listingDescriptionAi'
+import { generateListingDescriptionAsync } from '~/utils/listingDescriptionAi'
 
 definePageMeta({ middleware: 'requires-auth' })
 
@@ -408,7 +405,7 @@ const photoFiles = ref([])
 const coaFile = ref(null)
 const coaFileName = ref('')
 
-const aiDescTone = ref<ListingDescriptionTone>('professional')
+const aiDescTone = ref('professional')
 const aiDescNotes = ref('')
 const aiDescGenerating = ref(false)
 const aiDescMessage = ref('')
