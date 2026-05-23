@@ -30,6 +30,7 @@
 
         <div class="listing-details">
           <span class="badge badge-gold">{{ listing.category }}</span>
+          <span v-if="listing.saleType === 'auction'" class="badge badge-auction">Live auction</span>
           <h1>{{ listing.title }}</h1>
 
           <div class="listing-coa-box">
@@ -45,7 +46,18 @@
           </div>
 
           <div class="listing-price-row">
-            <span class="listing-price">${{ listing.price.toLocaleString() }}</span>
+            <template v-if="listing.saleType === 'auction'">
+              <div class="auction-price-block">
+                <span class="auction-price-label">{{ listing.currentBid != null ? 'Current bid' : 'Starting bid' }}</span>
+                <span class="listing-price">${{ displayBid.toLocaleString() }}</span>
+                <span v-if="auctionOpen" class="auction-time">{{ timeLeftLabel }}</span>
+                <span v-else class="auction-time ended">Auction ended</span>
+                <p v-if="listing.bidCount" class="text-muted small">{{ listing.bidCount }} bid{{ listing.bidCount === 1 ? '' : 's' }}</p>
+              </div>
+            </template>
+            <template v-else>
+              <span class="listing-price">${{ listing.price.toLocaleString() }}</span>
+            </template>
             <span class="listing-condition badge badge-gold">{{ conditionLabel(listing.condition) }}</span>
           </div>
 
@@ -60,7 +72,19 @@
           </div>
 
           <p class="checkout-notice text-muted">
-            <template v-if="listing.donateProceeds">
+            <template v-if="listing.saleType === 'auction' && auctionOpen">
+              <strong>Auction:</strong>
+              Place a bid at or above the minimum shown below. Sales tax applies at checkout when the winner pays after the auction ends.
+            </template>
+            <template v-else-if="listing.saleType === 'auction' && !auctionOpen && isWinningBidder && reserveOk">
+              <strong>You won this auction.</strong>
+              Pay your winning bid through Stripe. Sales tax is added from your billing address.
+            </template>
+            <template v-else-if="listing.saleType === 'auction' && !auctionOpen">
+              <strong>Auction closed.</strong>
+              {{ auctionClosedMessage }}
+            </template>
+            <template v-else-if="listing.donateProceeds">
               <strong>Secure checkout:</strong>
               Pay <strong>${{ listing.price.toLocaleString() }}</strong> through Stripe. Funds are held in escrow, then disbursed to the charity — not the seller.
             </template>
@@ -83,14 +107,47 @@
 
           <p v-if="checkoutError" class="checkout-error" role="alert">{{ checkoutError }}</p>
 
+          <p v-if="bidError" class="checkout-error" role="alert">{{ bidError }}</p>
+
+          <div v-if="listing.saleType === 'auction' && auctionOpen && !isOwnListing" class="bid-box">
+            <label class="label" for="bid-amount">Your bid (USD)</label>
+            <div class="bid-row">
+              <input
+                id="bid-amount"
+                v-model="bidAmount"
+                class="input"
+                type="number"
+                :min="minBid"
+                step="0.01"
+                :placeholder="minBid.toFixed(2)"
+              />
+              <button
+                type="button"
+                class="btn btn-primary btn-lg"
+                :disabled="bidLoading"
+                @click="submitBid"
+              >{{ bidLoading ? 'Placing bid…' : 'Place bid' }}</button>
+            </div>
+            <p class="text-muted small">Minimum bid: <strong>${{ minBid.toLocaleString() }}</strong></p>
+          </div>
+
           <div class="listing-actions">
             <button
+              v-if="listing.saleType !== 'auction'"
               type="button"
               class="btn btn-primary btn-lg"
               style="flex: 1;"
               :disabled="checkoutLoading || isOwnListing"
               @click="buyNow"
             >{{ checkoutLoading ? 'Opening checkout…' : `Buy now — $${listing.price.toLocaleString()} + tax at checkout` }}</button>
+            <button
+              v-else-if="!auctionOpen && isWinningBidder && reserveOk"
+              type="button"
+              class="btn btn-primary btn-lg"
+              style="flex: 1;"
+              :disabled="checkoutLoading"
+              @click="buyNow"
+            >{{ checkoutLoading ? 'Opening checkout…' : `Pay winning bid — $${displayBid.toLocaleString()} + tax` }}</button>
             <a
               :href="messageSellerHref"
               class="btn btn-outline btn-lg"
@@ -124,6 +181,12 @@
 
 <script setup>
 import { createRoomSlug } from '~/composables/useVideoRoom'
+import {
+  isAuctionOpen,
+  minNextBid,
+  formatAuctionTimeLeft,
+  reserveMet,
+} from '~/utils/auctionHelpers.js'
 
 const route = useRoute()
 const supabase = useSupabaseClient()
@@ -165,6 +228,51 @@ async function shareListing () {
 }
 
 const { loading: checkoutLoading, error: checkoutError, startCheckout } = useMarketplaceCheckout()
+const { loading: bidLoading, error: bidError, placeBid } = usePlaceBid()
+
+const bidAmount = ref('')
+const timeLeftLabel = ref('')
+let auctionTimer = null
+
+const auctionOpen = computed(() => isAuctionOpen(listing.value))
+const minBid = computed(() => (listing.value ? minNextBid(listing.value) : 0))
+const displayBid = computed(() => {
+  if (!listing.value) return 0
+  return listing.value.currentBid != null ? listing.value.currentBid : listing.value.startingBid ?? listing.value.price
+})
+const reserveOk = computed(() => reserveMet(listing.value))
+const isWinningBidder = computed(() => {
+  const uid = user.value?.id
+  return !!(uid && listing.value?.currentBidderId && uid === listing.value.currentBidderId)
+})
+const auctionClosedMessage = computed(() => {
+  if (!listing.value || listing.value.saleType !== 'auction') return ''
+  if (!listing.value.bidCount) return 'No bids were placed.'
+  if (!reserveOk.value) return 'Reserve was not met — seller may relist or contact bidders.'
+  if (isWinningBidder.value) return 'You have the winning bid — pay above to complete checkout.'
+  return 'Another bidder won this auction.'
+})
+
+function refreshAuctionClock () {
+  if (!listing.value?.auctionEndsAt) {
+    timeLeftLabel.value = ''
+    return
+  }
+  timeLeftLabel.value = formatAuctionTimeLeft(listing.value.auctionEndsAt)
+}
+
+async function submitBid () {
+  const id = (route.params.id || '').toString()
+  if (!id || !listing.value) return
+  const amount = Number(bidAmount.value || minBid.value)
+  const result = await placeBid(id, amount)
+  if (result?.current_bid != null) {
+    listing.value.currentBid = Number(result.current_bid)
+    listing.value.bidCount = result.bid_count ?? listing.value.bidCount
+    listing.value.currentBidderId = result.current_bidder_id
+    bidAmount.value = String(result.minimum_next_bid ?? minNextBid(listing.value))
+  }
+}
 
 async function buyNow () {
   const id = (route.params.id || '').toString()
@@ -229,7 +337,7 @@ async function load() {
 
   const { data, error } = await supabase
     .from('listings')
-    .select('id, title, description, category, price, condition, coa_type, guarantee_signed, seller_legal_name, image_paths, status, created_at, seller_id, donate_proceeds, charity_key, charity_name, seller:profiles(full_name, created_at)')
+    .select('id, title, description, category, price, condition, coa_type, guarantee_signed, seller_legal_name, image_paths, status, created_at, seller_id, donate_proceeds, charity_key, charity_name, sale_type, starting_bid, current_bid, current_bidder_id, bid_increment, bid_count, reserve_price, auction_ends_at, seller:profiles(full_name, created_at)')
     .eq('id', id)
     .eq('status', 'published')
     .maybeSingle()
@@ -260,13 +368,28 @@ async function load() {
     sellerMemberSince: data.seller ? memberSince(data.seller.created_at) : '',
     donateProceeds: !!data.donate_proceeds,
     charityName: data.charity_name || '',
+    saleType: data.sale_type || 'fixed',
+    startingBid: data.starting_bid != null ? Number(data.starting_bid) : null,
+    currentBid: data.current_bid != null ? Number(data.current_bid) : null,
+    currentBidderId: data.current_bidder_id,
+    bidIncrement: data.bid_increment != null ? Number(data.bid_increment) : 1,
+    bidCount: data.bid_count ?? 0,
+    reservePrice: data.reserve_price != null ? Number(data.reserve_price) : null,
+    auctionEndsAt: data.auction_ends_at,
   }
+  bidAmount.value = String(minNextBid(listing.value))
+  refreshAuctionClock()
+  if (auctionTimer) clearInterval(auctionTimer)
+  auctionTimer = setInterval(refreshAuctionClock, 30000)
   useSeoMeta({ title: `${data.title} — The Franks Standard` })
   loading.value = false
 }
 
 onMounted(() => {
   load()
+})
+onUnmounted(() => {
+  if (auctionTimer) clearInterval(auctionTimer)
 })
 watch(
   () => route.params.id,
@@ -317,6 +440,25 @@ watch(
   margin-bottom: 20px;
 }
 .listing-price { font-size: 2rem; font-weight: 700; color: var(--gold); font-family: 'Cinzel', serif; }
+.badge-auction {
+  margin-left: 8px;
+  background: rgba(255, 120, 0, 0.15);
+  color: #ea580c;
+  border: 1px solid rgba(234, 88, 12, 0.35);
+}
+.auction-price-block { display: flex; flex-direction: column; gap: 4px; }
+.auction-price-label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: #6b7280; font-weight: 700; }
+.auction-time { font-size: 0.88rem; font-weight: 700; color: #047857; }
+.auction-time.ended { color: #b45309; }
+.bid-box {
+  margin-bottom: 14px;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  background: rgba(201, 168, 76, 0.06);
+}
+.bid-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: stretch; }
+.bid-row .input { flex: 1; min-width: 120px; }
 .checkout-notice {
   font-size: 0.85rem; line-height: 1.55; margin-bottom: 14px;
   padding: 12px 14px; background: rgba(201, 168, 76, 0.08);

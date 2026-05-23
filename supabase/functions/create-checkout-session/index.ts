@@ -38,7 +38,7 @@ Deno.serve(async (req) => {
 
     const { data: listing, error: listingError } = await admin
       .from('listings')
-      .select('id, title, price, status, seller_id, donate_proceeds, charity_key, charity_name')
+      .select('id, title, price, status, seller_id, donate_proceeds, charity_key, charity_name, sale_type, starting_bid, current_bid, current_bidder_id, reserve_price, auction_ends_at')
       .eq('id', listingId)
       .eq('status', 'published')
       .maybeSingle()
@@ -57,7 +57,24 @@ Deno.serve(async (req) => {
       return json({ error: 'cannot_buy_own_listing' }, 400)
     }
 
-    const amount = Number(listing.price)
+    const isAuction = listing.sale_type === 'auction'
+    if (isAuction) {
+      if (!listing.auction_ends_at || new Date(listing.auction_ends_at) > new Date()) {
+        return json({ error: 'auction_still_open' }, 400)
+      }
+      if (!listing.current_bidder_id || listing.current_bidder_id !== user.id) {
+        return json({ error: 'not_auction_winner' }, 403)
+      }
+      const reserve = listing.reserve_price != null ? Number(listing.reserve_price) : null
+      const winning = Number(listing.current_bid)
+      if (reserve != null && Number.isFinite(reserve) && winning < reserve) {
+        return json({ error: 'reserve_not_met' }, 400)
+      }
+    }
+
+    const amount = isAuction
+      ? Number(listing.current_bid)
+      : Number(listing.price)
     if (!Number.isFinite(amount) || amount <= 0) {
       return json({ error: 'invalid_listing_price' }, 400)
     }

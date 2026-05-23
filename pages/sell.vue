@@ -49,6 +49,29 @@
 
         <p v-if="modeNotice" class="mode-notice" role="status">{{ modeNotice }}</p>
 
+        <div class="listing-type-selector sale-format-selector">
+          <button
+            type="button"
+            class="listing-type-btn"
+            :class="{ active: saleType === 'fixed' }"
+            @click="saleType = 'fixed'"
+          >
+            <span class="lt-icon">🏷️</span>
+            <span class="lt-label">Fixed price</span>
+            <span class="lt-desc">Buy now at your list price</span>
+          </button>
+          <button
+            type="button"
+            class="listing-type-btn"
+            :class="{ active: saleType === 'auction' }"
+            @click="saleType = 'auction'"
+          >
+            <span class="lt-icon">🔨</span>
+            <span class="lt-label">Auction</span>
+            <span class="lt-desc">Buyers bid until time runs out</span>
+          </button>
+        </div>
+
         <form class="sell-form" @submit.prevent="submitListing">
           <!-- Item details -->
           <div class="form-section">
@@ -68,9 +91,31 @@
                 </select>
               </div>
               <div class="form-group">
-                <label class="label">Price ($)</label>
+                <label class="label">{{ saleType === 'auction' ? 'Starting bid ($)' : 'Price ($)' }}</label>
                 <input class="input" type="number" min="1" step="0.01" v-model="form.price" placeholder="0.00" required />
               </div>
+            </div>
+
+            <div v-if="saleType === 'auction'" class="form-row">
+              <div class="form-group">
+                <label class="label">Auction length</label>
+                <select class="select" v-model="auctionDays">
+                  <option :value="3">3 days</option>
+                  <option :value="5">5 days</option>
+                  <option :value="7">7 days</option>
+                  <option :value="10">10 days</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="label">Minimum bid increase ($)</label>
+                <input class="input" type="number" min="1" step="0.01" v-model="bidIncrement" placeholder="1.00" required />
+              </div>
+            </div>
+
+            <div v-if="saleType === 'auction'" class="form-group">
+              <label class="label">Reserve price ($) — optional</label>
+              <input class="input" type="number" min="1" step="0.01" v-model="reservePrice" placeholder="Leave blank for no reserve" />
+              <p class="text-muted small">Hidden from buyers. Item only sells if the high bid meets or beats this amount.</p>
             </div>
 
             <div class="form-group">
@@ -325,6 +370,7 @@
 <script setup>
 import { LISTING_CATEGORIES } from '~/utils/marketplaceCategories'
 import { CHARITY_OPTIONS, charityByKey } from '~/utils/charities.js'
+import { auctionEndsAtFromDays } from '~/utils/auctionHelpers.js'
 
 const charities = CHARITY_OPTIONS
 
@@ -412,6 +458,11 @@ const form = reactive({
   sellerName: '',
   guaranteeSigned: false,
 })
+
+const saleType = ref('fixed')
+const auctionDays = ref(7)
+const bidIncrement = ref(1)
+const reservePrice = ref('')
 
 const charity = reactive({
   donateProceeds: false,
@@ -668,6 +719,40 @@ async function submitListing() {
         charity_key: pickedCharity.key,
         charity_name: pickedCharity.name,
       })
+    }
+
+    if (saleType.value === 'auction') {
+      const start = Number(form.price)
+      const increment = Number(bidIncrement.value)
+      if (!Number.isFinite(start) || start <= 0) {
+        alert('Enter a valid starting bid.')
+        submitting.value = false
+        return
+      }
+      if (!Number.isFinite(increment) || increment <= 0) {
+        alert('Enter a valid minimum bid increase.')
+        submitting.value = false
+        return
+      }
+      Object.assign(listingPayload, {
+        sale_type: 'auction',
+        starting_bid: start,
+        bid_increment: increment,
+        auction_ends_at: auctionEndsAtFromDays(auctionDays.value),
+        current_bid: null,
+        current_bidder_id: null,
+        bid_count: 0,
+        price: start,
+      })
+      const reserve = String(reservePrice.value ?? '').trim()
+      if (reserve) {
+        const r = Number(reserve)
+        if (Number.isFinite(r) && r > 0) {
+          listingPayload.reserve_price = r
+        }
+      }
+    } else {
+      listingPayload.sale_type = 'fixed'
     }
 
     // Dropship columns only exist after migration 002 — do not send them for direct sale.

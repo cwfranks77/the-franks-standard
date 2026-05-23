@@ -15,9 +15,9 @@
             for fraud. This is the collector economy, not the endless scroll.
           </p>
           <div class="hero-actions">
-            <NuxtLink to="/auth/register" class="btn btn-primary btn-lg">Start free — 10 listings on us</NuxtLink>
-            <NuxtLink to="/pricing" class="btn btn-outline btn-lg">See pricing (from 4% on sales)</NuxtLink>
-            <NuxtLink to="/browse" class="btn btn-dark btn-lg">Hit the floor</NuxtLink>
+            <NuxtLink to="/browse" class="btn btn-primary btn-lg">Browse marketplace</NuxtLink>
+            <NuxtLink to="/auth/register" class="btn btn-outline btn-lg">Start free — 10 listings on us</NuxtLink>
+            <NuxtLink to="/pricing" class="btn btn-dark btn-lg">See pricing (from 4% on sales)</NuxtLink>
           </div>
           <p class="hero-help text-muted">
             Need help getting in?
@@ -64,6 +64,8 @@
       </div>
     </section>
 
+    <HomeBrowsePreview />
+
     <SitePromoOffers />
 
     <section class="activity-ticker" aria-label="What the Standard stands for">
@@ -100,8 +102,6 @@
     </section>
 
     <TrustCounter />
-
-    <ShowcaseReel />
 
     <HomeOfferings />
 
@@ -233,8 +233,9 @@
         <h2 class="section-title">The floor is open</h2>
         <p class="section-subtitle text-muted">Buy with proof. Sell with reputation. It takes minutes to get inside.</p>
         <div class="hero-actions mt-3">
-          <NuxtLink to="/auth/register" class="btn btn-primary btn-lg">Join the Standard</NuxtLink>
-          <NuxtLink to="/how-it-works" class="btn btn-outline btn-lg">Read the play-by-play</NuxtLink>
+          <NuxtLink to="/browse" class="btn btn-primary btn-lg">Browse marketplace</NuxtLink>
+          <NuxtLink to="/auth/register" class="btn btn-outline btn-lg">Join the Standard</NuxtLink>
+          <NuxtLink to="/how-it-works" class="btn btn-dark btn-lg">Read the play-by-play</NuxtLink>
         </div>
       </div>
     </section>
@@ -243,6 +244,7 @@
 
 <script setup>
 import { CATEGORY_CATALOG } from '~/utils/marketplaceCategories'
+import { HOME_BROWSE_SAMPLES } from '~/utils/homeBrowseSamples.js'
 
 function onHeroMosaicError (e) {
   const el = e?.target
@@ -253,14 +255,7 @@ function onHeroMosaicError (e) {
   el.classList.add('mosaic-fallback')
 }
 
-const heroMosaic = [
-  '/franks-pavilion.png',
-  '/logo.svg',
-  '/img/reel-cards.svg',
-  '/img/reel-watches.svg',
-  '/img/reel-guitars.svg',
-  '/img/reel-coins.svg',
-]
+const heroMosaic = HOME_BROWSE_SAMPLES.slice(0, 6).map((s) => s.image)
 
 const tickerBelt = [
   'Sellers: COA upload in flow. ',

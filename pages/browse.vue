@@ -55,13 +55,19 @@
           <div class="listing-image">
             <img :src="item.image" :alt="item.title" />
             <span class="coa-badge listing-coa">COA Verified</span>
+            <span v-if="item.saleType === 'auction'" class="auction-badge listing-coa">Auction</span>
             <span v-if="item.donateProceeds" class="charity-badge listing-coa">Charity</span>
           </div>
           <div class="card-body">
             <p class="listing-category text-muted">{{ item.category }}</p>
             <h3 class="listing-title">{{ item.title }}</h3>
             <div class="listing-footer">
-              <span class="listing-price">${{ item.price.toLocaleString() }}</span>
+              <span class="listing-price">
+                <template v-if="item.saleType === 'auction'">
+                  {{ item.currentBid != null ? `$${item.currentBid.toLocaleString()} bid` : `$${item.price.toLocaleString()} start` }}
+                </template>
+                <template v-else>${{ item.price.toLocaleString() }}</template>
+              </span>
               <span v-if="item.condition" class="listing-condition-tag">{{ item.condition.replace(/-/g, ' ') }}</span>
             </div>
             <p class="listing-seller text-muted">{{ item.seller }}</p>
@@ -99,7 +105,7 @@ async function loadListings() {
   loadError.value = ''
   const { data, error } = await supabase
     .from('listings')
-    .select('id, title, category, price, condition, coa_type, image_paths, created_at, donate_proceeds, charity_name, seller:profiles(full_name)')
+    .select('id, title, category, price, condition, coa_type, image_paths, created_at, donate_proceeds, charity_name, sale_type, current_bid, starting_bid, auction_ends_at, seller:profiles(full_name)')
 
     .eq('status', 'published')
     .order('created_at', { ascending: false })
@@ -120,6 +126,10 @@ async function loadListings() {
     seller: (r.seller && r.seller.full_name) ? r.seller.full_name : 'Seller',
     donateProceeds: !!r.donate_proceeds,
     charityName: r.charity_name || '',
+    saleType: r.sale_type || 'fixed',
+    currentBid: r.current_bid != null ? Number(r.current_bid) : null,
+    startingBid: r.starting_bid != null ? Number(r.starting_bid) : null,
+    auctionEndsAt: r.auction_ends_at,
   }))
 }
 
@@ -207,6 +217,13 @@ const filteredListings = computed(() => {
   right: 10px;
   background: rgba(0, 245, 160, 0.9);
   color: #0c0619;
+}
+.auction-badge {
+  top: auto;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(234, 88, 12, 0.92);
+  color: #fff;
 }
 .listing-category { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
 .listing-title {
