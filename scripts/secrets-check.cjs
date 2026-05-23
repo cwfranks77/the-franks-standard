@@ -49,8 +49,10 @@ const GROUPS = [
     vars: [
       ['FACEBOOK_PAGE_ACCESS_TOKEN', false],
       ['TELEGRAM_BOT_TOKEN', false],
+      ['TELEGRAM_NOTIFY_CHAT_ID', false],
+      ['INSTAGRAM_BUSINESS_ACCOUNT_ID', false],
     ],
-    note: 'See docs/META-FACEBOOK-SETUP.md',
+    note: 'TELEGRAM_NOTIFY_CHAT_ID = your personal Telegram chat id for post alerts (getUpdates). Falls back to TELEGRAM_CHANNEL_ID. See docs/META-FACEBOOK-SETUP.md',
   },
 ]
 

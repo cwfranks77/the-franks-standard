@@ -71,7 +71,7 @@
     <section class="activity-ticker" aria-label="What the Standard stands for">
       <div class="container">
         <ul class="ticker-list">
-          <li v-for="(b, j) in tickerBelt" :key="j" class="ticker-bubble">{{ b }}</li>
+          <li v-for="(b, j) in tickerBeltDoubled" :key="j" class="ticker-bubble">{{ b }}</li>
         </ul>
       </div>
     </section>
@@ -265,6 +265,7 @@ const tickerBelt = [
   'Art, watches, games: the floor is the story. ',
   'See how we differ from other marketplaces. ',
 ]
+const tickerBeltDoubled = [...tickerBelt, ...tickerBelt]
 
 const stats = [
   { n: '1', t: 'Proof before publish — no exceptions' },
@@ -449,6 +450,16 @@ const categories = CATEGORY_CATALOG
   object-fit: cover;
   border: 2px solid var(--gold);
   box-shadow: 0 0 0 1px rgba(0, 224, 255, 0.22), 0 8px 20px rgba(255, 45, 122, 0.18);
+  animation: mosaic-float 5s ease-in-out infinite;
+}
+.mosaic-img:nth-child(2) { animation-delay: 0.4s; }
+.mosaic-img:nth-child(3) { animation-delay: 0.8s; }
+.mosaic-img:nth-child(4) { animation-delay: 1.2s; }
+.mosaic-img:nth-child(5) { animation-delay: 1.6s; }
+.mosaic-img:nth-child(6) { animation-delay: 2s; }
+@keyframes mosaic-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
 }
 .mosaic-img.mosaic-fallback {
   background: rgba(255, 255, 255, 0.06);
@@ -457,6 +468,8 @@ const categories = CATEGORY_CATALOG
 }
 @media (prefers-reduced-motion: reduce) {
   .t-gold-shine { animation: none; }
+  .mosaic-img { animation: none; }
+  .ticker-list { animation: none; flex-wrap: wrap; justify-content: center; width: auto; }
 }
 .hero-badges { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
 .coa-badge-link {
@@ -554,12 +567,22 @@ const categories = CATEGORY_CATALOG
 }
 .ticker-list {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
   gap: 10px 12px;
   list-style: none;
   margin: 0;
   padding: 0;
+  width: max-content;
+  animation: ticker-drift 38s linear infinite;
+}
+@keyframes ticker-drift {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.activity-ticker .container {
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
 }
 .ticker-bubble {
   font-size: 0.88rem;

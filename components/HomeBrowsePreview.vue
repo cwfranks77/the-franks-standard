@@ -1,12 +1,16 @@
 <template>
-  <section class="home-browse section" aria-labelledby="home-browse-title">
+  <section class="home-browse section home-browse-alive" aria-labelledby="home-browse-title">
     <div class="container">
       <header class="home-browse-head">
         <div>
+          <p class="home-browse-live">
+            <span class="live-dot" aria-hidden="true" />
+            Live floor preview
+          </p>
           <h2 id="home-browse-title" class="section-title">On the floor right now</h2>
           <p class="section-subtitle text-muted">
             Real listings when sellers publish — every public item is COA- or guarantee-backed.
-            <span v-if="usingSamples" class="sample-note">Showing sample categories until more inventory goes live.</span>
+            <span v-if="usingSamples" class="sample-note">Category examples below — tap any tile to browse that niche.</span>
           </p>
         </div>
         <NuxtLink to="/browse" class="btn btn-primary btn-lg home-browse-cta">Browse marketplace</NuxtLink>
@@ -14,10 +18,11 @@
 
       <div class="home-browse-grid">
         <NuxtLink
-          v-for="item in displayItems"
+          v-for="(item, idx) in displayItems"
           :key="item.id"
           :to="item.to"
           class="home-browse-card"
+          :style="{ '--card-i': idx }"
         >
           <div class="home-browse-img-wrap">
             <img
@@ -28,14 +33,15 @@
               height="320"
               @error="onImgError($event, item)"
             />
-            <span v-if="item.isSample" class="home-browse-sample-tag">Sample</span>
+            <span v-if="item.isSample" class="home-browse-sample-tag">Example</span>
             <span v-else-if="item.saleType === 'auction'" class="home-browse-auction-tag">Auction</span>
             <span v-else class="home-browse-coa-tag">COA / guarantee</span>
           </div>
           <div class="home-browse-meta">
             <p class="home-browse-cat">{{ item.category }}</p>
             <h3>{{ item.title }}</h3>
-            <p class="home-browse-price">
+            <p v-if="item.isSample" class="home-browse-sample-hint">Browse this category →</p>
+            <p v-else class="home-browse-price">
               <template v-if="item.saleType === 'auction'">
                 {{ item.currentBid != null ? `$${formatPrice(item.currentBid)} bid` : `$${formatPrice(item.price)} start` }}
               </template>
@@ -54,7 +60,12 @@
 </template>
 
 <script setup>
-import { HOME_BROWSE_SAMPLES, shuffleItems } from '~/utils/homeBrowseSamples.js'
+import {
+  HOME_BROWSE_SAMPLES,
+  CATEGORY_FALLBACK_IMAGE,
+  shuffleItems,
+  browseLinkForCategory,
+} from '~/utils/homeBrowseSamples.js'
 
 const { publicUrlForPath } = useListingImageUrl()
 const supabase = useSupabaseClient()
@@ -63,7 +74,6 @@ function buildSampleItems (count = 8) {
   return shuffleItems(HOME_BROWSE_SAMPLES).slice(0, count).map(mapSample)
 }
 
-const loading = ref(false)
 const displayItems = ref(buildSampleItems())
 const usingSamples = ref(true)
 
@@ -77,20 +87,29 @@ function onImgError (e, item) {
   const el = e?.target
   if (!el || el.dataset?.fallback) return
   el.dataset.fallback = '1'
-  el.src = '/img/hero-showcase-v2.svg'
+  const next = item.fallbackImage || CATEGORY_FALLBACK_IMAGE[item.category] || '/img/reel-cards.svg'
+  if (el.src !== next) {
+    el.src = next
+  }
 }
 
 function mapListing (row) {
   const saleType = row.sale_type || 'fixed'
   const currentBid = row.current_bid != null ? Number(row.current_bid) : null
+  const category = row.category || 'Listing'
+  const imagePath = row.image_paths?.[0]
+  const image = imagePath
+    ? publicUrlForPath(imagePath)
+    : (CATEGORY_FALLBACK_IMAGE[category] || '/img/reel-cards.svg')
   return {
     id: row.id,
     title: row.title,
-    category: row.category || 'Listing',
+    category,
     price: Number(row.price),
     saleType,
     currentBid,
-    image: publicUrlForPath(row.image_paths?.[0]),
+    image,
+    fallbackImage: CATEGORY_FALLBACK_IMAGE[category] || '/img/reel-cards.svg',
     to: `/listing/${row.id}`,
     isSample: false,
   }
@@ -99,8 +118,9 @@ function mapListing (row) {
 function mapSample (row) {
   return {
     ...row,
-    to: '/browse',
+    to: browseLinkForCategory(row.category),
     isSample: true,
+    fallbackImage: row.image,
   }
 }
 
@@ -153,9 +173,18 @@ onMounted(() => {
 
 <style scoped>
 .home-browse {
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.04) 0%, transparent 100%);
+  background: linear-gradient(180deg, rgba(0, 224, 255, 0.05) 0%, transparent 55%);
   padding-top: 48px;
   padding-bottom: 56px;
+  position: relative;
+}
+.home-browse-alive::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.45), rgba(0, 224, 255, 0.35), transparent);
+  pointer-events: none;
 }
 .home-browse-head {
   display: flex;
@@ -165,11 +194,34 @@ onMounted(() => {
   gap: 16px 24px;
   margin-bottom: 28px;
 }
+.home-browse-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--trust-green, #00f5a0);
+}
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--trust-green, #00f5a0);
+  box-shadow: 0 0 0 0 rgba(0, 245, 160, 0.55);
+  animation: live-pulse 2s ease-out infinite;
+}
+@keyframes live-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(0, 245, 160, 0.55); }
+  70% { box-shadow: 0 0 0 10px rgba(0, 245, 160, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 245, 160, 0); }
+}
 .home-browse-head .section-title { margin-bottom: 8px; text-align: left; }
 .home-browse-head .section-subtitle { text-align: left; max-width: 560px; margin: 0; }
 .sample-note { display: block; margin-top: 6px; font-size: 0.88rem; font-style: italic; }
 .home-browse-cta { flex-shrink: 0; }
-.home-browse-loading { padding: 48px 0; text-align: center; }
 .home-browse-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -189,17 +241,23 @@ onMounted(() => {
   border: 1px solid rgba(0, 224, 255, 0.22);
   background: #fff;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+  animation: card-rise 0.55s ease both;
+  animation-delay: calc(var(--card-i, 0) * 55ms);
+}
+@keyframes card-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 .home-browse-card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(201, 168, 76, 0.55);
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12);
+  transform: translateY(-4px);
+  border-color: rgba(201, 168, 76, 0.65);
+  box-shadow: 0 16px 40px rgba(201, 168, 76, 0.14), 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 .home-browse-img-wrap {
   position: relative;
   aspect-ratio: 1;
-  background: #111827;
+  background: linear-gradient(145deg, #111827 0%, #1f2937 100%);
   overflow: hidden;
 }
 .home-browse-img-wrap img {
@@ -207,6 +265,10 @@ onMounted(() => {
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform 0.35s ease;
+}
+.home-browse-card:hover .home-browse-img-wrap img {
+  transform: scale(1.04);
 }
 .home-browse-coa-tag,
 .home-browse-sample-tag,
@@ -259,11 +321,22 @@ onMounted(() => {
   font-weight: 800;
   color: var(--gold, #c9a84c);
 }
+.home-browse-sample-hint {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #146eb4;
+}
 .home-browse-foot {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
   justify-content: center;
   margin-top: 32px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-browse-card { animation: none; }
+  .live-dot { animation: none; }
+  .home-browse-card:hover .home-browse-img-wrap img { transform: none; }
 }
 </style>

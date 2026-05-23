@@ -1,12 +1,8 @@
 /**
- * Post The Franks Standard to Telegram, Facebook, X.
- * Uses standard TELEGRAM_*, FACEBOOK_*, and X_* environment variables.
+ * Post The Franks Standard to Telegram, Facebook, Instagram, and X.
+ * Sends an optional Telegram DM summary when TELEGRAM_NOTIFY_CHAT_ID is set.
  *
- *   cd the-franks-standard
- *   npm run post:social
- *   # or: node scripts/post-franks-social.cjs [--telegram|--facebook|--x]
- *   # founding seller promo: node scripts/post-franks-social.cjs --founders [--telegram|--facebook|--x]
- *   # honors program: node scripts/post-franks-social.cjs --honor [--telegram|--facebook|--x]
+ *   node scripts/post-franks-social.cjs [--telegram|--facebook|--instagram|--x]
  *
  * Requires: npm i axios form-data dotenv
  */
@@ -141,6 +137,26 @@ Main site: ${SITE}`
 const X_TWEET = `The Franks Standard is live: COA/signed guarantee listings, escrow-style buyer confirmation, AI Store Builder, video rooms, seller onboarding, and installable app. Join now: ${LINK_REGISTER}
 #TheFranksStandard #collectibles`
 
+const INSTAGRAM_IMAGE = `${SITE}/franks-pavilion.png`
+
+const INSTAGRAM_TEXT = `ZERO tolerance for fakes on The Franks Standard.
+
+Every listing needs a COA or signed in-platform guarantee before it goes live. Counterfeit = permanent ban.
+
+4–5% sale fees by plan vs typical 13%+ elsewhere. AI Store Builder. Real support: (877) 837-0527.
+
+Browse: ${LINK_BROWSE}
+Sell: ${LINK_SELL}
+
+#TheFranksStandard #Collectibles #COARequired #AuthenticOnly #Marketplace`
+
+const postResults = {
+  telegram: 'skipped',
+  facebook: 'skipped',
+  instagram: 'skipped',
+  x: 'skipped',
+}
+
 function assertFranksBrandCopy () {
   const combined = `${TELEGRAM_TEXT}\n${FACEBOOK_TEXT}\n${X_TWEET}`.toLowerCase()
   const blocked = ['zentrafuel', 'zfuel', 'zentramesh']
@@ -250,13 +266,50 @@ async function postFacebook (text = FACEBOOK_TEXT) {
     console.error('Missing Facebook Page env (FACEBOOK_PAGE_ACCESS_TOKEN or FACEBOOK_USER_ACCESS_TOKEN + FACEBOOK_PAGE_ID)')
     return false
   }
-  // Message-only post (URLs in text). Omit `link` — it often requires pages_read_engagement.
   const res = await axios.post(`${GRAPH}/${pageId}/feed`, {
     message: text,
     access_token: pageToken
   })
   console.log('OK: Facebook', res.data?.id || res.data)
-  return true
+  return res.data?.id || true
+}
+
+async function resolveInstagramAccountId (pageId, pageToken) {
+  const cached = process.env.INSTAGRAM_BUSINESS_ACCOUNT_ID
+  if (cached) return cached
+  const { data } = await axios.get(`${GRAPH}/${pageId}`, {
+    params: { fields: 'instagram_business_account', access_token: pageToken }
+  })
+  return data?.instagram_business_account?.id || null
+}
+
+async function postInstagram (caption = INSTAGRAM_TEXT, imageUrl = INSTAGRAM_IMAGE) {
+  const pageId = process.env.FACEBOOK_PAGE_ID
+  const pageToken = await resolveFacebookPageToken()
+  if (!pageToken || !pageId) {
+    console.error('Missing Facebook Page token (required for Instagram Graph API)')
+    return false
+  }
+  const igId = await resolveInstagramAccountId(pageId, pageToken)
+  if (!igId) {
+    console.error('No Instagram Business account linked to this Facebook Page. Link IG in Meta Business Suite and set INSTAGRAM_BUSINESS_ACCOUNT_ID if needed.')
+    return false
+  }
+  const { data: container } = await axios.post(`${GRAPH}/${igId}/media`, {
+    image_url: imageUrl,
+    caption: caption.slice(0, 2200),
+    access_token: pageToken
+  })
+  const creationId = container?.id
+  if (!creationId) {
+    throw new Error('Instagram media container missing id')
+  }
+  const { data: published } = await axios.post(`${GRAPH}/${igId}/media_publish`, {
+    creation_id: creationId,
+    access_token: pageToken
+  })
+  console.log('OK: Instagram', published?.id || published)
+  return published?.id || true
 }
 
 async function postX (tweet = X_TWEET) {
@@ -296,23 +349,74 @@ function assertCampaignBrandCopy (text) {
   if (hit) throw new Error(`Brand guard blocked post copy containing "${hit}".`)
 }
 
+async function runChannel (key, fn) {
+  try {
+    const ok = await fn()
+    postResults[key] = ok ? 'posted' : 'skipped (missing config)'
+    if (!ok) console.warn(`${key}: skipped`)
+  } catch (e) {
+    postResults[key] = `failed: ${safeErrorMessage(e, key)}`
+    console.error(postResults[key])
+    process.exitCode = 1
+  }
+}
+
+async function notifyOwner (campaignLabel) {
+  const token = process.env.TELEGRAM_BOT_TOKEN
+  const chatId = process.env.TELEGRAM_NOTIFY_CHAT_ID || process.env.TELEGRAM_CHANNEL_ID
+  if (!token || !chatId) {
+    console.log('[notify] Skip: set TELEGRAM_NOTIFY_CHAT_ID in GitHub secrets for post alerts on your phone.')
+    return
+  }
+  const lines = [
+    `The Franks Standard — social post (${campaignLabel})`,
+    ...Object.entries(postResults).map(([k, v]) => `• ${k}: ${v}`),
+    SITE,
+  ]
+  await axios.post(`https://api.telegram.org/bot${token}/sendMessage`, {
+    chat_id: chatId,
+    text: lines.join('\n').slice(0, 4096),
+  })
+  console.log('[notify] Owner alert sent via Telegram.')
+}
+
+async function runCampaign ({ label, telegramText, facebookText, xText, instagramText }) {
+  if (all || argv.includes('--telegram')) await runChannel('telegram', () => postTelegram(telegramText))
+  if (all || argv.includes('--facebook')) await runChannel('facebook', () => postFacebook(facebookText))
+  if (all || argv.includes('--instagram')) await runChannel('instagram', () => postInstagram(instagramText))
+  if (all || argv.includes('--x')) await runChannel('x', () => postX(xText))
+  await notifyOwner(label)
+}
+
 ;(async () => {
   if (founders) {
     assertCampaignBrandCopy(`${FOUNDERS_TELEGRAM}\n${FOUNDERS_FACEBOOK}\n${FOUNDERS_X}`)
-    if (all || argv.includes('--telegram')) await postTelegram(FOUNDERS_TELEGRAM).catch(e => { console.error(safeErrorMessage(e, 'Telegram')); process.exitCode = 1 })
-    if (all || argv.includes('--facebook')) await postFacebook(FOUNDERS_FACEBOOK).catch(e => { console.error(safeErrorMessage(e, 'Facebook')); process.exitCode = 1 })
-    if (all || argv.includes('--x')) await postX(FOUNDERS_X).catch(e => { console.error(safeErrorMessage(e, 'X')); process.exitCode = 1 })
+    await runCampaign({
+      label: 'founders',
+      telegramText: FOUNDERS_TELEGRAM,
+      facebookText: FOUNDERS_FACEBOOK,
+      xText: FOUNDERS_X,
+      instagramText: `Founding seller offer: first 10 sellers get 3 months Pro free on The Franks Standard. Code FOUNDERS10\n${LINK_FOUNDERS}\n#TheFranksStandard #FoundingSeller`,
+    })
     return
   }
   if (honor) {
     assertCampaignBrandCopy(`${HONOR_TELEGRAM}\n${HONOR_FACEBOOK}\n${honorXTweet()}`)
-    if (all || argv.includes('--telegram')) await postTelegram(HONOR_TELEGRAM).catch(e => { console.error(safeErrorMessage(e, 'Telegram')); process.exitCode = 1 })
-    if (all || argv.includes('--facebook')) await postFacebook(HONOR_FACEBOOK).catch(e => { console.error(safeErrorMessage(e, 'Facebook')); process.exitCode = 1 })
-    if (all || argv.includes('--x')) await postX(honorXTweet()).catch(e => { console.error(safeErrorMessage(e, 'X')); process.exitCode = 1 })
+    await runCampaign({
+      label: 'honor',
+      telegramText: HONOR_TELEGRAM,
+      facebookText: HONOR_FACEBOOK,
+      xText: honorXTweet(),
+      instagramText: `Honoring veterans & first responders: 6 months Pro free when you sell on The Franks Standard. Code HONOR26\n${LINK_HONOR}\n#ThankYouForYourService #TheFranksStandard`,
+    })
     return
   }
   assertFranksBrandCopy()
-  if (all || argv.includes('--telegram')) await postTelegram().catch(e => { console.error(safeErrorMessage(e, 'Telegram')); process.exitCode = 1 })
-  if (all || argv.includes('--facebook')) await postFacebook().catch(e => { console.error(safeErrorMessage(e, 'Facebook')); process.exitCode = 1 })
-  if (all || argv.includes('--x')) await postX().catch(e => { console.error(safeErrorMessage(e, 'X')); process.exitCode = 1 })
+  await runCampaign({
+    label: 'default',
+    telegramText: TELEGRAM_TEXT,
+    facebookText: FACEBOOK_TEXT,
+    xText: X_TWEET,
+    instagramText: INSTAGRAM_TEXT,
+  })
 })()

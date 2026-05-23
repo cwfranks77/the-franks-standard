@@ -1,62 +1,67 @@
-/** Fallback marketplace photos when few/no live listings (Unsplash, crop-safe). */
+/** Fallback marketplace tiles — local niche art first, no prices on samples. */
 export const HOME_BROWSE_SAMPLES = [
   {
-    id: 'sample-watch',
-    title: 'Steel chronograph',
-    category: 'Watches',
-    price: 1250,
-    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&h=600&fit=crop&q=80',
-  },
-  {
     id: 'sample-guitar',
-    title: 'Stage electric',
-    category: 'Musical instruments',
-    price: 890,
-    image: 'https://images.unsplash.com/photo-1516924962504-8b5545432ca2?w=600&h=600&fit=crop&q=80',
+    title: 'Vintage stage rig',
+    category: 'Musical Instruments',
+    image: '/img/reel-guitars.svg',
   },
   {
-    id: 'sample-sneaker',
-    title: 'Deadstock runners',
-    category: 'Sneakers',
-    price: 220,
-    image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&h=600&fit=crop&q=80',
+    id: 'sample-watch',
+    title: 'Certified chronograph',
+    category: 'Watches & Jewelry',
+    image: '/img/reel-watches.svg',
   },
   {
-    id: 'sample-vinyl',
-    title: 'Original press vinyl',
-    category: 'Music & media',
-    price: 45,
-    image: 'https://images.unsplash.com/photo-1619983081563-430f63602796?w=600&h=600&fit=crop&q=80',
-  },
-  {
-    id: 'sample-camera',
-    title: 'Film camera body',
-    category: 'Cameras & optics',
-    price: 340,
-    image: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&h=600&fit=crop&q=80',
-  },
-  {
-    id: 'sample-art',
-    title: 'Gallery canvas',
-    category: 'Art & antiques',
-    price: 680,
-    image: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b89a?w=600&h=600&fit=crop&q=80',
+    id: 'sample-cards',
+    title: 'Graded slab pickup',
+    category: 'Sports Cards & Memorabilia',
+    image: '/img/reel-cards.svg',
   },
   {
     id: 'sample-coins',
-    title: 'Slabbed silver',
-    category: 'Coins & currency',
-    price: 175,
-    image: 'https://images.unsplash.com/photo-1621761191319-c6fb62004040?w=600&h=600&fit=crop&q=80',
+    title: 'Slabbed silver lot',
+    category: 'Coins & Currency',
+    image: '/img/reel-coins.svg',
   },
   {
-    id: 'sample-phone',
-    title: 'Vintage crank phone',
-    category: 'Collectibles',
-    price: 95,
-    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=600&fit=crop&q=80',
+    id: 'sample-sneaker',
+    title: 'Authenticated deadstock',
+    category: 'Sneakers & Streetwear',
+    image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=640&h=640&fit=crop&q=85&auto=format',
+  },
+  {
+    id: 'sample-art',
+    title: 'Gallery estate piece',
+    category: 'Art & Antiques',
+    image: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b89a?w=640&h=640&fit=crop&q=85&auto=format',
+  },
+  {
+    id: 'sample-camera',
+    title: 'Film body + glass',
+    category: 'Photography & Film Gear',
+    image: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=640&h=640&fit=crop&q=85&auto=format',
+  },
+  {
+    id: 'sample-retro',
+    title: 'Sealed retro hardware',
+    category: 'Vintage Electronics & Games',
+    image: 'https://images.unsplash.com/photo-1486401899862-58a69294a4d7?w=640&h=640&fit=crop&q=85&auto=format',
   },
 ]
+
+/** When a live listing has no photo yet, pick art that matches the category. */
+export const CATEGORY_FALLBACK_IMAGE = {
+  'Musical Instruments': '/img/reel-guitars.svg',
+  'Watches & Jewelry': '/img/reel-watches.svg',
+  'Sports Cards & Memorabilia': '/img/reel-cards.svg',
+  'Trading Card Games (Pokemon, MTG, etc.)': '/img/reel-cards.svg',
+  'Coins & Currency': '/img/reel-coins.svg',
+  'Sneakers & Streetwear': HOME_BROWSE_SAMPLES.find((s) => s.id === 'sample-sneaker').image,
+  'Art & Antiques': HOME_BROWSE_SAMPLES.find((s) => s.id === 'sample-art').image,
+  'Photography & Film Gear': HOME_BROWSE_SAMPLES.find((s) => s.id === 'sample-camera').image,
+  'Vintage Electronics & Games': HOME_BROWSE_SAMPLES.find((s) => s.id === 'sample-retro').image,
+}
 
 export function shuffleItems (list) {
   const arr = [...list]
@@ -65,4 +70,9 @@ export function shuffleItems (list) {
     ;[arr[i], arr[j]] = [arr[j], arr[i]]
   }
   return arr
+}
+
+export function browseLinkForCategory (category) {
+  if (!category) return '/browse'
+  return `/browse?category=${encodeURIComponent(category)}`
 }
