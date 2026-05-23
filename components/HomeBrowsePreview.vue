@@ -12,9 +12,7 @@
         <NuxtLink to="/browse" class="btn btn-primary btn-lg home-browse-cta">Browse marketplace</NuxtLink>
       </header>
 
-      <div v-if="loading" class="home-browse-loading text-muted">Loading the floor…</div>
-
-      <div v-else class="home-browse-grid">
+      <div class="home-browse-grid">
         <NuxtLink
           v-for="item in displayItems"
           :key="item.id"
@@ -61,9 +59,13 @@ import { HOME_BROWSE_SAMPLES, shuffleItems } from '~/utils/homeBrowseSamples.js'
 const { publicUrlForPath } = useListingImageUrl()
 const supabase = useSupabaseClient()
 
-const loading = ref(true)
-const displayItems = ref([])
-const usingSamples = ref(false)
+function buildSampleItems (count = 8) {
+  return shuffleItems(HOME_BROWSE_SAMPLES).slice(0, count).map(mapSample)
+}
+
+const loading = ref(false)
+const displayItems = ref(buildSampleItems())
+const usingSamples = ref(true)
 
 function formatPrice (n) {
   const v = Number(n)
@@ -103,31 +105,45 @@ function mapSample (row) {
 }
 
 async function loadFloorPreview () {
-  loading.value = true
-  const { data, error } = await supabase
-    .from('listings')
-    .select('id, title, category, price, image_paths, sale_type, current_bid, starting_bid')
-    .eq('status', 'published')
-    .order('created_at', { ascending: false })
-    .limit(24)
+  try {
+    let { data, error } = await supabase
+      .from('listings')
+      .select('id, title, category, price, image_paths, sale_type, current_bid, starting_bid')
+      .eq('status', 'published')
+      .order('created_at', { ascending: false })
+      .limit(24)
 
-  let live = error ? [] : (data || []).map(mapListing)
-  live = shuffleItems(live)
+    if (error) {
+      const fallback = await supabase
+        .from('listings')
+        .select('id, title, category, price, image_paths')
+        .eq('status', 'published')
+        .order('created_at', { ascending: false })
+        .limit(24)
+      data = fallback.data
+      error = fallback.error
+    }
 
-  const target = 8
-  let items = live.slice(0, target)
+    let live = error ? [] : (data || []).map(mapListing)
+    live = shuffleItems(live)
 
-  if (items.length < target) {
-    const need = target - items.length
-    const samples = shuffleItems(HOME_BROWSE_SAMPLES).slice(0, need).map(mapSample)
-    items = shuffleItems([...items, ...samples])
-    usingSamples.value = items.some((i) => i.isSample)
-  } else {
-    usingSamples.value = false
+    const target = 8
+    let items = live.slice(0, target)
+
+    if (items.length < target) {
+      const need = target - items.length
+      const samples = shuffleItems(HOME_BROWSE_SAMPLES).slice(0, need).map(mapSample)
+      items = shuffleItems([...items, ...samples])
+      usingSamples.value = items.some((i) => i.isSample)
+    } else {
+      usingSamples.value = false
+    }
+
+    displayItems.value = items
+  } catch {
+    displayItems.value = buildSampleItems()
+    usingSamples.value = true
   }
-
-  displayItems.value = items
-  loading.value = false
 }
 
 onMounted(() => {

@@ -69,6 +69,12 @@ html.nuxt-ready #fss-static-boot,html.nuxt-ready #fss-static-boot-style,html.nux
 .fss-static-footer a{color:#ffd84d;text-decoration:none}
 .fss-static-footer a:hover{text-decoration:underline}
 .fss-static-tag{margin:.5rem 0 0;font-size:.75rem;opacity:.7}
+.fss-static-actions{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 1rem}
+.fss-static-btn{display:inline-block;padding:10px 18px;border-radius:10px;font-weight:700;text-decoration:none;border:1px solid rgba(255,255,255,.25);color:#fff}
+.fss-static-btn-primary{background:linear-gradient(135deg,#c9a84c,#ffd84d);color:#0c0619;border-color:transparent}
+.fss-static-preview{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 1rem}
+.fss-static-preview a{display:block;border-radius:12px;overflow:hidden;border:2px solid rgba(201,168,76,.45)}
+.fss-static-preview img{display:block;width:120px;height:120px;object-fit:cover}
 </style>`
 
 // Build the visible body block for a given route.
@@ -178,7 +184,14 @@ function fallbackForRoute (route) {
       body = `
       <p class="fss-static-ribbon">Proof-first marketplace. <span>Live floor energy.</span></p>
       <h1 class="fss-static-h1"><span class="fss-s1">If it is here,</span> <span class="fss-s2">it is real.</span></h1>
-      <p class="fss-static-sub">The authenticity-first collectibles and gear marketplace. Every listing backed by a Certificate of Authenticity or signed in-platform guarantee. The full app with gallery and motion loads next (JavaScript required).</p>
+      <p class="fss-static-sub">The authenticity-first collectibles and gear marketplace. Every listing backed by a Certificate of Authenticity or signed in-platform guarantee.</p>
+      <p class="fss-static-actions"><a class="fss-static-btn fss-static-btn-primary" href="/browse">Browse marketplace</a> <a class="fss-static-btn" href="/auth/register">Join free</a></p>
+      <div class="fss-static-preview" aria-label="Sample listings">
+        <a href="/browse"><img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=320&amp;h=320&amp;fit=crop&amp;q=80" alt="Watches" width="120" height="120" loading="lazy" /></a>
+        <a href="/browse"><img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=320&amp;h=320&amp;fit=crop&amp;q=80" alt="Sneakers" width="120" height="120" loading="lazy" /></a>
+        <a href="/browse"><img src="https://images.unsplash.com/photo-1516924962504-8b5545432ca2?w=320&amp;h=320&amp;fit=crop&amp;q=80" alt="Instruments" width="120" height="120" loading="lazy" /></a>
+        <a href="/browse"><img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=320&amp;h=320&amp;fit=crop&amp;q=80" alt="Collectibles" width="120" height="120" loading="lazy" /></a>
+      </div>
       <p class="fss-static-sub"><strong>Founder is reachable:</strong> Charles Franks reads feedback personally &mdash; <a href="/open-door" style="color:#ffd84d;font-weight:600">Open Door Policy</a>.</p>
       ${contactBlock}`
       break

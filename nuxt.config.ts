@@ -95,13 +95,11 @@ export default defineNuxtConfig({
       ],
     },
     workbox: {
-      globPatterns: ['**/*.{js,css,html,png,svg,ico,json,woff2,webmanifest}'],
-      // Force a newly built SW to take over immediately, so users do not
-      // get stuck on a stale cached bundle after a deploy. Without these
-      // two flags, the old SW keeps serving old JS to open tabs until
-      // every tab is closed -- which looks like "site shows new content
-      // for a second then reverts to the old version."
+      // Do not precache HTML — stale index.html pins users to old JS chunk hashes after deploy.
+      globPatterns: ['**/*.{js,css,png,svg,ico,json,woff2,webmanifest,jpg,jpeg,webp}'],
+      globIgnores: ['**/node_modules/**'],
       skipWaiting: true,
+      clientsClaim: true,
       cleanupOutdatedCaches: true,
       runtimeCaching: [
         {
