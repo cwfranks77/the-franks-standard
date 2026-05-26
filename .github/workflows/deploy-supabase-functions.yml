@@ -34,5 +34,7 @@ jobs:
           npx supabase@latest functions deploy place-bid
           npx supabase@latest functions deploy redeem-promo-code
           npx supabase@latest functions deploy promo-availability
+          npx supabase@latest functions deploy import-ebay-csv
+          npx supabase@latest functions deploy log-admin-lead
           npx supabase@latest functions deploy inventory-source-dispatch --no-verify-jwt
           npx supabase@latest functions deploy inventory-source-webhook --no-verify-jwt
