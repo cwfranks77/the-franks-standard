@@ -31,6 +31,8 @@
           <NuxtLink to="/sell" class="btn btn-primary btn-lg">Sell an Item (Free)</NuxtLink>
           <NuxtLink to="/sell/dropship-setup" class="btn btn-primary btn-lg">Dropship Setup</NuxtLink>
           <NuxtLink to="/ops/dropship" class="btn btn-primary btn-lg">Dropship Automation</NuxtLink>
+          <NuxtLink to="/ops/ebay-import" class="btn btn-primary btn-lg">Import eBay CSV</NuxtLink>
+          <NuxtLink to="/ops/leads" class="btn btn-primary btn-lg">Seller Leads</NuxtLink>
           <NuxtLink to="/sell?mode=direct" class="btn btn-outline btn-lg">Direct Sale Setup</NuxtLink>
           <NuxtLink to="/store-builder" class="btn btn-outline btn-lg">AI Store Builder</NuxtLink>
           <NuxtLink to="/sellers" class="btn btn-outline btn-lg">Seller Program</NuxtLink>
@@ -99,6 +101,8 @@
             <li><NuxtLink to="/compare">How we compare</NuxtLink></li>
             <li><NuxtLink to="/contact">Contact</NuxtLink></li>
             <li><NuxtLink to="/ops/dropship"><strong>Dropship automation</strong></NuxtLink></li>
+            <li><NuxtLink to="/ops/ebay-import"><strong>Import eBay CSV</strong></NuxtLink></li>
+            <li><NuxtLink to="/ops/leads"><strong>Seller lead logger</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/ads"><strong>Social Media Ads</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/marketing"><strong>Marketing &amp; get found</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/status"><strong>Transaction readiness</strong></NuxtLink></li>
