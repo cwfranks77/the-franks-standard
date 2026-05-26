@@ -363,9 +363,10 @@ async function runChannel (key, fn) {
 
 async function notifyOwner (campaignLabel) {
   const token = process.env.TELEGRAM_BOT_TOKEN
-  const chatId = process.env.TELEGRAM_NOTIFY_CHAT_ID || process.env.TELEGRAM_CHANNEL_ID
+  // Only DM the owner — never post this status report to TELEGRAM_CHANNEL_ID (public ad channel).
+  const chatId = process.env.TELEGRAM_NOTIFY_CHAT_ID
   if (!token || !chatId) {
-    console.log('[notify] Skip: set TELEGRAM_NOTIFY_CHAT_ID in GitHub secrets for post alerts on your phone.')
+    console.log('[notify] Skip: set TELEGRAM_NOTIFY_CHAT_ID (your private chat with the bot) — not sent to the public channel.')
     return
   }
   const lines = [
