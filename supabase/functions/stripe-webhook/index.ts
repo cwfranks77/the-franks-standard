@@ -12,17 +12,40 @@ async function handleCheckoutCompleted (session: {
   client_reference_id?: string | null
   amount_total?: number | null
   total_details?: { amount_tax?: number | null } | null
+  customer_details?: {
+    email?: string | null
+    name?: string | null
+    address?: {
+      line1?: string | null
+      line2?: string | null
+      city?: string | null
+      state?: string | null
+      postal_code?: string | null
+      country?: string | null
+    } | null
+  } | null
 }) {
   const orderId = session.metadata?.order_id ?? session.client_reference_id ?? ''
   if (!orderId) return
 
   const totals = paidTotalsFromSession(session)
+  const addr = session.customer_details?.address
   await markOrderPaid(admin, {
     orderId,
     sessionId: session.id,
     paymentIntentId: totals.paymentIntentId,
     taxAmount: totals.taxAmount,
     totalPaid: totals.totalPaid,
+    buyerEmail: session.customer_details?.email ?? null,
+    buyerName: session.customer_details?.name ?? null,
+    shippingAddress: addr ? {
+      line1: addr.line1,
+      line2: addr.line2,
+      city: addr.city,
+      state: addr.state,
+      postal_code: addr.postal_code,
+      country: addr.country,
+    } : null,
   })
 }
 
