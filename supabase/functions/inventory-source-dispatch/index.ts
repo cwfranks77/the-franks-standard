@@ -1,4 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
+import { transferDropshipSupplierPortion } from '../_shared/dropshipStripeSplit.ts'
+import { stripeClient } from '../_shared/stripe.ts'
 
 type DispatchRow = {
   id: string
@@ -285,6 +287,11 @@ Deno.serve(async (req) => {
           credential_source: credentialSource,
           provider_response: parsed,
         },
+      })
+
+      const stripe = stripeClient()
+      await transferDropshipSupplierPortion(supabase, stripe, row.order_id).catch((e) => {
+        console.error('dropship supplier transfer', row.order_id, e instanceof Error ? e.message : e)
       })
 
       submitted.push(row.id)

@@ -83,6 +83,7 @@ export function getAiReply (message: string): string {
       '3. Create a listing with **Dropship** mode and enter supplier name, contact, and SKU per item\n' +
       '4. COA or guarantee still required — you are responsible for what your supplier ships\n\n' +
       'When a buyer pays, we queue order details for you (or auto-forward if you connected your own API keys).\n\n' +
+      '**Stripe split (dropship):** buyer pays list price → platform fee kept → supplier wholesale released when you ship → your margin released when buyer confirms.\n\n' +
       'Dropship fees are the same as direct sale fees.'
   }
 

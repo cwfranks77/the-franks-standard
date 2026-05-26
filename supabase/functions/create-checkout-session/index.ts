@@ -1,5 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
-import { calcFees, corsHeaders, json, siteUrl, stripeClient } from '../_shared/stripe.ts'
+import { calcDropshipSplit, calcFees, corsHeaders, json, siteUrl, stripeClient } from '../_shared/stripe.ts'
 import { marketplaceListingTaxOptions, stripeTaxEnabled, TAX_CODE_TANGIBLE } from '../_shared/stripeTax.ts'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
@@ -38,7 +38,7 @@ Deno.serve(async (req) => {
 
     const { data: listing, error: listingError } = await admin
       .from('listings')
-      .select('id, title, price, status, seller_id, donate_proceeds, charity_key, charity_name, sale_type, starting_bid, current_bid, current_bidder_id, reserve_price, auction_ends_at')
+      .select('id, title, price, status, seller_id, listing_mode, dropship_wholesale_cost, donate_proceeds, charity_key, charity_name, sale_type, starting_bid, current_bid, current_bidder_id, reserve_price, auction_ends_at')
       .eq('id', listingId)
       .eq('status', 'published')
       .maybeSingle()
@@ -112,10 +112,36 @@ Deno.serve(async (req) => {
     }
 
     const isCharitySale = !!(listing.donate_proceeds && listing.charity_key)
-    const { platformFee, sellerPayout, platformFeeCents } = calcFees(amount, sellerProfile?.seller_tier)
-    const amountCents = Math.round(amount * 100)
-    const orderPlatformFee = isCharitySale ? 0 : platformFee
-    const orderSellerPayout = isCharitySale ? 0 : sellerPayout
+    const isDropship = String(listing.listing_mode || '').toLowerCase() === 'dropship'
+    const wholesaleCost = isDropship ? Number(listing.dropship_wholesale_cost) || 0 : 0
+
+    if (isDropship && wholesaleCost <= 0) {
+      return json({ error: 'dropship_wholesale_cost_required' }, 400)
+    }
+
+    let orderPlatformFee: number
+    let orderSellerPayout: number
+    let orderSupplierCost = 0
+    let orderSellerMargin: number | null = null
+
+    if (isCharitySale) {
+      orderPlatformFee = 0
+      orderSellerPayout = 0
+    } else if (isDropship) {
+      const split = calcDropshipSplit(amount, wholesaleCost, sellerProfile?.seller_tier)
+      if (split.sellerMargin <= 0) {
+        return json({ error: 'dropship_margin_too_low', detail: 'Wholesale cost is too high for this list price.' }, 400)
+      }
+      orderPlatformFee = split.platformFee
+      orderSupplierCost = split.supplierCost
+      orderSellerMargin = split.sellerMargin
+      orderSellerPayout = split.sellerMargin
+    } else {
+      const { platformFee, sellerPayout } = calcFees(amount, sellerProfile?.seller_tier)
+      orderPlatformFee = platformFee
+      orderSellerPayout = sellerPayout
+    }
+
     const orderCharityAmount = isCharitySale ? amount : null
 
     const { data: order, error: orderError } = await admin
@@ -127,6 +153,9 @@ Deno.serve(async (req) => {
         amount,
         platform_fee: orderPlatformFee,
         seller_payout: orderSellerPayout,
+        listing_mode: isDropship ? 'dropship' : (listing.listing_mode || 'direct'),
+        supplier_cost: orderSupplierCost,
+        seller_margin: orderSellerMargin,
         currency: 'usd',
         status: 'pending',
         escrow_status: 'none',
@@ -144,8 +173,12 @@ Deno.serve(async (req) => {
       return json({ error: 'order_create_failed', detail: orderError?.message }, 500)
     }
 
+    const amountCents = Math.round(amount * 100)
+    const platformFeeCents = Math.round(orderPlatformFee * 100)
+
     const base = siteUrl()
-    const useConnect = !isCharitySale
+    // Dropship: full payment on platform (escrow) then split via transfers on ship + confirm.
+    const useConnect = !isCharitySale && !isDropship
       && !!(sellerProfile?.stripe_account_id && sellerProfile?.stripe_charges_enabled)
 
     const sessionParams: Parameters<typeof stripe.checkout.sessions.create>[0] = {
@@ -175,6 +208,7 @@ Deno.serve(async (req) => {
         listing_id: listing.id,
         buyer_id: user.id,
         seller_id: listing.seller_id,
+        listing_mode: isDropship ? 'dropship' : 'direct',
         donate_to_charity: isCharitySale ? 'true' : 'false',
         charity_key: isCharitySale ? String(listing.charity_key) : '',
         charity_name: isCharitySale ? String(listing.charity_name ?? '') : '',
@@ -221,6 +255,11 @@ Deno.serve(async (req) => {
       connect_payout: connectCheckout,
       charity_sale: isCharitySale,
       charity_name: isCharitySale ? listing.charity_name : null,
+      dropship_split: isDropship ? {
+        platform_fee: orderPlatformFee,
+        supplier_cost: orderSupplierCost,
+        seller_margin: orderSellerMargin,
+      } : null,
     })
   } catch (e) {
     const message = e instanceof Error ? e.message : 'checkout_failed'

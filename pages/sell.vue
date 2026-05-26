@@ -270,8 +270,24 @@
               <input class="input" type="email" v-model="dropship.supplierEmail" placeholder="supplier@example.com" />
             </div>
 
-            <div class="form-group">
-              <label class="label">Supplier SKU / product code</label>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="label">Your wholesale cost ($)</label>
+                <input
+                  class="input"
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  v-model="dropship.wholesaleCost"
+                  required
+                  placeholder="What you pay your supplier"
+                />
+                <p class="text-muted small mt-1">
+                  Stripe splits payment: platform fee, this supplier cost (released when you ship), and your margin (on buyer confirm).
+                </p>
+              </div>
+              <div class="form-group">
+                <label class="label">Supplier SKU / product code</label>
               <input
                 class="input"
                 v-model="dropship.supplierSku"
@@ -281,6 +297,7 @@
               <p v-if="dropshipNeedsSku" class="text-muted small mt-1">
                 Required for auto-dispatch with your Doba account. Otherwise optional but helps you fulfill faster.
               </p>
+              </div>
             </div>
 
             <div class="form-row">
@@ -462,6 +479,7 @@ const dropship = reactive({
   supplierName: '',
   supplierEmail: '',
   supplierSku: '',
+  wholesaleCost: '',
   shipTime: '',
   shipsFrom: '',
 })
@@ -682,6 +700,18 @@ async function submitListing() {
     alert('Integrated Doba listings require a Supplier SKU before publishing.')
     return
   }
+  if (listingMode.value === 'dropship') {
+    const wholesale = Number(dropship.wholesaleCost)
+    const price = Number(form.price)
+    if (!Number.isFinite(wholesale) || wholesale <= 0) {
+      alert('Enter your wholesale cost (what you pay the supplier).')
+      return
+    }
+    if (Number.isFinite(price) && wholesale >= price) {
+      alert('Wholesale cost must be less than your list price so you have margin after fees.')
+      return
+    }
+  }
   if (charity.donateProceeds && !charity.key) {
     alert('Choose a charity or turn off "Donate sale proceeds".')
     return
@@ -760,6 +790,7 @@ async function submitListing() {
         dropship_supplier_name: dropship.supplierName.trim() || null,
         dropship_supplier_email: dropship.supplierEmail.trim() || null,
         dropship_supplier_sku: dropship.supplierSku.trim() || null,
+        dropship_wholesale_cost: Number(dropship.wholesaleCost) || null,
         dropship_ship_time: dropship.shipTime || null,
         dropship_ships_from: dropship.shipsFrom.trim() || null,
       })

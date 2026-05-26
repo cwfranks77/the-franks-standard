@@ -1,5 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
-import { transferDropshipSellerMargin } from '../_shared/dropshipStripeSplit.ts'
+import { transferDropshipSupplierPortion } from '../_shared/dropshipStripeSplit.ts'
 import { corsHeaders, json, stripeClient } from '../_shared/stripe.ts'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
@@ -37,63 +37,38 @@ Deno.serve(async (req) => {
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, { auth: { persistSession: false } })
     const { data: order, error: orderError } = await admin
       .from('orders')
-      .select('id, buyer_id, seller_id, status, escrow_status, seller_payout, seller_margin, listing_mode, stripe_payment_intent_id, stripe_seller_transfer_id, connect_checkout')
+      .select('id, seller_id, status, listing_mode')
       .eq('id', orderId)
       .maybeSingle()
 
     if (orderError || !order) {
       return json({ error: 'order_not_found' }, 404)
     }
-    if (order.buyer_id !== user.id) {
+    if (order.seller_id !== user.id) {
       return json({ error: 'forbidden' }, 403)
     }
-    if (!['paid', 'shipped', 'delivered'].includes(order.status)) {
-      return json({ error: 'order_not_ready_to_confirm' }, 400)
-    }
-
-    if (!order.connect_checkout) {
-      const stripe = stripeClient()
-      const isDropship = String(order.listing_mode || '').toLowerCase() === 'dropship'
-
-      if (isDropship) {
-        await transferDropshipSellerMargin(admin, stripe, orderId)
-      } else if (order.stripe_payment_intent_id) {
-        const { data: sellerProfile } = await admin
-          .from('profiles')
-          .select('stripe_account_id')
-          .eq('id', order.seller_id)
-          .maybeSingle()
-
-        if (sellerProfile?.stripe_account_id) {
-          const payoutCents = Math.round(Number(order.seller_payout) * 100)
-          if (payoutCents > 0) {
-            await stripe.transfers.create({
-              amount: payoutCents,
-              currency: 'usd',
-              destination: sellerProfile.stripe_account_id,
-              metadata: { order_id: order.id },
-            })
-          }
-        }
-      }
+    if (order.status !== 'paid') {
+      return json({ error: 'order_not_ready_to_ship' }, 400)
     }
 
     const { error: updateError } = await admin
       .from('orders')
-      .update({
-        status: 'confirmed',
-        escrow_status: 'released',
-        confirmed_at: new Date().toISOString(),
-      })
+      .update({ status: 'shipped', shipped_at: new Date().toISOString() })
       .eq('id', orderId)
 
     if (updateError) {
       return json({ error: 'update_failed', detail: updateError.message }, 500)
     }
 
-    return json({ ok: true, status: 'confirmed' })
+    let supplierTransfer = null
+    if (String(order.listing_mode || '').toLowerCase() === 'dropship') {
+      const stripe = stripeClient()
+      supplierTransfer = await transferDropshipSupplierPortion(admin, stripe, orderId)
+    }
+
+    return json({ ok: true, status: 'shipped', supplier_transfer: supplierTransfer })
   } catch (e) {
-    const message = e instanceof Error ? e.message : 'confirm_failed'
+    const message = e instanceof Error ? e.message : 'mark_shipped_failed'
     return json({ error: message }, 500)
   }
 })

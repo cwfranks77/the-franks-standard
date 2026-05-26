@@ -125,11 +125,20 @@ function fallbackForRoute (route) {
       ${contactBlock}`
       break
     case '/sell':
-    case '/sellers':
+    case '/sell/dropship-setup':
       body = `
       <p class="fss-static-ribbon">Sell with proof</p>
-      <h1 class="fss-static-h1"><span class="fss-s1">List with</span> <span class="fss-s2">proof.</span></h1>
-      <p class="fss-static-sub">Upload a Certificate of Authenticity or sign the in-platform guarantee. No fakes. Zero tolerance. Sellers keep more &mdash; fair fees.</p>
+      <h1 class="fss-static-h1"><span class="fss-s1">${route === '/sell/dropship-setup' ? 'Dropship' : 'List with'}</span> <span class="fss-s2">${route === '/sell/dropship-setup' ? 'setup' : 'proof.'}</span></h1>
+      <p class="fss-static-sub">${route === '/sell/dropship-setup'
+    ? 'Choose your own supplier. We walk you through setup and Stripe splits payment: platform fee, supplier cost, and your margin.'
+    : 'Upload a Certificate of Authenticity or sign the in-platform guarantee. No fakes. Zero tolerance. Sellers keep more &mdash; fair fees.'}</p>
+      ${contactBlock}`
+      break
+    case '/sellers':
+      body = `
+      <p class="fss-static-ribbon">For stores &amp; volume sellers</p>
+      <h1 class="fss-static-h1"><span class="fss-s1">Sell on</span> <span class="fss-s2">The Franks Standard</span></h1>
+      <p class="fss-static-sub">Apply to list authenticity-backed inventory. Same COA or guarantee rules. Fair fees and Stripe payouts.</p>
       ${contactBlock}`
       break
     case '/browse':

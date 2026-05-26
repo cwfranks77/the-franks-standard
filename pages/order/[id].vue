@@ -21,6 +21,14 @@
           <strong>Total paid:</strong> ${{ Number(order.total_paid).toLocaleString() }} USD
         </p>
         <p v-if="order.platform_fee != null"><strong>Platform fee:</strong> ${{ Number(order.platform_fee).toLocaleString() }}</p>
+        <div v-if="order.listing_mode === 'dropship'" class="dropship-split">
+          <p><strong>Dropship payment split</strong></p>
+          <p v-if="order.supplier_cost != null"><strong>Supplier cost (on ship):</strong> ${{ Number(order.supplier_cost).toLocaleString() }}</p>
+          <p v-if="order.seller_margin != null"><strong>Your margin (on confirm):</strong> ${{ Number(order.seller_margin).toLocaleString() }}</p>
+          <p v-if="order.stripe_supplier_transfer_id" class="text-muted small">Supplier portion transferred: {{ order.stripe_supplier_transfer_id.slice(0, 16) }}…</p>
+          <p v-if="order.stripe_seller_transfer_id" class="text-muted small">Margin transferred: {{ order.stripe_seller_transfer_id.slice(0, 16) }}…</p>
+        </div>
+        <p v-else-if="order.seller_payout != null"><strong>Seller payout:</strong> ${{ Number(order.seller_payout).toLocaleString() }}</p>
         <p><strong>Escrow:</strong> {{ escrowLabel(order.escrow_status) }}</p>
         <p class="text-muted small">Placed {{ formatDate(order.created_at) }}</p>
         <p v-if="order.paid_at" class="text-muted small">Paid {{ formatDate(order.paid_at) }}</p>
@@ -122,12 +130,18 @@ async function confirmReceipt () {
 
 async function markShipped () {
   shipping.value = true
-  const { error } = await supabase
-    .from('orders')
-    .update({ status: 'shipped', shipped_at: new Date().toISOString() })
-    .eq('id', order.value.id)
-  shipping.value = false
-  if (!error) await load()
+  try {
+    const { data, error } = await supabase.functions.invoke('mark-order-shipped', {
+      body: { order_id: order.value.id },
+    })
+    if (error) throw new Error(error.message)
+    if (data?.error) throw new Error(String(data.error))
+    await load()
+  } catch (e) {
+    console.error('[mark shipped]', e)
+  } finally {
+    shipping.value = false
+  }
 }
 
 onMounted(load)
@@ -148,5 +162,10 @@ watch(() => route.params.id, load)
 }
 .order-card a { color: var(--gold); font-weight: 600; }
 .order-actions { margin-top: 16px; }
+.dropship-split {
+  margin-top: 12px; padding: 12px 14px; border-radius: var(--radius);
+  background: #effbff; border: 1px solid #9fd9ff; font-size: 0.92rem;
+}
+.dropship-split p { margin: 4px 0; }
 .error-text { color: #b91c1c; font-size: 0.9rem; margin-top: 8px; }
 </style>

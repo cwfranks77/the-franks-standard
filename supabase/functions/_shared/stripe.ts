@@ -42,3 +42,19 @@ export function calcFees (amountUsd: number, sellerTier?: string | null) {
   const sellerPayout = Math.round((amountUsd - platformFee) * 100) / 100
   return { platformFee, sellerPayout, platformFeeCents: Math.round(platformFee * 100), feeBps: bps }
 }
+
+/** Dropship: retail = platform fee + supplier wholesale + seller margin. */
+export function calcDropshipSplit (amountUsd: number, wholesaleUsd: number, sellerTier?: string | null) {
+  const { platformFee, platformFeeCents, feeBps } = calcFees(amountUsd, sellerTier)
+  const maxWholesale = Math.max(0, amountUsd - platformFee - 0.01)
+  const supplierCost = Math.round(Math.min(Math.max(0, wholesaleUsd), maxWholesale) * 100) / 100
+  const sellerMargin = Math.round((amountUsd - platformFee - supplierCost) * 100) / 100
+  return {
+    platformFee,
+    platformFeeCents,
+    feeBps,
+    supplierCost,
+    sellerMargin,
+    sellerPayout: sellerMargin,
+  }
+}
