@@ -30,7 +30,8 @@
     "deploy:gh-pages": "npm run generate && npx --yes gh-pages@6.2.0 -d .output/public -t -m \"chore(gh-pages): static deploy\"",
     "stripe:webhook": "node scripts/wire-stripe-webhook.cjs",
     "stripe:reconcile": "node scripts/reconcile-stripe-orders.cjs",
-    "health": "node scripts/health-check.cjs"
+    "health": "node scripts/health-check.cjs",
+    "mail:test": "node scripts/test-mailbox.cjs"
   },
   "dependencies": {
     "@nuxtjs/supabase": "^2.0.6",

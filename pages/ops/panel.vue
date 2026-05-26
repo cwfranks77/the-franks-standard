@@ -42,6 +42,7 @@
           <NuxtLink to="/browse" class="btn btn-dark btn-lg">Browse Floor</NuxtLink>
           <NuxtLink to="/ops/status" class="btn btn-dark btn-lg">Transaction readiness</NuxtLink>
           <NuxtLink to="/ops/test-checkout" class="btn btn-primary btn-lg">Run QA tests</NuxtLink>
+          <NuxtLink to="/ops/mail-setup" class="btn btn-outline btn-lg">Fix info@ on phone</NuxtLink>
         </div>
         <div class="free-access-perks">
           <div class="perk-item"><span class="perk-check">✓</span> Listing fees waived</div>
