@@ -6,7 +6,8 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "nuxt generate && node scripts/inject-spa-fallback.cjs && node scripts/finish-pwa.cjs",
+    "build": "nuxt generate && node scripts/inject-spa-fallback.cjs && node scripts/finish-pwa.cjs && npm run build:ebay-migration",
+    "build:ebay-migration": "tsc scripts/ebay-csv-migration-service.ts --outDir dist/migration --target ES2022 --module NodeNext --moduleResolution NodeNext --esModuleInterop --skipLibCheck",
     "dev": "nuxt dev",
     "generate": "npm run build",
     "preview": "nuxt preview",
@@ -31,17 +32,24 @@
     "stripe:webhook": "node scripts/wire-stripe-webhook.cjs",
     "stripe:reconcile": "node scripts/reconcile-stripe-orders.cjs",
     "health": "node scripts/health-check.cjs",
-    "mail:test": "node scripts/test-mailbox.cjs"
+    "mail:test": "node scripts/test-mailbox.cjs",
+    "migrate:ebay-csv": "npm run build:ebay-migration && node dist/migration/ebay-csv-migration-service.js"
   },
   "dependencies": {
     "@nuxtjs/supabase": "^2.0.6",
     "@stripe/stripe-js": "^5.5.0",
+    "csv-parse": "^6.2.1",
+    "express": "^5.2.1",
+    "multer": "^2.1.1",
     "nuxt": "^3.16.0",
     "vue": "^3.5.0",
     "vue-router": "^4.5.0"
   },
   "devDependencies": {
     "@nuxt/devtools": "^2.3.0",
+    "@types/express": "^5.0.6",
+    "@types/multer": "^2.1.0",
+    "@types/node": "^25.9.1",
     "@vite-pwa/nuxt": "^1.1.1",
     "axios": "^1.7.0",
     "dotenv": "^16.4.0",
