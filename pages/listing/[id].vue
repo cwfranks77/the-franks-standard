@@ -337,7 +337,7 @@ async function load() {
 
   const { data, error } = await supabase
     .from('listings')
-    .select('id, title, description, category, price, condition, coa_type, guarantee_signed, seller_legal_name, image_paths, status, created_at, seller_id, donate_proceeds, charity_key, charity_name, sale_type, starting_bid, current_bid, current_bidder_id, bid_increment, bid_count, reserve_price, auction_ends_at, seller:profiles(full_name, created_at)')
+    .select('id, title, description, category, price, condition, coa_type, guarantee_signed, seller_legal_name, image_paths, status, created_at, seller_id, donate_proceeds, charity_key, charity_name, sale_type, starting_bid, current_bid, current_bidder_id, bid_increment, bid_count, reserve_price, auction_ends_at, seller:profiles!listings_seller_id_fkey(full_name, created_at)')
     .eq('id', id)
     .eq('status', 'published')
     .maybeSingle()

@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
 
     const { data: sellerProfile } = await admin
       .from('profiles')
-      .select('stripe_account_id, stripe_charges_enabled')
+      .select('stripe_account_id, stripe_charges_enabled, seller_tier')
       .eq('id', listing.seller_id)
       .maybeSingle()
 
@@ -80,7 +80,7 @@ Deno.serve(async (req) => {
     }
 
     const isCharitySale = !!(listing.donate_proceeds && listing.charity_key)
-    const { platformFee, sellerPayout, platformFeeCents } = calcFees(amount)
+    const { platformFee, sellerPayout, platformFeeCents } = calcFees(amount, sellerProfile?.seller_tier)
     const amountCents = Math.round(amount * 100)
     const orderPlatformFee = isCharitySale ? 0 : platformFee
     const orderSellerPayout = isCharitySale ? 0 : sellerPayout

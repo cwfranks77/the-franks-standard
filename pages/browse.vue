@@ -105,7 +105,7 @@ async function loadListings() {
   loadError.value = ''
   const { data, error } = await supabase
     .from('listings')
-    .select('id, title, category, price, condition, coa_type, image_paths, created_at, donate_proceeds, charity_name, sale_type, current_bid, starting_bid, auction_ends_at, seller:profiles(full_name)')
+    .select('id, title, category, price, condition, coa_type, image_paths, created_at, donate_proceeds, charity_name, sale_type, current_bid, starting_bid, auction_ends_at, seller:profiles!listings_seller_id_fkey(full_name)')
 
     .eq('status', 'published')
     .order('created_at', { ascending: false })

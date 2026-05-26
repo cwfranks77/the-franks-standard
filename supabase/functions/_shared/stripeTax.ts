@@ -1,5 +1,4 @@
 /** Stripe Tax at checkout — always from buyer billing address. */
-
 export const TAX_CODE_TANGIBLE = 'txcd_99999999'
 export const TAX_CODE_SERVICES = 'txcd_20030000'
 
@@ -25,7 +24,6 @@ function checkoutTaxOptions () {
   }
 }
 
-/** Listing purchases and platform fees — tax from billing address. */
 export function marketplaceListingTaxOptions () {
   return checkoutTaxOptions()
 }

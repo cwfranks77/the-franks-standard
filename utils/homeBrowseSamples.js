@@ -1,4 +1,4 @@
-/** Fallback marketplace tiles — local niche art first, no prices on samples. */
+/** Category preview tiles — local niche art only (no stock photos). */
 export const HOME_BROWSE_SAMPLES = [
   {
     id: 'sample-guitar',
@@ -28,39 +28,47 @@ export const HOME_BROWSE_SAMPLES = [
     id: 'sample-sneaker',
     title: 'Authenticated deadstock',
     category: 'Sneakers & Streetwear',
-    image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=640&h=640&fit=crop&q=85&auto=format',
+    image: '/img/reel-sneakers.svg',
   },
   {
     id: 'sample-art',
     title: 'Gallery estate piece',
     category: 'Art & Antiques',
-    image: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b89a?w=640&h=640&fit=crop&q=85&auto=format',
+    image: '/img/reel-art.svg',
   },
   {
     id: 'sample-camera',
     title: 'Film body + glass',
     category: 'Photography & Film Gear',
-    image: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=640&h=640&fit=crop&q=85&auto=format',
+    image: '/img/reel-camera.svg',
   },
   {
     id: 'sample-retro',
     title: 'Sealed retro hardware',
     category: 'Vintage Electronics & Games',
-    image: 'https://images.unsplash.com/photo-1486401899862-58a69294a4d7?w=640&h=640&fit=crop&q=85&auto=format',
+    image: '/img/reel-vintage.svg',
+  },
+  {
+    id: 'sample-estate',
+    title: 'Estate desk find',
+    category: 'Home & Estate Collectibles',
+    image: '/img/reel-estate.svg',
   },
 ]
 
-/** When a live listing has no photo yet, pick art that matches the category. */
+/** When a listing has no photo, pick art that matches the category. */
 export const CATEGORY_FALLBACK_IMAGE = {
   'Musical Instruments': '/img/reel-guitars.svg',
   'Watches & Jewelry': '/img/reel-watches.svg',
   'Sports Cards & Memorabilia': '/img/reel-cards.svg',
   'Trading Card Games (Pokemon, MTG, etc.)': '/img/reel-cards.svg',
   'Coins & Currency': '/img/reel-coins.svg',
-  'Sneakers & Streetwear': HOME_BROWSE_SAMPLES.find((s) => s.id === 'sample-sneaker').image,
-  'Art & Antiques': HOME_BROWSE_SAMPLES.find((s) => s.id === 'sample-art').image,
-  'Photography & Film Gear': HOME_BROWSE_SAMPLES.find((s) => s.id === 'sample-camera').image,
-  'Vintage Electronics & Games': HOME_BROWSE_SAMPLES.find((s) => s.id === 'sample-retro').image,
+  'Sneakers & Streetwear': '/img/reel-sneakers.svg',
+  'Art & Antiques': '/img/reel-art.svg',
+  'Photography & Film Gear': '/img/reel-camera.svg',
+  'Vintage Electronics & Games': '/img/reel-vintage.svg',
+  'Home & Estate Collectibles': '/img/reel-estate.svg',
+  'Other (describe in listing)': '/img/reel-estate.svg',
 }
 
 export function shuffleItems (list) {

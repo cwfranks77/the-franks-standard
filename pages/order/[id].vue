@@ -14,6 +14,12 @@
       <div class="order-card">
         <p><strong>Listing:</strong> <NuxtLink :to="`/listing/${order.listing_id}`">{{ listingTitle }}</NuxtLink></p>
         <p><strong>Amount:</strong> ${{ Number(order.amount).toLocaleString() }} USD</p>
+        <p v-if="order.tax_amount != null && Number(order.tax_amount) > 0">
+          <strong>Sales tax:</strong> ${{ Number(order.tax_amount).toLocaleString() }}
+        </p>
+        <p v-if="order.total_paid != null && Number(order.total_paid) > 0">
+          <strong>Total paid:</strong> ${{ Number(order.total_paid).toLocaleString() }} USD
+        </p>
         <p v-if="order.platform_fee != null"><strong>Platform fee:</strong> ${{ Number(order.platform_fee).toLocaleString() }}</p>
         <p><strong>Escrow:</strong> {{ escrowLabel(order.escrow_status) }}</p>
         <p class="text-muted small">Placed {{ formatDate(order.created_at) }}</p>

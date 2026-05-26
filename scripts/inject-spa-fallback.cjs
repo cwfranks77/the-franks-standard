@@ -186,11 +186,11 @@ function fallbackForRoute (route) {
       <h1 class="fss-static-h1"><span class="fss-s1">If it is here,</span> <span class="fss-s2">it is real.</span></h1>
       <p class="fss-static-sub">The authenticity-first collectibles and gear marketplace. Every listing backed by a Certificate of Authenticity or signed in-platform guarantee.</p>
       <p class="fss-static-actions"><a class="fss-static-btn fss-static-btn-primary" href="/browse">Browse marketplace</a> <a class="fss-static-btn" href="/auth/register">Join free</a></p>
-      <div class="fss-static-preview" aria-label="Sample listings">
-        <a href="/browse"><img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=320&amp;h=320&amp;fit=crop&amp;q=80" alt="Watches" width="120" height="120" loading="lazy" /></a>
-        <a href="/browse"><img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=320&amp;h=320&amp;fit=crop&amp;q=80" alt="Sneakers" width="120" height="120" loading="lazy" /></a>
-        <a href="/browse"><img src="https://images.unsplash.com/photo-1516924962504-8b5545432ca2?w=320&amp;h=320&amp;fit=crop&amp;q=80" alt="Instruments" width="120" height="120" loading="lazy" /></a>
-        <a href="/browse"><img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=320&amp;h=320&amp;fit=crop&amp;q=80" alt="Collectibles" width="120" height="120" loading="lazy" /></a>
+      <div class="fss-static-preview" aria-label="Category preview">
+        <a href="/browse?category=Watches%20%26%20Jewelry"><img src="/img/reel-watches.svg" alt="Watches and jewelry" width="120" height="120" loading="lazy" /></a>
+        <a href="/browse?category=Sneakers%20%26%20Streetwear"><img src="/img/reel-sneakers.svg" alt="Sneakers and streetwear" width="120" height="120" loading="lazy" /></a>
+        <a href="/browse?category=Musical%20Instruments"><img src="/img/reel-guitars.svg" alt="Musical instruments" width="120" height="120" loading="lazy" /></a>
+        <a href="/browse?category=Home%20%26%20Estate%20Collectibles"><img src="/img/reel-estate.svg" alt="Home and estate collectibles" width="120" height="120" loading="lazy" /></a>
       </div>
       <p class="fss-static-sub"><strong>Founder is reachable:</strong> Charles Franks reads feedback personally &mdash; <a href="/open-door" style="color:#ffd84d;font-weight:600">Open Door Policy</a>.</p>
       ${contactBlock}`

@@ -9,8 +9,8 @@
           </p>
           <h2 id="home-browse-title" class="section-title">On the floor right now</h2>
           <p class="section-subtitle text-muted">
-            Real listings when sellers publish — every public item is COA- or guarantee-backed.
-            <span v-if="usingSamples" class="sample-note">Category examples below — tap any tile to browse that niche.</span>
+            Tap a category to browse that niche — every public listing is COA- or guarantee-backed.
+            <NuxtLink v-if="liveListingCount > 0" to="/browse" class="live-count-link">{{ liveListingCount }} live listing{{ liveListingCount === 1 ? '' : 's' }} on the floor now →</NuxtLink>
           </p>
         </div>
         <NuxtLink to="/browse" class="btn btn-primary btn-lg home-browse-cta">Browse marketplace</NuxtLink>
@@ -31,22 +31,12 @@
               loading="lazy"
               width="320"
               height="320"
-              @error="onImgError($event, item)"
             />
-            <span v-if="item.isSample" class="home-browse-sample-tag">Example</span>
-            <span v-else-if="item.saleType === 'auction'" class="home-browse-auction-tag">Auction</span>
-            <span v-else class="home-browse-coa-tag">COA / guarantee</span>
           </div>
           <div class="home-browse-meta">
             <p class="home-browse-cat">{{ item.category }}</p>
             <h3>{{ item.title }}</h3>
-            <p v-if="item.isSample" class="home-browse-sample-hint">Browse this category →</p>
-            <p v-else class="home-browse-price">
-              <template v-if="item.saleType === 'auction'">
-                {{ item.currentBid != null ? `$${formatPrice(item.currentBid)} bid` : `$${formatPrice(item.price)} start` }}
-              </template>
-              <template v-else>${{ formatPrice(item.price) }}</template>
-            </p>
+            <p class="home-browse-sample-hint">Browse this category →</p>
           </div>
         </NuxtLink>
       </div>
@@ -62,12 +52,10 @@
 <script setup>
 import {
   HOME_BROWSE_SAMPLES,
-  CATEGORY_FALLBACK_IMAGE,
   shuffleItems,
   browseLinkForCategory,
 } from '~/utils/homeBrowseSamples.js'
 
-const { publicUrlForPath } = useListingImageUrl()
 const supabase = useSupabaseClient()
 
 function buildSampleItems (count = 8) {
@@ -75,45 +63,7 @@ function buildSampleItems (count = 8) {
 }
 
 const displayItems = ref(buildSampleItems())
-const usingSamples = ref(true)
-
-function formatPrice (n) {
-  const v = Number(n)
-  if (!Number.isFinite(v)) return '—'
-  return v.toLocaleString(undefined, { maximumFractionDigits: 0 })
-}
-
-function onImgError (e, item) {
-  const el = e?.target
-  if (!el || el.dataset?.fallback) return
-  el.dataset.fallback = '1'
-  const next = item.fallbackImage || CATEGORY_FALLBACK_IMAGE[item.category] || '/img/reel-cards.svg'
-  if (el.src !== next) {
-    el.src = next
-  }
-}
-
-function mapListing (row) {
-  const saleType = row.sale_type || 'fixed'
-  const currentBid = row.current_bid != null ? Number(row.current_bid) : null
-  const category = row.category || 'Listing'
-  const imagePath = row.image_paths?.[0]
-  const image = imagePath
-    ? publicUrlForPath(imagePath)
-    : (CATEGORY_FALLBACK_IMAGE[category] || '/img/reel-cards.svg')
-  return {
-    id: row.id,
-    title: row.title,
-    category,
-    price: Number(row.price),
-    saleType,
-    currentBid,
-    image,
-    fallbackImage: CATEGORY_FALLBACK_IMAGE[category] || '/img/reel-cards.svg',
-    to: `/listing/${row.id}`,
-    isSample: false,
-  }
-}
+const liveListingCount = ref(0)
 
 function mapSample (row) {
   return {
@@ -124,50 +74,21 @@ function mapSample (row) {
   }
 }
 
-async function loadFloorPreview () {
+async function loadLiveCount () {
   try {
-    let { data, error } = await supabase
+    const { count, error } = await supabase
       .from('listings')
-      .select('id, title, category, price, image_paths, sale_type, current_bid, starting_bid')
+      .select('id', { count: 'exact', head: true })
       .eq('status', 'published')
-      .order('created_at', { ascending: false })
-      .limit(24)
-
-    if (error) {
-      const fallback = await supabase
-        .from('listings')
-        .select('id, title, category, price, image_paths')
-        .eq('status', 'published')
-        .order('created_at', { ascending: false })
-        .limit(24)
-      data = fallback.data
-      error = fallback.error
-    }
-
-    let live = error ? [] : (data || []).map(mapListing)
-    live = shuffleItems(live)
-
-    const target = 8
-    let items = live.slice(0, target)
-
-    if (items.length < target) {
-      const need = target - items.length
-      const samples = shuffleItems(HOME_BROWSE_SAMPLES).slice(0, need).map(mapSample)
-      items = shuffleItems([...items, ...samples])
-      usingSamples.value = items.some((i) => i.isSample)
-    } else {
-      usingSamples.value = false
-    }
-
-    displayItems.value = items
+    if (!error && count != null) liveListingCount.value = count
   } catch {
-    displayItems.value = buildSampleItems()
-    usingSamples.value = true
+    liveListingCount.value = 0
   }
 }
 
 onMounted(() => {
-  loadFloorPreview()
+  displayItems.value = buildSampleItems()
+  loadLiveCount()
 })
 </script>
 
@@ -221,6 +142,14 @@ onMounted(() => {
 .home-browse-head .section-title { margin-bottom: 8px; text-align: left; }
 .home-browse-head .section-subtitle { text-align: left; max-width: 560px; margin: 0; }
 .sample-note { display: block; margin-top: 6px; font-size: 0.88rem; font-style: italic; }
+.live-count-link {
+  display: block;
+  margin-top: 8px;
+  font-weight: 700;
+  color: #146eb4;
+  text-decoration: none;
+}
+.live-count-link:hover { text-decoration: underline; }
 .home-browse-cta { flex-shrink: 0; }
 .home-browse-grid {
   display: grid;
