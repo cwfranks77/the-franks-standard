@@ -77,13 +77,12 @@ export function getAiReply (message: string): string {
   if (matchAny(q, [/dropship|drop.?ship|supplier.?ship|direct.?fulfil|third.?party.?ship|wholesale.?ship/])) {
     ctx.lastTopic = 'dropship'
     return '**Dropshipping on The Franks Standard:**\n\n' +
-      'Yes, we support dropshipping! When creating a listing:\n\n' +
-      '1. Click **"Dropship"** on the sell page (instead of Direct Sale)\n' +
-      '2. Enter your **supplier name** and contact info\n' +
-      '3. Set **estimated shipping time** and origin\n' +
-      '4. A COA or guarantee is still required — you\'re responsible for authenticity\n\n' +
-      '**Important:** You are accountable for items your supplier ships. ' +
-      'If a buyer receives a counterfeit, the same zero-tolerance policy applies.\n\n' +
+      'Yes — you use **your own supplier**, not one we pick for you.\n\n' +
+      '1. Go to **Sell → Dropship setup** (`/sell/dropship-setup`) and choose any provider (Doba, Spocket, your own wholesaler, etc.)\n' +
+      '2. We walk you through account setup and manual vs optional auto-dispatch\n' +
+      '3. Create a listing with **Dropship** mode and enter supplier name, contact, and SKU per item\n' +
+      '4. COA or guarantee still required — you are responsible for what your supplier ships\n\n' +
+      'When a buyer pays, we queue order details for you (or auto-forward if you connected your own API keys).\n\n' +
       'Dropship fees are the same as direct sale fees.'
   }
 

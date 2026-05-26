@@ -82,6 +82,32 @@
       </div>
 
       <div class="dash-section mt-4">
+        <div class="dash-section-header">
+          <h2>Dropship orders to fulfill</h2>
+          <NuxtLink to="/sell/dropship-setup" class="btn btn-outline btn-sm">Dropship setup</NuxtLink>
+        </div>
+        <p v-if="!dropshipSetupComplete" class="text-muted small">
+          <NuxtLink to="/sell/dropship-setup">Complete dropship setup</NuxtLink> to choose your supplier and fulfillment mode.
+        </p>
+        <div v-if="!dropshipFulfill.length" class="empty-state text-center" style="padding: 32px;">
+          <p class="text-muted">No dropship orders waiting on you.</p>
+        </div>
+        <ul v-else class="dash-listings dropship-fulfill-list">
+          <li v-for="d in dropshipFulfill" :key="d.id" class="dropship-fulfill-row">
+            <div class="dash-listing-main">
+              <NuxtLink :to="`/order/${d.order_id}`">{{ d.listing_title || 'Order' }}</NuxtLink>
+              <span class="text-muted small">
+                {{ d.provider_status }} · SKU {{ d.supplier_sku || '—' }} · {{ formatDate(d.created_at) }}
+              </span>
+              <span v-if="d.buyer_email" class="text-muted small">Buyer: {{ d.buyer_email }}</span>
+              <span v-if="d.shipping_line" class="text-muted small">Ship to: {{ d.shipping_line }}</span>
+            </div>
+            <NuxtLink :to="`/order/${d.order_id}`" class="btn btn-primary btn-sm">Fulfill</NuxtLink>
+          </li>
+        </ul>
+      </div>
+
+      <div class="dash-section mt-4">
         <h2>Recent Orders</h2>
         <div v-if="!recentOrders.length" class="empty-state text-center" style="padding: 40px;">
           <p style="font-size: 2rem;">🛒</p>
@@ -100,6 +126,8 @@
 </template>
 
 <script setup>
+import { useSellerDropship } from '~/composables/useSellerDropship.js'
+
 definePageMeta({ layout: 'default', middleware: 'requires-auth' })
 useSeoMeta({ title: 'Dashboard - The Franks Standard' })
 
@@ -117,6 +145,9 @@ const foundingUntil = ref('')
 const honorsMember = ref(false)
 const honorsUntil = ref('')
 const honorsLabel = ref('')
+const dropshipFulfill = ref([])
+
+const { setupComplete: dropshipSetupComplete, load: loadSellerDropship } = useSellerDropship()
 
 const HONOR_LABELS = {
   veteran: ' (U.S. Military Veteran)',
@@ -161,11 +192,81 @@ function orderLabel (o) {
   return o.listing_title || `Order ${o.id.slice(0, 8)}`
 }
 
+function formatDate (iso) {
+  if (!iso) return ''
+  try {
+    return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+  } catch {
+    return iso
+  }
+}
+
+function shippingLineFromPayload (payload) {
+  if (!payload || typeof payload !== 'object') return ''
+  const addr = payload.shipping_address
+  if (!addr || typeof addr !== 'object') return ''
+  const parts = [addr.line1, addr.city, addr.state, addr.postal_code].filter(Boolean)
+  return parts.join(', ')
+}
+
+function skuFromPayload (payload) {
+  if (!payload || typeof payload !== 'object') return ''
+  const items = Array.isArray(payload.line_items) ? payload.line_items : []
+  const first = items[0]
+  if (!first || typeof first !== 'object') return ''
+  return String(first.sku || '').trim()
+}
+
+async function loadDropshipFulfill (userId) {
+  const { data, error } = await supabase
+    .from('dropship_orders')
+    .select('id, order_id, provider_status, supplier_payload, created_at, listing_id')
+    .eq('seller_id', userId)
+    .in('provider_status', ['awaiting_seller', 'manual_fulfillment'])
+    .order('created_at', { ascending: false })
+    .limit(20)
+
+  if (error) {
+    console.warn('[dashboard] dropship_orders', error.message)
+    return
+  }
+
+  const rows = data || []
+  const listingIds = [...new Set(rows.map((r) => r.listing_id).filter(Boolean))]
+  let titles = {}
+  if (listingIds.length) {
+    const { data: listings } = await supabase.from('listings').select('id, title').in('id', listingIds)
+    titles = Object.fromEntries((listings || []).map((l) => [l.id, l.title]))
+  }
+
+  const orderIds = [...new Set(rows.map((r) => r.order_id).filter(Boolean))]
+  let buyerEmails = {}
+  if (orderIds.length) {
+    const { data: orders } = await supabase.from('orders').select('id, buyer_email').in('id', orderIds)
+    buyerEmails = Object.fromEntries((orders || []).map((o) => [o.id, o.buyer_email]))
+  }
+
+  dropshipFulfill.value = rows.map((r) => ({
+    id: r.id,
+    order_id: r.order_id,
+    provider_status: r.provider_status,
+    created_at: r.created_at,
+    listing_title: titles[r.listing_id] || null,
+    buyer_email: buyerEmails[r.order_id] || r.supplier_payload?.customer?.email || null,
+    supplier_sku: skuFromPayload(r.supplier_payload),
+    shipping_line: shippingLineFromPayload(r.supplier_payload),
+  }))
+}
+
 onMounted(async () => {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) {
     return
   }
+
+  await loadSellerDropship()
+  await loadDropshipFulfill(user.id)
+
   const { data, error } = await supabase
     .from('listings')
     .select('id, title, price, status, created_at')
@@ -330,6 +431,13 @@ onMounted(async () => {
   padding: 18px 20px; border-radius: var(--radius-lg);
   border: 1px solid rgba(201, 168, 76, 0.35);
   background: rgba(201, 168, 76, 0.08);
+}
+.dropship-fulfill-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 .connect-banner p { margin: 0 0 12px; color: #1f2937; }
 </style>

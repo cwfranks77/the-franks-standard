@@ -1,6 +1,6 @@
 import { SupabaseClient } from 'npm:@supabase/supabase-js@2'
 
-const DISPATCH_PROVIDERS = new Set(['doba', 'inventory-source'])
+const INTEGRATED_PROVIDERS = new Set(['doba', 'inventory-source'])
 
 type ShippingAddress = {
   line1?: string | null
@@ -9,6 +9,34 @@ type ShippingAddress = {
   state?: string | null
   postal_code?: string | null
   country?: string | null
+}
+
+type SellerSecrets = {
+  flxpoint_api_key?: string | null
+  inventory_source_api_key?: string | null
+  doba_supplier_id?: string | null
+  doba_warehouse_id?: string | null
+}
+
+function sellerCanAutoDispatch (
+  providerKey: string,
+  fulfillmentMode: string,
+  secrets: SellerSecrets | null,
+): boolean {
+  if (fulfillmentMode !== 'integrated' || !INTEGRATED_PROVIDERS.has(providerKey)) {
+    return false
+  }
+  if (providerKey === 'doba') {
+    return !!(
+      secrets?.flxpoint_api_key?.trim()
+      && secrets?.doba_supplier_id?.trim()
+      && secrets?.doba_warehouse_id?.trim()
+    )
+  }
+  if (providerKey === 'inventory-source') {
+    return !!secrets?.inventory_source_api_key?.trim()
+  }
+  return false
 }
 
 export async function queueDropshipOrder (
@@ -24,7 +52,7 @@ export async function queueDropshipOrder (
 
   const { data: order, error: orderErr } = await admin
     .from('orders')
-    .select('id, listing_id, amount, buyer_email')
+    .select('id, listing_id, amount, buyer_email, seller_id')
     .eq('id', orderId)
     .maybeSingle()
 
@@ -48,11 +76,7 @@ export async function queueDropshipOrder (
     return { ok: true, skipped: true }
   }
 
-  const providerKey = String(listing.dropship_provider_key || '').trim()
-  if (!providerKey || !DISPATCH_PROVIDERS.has(providerKey)) {
-    console.log('queueDropshipOrder skip unsupported provider', providerKey, orderId)
-    return { ok: true, skipped: true, reason: 'unsupported_provider' }
-  }
+  const providerKey = String(listing.dropship_provider_key || 'custom').trim() || 'custom'
 
   const { data: existing } = await admin
     .from('dropship_orders')
@@ -62,6 +86,34 @@ export async function queueDropshipOrder (
 
   if (existing?.id) {
     return { ok: true, skipped: true, reason: 'already_queued' }
+  }
+
+  let fulfillmentMode = 'manual'
+  let providerStatus = 'awaiting_seller'
+  let sellerSecrets: SellerSecrets | null = null
+
+  if (order.seller_id) {
+    const { data: settings } = await admin
+      .from('seller_dropship_settings')
+      .select('fulfillment_mode, preferred_provider_key')
+      .eq('seller_id', order.seller_id)
+      .maybeSingle()
+
+    fulfillmentMode = String(settings?.fulfillment_mode || 'manual')
+
+    const { data: secrets } = await admin
+      .from('seller_dropship_secrets')
+      .select('flxpoint_api_key, inventory_source_api_key, doba_supplier_id, doba_warehouse_id')
+      .eq('seller_id', order.seller_id)
+      .maybeSingle()
+
+    sellerSecrets = secrets
+
+    if (sellerCanAutoDispatch(providerKey, fulfillmentMode, sellerSecrets)) {
+      providerStatus = 'queued'
+    } else if (fulfillmentMode === 'integrated') {
+      providerStatus = 'manual_fulfillment'
+    }
   }
 
   const email = buyerEmail || order.buyer_email || null
@@ -97,10 +149,12 @@ export async function queueDropshipOrder (
     .insert({
       order_id: orderId,
       listing_id: listing.id,
+      seller_id: order.seller_id ?? null,
       provider_key: providerKey,
       sales_channel_key: listing.dropship_sales_channel_key || 'the-franks-standard',
       supplier_payload: supplierPayload,
-      provider_status: 'queued',
+      fulfillment_mode: fulfillmentMode,
+      provider_status: providerStatus,
     })
     .select('id')
     .single()
@@ -113,9 +167,17 @@ export async function queueDropshipOrder (
   await admin.from('dropship_events').insert({
     dropship_order_id: row.id,
     order_id: orderId,
-    event_type: 'queued',
-    event_payload: { provider_key: providerKey },
+    event_type: providerStatus === 'queued' ? 'queued' : 'awaiting_seller',
+    event_payload: {
+      provider_key: providerKey,
+      fulfillment_mode: fulfillmentMode,
+      auto_dispatch: providerStatus === 'queued',
+    },
   })
 
-  return { ok: true, dropship_order_id: row.id }
+  return {
+    ok: true,
+    dropship_order_id: row.id,
+    provider_status: providerStatus,
+  }
 }

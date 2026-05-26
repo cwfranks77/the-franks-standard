@@ -29,7 +29,7 @@
         </div>
         <div class="free-access-actions">
           <NuxtLink to="/sell" class="btn btn-primary btn-lg">Sell an Item (Free)</NuxtLink>
-          <NuxtLink to="/sell?mode=dropship" class="btn btn-primary btn-lg">Dropship Setup</NuxtLink>
+          <NuxtLink to="/sell/dropship-setup" class="btn btn-primary btn-lg">Dropship Setup</NuxtLink>
           <NuxtLink to="/ops/dropship" class="btn btn-primary btn-lg">Dropship Automation</NuxtLink>
           <NuxtLink to="/sell?mode=direct" class="btn btn-outline btn-lg">Direct Sale Setup</NuxtLink>
           <NuxtLink to="/store-builder" class="btn btn-outline btn-lg">AI Store Builder</NuxtLink>

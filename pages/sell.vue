@@ -49,6 +49,20 @@
 
         <p v-if="modeNotice" class="mode-notice" role="status">{{ modeNotice }}</p>
 
+        <div v-if="listingMode === 'dropship'" class="dropship-setup-banner" role="status">
+          <template v-if="!dropshipSetupComplete">
+            <p><strong>First time dropshipping?</strong> You pick your own supplier — we walk you through setup step by step.</p>
+            <NuxtLink to="/sell/dropship-setup" class="btn btn-primary btn-sm">Start dropship setup</NuxtLink>
+          </template>
+          <template v-else>
+            <p>
+              <strong>Your setup:</strong> {{ sellerDropshipSettings?.preferred_provider_name || 'Your supplier' }}
+              · {{ sellerDropshipSettings?.fulfillment_mode === 'integrated' ? 'Auto-dispatch enabled' : 'Manual fulfillment' }}
+              <NuxtLink to="/sell/dropship-setup" class="dropship-setup-link">Edit setup</NuxtLink>
+            </p>
+          </template>
+        </div>
+
         <div class="listing-type-selector sale-format-selector">
           <button
             type="button"
@@ -207,12 +221,14 @@
           <!-- Dropship details -->
           <div v-if="listingMode === 'dropship'" class="form-section dropship-section">
             <h2>Dropship Details</h2>
-            <p class="text-muted mb-2">Provide supplier information. The buyer's address will be shared with your supplier for direct fulfillment.</p>
+            <p class="text-muted mb-2">
+              Use your own supplier (whoever you chose in setup). Per listing, add supplier contact and SKU so we can pass order details when someone buys.
+            </p>
 
             <div class="form-group">
               <label class="label">Dropship Provider</label>
               <select class="select" v-model="dropship.providerKey">
-                <option value="">Custom / Private Supplier</option>
+                <option value="">My own supplier (any company)</option>
                 <option v-for="provider in dropshipProviders" :key="provider.key" :value="provider.key">
                   {{ provider.name }}
                 </option>
@@ -255,15 +271,15 @@
             </div>
 
             <div class="form-group">
-              <label class="label">Supplier SKU (Doba / automated feeds)</label>
+              <label class="label">Supplier SKU / product code</label>
               <input
                 class="input"
                 v-model="dropship.supplierSku"
-                :required="listingMode === 'dropship' && dropship.providerKey === 'doba'"
-                placeholder="e.g. DOBA-12345"
+                :required="listingMode === 'dropship' && dropshipNeedsSku"
+                placeholder="e.g. DOBA-12345 or your supplier's item code"
               />
-              <p v-if="dropship.providerKey === 'doba'" class="text-muted small mt-1">
-                Doba automation requires a supplier SKU so order line items can be forwarded automatically.
+              <p v-if="dropshipNeedsSku" class="text-muted small mt-1">
+                Required for auto-dispatch with your Doba account. Otherwise optional but helps you fulfill faster.
               </p>
             </div>
 
@@ -371,6 +387,7 @@
 import { LISTING_CATEGORIES } from '~/utils/marketplaceCategories'
 import { CHARITY_OPTIONS, charityByKey } from '~/utils/charities.js'
 import { auctionEndsAtFromDays } from '~/utils/auctionHelpers.js'
+import { DROPSHIP_PROVIDER_CATALOG, useSellerDropship } from '~/composables/useSellerDropship.js'
 
 const charities = CHARITY_OPTIONS
 
@@ -392,50 +409,18 @@ const modeNotice = ref('')
 
 const categories = LISTING_CATEGORIES
 
-const dropshipProviders = [
-  {
-    key: 'inventory-source',
-    name: 'Inventory Source',
-    website: 'https://www.inventorysource.com/',
-    contactEmail: 'support@inventorysource.com',
-    note: 'Supplier directory + inventory/order automation.',
-  },
-  {
-    key: 'spocket',
-    name: 'Spocket',
-    website: 'https://www.spocket.co/',
-    contactEmail: 'support@spocket.co',
-    note: 'US/EU suppliers and ecommerce integrations.',
-  },
-  {
-    key: 'syncee',
-    name: 'Syncee',
-    website: 'https://syncee.com/',
-    contactEmail: 'support@syncee.com',
-    note: 'Marketplace network with automated product sync.',
-  },
-  {
-    key: 'doba',
-    name: 'Doba',
-    website: 'https://www.doba.com/',
-    contactEmail: 'support@doba.com',
-    note: 'Catalog and fulfillment workflows for dropship sellers.',
-  },
-  {
-    key: 'zendrop',
-    name: 'Zendrop',
-    website: 'https://www.zendrop.com/',
-    contactEmail: 'support@zendrop.com',
-    note: 'Fast-ship programs and branded package options.',
-  },
-  {
-    key: 'cjdropshipping',
-    name: 'CJdropshipping',
-    website: 'https://cjdropshipping.com/',
-    contactEmail: 'support@cjdropshipping.com',
-    note: 'Global sourcing and fulfillment with warehouse options.',
-  },
-]
+const dropshipProviders = DROPSHIP_PROVIDER_CATALOG.filter((p) => p.key !== 'custom')
+
+const {
+  setupComplete: dropshipSetupComplete,
+  settings: sellerDropshipSettings,
+  load: loadSellerDropship,
+} = useSellerDropship()
+
+const dropshipNeedsSku = computed(() => {
+  return dropship.providerKey === 'doba'
+    && sellerDropshipSettings.value?.fulfillment_mode === 'integrated'
+})
 
 const dropshipChannels = [
   {
@@ -603,10 +588,18 @@ async function generateAiDescription () {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
+  await loadSellerDropship()
   const mode = String(route.query.mode || '').toLowerCase()
   if (mode === 'dropship') {
     listingMode.value = 'dropship'
+    if (!dropshipSetupComplete.value) {
+      modeNotice.value = 'Complete dropship setup to choose your supplier, or fill in supplier details below.'
+    }
+    if (sellerDropshipSettings.value?.preferred_provider_key && !dropship.providerKey) {
+      const key = sellerDropshipSettings.value.preferred_provider_key
+      dropship.providerKey = key === 'custom' ? '' : key
+    }
   } else if (mode === 'direct') {
     listingMode.value = 'direct'
   }
@@ -634,7 +627,9 @@ watch(() => dropship.providerKey, (providerKey) => {
 async function setListingMode(mode) {
   listingMode.value = mode
   modeNotice.value = mode === 'dropship'
-    ? 'Dropship mode is active. Fill in supplier details below.'
+    ? (dropshipSetupComplete.value
+      ? 'Dropship mode — your supplier fulfills. Add per-item supplier details below.'
+      : 'Dropship mode — start setup to pick your supplier, then add listing details.')
     : 'Direct sale mode is active. You will ship this item yourself.'
 
   if (mode === 'dropship') {
@@ -683,8 +678,8 @@ async function submitListing() {
     alert('Add at least one item photo (first image is the cover).')
     return
   }
-  if (listingMode.value === 'dropship' && dropship.providerKey === 'doba' && !String(dropship.supplierSku || '').trim()) {
-    alert('Doba dropship listings require Supplier SKU before publishing.')
+  if (listingMode.value === 'dropship' && dropshipNeedsSku.value && !String(dropship.supplierSku || '').trim()) {
+    alert('Integrated Doba listings require a Supplier SKU before publishing.')
     return
   }
   if (charity.donateProceeds && !charity.key) {
@@ -1020,6 +1015,21 @@ async function submitListing() {
   font-weight: 700;
   font-size: 0.88rem;
 }
+.dropship-setup-banner {
+  margin: 0 0 20px;
+  padding: 16px 18px;
+  border-radius: var(--radius-lg);
+  border: 1px solid #9fd9ff;
+  background: #effbff;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+.dropship-setup-link { margin-left: 8px; font-weight: 600; }
 .lt-icon { font-size: 1.8rem; }
 .lt-label { font-weight: 700; font-size: 1rem; color: #111827; }
 .lt-desc { font-size: 0.78rem; color: #4b5563; }

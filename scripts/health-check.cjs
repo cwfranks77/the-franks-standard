@@ -68,6 +68,14 @@ async function check(name, fn) {
     const r = await post(sbUrl + '/functions/v1/stripe-webhook', '{}')
     return { ok: r.status !== 404, detail: 'HTTP ' + r.status }
   })
+  await check('Supabase dropship_orders', async () => {
+    const r = await get(sbUrl + '/rest/v1/dropship_orders?select=id&limit=1', { apikey: sbKey, Authorization: 'Bearer ' + sbKey })
+    return { ok: r.status === 200, detail: 'HTTP ' + r.status }
+  })
+  await check('Supabase seller_dropship_settings', async () => {
+    const r = await get(sbUrl + '/rest/v1/seller_dropship_settings?select=seller_id&limit=1', { apikey: sbKey, Authorization: 'Bearer ' + sbKey })
+    return { ok: r.status === 200, detail: 'HTTP ' + r.status }
+  })
   await check('Edge create-checkout-session alive', async () => {
     const r = await post(sbUrl + '/functions/v1/create-checkout-session', '{}')
     return { ok: r.status !== 404, detail: 'HTTP ' + r.status }
