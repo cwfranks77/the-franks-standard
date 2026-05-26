@@ -27,7 +27,8 @@
     "notify:telegram": "node scripts/notify-telegram.cjs",
     "verify": "npm run generate",
     "env:vercel": "node scripts/push-vercel-env.cjs",
-    "deploy:gh-pages": "npm run generate && npx --yes gh-pages@6.2.0 -d .output/public -t -m \"chore(gh-pages): static deploy\""
+    "deploy:gh-pages": "npm run generate && npx --yes gh-pages@6.2.0 -d .output/public -t -m \"chore(gh-pages): static deploy\"",
+    "stripe:webhook": "node scripts/wire-stripe-webhook.cjs"
   },
   "dependencies": {
     "@nuxtjs/supabase": "^2.0.6",
@@ -42,6 +43,7 @@
     "axios": "^1.7.0",
     "dotenv": "^16.4.0",
     "form-data": "^4.0.0",
+    "stripe": "^22.1.1",
     "typescript": "^5.7.0"
   }
 }
