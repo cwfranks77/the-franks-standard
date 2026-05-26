@@ -1,0 +1,7 @@
+Production is wired. See PRODUCTION-STATUS.txt
+
+Quick verify: npm run health
+Smoke test: https://thefranksstandard.com/auth/register then /ops/test-checkout
+
+Webhook URL: https://rochesyrxiyrxhzmkuwk.supabase.co/functions/v1/stripe-webhook
+If payments succeed but orders stay pending: npm run stripe:webhook

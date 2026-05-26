@@ -1,0 +1,13 @@
+The Franks Standard — production status (updated 2026-05-26)
+
+OPERATIONAL
+- Site: https://thefranksstandard.com (GitHub Pages, real Supabase baked in)
+- Database: rochesyrxiyrxhzmkuwk — listings, orders, profiles, promo_codes, listing_bids
+- Auth: Site URL + redirect URLs configured in Supabase
+- Edge Functions: deployed (checkout, webhook, connect, promo, place-bid)
+- Supabase Edge secrets: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, SITE_URL — SET
+- GitHub Actions secrets: Supabase, Stripe Payment Links, ops key, social keys
+- Stripe: The Franks Standard LLC (live Payment Links active)
+
+VERIFY: npm run health
+SMOKE TEST: /auth/register then /ops/test-checkout (5 logo taps + ops phrase)
