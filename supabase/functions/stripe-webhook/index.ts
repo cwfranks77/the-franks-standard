@@ -1,44 +1,9 @@
-import { createClient } from 'npm:@supabase/supabase-js@2'
 import { json, stripeClient } from '../_shared/stripe.ts'
+import { adminClient, markOrderPaid, paidTotalsFromSession } from '../_shared/markOrderPaid.ts'
 
-const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
-const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.get('SERVICE_ROLE_KEY') ?? ''
 const WEBHOOK_SECRET = Deno.env.get('STRIPE_WEBHOOK_SECRET') ?? ''
 
-const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, { auth: { persistSession: false } })
-
-async function markOrderPaid (params: {
-  orderId: string
-  sessionId?: string
-  paymentIntentId?: string
-  taxAmount?: number | null
-  totalPaid?: number | null
-}) {
-  const { orderId, sessionId, paymentIntentId, taxAmount, totalPaid } = params
-  const patch: Record<string, unknown> = {
-    status: 'paid',
-    escrow_status: 'held',
-    paid_at: new Date().toISOString(),
-    stripe_checkout_session_id: sessionId ?? undefined,
-    stripe_payment_intent_id: paymentIntentId ?? undefined,
-  }
-  if (taxAmount != null && Number.isFinite(taxAmount)) {
-    patch.tax_amount = taxAmount
-  }
-  if (totalPaid != null && Number.isFinite(totalPaid)) {
-    patch.total_paid = totalPaid
-  }
-
-  const { error } = await admin
-    .from('orders')
-    .update(patch)
-    .eq('id', orderId)
-    .in('status', ['pending'])
-
-  if (error) {
-    console.error('markOrderPaid', orderId, error.message)
-  }
-}
+const admin = adminClient()
 
 async function handleCheckoutCompleted (session: {
   id: string
@@ -51,17 +16,13 @@ async function handleCheckoutCompleted (session: {
   const orderId = session.metadata?.order_id ?? session.client_reference_id ?? ''
   if (!orderId) return
 
-  const pi = session.payment_intent
-  const paymentIntentId = typeof pi === 'string' ? pi : pi?.id
-  const taxCents = session.total_details?.amount_tax ?? 0
-  const totalCents = session.amount_total ?? 0
-
-  await markOrderPaid({
+  const totals = paidTotalsFromSession(session)
+  await markOrderPaid(admin, {
     orderId,
     sessionId: session.id,
-    paymentIntentId,
-    taxAmount: taxCents > 0 ? Math.round(taxCents) / 100 : 0,
-    totalPaid: totalCents > 0 ? Math.round(totalCents) / 100 : null,
+    paymentIntentId: totals.paymentIntentId,
+    taxAmount: totals.taxAmount,
+    totalPaid: totals.totalPaid,
   })
 }
 

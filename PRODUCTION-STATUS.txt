@@ -1,13 +1,17 @@
-The Franks Standard — production status (updated 2026-05-26)
+﻿The Franks Standard — production status (updated 2026-05-26)
 
 OPERATIONAL
-- Site: https://thefranksstandard.com (GitHub Pages, real Supabase baked in)
+- Site: https://thefranksstandard.com (GitHub Pages, real Supabase backend)
 - Database: rochesyrxiyrxhzmkuwk — listings, orders, profiles, promo_codes, listing_bids
-- Auth: Site URL + redirect URLs configured in Supabase
-- Edge Functions: deployed (checkout, webhook, connect, promo, place-bid)
-- Supabase Edge secrets: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, SITE_URL — SET
-- GitHub Actions secrets: Supabase, Stripe Payment Links, ops key, social keys
-- Stripe: The Franks Standard LLC (live Payment Links active)
+- Edge Functions: checkout, platform-checkout, webhook, connect, promo, place-bid, reconcile-orders
+- Health check: npm run health (7/7 when live)
 
-VERIFY: npm run health
-SMOKE TEST: /auth/register then /ops/test-checkout (5 logo taps + ops phrase)
+WEBHOOK
+- URL: https://rochesyrxiyrxhzmkuwk.supabase.co/functions/v1/stripe-webhook
+- Events: checkout.session.completed, account.updated
+- Wire: npm run stripe:webhook (needs STRIPE_SECRET_KEY)
+- Reconcile: npm run stripe:reconcile or dashboard auto-reconcile on load
+
+STRIPE TAX
+- Add Louisiana in Stripe Dashboard → Tax → Registrations
+

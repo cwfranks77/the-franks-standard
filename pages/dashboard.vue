@@ -208,11 +208,27 @@ onMounted(async () => {
     .limit(20)
 
   recentOrders.value = orders || []
-  stats.pendingOrders = recentOrders.value.filter((o) => ['pending', 'paid', 'shipped'].includes(o.status)).length
+  stats.pendingOrders = recentOrders.value.filter((o) => o.status === 'pending').length
   const paidTotal = recentOrders.value
     .filter((o) => o.seller_id === user.id && ['paid', 'confirmed', 'shipped', 'delivered'].includes(o.status))
     .reduce((sum, o) => sum + Number(o.amount || 0), 0)
   stats.totalSales = paidTotal.toFixed(2)
+
+  if (stats.pendingOrders > 0) {
+    const { data: reconciled } = await supabase.functions.invoke('reconcile-orders', { body: {} })
+    if (reconciled?.summary?.paid || reconciled?.summary?.cancelled) {
+      const { data: refreshed } = await supabase
+        .from('orders')
+        .select('id, amount, status, created_at, listing_id, buyer_id, seller_id')
+        .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
+        .order('created_at', { ascending: false })
+        .limit(20)
+      if (refreshed) {
+        recentOrders.value = refreshed
+        stats.pendingOrders = refreshed.filter((o) => o.status === 'pending').length
+      }
+    }
+  }
 })
 </script>
 
