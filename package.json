@@ -31,7 +31,9 @@
     "stripe:webhook": "node scripts/wire-stripe-webhook.cjs",
     "stripe:reconcile": "node scripts/reconcile-stripe-orders.cjs",
     "health": "node scripts/health-check.cjs",
-    "mail:test": "node scripts/test-mailbox.cjs"
+    "mail:test": "node scripts/test-mailbox.cjs",
+    "mail:fix": "node scripts/apply-email-password.cjs",
+    "namecheap:recover": "powershell -ExecutionPolicy Bypass -File scripts/namecheap-recover.ps1"
   },
   "dependencies": {
     "@nuxtjs/supabase": "^2.0.6",

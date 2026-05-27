@@ -1,6 +1,26 @@
 #!/usr/bin/env node
-require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') })
+const fs = require('fs')
+const path = require('path')
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') })
 const https = require('https')
+
+const EMAIL_ENV_PATHS = [
+  path.join(__dirname, '..', '..', 'franks-standard-credentials', 'email.env'),
+  path.join(__dirname, '..', 'email.env'),
+]
+
+function loadEmailEnv () {
+  for (const p of EMAIL_ENV_PATHS) {
+    if (!fs.existsSync(p)) continue
+    const out = {}
+    for (const line of fs.readFileSync(p, 'utf8').split(/\r?\n/)) {
+      const m = line.match(/^([A-Z_]+)=(.*)$/)
+      if (m) out[m[1]] = m[2].trim()
+    }
+    if (out.EMAIL_USER) return { ...out, source: p }
+  }
+  return null
+}
 
 function get(url, headers = {}) {
   return new Promise((resolve, reject) => {
@@ -79,6 +99,14 @@ async function check(name, fn) {
   await check('Edge create-checkout-session alive', async () => {
     const r = await post(sbUrl + '/functions/v1/create-checkout-session', '{}')
     return { ok: r.status !== 404, detail: 'HTTP ' + r.status }
+  })
+  await check('Mailbox credentials (info@)', async () => {
+    const env = loadEmailEnv()
+    if (!env) return { ok: false, detail: 'email.env missing — see franks-standard-credentials/EMAIL-SETUP.md' }
+    if (!env.EMAIL_PASS) {
+      return { ok: false, detail: 'EMAIL_PASS empty — reset in Namecheap, save password, npm run mail:test' }
+    }
+    return { ok: true, detail: env.EMAIL_USER + ' configured (' + path.basename(path.dirname(env.source)) + '/email.env)' }
   })
   const failed = checks.filter((c) => !c.ok).length
   console.log('')
