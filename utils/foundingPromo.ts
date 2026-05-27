@@ -5,9 +5,9 @@ export const FOUNDING_PROMO_MAX = 10
 export const FOUNDING_PROMO_MONTHS = 3
 
 export function foundingPromoRegisterPath (): string {
-  return /auth/register?promo=&account=sell
+  return `/auth/register?promo=${FOUNDING_PROMO_CODE}&account=seller`
 }
 
 export function foundingPromoJoinPath (): string {
-  return /join/
+  return `/join/${FOUNDING_PROMO_SLUG}`
 }
