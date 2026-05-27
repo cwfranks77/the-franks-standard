@@ -47,7 +47,24 @@
         </section>
 
         <section v-if="step === 2" class="setup-panel">
-          <h2>Step 2 — Create or link your account</h2>
+          <h2>Step 2 — Your store on The Franks Standard</h2>
+          <div class="form-group">
+            <label class="label">Store name (shown to buyers)</label>
+            <input v-model="form.storeName" class="input" placeholder="Brandy's Sporting Goods" />
+          </div>
+          <div class="form-group">
+            <label class="label">Store link slug</label>
+            <input v-model="form.storeSlug" class="input" placeholder="brandyssportinggoods" />
+            <p class="text-muted small">
+              Your shop URL:
+              <strong>thefranksstandard.com/store/{{ form.storeSlug || 'your-slug' }}</strong>
+            </p>
+          </div>
+          <div class="form-group">
+            <label class="label">Customer support email</label>
+            <input v-model="form.storeContactEmail" class="input" type="email" placeholder="brandy@thefranksstandard.com" />
+          </div>
+          <h3 class="mt-3">Supplier account</h3>
           <p v-if="selectedProvider" class="text-muted">{{ selectedProvider.note }}</p>
           <ul class="checklist">
             <li v-if="selectedProvider?.website">
@@ -183,6 +200,9 @@ const stepLabels = ['Provider', 'Account', 'Fulfillment', 'API', 'Done']
 const step = ref(1)
 
 const form = reactive({
+  storeName: "Brandy's Sporting Goods",
+  storeSlug: 'brandyssportinggoods',
+  storeContactEmail: 'brandy@thefranksstandard.com',
   providerKey: 'custom',
   customProviderName: '',
   accountCreated: false,
@@ -207,7 +227,9 @@ const canAdvance = computed(() => {
     if (form.providerKey === 'custom') return !!form.customProviderName.trim()
     return !!form.providerKey
   }
-  if (step.value === 2) return form.accountCreated
+  if (step.value === 2) {
+    return form.accountCreated && !!form.storeName.trim() && !!form.storeSlug.trim()
+  }
   if (step.value === 3) return !!form.fulfillmentMode
   return true
 })
@@ -221,6 +243,9 @@ async function persistPartial (complete = false) {
   return saveSetup({
     setupComplete: complete,
     setupStep: step.value,
+    storeName: form.storeName,
+    storeSlug: form.storeSlug,
+    storeContactEmail: form.storeContactEmail,
     preferredProviderKey: form.providerKey,
     preferredProviderName: displayProviderName.value,
     fulfillmentMode: form.fulfillmentMode,
@@ -247,6 +272,9 @@ async function finishSetup () {
   const res = await saveSetup({
     setupComplete: true,
     setupStep: 5,
+    storeName: form.storeName,
+    storeSlug: form.storeSlug,
+    storeContactEmail: form.storeContactEmail,
     preferredProviderKey: form.providerKey,
     preferredProviderName: displayProviderName.value,
     fulfillmentMode: form.fulfillmentMode,

@@ -23,6 +23,7 @@
         <NuxtLink v-if="!isOwner" to="/pay" class="btn btn-primary btn-sm">Pay fees (Stripe)</NuxtLink>
         <NuxtLink v-else to="/ops/panel" class="btn btn-primary btn-sm">Owner toolkit</NuxtLink>
         <NuxtLink to="/sell" class="btn btn-primary btn-sm">+ New Listing</NuxtLink>
+        <NuxtLink to="/sell/import" class="btn btn-outline btn-sm">Import from eBay / CSV</NuxtLink>
         <NuxtLink to="/video" class="btn btn-outline btn-sm">Start a video call</NuxtLink>
       </div>
 

@@ -7,6 +7,15 @@
           <p class="text-muted">List your authentic items. COA or signed guarantee required — that is what makes us different.</p>
         </div>
 
+        <div class="sell-switch-banner card" role="status">
+          <p>
+            <strong>Coming from eBay or another marketplace?</strong>
+            Import your inventory in minutes — skim eBay or upload CSV, then publish here with escrow checkout.
+          </p>
+          <NuxtLink to="/sell/import" class="btn btn-primary btn-sm">Import inventory</NuxtLink>
+          <NuxtLink to="/sellers/switch" class="btn btn-outline btn-sm">Switching guide</NuxtLink>
+        </div>
+
         <div v-if="isOwner" class="sell-owner-banner" role="status">
           <span class="sell-owner-badge">Owner mode</span>
           <p>
@@ -862,6 +871,17 @@ async function submitListing() {
 .sell-wrapper { max-width: 720px; margin: 0 auto; }
 .sell-header { margin-bottom: 30px; }
 .sell-header h1 { font-size: 2rem; }
+.sell-switch-banner {
+  margin-bottom: 24px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  justify-content: space-between;
+  border: 1px solid rgba(201, 168, 76, 0.35);
+}
+.sell-switch-banner p { margin: 0; flex: 1 1 240px; }
 
 .form-section {
   margin-bottom: 32px;

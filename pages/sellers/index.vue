@@ -10,6 +10,15 @@
 
       <SitePromoOffers :compact="true" class="sellers-promos" />
 
+      <div class="card callout switch-callout">
+        <h2>Import inventory from eBay or CSV</h2>
+        <p class="text-muted">
+          Skim your active eBay listings or upload an export — review, then list on The Franks Standard with the same photos and titles. Buyers get escrow checkout and clear authenticity rules.
+        </p>
+        <NuxtLink to="/sell/import" class="btn btn-primary btn-sm">Import tool</NuxtLink>
+        <NuxtLink to="/sellers/switch" class="btn btn-outline btn-sm">Switching guide</NuxtLink>
+      </div>
+
       <div class="card callout">
         <h2>What we need from you</h2>
         <ul>
@@ -56,6 +65,8 @@ useSeoMeta({
 .narrow { max-width: 720px; margin: 0 auto; }
 .lead { font-size: 1.08rem; line-height: 1.65; margin: 1rem 0 1.5rem; }
 .sellers-promos { margin: 0 0 28px; }
+.switch-callout { margin-bottom: 1.25rem; }
+.switch-callout h2 { font-size: 1.15rem; color: var(--gold); margin-bottom: 0.5rem; }
 h1 { font-size: 2rem; margin-bottom: 0.5rem; }
 .callout { padding: 1.5rem; margin: 1.5rem 0; }
 .callout h2 { font-size: 1.15rem; color: var(--gold); margin-bottom: 0.75rem; }

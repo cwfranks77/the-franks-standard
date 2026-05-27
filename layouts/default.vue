@@ -34,6 +34,7 @@
           <NuxtLink to="/browse" class="nav-link" @click="closeAllNav">Browse</NuxtLink>
           <NuxtLink to="/sellers" class="nav-link" @click="closeAllNav">For sellers</NuxtLink>
           <NuxtLink to="/pricing" class="nav-link nav-highlight" @click="closeAllNav">Pricing</NuxtLink>
+          <a href="tel:+18778370527" class="nav-link nav-phone" @click="closeAllNav">(877) 837-0527</a>
           <NuxtLink to="/support" class="nav-link" @click="closeAllNav">Support</NuxtLink>
           <NuxtLink to="/open-door" class="nav-link" @click="closeAllNav">Open Door</NuxtLink>
           <NuxtLink to="/contact" class="nav-link" @click="closeAllNav">Contact</NuxtLink>
@@ -641,6 +642,8 @@ async function submitOpModal () {
 }
 
 .nav-link.nav-highlight { color: var(--gold-light); }
+.nav-link.nav-phone { color: var(--trust-green); white-space: nowrap; }
+.nav-link.nav-phone:hover { color: var(--gold-light); }
 
 .header-owner-pill {
   display: inline-flex; align-items: center;

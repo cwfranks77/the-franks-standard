@@ -1,7 +1,21 @@
 <template>
   <div class="store-page">
     <div class="container">
-      <header v-if="store" class="store-hero">
+      <div v-if="storeOnHold" class="store-hold card">
+        <p class="eyebrow">Opening soon</p>
+        <h1>{{ holdHeadline }}</h1>
+        <p class="text-muted">{{ holdMessage }}</p>
+        <p class="text-muted small">
+          Switching from eBay or another marketplace?
+          <NuxtLink to="/sellers/switch?from=ebay">See our easy transition guide</NuxtLink>.
+        </p>
+        <div class="store-actions mt-3">
+          <NuxtLink to="/browse" class="btn btn-primary btn-sm">Browse marketplace</NuxtLink>
+          <NuxtLink to="/sellers/switch" class="btn btn-outline btn-sm">Seller switching guide</NuxtLink>
+        </div>
+      </div>
+
+      <header v-else-if="store" class="store-hero">
         <p class="eyebrow">Seller storefront</p>
         <h1>{{ store.displayName }}</h1>
         <p class="text-muted store-tagline">
@@ -24,7 +38,7 @@
 
       <p v-if="loadError" class="text-muted">{{ loadError }}</p>
 
-      <div v-if="store" class="browse-filters mt-3">
+      <div v-if="store && !storeOnHold" class="browse-filters mt-3">
         <input
           v-model="searchQuery"
           type="search"
@@ -33,7 +47,7 @@
         />
       </div>
 
-      <div v-if="filteredListings.length" class="grid grid-4 mt-4">
+      <div v-if="store && !storeOnHold && filteredListings.length" class="grid grid-4 mt-4">
         <NuxtLink
           v-for="item in filteredListings"
           :key="item.id"
@@ -54,7 +68,7 @@
         </NuxtLink>
       </div>
 
-      <div v-else-if="store && !loading" class="empty-state text-center mt-4">
+      <div v-else-if="store && !storeOnHold && !loading" class="empty-state text-center mt-4">
         <h3>No listings yet</h3>
         <p class="text-muted">Check back soon — new gear is being added.</p>
       </div>
@@ -63,7 +77,12 @@
 </template>
 
 <script setup>
-import { resolveStoreSlug } from '~/utils/storeSlug'
+import {
+  resolveStoreSlug,
+  isBrandyStoreOnHold,
+  BRANDY_HOLD_HEADLINE,
+  BRANDY_HOLD_MESSAGE,
+} from '~/utils/storeSlug'
 
 const route = useRoute()
 const { publicUrlForPath } = useListingImageUrl()
@@ -77,6 +96,9 @@ const listings = ref([])
 const searchQuery = ref('')
 
 const canonicalSlug = computed(() => resolveStoreSlug(route.params.slug))
+const storeOnHold = computed(() => isBrandyStoreOnHold(canonicalSlug.value))
+const holdHeadline = BRANDY_HOLD_HEADLINE
+const holdMessage = BRANDY_HOLD_MESSAGE
 
 const storeContactMailto = computed(() => {
   if (!store.value?.contactEmail) return ''
@@ -93,11 +115,18 @@ const filteredListings = computed(() => {
 })
 
 useSeoMeta({
-  title: () => (store.value ? `${store.value.displayName} — The Franks Standard` : 'Store'),
+  title: () =>
+    storeOnHold.value
+      ? "Brandy's Sporting Goods — opening soon"
+      : store.value
+        ? `${store.value.displayName} — The Franks Standard`
+        : 'Store',
   description: () =>
-    store.value
-      ? `Shop ${store.value.displayName} on The Franks Standard — tactical, outdoor, and hunting gear.`
-      : 'Seller storefront on The Franks Standard',
+    storeOnHold.value
+      ? 'Brandy\'s Sporting Goods on The Franks Standard — catalog opening soon. Browse the marketplace meanwhile.'
+      : store.value
+        ? `Shop ${store.value.displayName} on The Franks Standard — tactical, outdoor, and hunting gear.`
+        : 'Seller storefront on The Franks Standard',
 })
 
 async function loadStore () {
@@ -110,6 +139,12 @@ async function loadStore () {
   const slug = canonicalSlug.value
   if (!slug) {
     notFound.value = true
+    loading.value = false
+    return
+  }
+
+  if (storeOnHold.value) {
+    store.value = { displayName: "Brandy's Sporting Goods", contactEmail: null }
     loading.value = false
     return
   }
@@ -172,6 +207,20 @@ watch(canonicalSlug, loadStore)
 
 <style scoped>
 .store-page { padding: 40px 0 64px; }
+.store-hold {
+  max-width: 720px;
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(201, 168, 76, 0.35);
+}
+.store-hold .eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+  color: #00f5a0;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
 .store-hero { margin-bottom: 8px; max-width: 720px; }
 .store-hero h1 { margin: 8px 0; }
 .store-tagline { margin-bottom: 12px; }
