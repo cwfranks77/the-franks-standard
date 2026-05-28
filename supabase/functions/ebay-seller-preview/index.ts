@@ -58,14 +58,24 @@ Deno.serve(async (req) => {
   const html = await res.text()
   const items = parseEbaySellerHtml(html, limit)
 
+  const blocked = res.status === 403 || res.status === 429
+  let hint: string | null = null
+  if (items.length === 0) {
+    if (blocked) {
+      hint =
+        'eBay blocked our server (common). Open your eBay store in Chrome, save the page as HTML, then upload it on the Import page — or use eBay CSV export.'
+    } else {
+      hint = 'No listings parsed. Save your eBay store page as HTML and upload it, or use CSV export.'
+    }
+  }
+
   return json({
     seller_username: username,
     source_url: url,
     http_status: res.status,
+    blocked,
     count: items.length,
     items,
-    hint: items.length === 0
-      ? 'eBay may have blocked the fetch or changed their HTML. Try CSV import instead.'
-      : null,
+    hint,
   })
 })

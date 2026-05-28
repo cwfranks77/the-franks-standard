@@ -48,3 +48,13 @@ export function auctionEndsAtFromDays (days) {
   const n = Number.isFinite(d) && d > 0 ? d : 7
   return new Date(Date.now() + n * 24 * 60 * 60 * 1000).toISOString()
 }
+
+/** Buy It Now is available while the auction is open and no bids have been placed. */
+export function buyNowAvailable (listing) {
+  if (!listing || listing.saleType !== 'auction') return false
+  const bin = listing.buyNowPrice != null ? Number(listing.buyNowPrice) : null
+  if (bin == null || !Number.isFinite(bin) || bin <= 0) return false
+  if (!isAuctionOpen(listing)) return false
+  const bids = listing.bidCount ?? 0
+  return bids === 0
+}

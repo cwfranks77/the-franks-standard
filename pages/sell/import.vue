@@ -14,7 +14,10 @@
 
       <div v-if="tab === 'ebay'" class="card panel">
         <h2>eBay seller username</h2>
-        <p class="text-muted small">We fetch your public active listings (same as your eBay store search). No eBay password required.</p>
+        <p class="text-muted small">
+          We try to load your public active listings. No eBay password required.
+          If preview is empty, eBay often blocks automated fetches — use the <strong>saved page</strong> or <strong>CSV</strong> steps below.
+        </p>
         <div class="form-row">
           <input
             v-model="ebayUsername"
@@ -25,14 +28,41 @@
           <button type="button" class="btn btn-primary" :disabled="previewLoading" @click="loadEbay">
             {{ previewLoading ? 'Loading…' : 'Preview listings' }}
           </button>
+          <a
+            v-if="ebayUsername.trim()"
+            class="btn btn-outline btn-sm"
+            :href="ebayStoreUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+          >Open eBay store ↗</a>
         </div>
         <p v-if="previewError" class="error-text">{{ previewError }}</p>
+
+        <details class="ebay-fallback mt-2">
+          <summary>When preview fails — save your eBay page (recommended)</summary>
+          <ol class="small text-muted">
+            <li>Click <strong>Open eBay store</strong> (or go to your Seller Hub → Active listings).</li>
+            <li>Scroll so listings load, then <strong>Ctrl+S</strong> (Mac: <strong>Cmd+S</strong>) → save as <strong>Webpage, HTML only</strong>.</li>
+            <li>Upload that file here — we parse it in your browser (eBay cannot block that).</li>
+          </ol>
+          <input type="file" accept=".html,.htm,text/html" @change="onEbayHtmlFile" />
+        </details>
       </div>
 
       <div v-else class="card panel">
         <h2>CSV file</h2>
-        <p class="text-muted small">eBay File Exchange / Seller Hub export with Title, Price, PicURL or similar columns.</p>
+        <p class="text-muted small">
+          Upload a CSV export. We support eBay exports and most supplier exports (Doba / Inventory Source) as long as it includes a Title/Name,
+          a Retail/Price column, and a Supplier SKU.
+        </p>
         <input type="file" accept=".csv,text/csv" @change="onCsvFile" />
+        <label class="check-row mt-2">
+          <input v-model="isDropshipCsv" type="checkbox" />
+          This CSV is dropship inventory (Doba) — import as dropship drafts
+        </label>
+        <p v-if="isDropshipCsv" class="text-muted small">
+          Dropship imports require a <strong>Supplier SKU</strong> per row. Wholesale cost is optional (recommended for accurate payout splits).
+        </p>
       </div>
 
       <div v-if="previewItems.length" class="card panel mt-3">
@@ -55,6 +85,8 @@
                 <span class="item-sub">
                   {{ item.price != null ? `$${item.price}` : 'No price — fix in CSV or skip' }}
                   <span v-if="item.external_id"> · ID {{ item.external_id }}</span>
+                  <span v-if="isDropshipCsv && item.supplier_sku"> · SKU {{ item.supplier_sku }}</span>
+                  <span v-if="isDropshipCsv && item.wholesale_cost != null"> · Cost ${{ item.wholesale_cost }}</span>
                 </span>
               </span>
             </label>
@@ -126,6 +158,7 @@ const publishNow = ref(false)
 const useGuarantee = ref(true)
 const sellerLegalName = ref('')
 const importResult = ref(null)
+const isDropshipCsv = ref(false)
 
 const {
   previewLoading,
@@ -133,14 +166,32 @@ const {
   previewError,
   previewItems,
   previewEbaySeller,
+  previewEbayFromHtml,
   setCsvPreview,
   importSelected,
   parseInventoryCsv,
 } = useInventoryImport()
 
+const ebayStoreUrl = computed(() => {
+  const u = ebayUsername.value.trim().replace(/^@/, '')
+  if (!u) return 'https://www.ebay.com/'
+  return `https://www.ebay.com/sch/i.html?_ssn=${encodeURIComponent(u)}&_ipg=120&rt=nc`
+})
+
 async function loadEbay () {
   importResult.value = null
   await previewEbaySeller(ebayUsername.value.trim())
+}
+
+function onEbayHtmlFile (e) {
+  importResult.value = null
+  const file = e.target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = () => {
+    previewEbayFromHtml(reader.result, 60)
+  }
+  reader.readAsText(file)
 }
 
 function onCsvFile (e) {
@@ -176,7 +227,10 @@ async function runImport () {
       coaType,
       guaranteeSigned: useGuarantee.value,
       sellerLegalName: sellerLegalName.value.trim(),
-      importSource: tab.value === 'ebay' ? 'ebay' : 'csv',
+      importSource: tab.value === 'ebay' ? 'ebay' : (isDropshipCsv.value ? 'doba_csv' : 'csv'),
+      listingMode: tab.value === 'csv' && isDropshipCsv.value ? 'dropship' : 'direct',
+      dropshipProviderKey: tab.value === 'csv' && isDropshipCsv.value ? 'doba' : '',
+      dropshipProviderName: tab.value === 'csv' && isDropshipCsv.value ? 'Doba' : '',
     })
     if (importResult.value.created > 0) {
       await navigateTo('/dashboard')
@@ -218,8 +272,17 @@ async function runImport () {
 .item-sub { font-size: 0.85rem; color: #9ca3af; }
 .import-options { margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.08); }
 .check-row { display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem; }
+.mt-2 { margin-top: 0.5rem; }
 .result-text { margin-top: 1rem; color: var(--gold); }
 .buyer-box h2 { font-size: 1rem; }
 .mt-3 { margin-top: 1.25rem; }
+.mt-2 { margin-top: 0.75rem; }
 .small { font-size: 0.9rem; }
+.ebay-fallback {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.ebay-fallback summary { cursor: pointer; font-weight: 600; color: var(--gold); }
+.ebay-fallback ol { margin: 0.5rem 0; padding-left: 1.2rem; line-height: 1.55; }
 </style>

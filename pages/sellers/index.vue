@@ -11,6 +11,16 @@
       <SitePromoOffers :compact="true" class="sellers-promos" />
 
       <div class="card callout switch-callout">
+        <h2>Seller tools &amp; Top Sellers program</h2>
+        <p class="text-muted">
+          Live links to accredited appraiser directories (ASA, ISA, AAA), grading services, and sold comps —
+          plus our <strong>Seller Excellence</strong> cycle: top sellers every six months earn reduced or waived platform fees.
+        </p>
+        <NuxtLink to="/seller-tools" class="btn btn-primary btn-sm">Appraisal &amp; research links</NuxtLink>
+        <NuxtLink to="/top-sellers" class="btn btn-outline btn-sm">Top sellers &amp; rewards</NuxtLink>
+      </div>
+
+      <div class="card callout switch-callout">
         <h2>Import inventory from eBay or CSV</h2>
         <p class="text-muted">
           Skim your active eBay listings or upload an export — review, then list on The Franks Standard with the same photos and titles. Buyers get escrow checkout and clear authenticity rules.

@@ -100,6 +100,22 @@ async function check(name, fn) {
     const r = await post(sbUrl + '/functions/v1/create-checkout-session', '{}')
     return { ok: r.status !== 404, detail: 'HTTP ' + r.status }
   })
+  await check('Edge ebay-seller-preview alive', async () => {
+    const r = await post(sbUrl + '/functions/v1/ebay-seller-preview', '{}')
+    return { ok: r.status !== 404, detail: 'HTTP ' + r.status }
+  })
+  await check('Live /sell/import page', async () => {
+    const r = await get('https://thefranksstandard.com/sell/import/')
+    return { ok: r.status === 200, detail: 'HTTP ' + r.status }
+  })
+  await check('Live /seller-tools page', async () => {
+    const r = await get('https://thefranksstandard.com/seller-tools/')
+    return { ok: r.status === 200, detail: 'HTTP ' + r.status }
+  })
+  await check('Live /top-sellers page', async () => {
+    const r = await get('https://thefranksstandard.com/top-sellers/')
+    return { ok: r.status === 200, detail: 'HTTP ' + r.status }
+  })
   await check('Mailbox credentials (info@)', async () => {
     const env = loadEmailEnv()
     if (!env) return { ok: false, detail: 'email.env missing — see franks-standard-credentials/EMAIL-SETUP.md' }

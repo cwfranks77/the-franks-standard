@@ -47,6 +47,12 @@
           {{ shipping ? 'Saving…' : 'Mark as shipped' }}
         </button>
       </div>
+
+      <SellerReviewForm
+        v-if="isBuyer && order.seller_id"
+        :order-id="order.id"
+        :seller-id="order.seller_id"
+      />
     </template>
   </div>
 </template>

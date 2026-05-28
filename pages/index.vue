@@ -68,6 +68,8 @@
 
     <SitePromoOffers />
 
+    <TopSellersShowcase />
+
     <section class="activity-ticker" aria-label="What the Standard stands for">
       <div class="container">
         <ul class="ticker-list">

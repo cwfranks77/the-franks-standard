@@ -205,7 +205,10 @@
         <section class="card">
           <h2>Market research (not a legal appraisal)</h2>
           <p class="small text-muted">
-            Real certified appraisals come from licensed professionals. Use these as <strong>starting research</strong> for comps and education only.
+            Public seller page has the full curated list (ASA, ISA, AAA, grading, comps).
+            <NuxtLink to="/seller-tools">Open /seller-tools</NuxtLink>
+            ·
+            <NuxtLink to="/top-sellers">Seller Excellence / top sellers</NuxtLink>
           </p>
           <ul class="link-list external">
             <li><a href="https://www.ebay.com/sch/i.html?_from=R40&_nkw=&_sacat=0&LH_Sold=1&LH_Complete=1" target="_blank" rel="noopener noreferrer">Sold listings research (C2C marketplace)</a></li>

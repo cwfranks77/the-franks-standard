@@ -30,7 +30,9 @@
 
         <div class="listing-details">
           <span class="badge badge-gold">{{ listing.category }}</span>
-          <span v-if="listing.saleType === 'auction'" class="badge badge-auction">Live auction</span>
+          <span v-if="listing.saleType === 'auction'" class="badge badge-auction">
+            {{ canBuyNow ? 'Auction + Buy It Now' : 'Live auction' }}
+          </span>
           <h1>{{ listing.title }}</h1>
 
           <div class="listing-coa-box">
@@ -53,6 +55,9 @@
                 <span v-if="auctionOpen" class="auction-time">{{ timeLeftLabel }}</span>
                 <span v-else class="auction-time ended">Auction ended</span>
                 <p v-if="listing.bidCount" class="text-muted small">{{ listing.bidCount }} bid{{ listing.bidCount === 1 ? '' : 's' }}</p>
+                <p v-if="canBuyNow" class="buy-now-hint text-muted small">
+                  Buy It Now: <strong>${{ listing.buyNowPrice.toLocaleString() }}</strong> (until first bid)
+                </p>
               </div>
             </template>
             <template v-else>
@@ -66,7 +71,13 @@
             <div>
               <strong>Charity sale</strong>
               <p class="text-muted small" style="margin: 4px 0 0;">
-                100% of proceeds go to <strong>{{ listing.charityName }}</strong> after this sale completes.
+                <template v-if="listing.charityPercent >= 100">
+                  100% of proceeds go to <strong>{{ listing.charityName }}</strong> after this sale completes.
+                </template>
+                <template v-else>
+                  <strong>{{ listing.charityPercent }}%</strong> of proceeds go to <strong>{{ listing.charityName }}</strong>;
+                  you keep the remainder (minus platform fees on your share).
+                </template>
               </p>
             </div>
           </div>
@@ -74,7 +85,11 @@
           <p class="checkout-notice text-muted">
             <template v-if="listing.saleType === 'auction' && auctionOpen">
               <strong>Auction:</strong>
-              Place a bid at or above the minimum shown below. Sales tax applies at checkout when the winner pays after the auction ends.
+              Place a bid at or above the minimum shown below.
+              <template v-if="canBuyNow">
+                Or use <strong>Buy It Now</strong> for ${{ listing.buyNowPrice.toLocaleString() }} before anyone bids (escrow checkout).
+              </template>
+              Sales tax applies at checkout.
             </template>
             <template v-else-if="listing.saleType === 'auction' && !auctionOpen && isWinningBidder && reserveOk">
               <strong>You won this auction.</strong>
@@ -84,9 +99,14 @@
               <strong>Auction closed.</strong>
               {{ auctionClosedMessage }}
             </template>
-            <template v-else-if="listing.donateProceeds">
+            <template v-else-if="listing.donateProceeds && listing.charityPercent >= 100">
               <strong>Secure checkout:</strong>
               Pay <strong>${{ listing.price.toLocaleString() }}</strong> through Stripe. Funds are held in escrow, then disbursed to the charity — not the seller.
+            </template>
+            <template v-else-if="listing.donateProceeds">
+              <strong>Secure checkout:</strong>
+              Pay <strong>${{ listing.price.toLocaleString() }}</strong> through Stripe.
+              <strong>{{ listing.charityPercent }}%</strong> is earmarked for <strong>{{ listing.charityName }}</strong>; the seller receives the rest after fees.
             </template>
             <template v-else>
               <strong>Secure checkout:</strong>
@@ -141,6 +161,14 @@
               @click="buyNow"
             >{{ checkoutLoading ? 'Opening checkout…' : `Buy now — $${listing.price.toLocaleString()} + tax at checkout` }}</button>
             <button
+              v-else-if="canBuyNow && !isOwnListing"
+              type="button"
+              class="btn btn-primary btn-lg"
+              style="flex: 1;"
+              :disabled="checkoutLoading"
+              @click="buyNow"
+            >{{ checkoutLoading ? 'Opening checkout…' : `Buy It Now — $${listing.buyNowPrice.toLocaleString()} + tax` }}</button>
+            <button
               v-else-if="!auctionOpen && isWinningBidder && reserveOk"
               type="button"
               class="btn btn-primary btn-lg"
@@ -186,6 +214,7 @@ import {
   minNextBid,
   formatAuctionTimeLeft,
   reserveMet,
+  buyNowAvailable,
 } from '~/utils/auctionHelpers.js'
 
 const route = useRoute()
@@ -235,6 +264,7 @@ const timeLeftLabel = ref('')
 let auctionTimer = null
 
 const auctionOpen = computed(() => isAuctionOpen(listing.value))
+const canBuyNow = computed(() => buyNowAvailable(listing.value))
 const minBid = computed(() => (listing.value ? minNextBid(listing.value) : 0))
 const displayBid = computed(() => {
   if (!listing.value) return 0
@@ -337,7 +367,7 @@ async function load() {
 
   const { data, error } = await supabase
     .from('listings')
-    .select('id, title, description, category, price, condition, coa_type, guarantee_signed, seller_legal_name, image_paths, status, created_at, seller_id, donate_proceeds, charity_key, charity_name, sale_type, starting_bid, current_bid, current_bidder_id, bid_increment, bid_count, reserve_price, auction_ends_at, seller:profiles!listings_seller_id_fkey(full_name, created_at)')
+    .select('id, title, description, category, price, condition, coa_type, guarantee_signed, seller_legal_name, image_paths, status, created_at, seller_id, donate_proceeds, charity_key, charity_name, charity_percent, sale_type, starting_bid, current_bid, current_bidder_id, bid_increment, bid_count, reserve_price, auction_ends_at, buy_now_price, seller:profiles!listings_seller_id_fkey(full_name, created_at)')
     .eq('id', id)
     .eq('status', 'published')
     .maybeSingle()
@@ -368,6 +398,9 @@ async function load() {
     sellerMemberSince: data.seller ? memberSince(data.seller.created_at) : '',
     donateProceeds: !!data.donate_proceeds,
     charityName: data.charity_name || '',
+    charityPercent: data.donate_proceeds
+      ? Math.min(100, Math.max(1, Number(data.charity_percent ?? 100)))
+      : 0,
     saleType: data.sale_type || 'fixed',
     startingBid: data.starting_bid != null ? Number(data.starting_bid) : null,
     currentBid: data.current_bid != null ? Number(data.current_bid) : null,
@@ -376,6 +409,7 @@ async function load() {
     bidCount: data.bid_count ?? 0,
     reservePrice: data.reserve_price != null ? Number(data.reserve_price) : null,
     auctionEndsAt: data.auction_ends_at,
+    buyNowPrice: data.buy_now_price != null ? Number(data.buy_now_price) : null,
   }
   bidAmount.value = String(minNextBid(listing.value))
   refreshAuctionClock()
@@ -450,6 +484,8 @@ watch(
 .auction-price-label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: #6b7280; font-weight: 700; }
 .auction-time { font-size: 0.88rem; font-weight: 700; color: #047857; }
 .auction-time.ended { color: #b45309; }
+.buy-now-hint { margin-top: 4px; color: #047857; }
+.listing-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .bid-box {
   margin-bottom: 14px;
   padding: 14px;

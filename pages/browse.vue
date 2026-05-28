@@ -55,8 +55,12 @@
           <div class="listing-image">
             <img :src="item.image" :alt="item.title" />
             <span class="coa-badge listing-coa">COA Verified</span>
-            <span v-if="item.saleType === 'auction'" class="auction-badge listing-coa">Auction</span>
-            <span v-if="item.donateProceeds" class="charity-badge listing-coa">Charity</span>
+            <span v-if="item.saleType === 'auction'" class="auction-badge listing-coa">
+              {{ item.buyNowPrice ? 'Auction + BIN' : 'Auction' }}
+            </span>
+            <span v-if="item.donateProceeds" class="charity-badge listing-coa">
+              {{ item.charityPercent >= 100 ? 'Charity' : `${item.charityPercent}% charity` }}
+            </span>
           </div>
           <div class="card-body">
             <p class="listing-category text-muted">{{ item.category }}</p>
@@ -65,6 +69,7 @@
               <span class="listing-price">
                 <template v-if="item.saleType === 'auction'">
                   {{ item.currentBid != null ? `$${item.currentBid.toLocaleString()} bid` : `$${item.price.toLocaleString()} start` }}
+                  <span v-if="item.buyNowPrice && !item.currentBid" class="text-muted small"> · BIN ${{ item.buyNowPrice.toLocaleString() }}</span>
                 </template>
                 <template v-else>${{ item.price.toLocaleString() }}</template>
               </span>
@@ -105,7 +110,7 @@ async function loadListings() {
   loadError.value = ''
   const { data, error } = await supabase
     .from('listings')
-    .select('id, title, category, price, condition, coa_type, image_paths, created_at, donate_proceeds, charity_name, sale_type, current_bid, starting_bid, auction_ends_at, seller:profiles!listings_seller_id_fkey(full_name)')
+    .select('id, title, category, price, condition, coa_type, image_paths, created_at, donate_proceeds, charity_name, charity_percent, sale_type, current_bid, starting_bid, auction_ends_at, buy_now_price, bid_count, seller:profiles!listings_seller_id_fkey(full_name)')
 
     .eq('status', 'published')
     .order('created_at', { ascending: false })
@@ -126,10 +131,15 @@ async function loadListings() {
     seller: (r.seller && r.seller.full_name) ? r.seller.full_name : 'Seller',
     donateProceeds: !!r.donate_proceeds,
     charityName: r.charity_name || '',
+    charityPercent: r.donate_proceeds
+      ? Math.min(100, Math.max(1, Number(r.charity_percent ?? 100)))
+      : 0,
     saleType: r.sale_type || 'fixed',
     currentBid: r.current_bid != null ? Number(r.current_bid) : null,
     startingBid: r.starting_bid != null ? Number(r.starting_bid) : null,
     auctionEndsAt: r.auction_ends_at,
+    buyNowPrice: r.buy_now_price != null ? Number(r.buy_now_price) : null,
+    bidCount: r.bid_count ?? 0,
   }))
 }
 

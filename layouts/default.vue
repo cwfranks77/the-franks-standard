@@ -61,6 +61,8 @@
               <NuxtLink to="/join/founders10" class="nav-drop-link" @click="closeAllNav">Founding sellers (FOUNDERS10)</NuxtLink>
               <NuxtLink to="/honor" class="nav-drop-link" @click="closeAllNav">Honor our heroes (HONOR26)</NuxtLink>
               <NuxtLink to="/store-builder" class="nav-drop-link" @click="closeAllNav">AI Store Builder</NuxtLink>
+              <NuxtLink to="/seller-tools" class="nav-drop-link" @click="closeAllNav">Seller tools (appraisers &amp; comps)</NuxtLink>
+              <NuxtLink to="/top-sellers" class="nav-drop-link" @click="closeAllNav">Top sellers &amp; rewards</NuxtLink>
               <NuxtLink to="/about" class="nav-drop-link" @click="closeAllNav">Our story and mission</NuxtLink>
               <NuxtLink to="/support" class="nav-drop-link" @click="closeAllNav">Support and tech</NuxtLink>
               <NuxtLink to="/contact" class="nav-drop-link" @click="closeAllNav">Get in touch</NuxtLink>
@@ -127,6 +129,8 @@
             <NuxtLink to="/join/founders10">Founding Sellers (3 mo Pro)</NuxtLink>
             <NuxtLink to="/honor">Honor Our Heroes (6 mo Pro)</NuxtLink>
             <NuxtLink to="/how-it-works">How It Works</NuxtLink>
+            <NuxtLink to="/seller-tools">Appraisal &amp; comp tools</NuxtLink>
+            <NuxtLink to="/top-sellers">Top sellers program</NuxtLink>
             <NuxtLink to="/support">Support</NuxtLink>
           </div>
           <div class="footer-col">

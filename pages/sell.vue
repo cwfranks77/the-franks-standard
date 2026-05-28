@@ -14,6 +14,7 @@
           </p>
           <NuxtLink to="/sell/import" class="btn btn-primary btn-sm">Import inventory</NuxtLink>
           <NuxtLink to="/sellers/switch" class="btn btn-outline btn-sm">Switching guide</NuxtLink>
+          <NuxtLink to="/seller-tools" class="btn btn-outline btn-sm">Appraisal &amp; comp tools</NuxtLink>
         </div>
 
         <div v-if="isOwner" class="sell-owner-banner" role="status">
@@ -93,6 +94,16 @@
             <span class="lt-label">Auction</span>
             <span class="lt-desc">Buyers bid until time runs out</span>
           </button>
+          <button
+            type="button"
+            class="listing-type-btn"
+            :class="{ active: saleType === 'auction_bin' }"
+            @click="saleType = 'auction_bin'"
+          >
+            <span class="lt-icon">🔨🏷️</span>
+            <span class="lt-label">Auction + Buy It Now</span>
+            <span class="lt-desc">Bidders compete, or a buyer pays your instant price before the first bid</span>
+          </button>
         </div>
 
         <form class="sell-form" @submit.prevent="submitListing">
@@ -114,12 +125,18 @@
                 </select>
               </div>
               <div class="form-group">
-                <label class="label">{{ saleType === 'auction' ? 'Starting bid ($)' : 'Price ($)' }}</label>
+                <label class="label">{{ isAuctionFormat ? 'Starting bid ($)' : 'Price ($)' }}</label>
                 <input class="input" type="number" min="1" step="0.01" v-model="form.price" placeholder="0.00" required />
               </div>
             </div>
 
-            <div v-if="saleType === 'auction'" class="form-row">
+            <div v-if="saleType === 'auction_bin'" class="form-group">
+              <label class="label">Buy It Now price ($)</label>
+              <input class="input" type="number" min="1" step="0.01" v-model="buyNowPrice" placeholder="Instant purchase price" required />
+              <p class="text-muted small">Shown while the auction is live and <strong>before the first bid</strong>. Must be higher than your starting bid.</p>
+            </div>
+
+            <div v-if="isAuctionFormat" class="form-row">
               <div class="form-group">
                 <label class="label">Auction length</label>
                 <select class="select" v-model="auctionDays">
@@ -135,7 +152,7 @@
               </div>
             </div>
 
-            <div v-if="saleType === 'auction'" class="form-group">
+            <div v-if="isAuctionFormat" class="form-group">
               <label class="label">Reserve price ($) — optional</label>
               <input class="input" type="number" min="1" step="0.01" v-model="reservePrice" placeholder="Leave blank for no reserve" />
               <p class="text-muted small">Hidden from buyers. Item only sells if the high bid meets or beats this amount.</p>
@@ -207,14 +224,14 @@
           <div class="form-section charity-section">
             <h2>Donate sale proceeds</h2>
             <p class="text-muted mb-2">
-              Optional. When your item sells, you keep $0 — the full sale (minus payment processing) is earmarked for your chosen charity.
-              The Franks Standard disburses donations to registered nonprofits.
+              Optional. Donate some or all of your seller proceeds to a registered nonprofit.
+              The Franks Standard disburses the charity share after the sale completes; you keep the rest (minus platform fees on your portion).
             </p>
             <label class="charity-toggle">
-              <input v-model="charity.donateProceeds" type="checkbox" />
-              <span>Donate 100% of this sale to a charity</span>
+              <input v-model="charity.enabled" type="checkbox" />
+              <span>Donate part of this sale to a charity</span>
             </label>
-            <div v-if="charity.donateProceeds" class="charity-pick mt-2">
+            <div v-if="charity.enabled" class="charity-pick mt-2">
               <label class="label">Choose a charity</label>
               <select v-model="charity.key" class="select" required>
                 <option value="">Select a charity</option>
@@ -223,6 +240,37 @@
               <p v-if="selectedCharity" class="charity-detail text-muted small mt-1">
                 {{ selectedCharity.tagline }}
                 <a :href="selectedCharity.website" target="_blank" rel="noopener noreferrer">Learn more</a>
+              </p>
+              <label class="label mt-2">How much of the sale goes to charity?</label>
+              <div class="charity-percent-row">
+                <button
+                  v-for="p in charityPercentPresets"
+                  :key="p"
+                  type="button"
+                  class="charity-pct-btn"
+                  :class="{ active: charity.percent === p }"
+                  @click="charity.percent = p"
+                >{{ p }}%</button>
+              </div>
+              <div class="form-row mt-1">
+                <div class="form-group">
+                  <label class="label" for="charity-custom-pct">Or enter % (1–100)</label>
+                  <input
+                    id="charity-custom-pct"
+                    v-model.number="charity.percent"
+                    class="input"
+                    type="number"
+                    min="1"
+                    max="100"
+                    step="1"
+                  />
+                </div>
+              </div>
+              <p v-if="charitySplitPreview" class="charity-split-preview text-muted small mt-2" role="status">
+                On a <strong>${{ charitySplitPreview.saleAmount.toLocaleString() }}</strong> sale:
+                <strong>${{ charitySplitPreview.charityAmount.toLocaleString() }}</strong> to charity,
+                about <strong>${{ charitySplitPreview.sellerPayout.toLocaleString() }}</strong> to you after fees
+                <span v-if="charitySplitPreview.platformFee > 0"> (platform fee ~${{ charitySplitPreview.platformFee.toLocaleString() }} on your share)</span>.
               </p>
             </div>
           </div>
@@ -412,6 +460,7 @@
 <script setup>
 import { LISTING_CATEGORIES } from '~/utils/marketplaceCategories'
 import { CHARITY_OPTIONS, charityByKey } from '~/utils/charities.js'
+import { calcCharitySplit, CHARITY_PERCENT_PRESETS } from '~/utils/charitySplit.js'
 import { auctionEndsAtFromDays } from '~/utils/auctionHelpers.js'
 import { DROPSHIP_PROVIDER_CATALOG, useSellerDropship } from '~/composables/useSellerDropship.js'
 
@@ -474,13 +523,27 @@ const saleType = ref('fixed')
 const auctionDays = ref(7)
 const bidIncrement = ref(1)
 const reservePrice = ref('')
+const buyNowPrice = ref('')
+
+const isAuctionFormat = computed(() => saleType.value === 'auction' || saleType.value === 'auction_bin')
 
 const charity = reactive({
-  donateProceeds: false,
+  enabled: false,
   key: '',
+  percent: 25,
 })
 
+const charityPercentPresets = CHARITY_PERCENT_PRESETS
 const selectedCharity = computed(() => charityByKey(charity.key))
+
+const charitySplitPreview = computed(() => {
+  if (!charity.enabled || !charity.key) return null
+  const saleAmount = Number(form.price)
+  if (!Number.isFinite(saleAmount) || saleAmount <= 0) return null
+  const pct = Math.min(100, Math.max(1, Math.round(Number(charity.percent) || 0)))
+  const split = calcCharitySplit(saleAmount, pct)
+  return { saleAmount, ...split }
+})
 
 const dropship = reactive({
   providerKey: '',
@@ -721,9 +784,16 @@ async function submitListing() {
       return
     }
   }
-  if (charity.donateProceeds && !charity.key) {
-    alert('Choose a charity or turn off "Donate sale proceeds".')
+  if (charity.enabled && !charity.key) {
+    alert('Choose a charity or turn off "Donate part of this sale".')
     return
+  }
+  if (charity.enabled) {
+    const pct = Math.round(Number(charity.percent) || 0)
+    if (pct < 1 || pct > 100) {
+      alert('Charity percentage must be between 1 and 100.')
+      return
+    }
   }
   submitting.value = true
   try {
@@ -746,16 +816,18 @@ async function submitListing() {
       image_paths: [],
       status: 'published',
     }
-    const pickedCharity = charity.donateProceeds ? charityByKey(charity.key) : null
+    const pickedCharity = charity.enabled ? charityByKey(charity.key) : null
     if (pickedCharity) {
+      const pct = Math.min(100, Math.max(1, Math.round(Number(charity.percent) || 0)))
       Object.assign(listingPayload, {
         donate_proceeds: true,
         charity_key: pickedCharity.key,
         charity_name: pickedCharity.name,
+        charity_percent: pct,
       })
     }
 
-    if (saleType.value === 'auction') {
+    if (isAuctionFormat.value) {
       const start = Number(form.price)
       const increment = Number(bidIncrement.value)
       if (!Number.isFinite(start) || start <= 0) {
@@ -768,6 +840,20 @@ async function submitListing() {
         submitting.value = false
         return
       }
+      let bin = null
+      if (saleType.value === 'auction_bin') {
+        bin = Number(buyNowPrice.value)
+        if (!Number.isFinite(bin) || bin <= 0) {
+          alert('Enter a valid Buy It Now price.')
+          submitting.value = false
+          return
+        }
+        if (bin <= start) {
+          alert('Buy It Now price must be higher than the starting bid.')
+          submitting.value = false
+          return
+        }
+      }
       Object.assign(listingPayload, {
         sale_type: 'auction',
         starting_bid: start,
@@ -777,6 +863,7 @@ async function submitListing() {
         current_bidder_id: null,
         bid_count: 0,
         price: start,
+        buy_now_price: bin,
       })
       const reserve = String(reservePrice.value ?? '').trim()
       if (reserve) {
@@ -805,11 +892,37 @@ async function submitListing() {
       })
     }
 
-    const { data: row, error: insErr } = await supabase
+    let { data: row, error: insErr } = await supabase
       .from('listings')
       .insert(listingPayload)
       .select('id')
       .single()
+
+    if (insErr && /charity_percent/i.test(insErr.message || '')) {
+      const fallback = { ...listingPayload }
+      delete fallback.charity_percent
+      ;({ data: row, error: insErr } = await supabase
+        .from('listings')
+        .insert(fallback)
+        .select('id')
+        .single())
+      if (!insErr) {
+        alert('Listing saved, but charity % needs migration 016_charity_percent.sql in Supabase. Run migrations, then edit the listing.')
+      }
+    }
+
+    if (insErr && /buy_now_price/i.test(insErr.message || '')) {
+      const fallback = { ...listingPayload }
+      delete fallback.buy_now_price
+      ;({ data: row, error: insErr } = await supabase
+        .from('listings')
+        .insert(fallback)
+        .select('id')
+        .single())
+      if (!insErr) {
+        alert('Listing saved, but Buy It Now needs migration 015_auction_buy_now.sql in Supabase. Run migrations, then edit the listing.')
+      }
+    }
 
     if (insErr || !row) {
       throw new Error(insErr?.message || 'Could not create listing. Did you run the SQL migration in Supabase?')
@@ -937,6 +1050,27 @@ async function submitListing() {
 .charity-toggle input { margin-top: 4px; accent-color: var(--gold); }
 .charity-detail a { color: var(--gold); font-weight: 600; }
 .charity-pick .select { max-width: 100%; }
+.charity-percent-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.charity-pct-btn {
+  padding: 8px 14px;
+  border: 2px solid #d7dde6;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  color: #1f2937;
+}
+.charity-pct-btn.active {
+  border-color: #047857;
+  background: #ecfdf5;
+  color: #047857;
+}
+.charity-split-preview { line-height: 1.5; color: #047857; }
 .ai-desc-group .textarea {
   font-size: 0.92rem;
   line-height: 1.55;
@@ -1044,6 +1178,12 @@ async function submitListing() {
 .guarantee-check input { margin-top: 3px; accent-color: var(--gold); }
 .listing-type-selector {
   display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;
+}
+.sale-format-selector {
+  grid-template-columns: repeat(3, 1fr);
+}
+@media (max-width: 720px) {
+  .sale-format-selector { grid-template-columns: 1fr; }
 }
 .listing-type-btn {
   display: flex; flex-direction: column; align-items: center; gap: 4px;

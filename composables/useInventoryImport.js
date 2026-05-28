@@ -1,4 +1,5 @@
 import { LISTING_CATEGORIES } from '~/utils/marketplaceCategories'
+import { parseEbaySellerHtml } from '~/utils/ebayParse.js'
 
 const DEFAULT_CATEGORY = 'Sports Cards & Memorabilia'
 
@@ -40,12 +41,18 @@ function mapCsvRow (headers, cells) {
     row['item title'] ||
     row['* title'] ||
     row['product name'] ||
+    row['name'] ||
+    row['product title'] ||
     ''
   const priceRaw =
     row.price ||
     row['start price'] ||
     row['buy it now price'] ||
     row['current price'] ||
+    row['retail price'] ||
+    row['msrp'] ||
+    row['map'] ||
+    row['map price'] ||
     ''
   const price = Number.parseFloat(String(priceRaw).replace(/[^0-9.]/g, ''))
   const image =
@@ -54,10 +61,40 @@ function mapCsvRow (headers, cells) {
     row['image url'] ||
     row['gallery url'] ||
     row['item photo url'] ||
+    row['main image'] ||
+    row['image'] ||
+    row['image 1'] ||
+    row['image url 1'] ||
+    row['image1'] ||
     ''
-  const sku = row.sku || row['custom label'] || row['item id'] || ''
+  const sku =
+    row.sku ||
+    row['supplier sku'] ||
+    row['vendor sku'] ||
+    row['source sku'] ||
+    row['product sku'] ||
+    row['custom label'] ||
+    row['item id'] ||
+    row['product id'] ||
+    ''
   const desc = row.description || row['item description'] || ''
-  const external_id = sku || title.slice(0, 80)
+  const supplierSku =
+    row['supplier sku'] ||
+    row['vendor sku'] ||
+    row['source sku'] ||
+    row['doba sku'] ||
+    row['supplier_sku'] ||
+    ''
+  const wholesaleRaw =
+    row['wholesale cost'] ||
+    row['wholesale price'] ||
+    row['wholesale'] ||
+    row['cost'] ||
+    row['your cost'] ||
+    row['supplier cost'] ||
+    ''
+  const wholesale_cost = Number.parseFloat(String(wholesaleRaw).replace(/[^0-9.]/g, ''))
+  const external_id = supplierSku || sku || title.slice(0, 80)
   if (!title) return null
   return {
     external_id: String(external_id),
@@ -66,6 +103,8 @@ function mapCsvRow (headers, cells) {
     image_url: image.startsWith('http') ? image : null,
     description: desc,
     item_url: null,
+    supplier_sku: String(supplierSku || sku || '').trim() || null,
+    wholesale_cost: Number.isFinite(wholesale_cost) && wholesale_cost > 0 ? wholesale_cost : null,
   }
 }
 
@@ -89,6 +128,34 @@ export function useInventoryImport () {
   const previewError = ref('')
   const previewItems = ref([])
 
+  function applyEbayPreviewItems (items, hint) {
+    previewItems.value = (items || []).map((it) => ({
+      ...it,
+      selected: true,
+      description: '',
+    }))
+    if (!previewItems.value.length) {
+      previewError.value =
+        hint ||
+        'No listings found. Save your eBay store page as HTML and upload it here, or use CSV export.'
+    } else {
+      previewError.value = ''
+    }
+  }
+
+  /** Parse a saved eBay store/search page in the browser (works when eBay blocks servers). */
+  function previewEbayFromHtml (html, limit = 48) {
+    previewLoading.value = true
+    previewError.value = ''
+    try {
+      const items = parseEbaySellerHtml(String(html || ''), limit)
+      applyEbayPreviewItems(items)
+      return { count: items.length, items, source: 'html' }
+    } finally {
+      previewLoading.value = false
+    }
+  }
+
   async function previewEbaySeller (sellerUsername, limit = 24) {
     previewLoading.value = true
     previewError.value = ''
@@ -99,14 +166,7 @@ export function useInventoryImport () {
       })
       if (error) throw new Error(error.message || 'Preview failed')
       if (data?.error) throw new Error(data.hint || data.error)
-      previewItems.value = (data.items || []).map((it) => ({
-        ...it,
-        selected: true,
-        description: '',
-      }))
-      if (!previewItems.value.length && data?.hint) {
-        previewError.value = data.hint
-      }
+      applyEbayPreviewItems(data.items, data.hint)
       return data
     } catch (e) {
       previewError.value = e.message || 'Could not load eBay listings'
@@ -132,6 +192,9 @@ export function useInventoryImport () {
     sellerLegalName = '',
     defaultCategory = DEFAULT_CATEGORY,
     importSource = 'manual',
+    listingMode = 'direct',
+    dropshipProviderKey = '',
+    dropshipProviderName = '',
   }) {
     importLoading.value = true
     const results = { created: 0, skipped: 0, failed: 0, errors: [] }
@@ -150,11 +213,23 @@ export function useInventoryImport () {
           continue
         }
 
+        const isDropship = listingMode === 'dropship'
+        if (isDropship) {
+          const supplierSku = String(item.supplier_sku || '').trim()
+          if (!supplierSku) {
+            results.failed++
+            results.errors.push(`${item.title}: missing supplier SKU (required for Doba dropship)`)
+            continue
+          }
+        }
+
         const imagePaths = []
         if (item.image_url && /^https?:\/\//i.test(item.image_url)) {
           imagePaths.push(item.image_url)
         }
 
+        const normalizedProviderKey = String(dropshipProviderKey || '').trim()
+        const normalizedProviderName = String(dropshipProviderName || '').trim()
         const payload = {
           seller_id: user.id,
           title: String(item.title).trim().slice(0, 200),
@@ -175,6 +250,12 @@ export function useInventoryImport () {
           sale_type: 'fixed',
           import_source: importSource,
           external_listing_id: item.external_id ? String(item.external_id) : null,
+          listing_mode: isDropship ? 'dropship' : 'direct',
+          dropship_provider_key: isDropship ? (normalizedProviderKey || null) : null,
+          dropship_provider_name: isDropship ? (normalizedProviderName || null) : null,
+          dropship_sales_channel_key: isDropship ? 'the-franks-standard' : null,
+          dropship_supplier_sku: isDropship ? (String(item.supplier_sku || '').trim() || null) : null,
+          dropship_wholesale_cost: isDropship ? (item.wholesale_cost != null ? Number(item.wholesale_cost) : null) : null,
         }
 
         let { error: insErr } = await supabase.from('listings').insert(payload)
@@ -207,6 +288,7 @@ export function useInventoryImport () {
     previewError,
     previewItems,
     previewEbaySeller,
+    previewEbayFromHtml,
     setCsvPreview,
     importSelected,
     parseInventoryCsv,
