@@ -1,3 +1,4 @@
+import { diagnoseEbaySavedHtml } from '~/utils/ebayHtmlDiagnostics.js'
 import { parseEbayProspectsFromHtml } from '~/utils/ebayProspectParse.js'
 import { buildEbaySearchUrl } from '~/utils/ebaySearchUrls.js'
 
@@ -11,6 +12,7 @@ export function useEbayProspectSkim () {
   const method = ref('')
   const apiConfigured = ref(false)
   const itemsScanned = ref(0)
+  const lastUpload = ref(null)
 
   function applyProspects (data, fallbackUrl) {
     prospects.value = data?.prospects || []
@@ -19,30 +21,39 @@ export function useEbayProspectSkim () {
     method.value = data?.method || ''
     apiConfigured.value = !!data?.api_configured
     itemsScanned.value = Number(data?.items_scanned) || 0
+    if (data?.diagnostics) {
+      lastUpload.value = data.diagnostics
+    }
     error.value =
       prospects.value.length === 0
         ? data?.hint ||
           (data?.api_configured
             ? 'No sellers found — try different keywords.'
-            : 'Add eBay API keys in Supabase for full automation (docs/EBAY-API-SETUP.md).')
+            : data?.uploadHint ||
+              'No sellers found in that file. Re-save eBay after listings load (see tips above).')
         : ''
   }
 
-  function skimFromHtml (html, limit = 120) {
+  function skimFromHtml (html, limit = 120, meta = {}) {
     loading.value = true
     error.value = ''
     try {
-      const items = parseEbayProspectsFromHtml(String(html || ''), limit)
+      const raw = String(html || '')
+      const diag = diagnoseEbaySavedHtml(raw)
+      const items = parseEbayProspectsFromHtml(raw, limit)
       applyProspects(
         {
           prospects: items,
           method: 'browser_html',
           api_configured: apiConfigured.value,
           blocked: false,
+          hint: items.length ? '' : diag.hint || meta.uploadHint,
+          uploadHint: diag.hint,
+          diagnostics: { ...diag, fileName: meta.fileName || '' },
         },
         sourceUrl.value,
       )
-      return items
+      return { items, diag }
     } finally {
       loading.value = false
     }
@@ -79,6 +90,7 @@ export function useEbayProspectSkim () {
     method,
     apiConfigured,
     itemsScanned,
+    lastUpload,
     skimFromHtml,
     skimFromServer,
   }

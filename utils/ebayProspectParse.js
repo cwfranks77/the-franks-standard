@@ -52,47 +52,68 @@ function parsePrice (raw) {
   return Number.isFinite(n) && n > 0 ? n : null
 }
 
+function parseCardsFromBlocks (text, map, limit, blockRe) {
+  let card
+  while ((card = blockRe.exec(text)) !== null && map.size < limit * 2) {
+    ingestListingBlock(card[1], map)
+  }
+}
+
+function ingestListingBlock (block, map) {
+  if (/Shop on eBay|s-item__placholder/i.test(block)) return
+
+  let username =
+    block.match(/\/usr\/([A-Za-z0-9._-]{2,64})/i)?.[1] ||
+    block.match(/[?&]_ssn=([A-Za-z0-9._-]{2,64})/i)?.[1] ||
+    block.match(/"sellerUserName"\s*:\s*"([A-Za-z0-9._-]{2,64})"/i)?.[1] ||
+    block.match(/"username"\s*:\s*"([A-Za-z0-9._-]{2,64})"/i)?.[1] ||
+    null
+
+  const sellerSpan =
+    block.match(/s-item__seller-info-text[^>]*>([^<]+)</i) ||
+    block.match(/s-card__seller-info-text[^>]*>([^<]+)</i) ||
+    block.match(/class="[^"]*s-item__seller[^"]*"[^>]*>[\s\S]*?>([^<]{2,64})</i)
+  if (!username && sellerSpan) username = sellerSpan[1].trim()
+
+  username = cleanUsername(username)
+  if (!username) return
+
+  const titleMatch =
+    block.match(/s-item__title[^>]*>[\s\S]*?<[^>]+>([^<]+)</i) ||
+    block.match(/s-card__title[^>]*>([^<]+)</i) ||
+    block.match(/"title"\s*:\s*"([^"]{4,200})"/i)
+  const title = (titleMatch?.[1] || '').replace(/\s+/g, ' ').trim()
+
+  const priceMatch =
+    block.match(/s-item__price[^>]*>([^<]+)</i) ||
+    block.match(/s-card__price[^>]*>([^<]+)</i)
+  const price = priceMatch ? parsePrice(priceMatch[1]) : null
+
+  const fb = parseFeedback(block)
+  upsert(map, username, {
+    ...fb,
+    title: title && !/^shop on ebay/i.test(title) ? title : null,
+    price,
+    listing_hits: 1,
+  })
+}
+
 /** Parse sellers from eBay search results HTML. */
 export function parseEbayProspectsFromHtml (html, limit = 150) {
   const map = new Map()
   const text = String(html || '')
 
   const cardRe = /<li[^>]*class="[^"]*s-item[^"]*"[^>]*>([\s\S]*?)<\/li>/gi
-  let card
-  while ((card = cardRe.exec(text)) !== null && map.size < limit * 2) {
-    const block = card[1]
-    if (/Shop on eBay|s-item__placholder/i.test(block)) continue
+  parseCardsFromBlocks(text, map, limit, cardRe)
 
-    let username =
-      block.match(/\/usr\/([A-Za-z0-9._-]{2,64})/i)?.[1] ||
-      block.match(/[?&]_ssn=([A-Za-z0-9._-]{2,64})/i)?.[1] ||
-      null
+  const cardDivRe = /<div[^>]*class="[^"]*s-card[^"]*s-item[^"]*"[^>]*>([\s\S]*?)<\/div>/gi
+  parseCardsFromBlocks(text, map, limit, cardDivRe)
 
-    const sellerSpan =
-      block.match(/s-item__seller-info-text[^>]*>([^<]+)</i) ||
-      block.match(/s-card__seller-info-text[^>]*>([^<]+)</i)
-    if (!username && sellerSpan) username = sellerSpan[1].trim()
-
-    username = cleanUsername(username)
-    if (!username) continue
-
-    const titleMatch =
-      block.match(/s-item__title[^>]*>[\s\S]*?<[^>]+>([^<]+)</i) ||
-      block.match(/s-card__title[^>]*>([^<]+)</i)
-    const title = (titleMatch?.[1] || '').replace(/\s+/g, ' ').trim()
-
-    const priceMatch =
-      block.match(/s-item__price[^>]*>([^<]+)</i) ||
-      block.match(/s-card__price[^>]*>([^<]+)</i)
-    const price = priceMatch ? parsePrice(priceMatch[1]) : null
-
-    const fb = parseFeedback(block)
-    upsert(map, username, {
-      ...fb,
-      title: title && !/^shop on ebay/i.test(title) ? title : null,
-      price,
-      listing_hits: 1,
-    })
+  const sellerJsonRe = /"sellerUserName"\s*:\s*"([A-Za-z0-9._-]{2,64})"/gi
+  let sj
+  while ((sj = sellerJsonRe.exec(text)) !== null && map.size < limit * 2) {
+    const username = cleanUsername(sj[1])
+    if (username) upsert(map, username, { listing_hits: 1 })
   }
 
   const usrRe = /ebay\.com\/usr\/([A-Za-z0-9._-]{2,64})/gi

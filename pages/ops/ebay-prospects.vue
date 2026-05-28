@@ -4,71 +4,75 @@
       <p class="eyebrow">Owner toolkit</p>
       <h1>Find eBay sellers (easy mode)</h1>
       <p class="lead text-muted">
-        No developer account required. Open eBay, save one page, upload it here — we pull seller names for outreach.
+        Save an eBay search page, upload it here (or paste HTML). We list seller usernames for outreach.
       </p>
 
       <section class="card panel easy-hero">
-        <h2>Do this now (2 minutes)</h2>
-        <ol class="easy-steps">
-          <li>
-            <a :href="searchUrl" class="btn btn-primary" target="_blank" rel="noopener noreferrer" @click="opened = true">
-              Open eBay search ↗
-            </a>
-            Scroll so listings load (2–3 screens).
-          </li>
-          <li>
-            Press <strong>Ctrl+S</strong> (Mac: <strong>Cmd+S</strong>) → save as <strong>Webpage, HTML only</strong>.
-          </li>
-          <li>
-            <button type="button" class="btn btn-primary btn-lg upload-btn" @click="pickHtmlFile">
-              Choose saved eBay file (.html)
-            </button>
-            <span class="upload-hint">A small white window is normal — that’s Windows asking which file to upload.</span>
-            <input ref="fileInput" type="file" accept=".html,.htm,text/html" class="file-input-hidden" @change="onHtmlFile" />
-          </li>
-        </ol>
-        <p v-if="loading" class="text-muted">Reading sellers from your file…</p>
+        <h2>Upload your saved eBay page</h2>
+
+        <label
+          class="upload-zone"
+          :class="{ 'upload-zone--drag': dragOver }"
+          @dragover.prevent="dragOver = true"
+          @dragleave.prevent="dragOver = false"
+          @drop.prevent="onDrop"
+        >
+          <span class="upload-zone-title">Tap or click here to choose your .html file</span>
+          <span class="upload-zone-sub">Windows may open a file picker — or drag the file onto this box.</span>
+          <input
+            ref="fileInput"
+            type="file"
+            accept=".html,.htm,text/html"
+            class="upload-zone-input"
+            @change="onHtmlFile"
+          />
+        </label>
+
+        <details class="paste-fallback">
+          <summary>File picker not opening? Paste HTML instead</summary>
+          <textarea
+            v-model="htmlPaste"
+            class="input paste-area"
+            rows="6"
+            placeholder="Open your saved .html file in Notepad, Ctrl+A, Ctrl+C, paste here"
+          />
+          <button type="button" class="btn btn-outline btn-sm mt-1" :disabled="loading || !htmlPaste.trim()" @click="parsePaste">
+            Parse pasted HTML
+          </button>
+        </details>
+
+        <p v-if="loading" class="text-muted mt-1">Reading your file…</p>
+
+        <div v-if="lastUpload" class="upload-report">
+          <p><strong>Last file:</strong> {{ lastUpload.fileName || '(pasted HTML)' }} — {{ formatKb(lastUpload.bytes) }}</p>
+          <p class="small text-muted">
+            Listings in file: {{ lastUpload.itemCount }} item links · {{ lastUpload.usrCount }} seller profile links
+            <span v-if="lastUpload.hasSItem || lastUpload.hasSCard"> · eBay listing markup detected</span>
+          </p>
+        </div>
       </section>
 
-      <details class="card panel">
-        <summary>Optional: niche presets (change search before step 1)</summary>
-        <div class="preset-row">
-          <button
-            v-for="p in presets"
-            :key="p.id"
-            type="button"
-            class="btn btn-outline btn-sm"
-            @click="applyPreset(p)"
-          >
-            {{ p.label }}
-          </button>
-        </div>
-        <label class="label">Keywords</label>
-        <input v-model="keywords" class="input" />
-        <label class="label mt">Category ID</label>
-        <input v-model="categoryId" class="input" />
-      </details>
+      <section class="card panel steps-panel">
+        <h2>Before you upload (on eBay)</h2>
+        <ol class="easy-steps">
+          <li>
+            <a :href="searchUrl" class="btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer">Open eBay search ↗</a>
+            Scroll until many listings show. Wait ~5 seconds.
+          </li>
+          <li><strong>Ctrl+S</strong> → try <strong>Webpage, Complete</strong> if <strong>HTML only</strong> gives 0 sellers.</li>
+        </ol>
+      </section>
 
-      <details class="card panel">
-        <summary>Advanced: auto-skim (needs eBay developer keys in Supabase)</summary>
-        <p class="text-muted small">
-          Production Browse API often needs eBay approval. Until then, use easy mode above.
-        </p>
-        <button type="button" class="btn btn-outline btn-sm" :disabled="loading" @click="runAutoSkim">
-          {{ loading ? 'Working…' : 'Try API skim' }}
-        </button>
-        <p v-if="method === 'ebay_browse_api'" class="ok-text">API connected — {{ itemsScanned }} listings scanned</p>
-      </details>
+      <p v-if="error" class="error-text" role="alert">{{ error }}</p>
 
-      <p v-if="error" class="error-text">{{ error }}</p>
-
-      <section v-if="prospects.length" class="card panel">
+      <section v-if="prospects.length" class="card panel results-panel">
         <div class="panel-head">
-          <h2>{{ filteredProspects.length }} sellers found</h2>
+          <h2>{{ filteredProspects.length }} sellers found — you’re done</h2>
           <button type="button" class="btn btn-outline btn-sm" @click="copyCsv">
             {{ csvCopied ? 'Copied' : 'Copy CSV' }}
           </button>
         </div>
+        <p class="text-muted small">Click a username → eBay profile → <strong>Contact seller</strong>. Use Copy CSV to track outreach.</p>
         <div class="table-wrap">
           <table class="prospect-table">
             <thead>
@@ -117,23 +121,23 @@ import { buildProspectOutreachMailto } from '~/utils/prospectOutreach.js'
 definePageMeta({ middleware: 'ops-auth' })
 useSeoMeta({ title: 'Find eBay sellers — Ops', robots: 'noindex' })
 
-const presets = EBAY_PROSPECT_PRESETS
 const keywords = ref('sports cards PSA')
 const categoryId = ref('2536')
 const minFeedback = ref(0)
 const csvCopied = ref(false)
-const opened = ref(false)
 const fileInput = ref(null)
+const htmlPaste = ref('')
+const dragOver = ref(false)
 
 const {
   loading,
-  error,
+  error: skimError,
   prospects,
-  method,
-  itemsScanned,
+  lastUpload,
   skimFromHtml,
-  skimFromServer,
 } = useEbayProspectSkim()
+
+const error = skimError
 
 const searchUrl = computed(() =>
   buildEbaySearchUrl({ keywords: keywords.value, categoryId: categoryId.value, itemsPerPage: 120 }),
@@ -144,25 +148,39 @@ const filteredProspects = computed(() => {
   return prospects.value.filter((p) => p.feedback_pct == null || p.feedback_pct >= min)
 })
 
-function applyPreset (p) {
-  keywords.value = p.keywords
-  categoryId.value = p.categoryId || ''
+function formatKb (bytes) {
+  const n = Number(bytes) || 0
+  if (n < 1024) return `${n} bytes`
+  return `${(n / 1024).toFixed(1)} KB`
 }
 
-function pickHtmlFile () {
-  fileInput.value?.click()
+function readHtmlFile (file) {
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = () => {
+    skimFromHtml(reader.result, 150, { fileName: file.name })
+  }
+  reader.readAsText(file)
 }
 
 function onHtmlFile (e) {
   const file = e.target.files?.[0]
-  if (!file) return
-  const reader = new FileReader()
-  reader.onload = () => skimFromHtml(reader.result, 150)
-  reader.readAsText(file)
+  readHtmlFile(file)
+  if (fileInput.value) fileInput.value.value = ''
 }
 
-async function runAutoSkim () {
-  await skimFromServer({ keywords: keywords.value.trim(), categoryId: categoryId.value.trim(), limit: 80 })
+function onDrop (e) {
+  dragOver.value = false
+  const file = e.dataTransfer?.files?.[0]
+  if (file && /\.html?$/i.test(file.name)) {
+    readHtmlFile(file)
+  } else {
+    error.value = 'Drop a .html or .htm file from your eBay save.'
+  }
+}
+
+function parsePaste () {
+  skimFromHtml(htmlPaste.value, 150, { fileName: 'pasted.html' })
 }
 
 function outreachMailto (row) {
@@ -185,23 +203,49 @@ async function copyCsv () {
 .card.panel { padding: 1.25rem; margin-bottom: 1rem; }
 .easy-hero { border-color: rgba(247, 202, 0, 0.35); }
 .easy-hero h2 { color: var(--gold); margin-bottom: 1rem; }
-.easy-steps { line-height: 1.7; padding-left: 1.2rem; }
-.easy-steps li { margin-bottom: 1rem; }
-.file-input-hidden { position: absolute; width: 0; height: 0; opacity: 0; pointer-events: none; }
-.upload-btn { margin-top: 8px; }
-.upload-hint { display: block; margin-top: 10px; font-size: 0.88rem; color: #9ca3af; max-width: 520px; line-height: 1.5; }
-.preset-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
-.label { display: block; font-size: 0.85rem; color: #9ca3af; margin-bottom: 4px; }
-.mt { margin-top: 8px; }
-.error-text { color: #f87171; }
-.ok-text { color: #86efac; font-size: 0.9rem; }
+.upload-zone {
+  display: block;
+  position: relative;
+  padding: 2rem 1.25rem;
+  border: 2px dashed rgba(247, 202, 0, 0.55);
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  background: rgba(247, 202, 0, 0.06);
+}
+.upload-zone--drag { background: rgba(247, 202, 0, 0.14); border-color: var(--gold); }
+.upload-zone-title { display: block; font-weight: 700; font-size: 1.05rem; color: var(--gold); }
+.upload-zone-sub { display: block; margin-top: 8px; font-size: 0.88rem; color: #9ca3af; }
+.upload-zone-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.paste-fallback { margin-top: 1rem; }
+.paste-fallback summary { cursor: pointer; color: #93c5fd; font-size: 0.9rem; }
+.paste-area { width: 100%; margin-top: 8px; font-family: inherit; min-height: 120px; }
+.mt-1 { margin-top: 10px; }
+.upload-report {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+.steps-panel h2 { font-size: 1rem; color: var(--gold); }
+.easy-steps { line-height: 1.65; padding-left: 1.2rem; margin: 0.5rem 0 0; }
+.easy-steps li { margin-bottom: 0.65rem; }
+.error-text { color: #f87171; padding: 0.75rem 1rem; background: rgba(248, 113, 113, 0.1); border-radius: 8px; }
+.results-panel h2 { color: #86efac; }
 .panel-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-.table-wrap { overflow-x: auto; }
+.table-wrap { overflow-x: auto; margin-top: 12px; }
 .prospect-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
 .prospect-table th, .prospect-table td { padding: 8px 10px; border-bottom: 1px solid #374151; }
 .sample { max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .link-sm { color: #93c5fd; }
 .back-link { margin-top: 1.5rem; }
-summary { cursor: pointer; color: var(--gold); font-weight: 600; }
-.small { font-size: 0.88rem; }
+.small { font-size: 0.85rem; }
 </style>
