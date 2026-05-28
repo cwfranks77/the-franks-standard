@@ -21,6 +21,7 @@ jobs:
           npx supabase@latest link --project-ref rochesyrxiyrxhzmkuwk
           npx supabase@latest functions deploy submit-contact --no-verify-jwt
           npx supabase@latest functions deploy ebay-seller-preview --no-verify-jwt
+          npx supabase@latest functions deploy ebay-prospect-skim --no-verify-jwt
           npx supabase@latest functions deploy promo-availability --no-verify-jwt
           npx supabase@latest functions deploy redeem-promo-code --no-verify-jwt
           npx supabase@latest functions deploy create-checkout-session

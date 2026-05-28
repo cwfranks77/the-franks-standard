@@ -43,6 +43,7 @@
           <NuxtLink to="/ops/status" class="btn btn-dark btn-lg">Transaction readiness</NuxtLink>
           <NuxtLink to="/ops/test-checkout" class="btn btn-primary btn-lg">Run QA tests</NuxtLink>
           <NuxtLink to="/ops/mail-setup" class="btn btn-outline btn-lg">Fix info@ on phone</NuxtLink>
+          <NuxtLink to="/ops/ebay-prospects" class="btn btn-primary btn-lg">eBay seller skim</NuxtLink>
         </div>
         <div class="free-access-perks">
           <div class="perk-item"><span class="perk-check">✓</span> Listing fees waived</div>
@@ -101,6 +102,7 @@
             <li><NuxtLink to="/ops/dropship"><strong>Dropship automation</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/ads"><strong>Social Media Ads</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/marketing"><strong>Marketing &amp; get found</strong></NuxtLink></li>
+            <li><NuxtLink to="/ops/ebay-prospects"><strong>eBay seller prospect skim</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/status"><strong>Transaction readiness</strong></NuxtLink></li>
           </ul>
         </section>

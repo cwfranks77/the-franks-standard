@@ -17,6 +17,18 @@
         <p class="text-muted small">Full playbook: <code>docs/GET-FOUND-AND-GROW.md</code> in the repo.</p>
       </section>
 
+      <section class="mkt-card mkt-alert">
+        <h2>eBay seller prospect skim</h2>
+        <p class="text-muted">
+          Find possible sellers on eBay by category/keyword — extract usernames and store links for outreach.
+          Owner-only:
+          <NuxtLink to="/ops/ebay-prospects">Open eBay seller skim</NuxtLink>.
+        </p>
+        <p class="text-muted small">
+          Different from <NuxtLink to="/sell/import">/sell/import</NuxtLink>, which helps an existing seller copy <em>their own</em> listings onto Franks Standard.
+        </p>
+      </section>
+
       <section class="mkt-card">
         <h2>Search engines — do today (30 min)</h2>
         <ol class="mkt-steps">
