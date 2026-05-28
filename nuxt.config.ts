@@ -68,6 +68,8 @@ export default defineNuxtConfig({
       brandyStoreOnHold: process.env.NUXT_PUBLIC_BRANDY_STORE_ON_HOLD ?? 'true',
       androidApkUrl: process.env.NUXT_PUBLIC_ANDROID_APK_URL || '',
       windowsInstallerUrl: process.env.NUXT_PUBLIC_WINDOWS_INSTALLER_URL || '',
+      gadsId: process.env.NUXT_PUBLIC_GADS_ID || '',
+      gadsConversionLabel: process.env.NUXT_PUBLIC_GADS_CONVERSION_LABEL || '',
     },
   },
 
@@ -181,5 +183,5 @@ export default defineNuxtConfig({
     },
   },
 
-  css: ['~/assets/css/main.css'],
+  css: ['~/assets/css/main.css', '~/assets/css/marketplace-ui.css'],
 })

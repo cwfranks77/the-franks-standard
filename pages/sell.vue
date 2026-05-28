@@ -12,9 +12,7 @@
             <strong>Coming from eBay or another marketplace?</strong>
             Import your inventory in minutes — skim eBay or upload CSV, then publish here with escrow checkout.
           </p>
-          <NuxtLink to="/sell/import" class="btn btn-primary btn-sm">Import inventory</NuxtLink>
-          <NuxtLink to="/sellers/switch" class="btn btn-outline btn-sm">Switching guide</NuxtLink>
-          <NuxtLink to="/seller-tools" class="btn btn-outline btn-sm">Appraisal &amp; comp tools</NuxtLink>
+          <MarketplacePageDock :tiles="sellDockTiles" aria-label="Seller shortcuts" />
         </div>
 
         <div v-if="isOwner" class="sell-owner-banner" role="status">
@@ -463,6 +461,13 @@ import { CHARITY_OPTIONS, charityByKey } from '~/utils/charities.js'
 import { calcCharitySplit, CHARITY_PERCENT_PRESETS } from '~/utils/charitySplit.js'
 import { auctionEndsAtFromDays } from '~/utils/auctionHelpers.js'
 import { DROPSHIP_PROVIDER_CATALOG, useSellerDropship } from '~/composables/useSellerDropship.js'
+
+const sellDockTiles = [
+  { to: '/sell/import', icon: '📥', label: 'Import inventory', hint: 'eBay CSV or store', variant: 'primary' },
+  { to: '/sellers/switch', icon: '↔️', label: 'Switching guide', hint: 'From eBay or elsewhere', variant: 'accent' },
+  { to: '/seller-tools', icon: '📊', label: 'Appraisal tools', hint: 'Comps & pricing help' },
+  { to: '/join/founders10', icon: '🎁', label: 'FOUNDERS10', hint: '3 mo Pro free', variant: 'dark' },
+]
 
 const charities = CHARITY_OPTIONS
 

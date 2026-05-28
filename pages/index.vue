@@ -14,11 +14,7 @@
             Every listing ships a COA or a signed, in-platform guarantee. Escrow, buyer confirm, and a permanent ban
             for fraud. This is the collector economy, not the endless scroll.
           </p>
-          <div class="hero-actions">
-            <NuxtLink to="/browse" class="btn btn-primary btn-lg">Browse marketplace</NuxtLink>
-            <NuxtLink to="/auth/register" class="btn btn-outline btn-lg">Start free — 10 listings on us</NuxtLink>
-            <NuxtLink to="/pricing" class="btn btn-dark btn-lg">See pricing (from 4% on sales)</NuxtLink>
-          </div>
+          <HomeActionDock />
           <p class="hero-help text-muted">
             Need help getting in?
             <a href="tel:+18778370527">(877) 837-0527</a> ·
@@ -57,12 +53,20 @@
             No ticket queues. No 7&ndash;10 business day waits.
           </p>
         </div>
-        <div class="founder-bar-actions">
-          <a href="tel:+18778370527" class="btn btn-outline btn-sm">Call (877) 837-0527</a>
-          <NuxtLink to="/open-door" class="btn btn-primary btn-sm">Open Door Policy &rarr;</NuxtLink>
+        <div class="action-dock founder-bar-dock">
+          <a href="tel:+18778370527" class="action-tile">
+            <span class="action-tile-label">Call founder</span>
+            <span class="action-tile-hint">(877) 837-0527</span>
+          </a>
+          <NuxtLink to="/open-door" class="action-tile action-tile--primary">
+            <span class="action-tile-label">Open Door Policy</span>
+            <span class="action-tile-hint">Feedback read personally</span>
+          </NuxtLink>
         </div>
       </div>
     </section>
+
+    <HomeLiveNow />
 
     <HomeBrowsePreview />
 
@@ -144,14 +148,15 @@
       <div class="container">
         <h2 class="section-title text-center">Curated for serious inventory</h2>
         <p class="section-subtitle text-center text-muted">If it belongs on a stage, a slab, a wall, or a rack — and it is real</p>
-        <div class="grid grid-4 mt-4">
+        <div class="category-shelf mt-4">
           <NuxtLink
-            v-for="cat in categories"
+            v-for="(cat, i) in categories"
             :key="cat.name"
             :to="{ path: '/browse', query: { category: cat.name } }"
-            class="category-card"
+            class="category-shelf-tile"
+            :style="{ '--i': i }"
           >
-            <div class="category-emoji">{{ cat.icon }}</div>
+            <span class="category-shelf-emoji" aria-hidden="true">{{ cat.icon }}</span>
             <h4>{{ cat.name }}</h4>
             <p>{{ cat.desc }}</p>
           </NuxtLink>
@@ -368,8 +373,9 @@ const categories = CATEGORY_CATALOG
 .hero-grid {
   position: relative;
   display: grid;
-  grid-template-columns: 1.08fr 0.92fr;
-  gap: 40px;
+  grid-template-columns: 1fr;
+  max-width: 760px;
+  gap: 24px;
   align-items: center;
 }
 .hero-pulse-ribbon {
@@ -549,16 +555,14 @@ const categories = CATEGORY_CATALOG
   line-height: 1.5;
 }
 .founder-bar-text strong { color: #111827; font-weight: 900; }
-.founder-bar-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  flex: 0 0 auto;
+.founder-bar-dock {
+  flex: 0 1 340px;
+  margin: 0;
+  grid-template-columns: 1fr 1fr;
 }
 @media (max-width: 640px) {
   .founder-bar-inner { flex-direction: column; align-items: flex-start; }
-  .founder-bar-actions { width: 100%; }
-  .founder-bar-actions .btn { flex: 1 1 auto; text-align: center; }
+  .founder-bar-dock { width: 100%; flex: 1 1 100%; }
 }
 
 .activity-ticker {

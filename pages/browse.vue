@@ -12,6 +12,8 @@
         </p>
       </div>
 
+      <MarketplacePageDock :tiles="browseDockTiles" aria-label="Browse shortcuts" />
+
       <!-- Filters -->
       <p v-if="loadError" class="text-muted" style="max-width: 640px;">
         Could not load listings (check Supabase env and the SQL migration in the repo was run in your project). {{ loadError }}
@@ -95,6 +97,13 @@ import { LISTING_CATEGORIES } from '~/utils/marketplaceCategories'
 
 const { publicUrlForPath } = useListingImageUrl()
 const supabase = useSupabaseClient()
+
+const browseDockTiles = [
+  { to: '/sell', icon: '📤', label: 'Sell an item', hint: 'COA or signed guarantee', variant: 'primary' },
+  { to: '/sell/import', icon: '📥', label: 'Import from eBay', hint: 'CSV or store link', variant: 'accent' },
+  { to: '/categories', icon: '🏷️', label: 'Categories', hint: 'Curated niches' },
+  { to: '/join/founders10', icon: '🎁', label: 'FOUNDERS10', hint: '3 mo Pro free', variant: 'dark' },
+]
 
 const searchQuery = ref('')
 const selectedCategory = ref('')

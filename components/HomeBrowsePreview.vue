@@ -13,7 +13,7 @@
             <NuxtLink v-if="liveListingCount > 0" to="/browse" class="live-count-link">{{ liveListingCount }} live listing{{ liveListingCount === 1 ? '' : 's' }} on the floor now →</NuxtLink>
           </p>
         </div>
-        <NuxtLink to="/browse" class="btn btn-primary btn-lg home-browse-cta">Browse marketplace</NuxtLink>
+        <NuxtLink to="/browse" class="action-tile action-tile--primary home-browse-cta">Browse marketplace</NuxtLink>
       </header>
 
       <div class="home-browse-grid">
@@ -41,9 +41,19 @@
         </NuxtLink>
       </div>
 
-      <div class="home-browse-foot">
-        <NuxtLink to="/browse" class="btn btn-dark btn-lg">Browse all listings →</NuxtLink>
-        <NuxtLink to="/sell" class="btn btn-outline btn-lg">List your item</NuxtLink>
+      <div class="action-dock home-browse-foot">
+        <NuxtLink to="/browse" class="action-tile action-tile--dark">
+          <span class="action-tile-label">Browse all listings →</span>
+          <span class="action-tile-hint">COA or guarantee on every item</span>
+        </NuxtLink>
+        <NuxtLink to="/sell" class="action-tile action-tile--primary">
+          <span class="action-tile-label">List your item</span>
+          <span class="action-tile-hint">Free to list · escrow checkout</span>
+        </NuxtLink>
+        <NuxtLink to="/sell/import" class="action-tile action-tile--accent">
+          <span class="action-tile-label">Import from eBay</span>
+          <span class="action-tile-hint">Bring your catalog here</span>
+        </NuxtLink>
       </div>
     </div>
   </section>
@@ -150,7 +160,17 @@ onMounted(() => {
   text-decoration: none;
 }
 .live-count-link:hover { text-decoration: underline; }
-.home-browse-cta { flex-shrink: 0; }
+.home-browse-cta {
+  flex-shrink: 0;
+  text-decoration: none;
+  min-width: 180px;
+}
+.home-browse-foot {
+  margin-top: 32px;
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+}
 .home-browse-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -255,13 +275,6 @@ onMounted(() => {
   font-size: 0.88rem;
   font-weight: 700;
   color: #146eb4;
-}
-.home-browse-foot {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  justify-content: center;
-  margin-top: 32px;
 }
 @media (prefers-reduced-motion: reduce) {
   .home-browse-card { animation: none; }

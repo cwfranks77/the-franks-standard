@@ -4,9 +4,9 @@
       <div class="container site-ribbon-inner">
         <span class="ribbon-txt">COA or signed guarantee on every listing</span>
         <span class="ribbon-dot" aria-hidden="true" />
-        <span class="ribbon-txt">Escrow &amp; buyer confirmation</span>
+        <span class="ribbon-txt">Escrow until buyer confirms — not MBG yet</span>
         <span class="ribbon-dot" aria-hidden="true" />
-        <span class="ribbon-txt">Zero tolerance for fakes</span>
+        <span class="ribbon-txt">4–5% seller fees · FOUNDERS10: 3 mo Pro free</span>
       </div>
     </div>
     <header class="site-header">
@@ -30,55 +30,14 @@
         </div>
 
         <nav class="header-nav" :class="{ open: menuOpen }">
-          <NuxtLink to="/video" class="nav-link" @click="closeAllNav">Video</NuxtLink>
-          <NuxtLink to="/browse" class="nav-link" @click="closeAllNav">Browse</NuxtLink>
-          <NuxtLink to="/sellers" class="nav-link" @click="closeAllNav">For sellers</NuxtLink>
-          <NuxtLink to="/pricing" class="nav-link nav-highlight" @click="closeAllNav">Pricing</NuxtLink>
-          <a href="tel:+18778370527" class="nav-link nav-phone" @click="closeAllNav">(877) 837-0527</a>
-          <NuxtLink to="/support" class="nav-link" @click="closeAllNav">Support</NuxtLink>
-          <NuxtLink to="/open-door" class="nav-link" @click="closeAllNav">Open Door</NuxtLink>
-          <NuxtLink to="/contact" class="nav-link" @click="closeAllNav">Contact</NuxtLink>
-          <div
-            class="nav-more"
-            :class="{ open: moreOpen }"
-            @mouseenter="onNavMoreEnter"
-            @mouseleave="onNavMoreLeave"
-          >
-            <button
-              type="button"
-              class="nav-more-btn"
-              :aria-expanded="moreOpen"
-              @click.stop="toggleExplore"
-            >
-              Explore
-              <span class="chev" aria-hidden="true" />
-            </button>
-            <div v-show="moreOpen" class="nav-more-panel" @click.stop>
-              <NuxtLink to="/categories" class="nav-drop-link" @click="closeAllNav">Categories A to Z</NuxtLink>
-              <NuxtLink to="/how-it-works" class="nav-drop-link" @click="closeAllNav">How it works</NuxtLink>
-              <NuxtLink to="/pricing" class="nav-drop-link" @click="closeAllNav">Pricing</NuxtLink>
-              <NuxtLink to="/launch-offer" class="nav-drop-link" @click="closeAllNav">Launch offer (new sellers)</NuxtLink>
-              <NuxtLink to="/join/founders10" class="nav-drop-link" @click="closeAllNav">Founding sellers (FOUNDERS10)</NuxtLink>
-              <NuxtLink to="/honor" class="nav-drop-link" @click="closeAllNav">Honor our heroes (HONOR26)</NuxtLink>
-              <NuxtLink to="/store-builder" class="nav-drop-link" @click="closeAllNav">AI Store Builder</NuxtLink>
-              <NuxtLink to="/seller-tools" class="nav-drop-link" @click="closeAllNav">Seller tools (appraisers &amp; comps)</NuxtLink>
-              <NuxtLink to="/top-sellers" class="nav-drop-link" @click="closeAllNav">Top sellers &amp; rewards</NuxtLink>
-              <NuxtLink to="/about" class="nav-drop-link" @click="closeAllNav">Our story and mission</NuxtLink>
-              <NuxtLink to="/support" class="nav-drop-link" @click="closeAllNav">Support and tech</NuxtLink>
-              <NuxtLink to="/contact" class="nav-drop-link" @click="closeAllNav">Get in touch</NuxtLink>
-              <NuxtLink to="/compare" class="nav-drop-link" @click="closeAllNav">How we compare</NuxtLink>
-              <NuxtLink to="/terms" class="nav-drop-link" @click="closeAllNav">Terms</NuxtLink>
-              <NuxtLink to="/privacy" class="nav-drop-link" @click="closeAllNav">Privacy</NuxtLink>
-              <NuxtLink to="/prohibited-items" class="nav-drop-link" @click="closeAllNav">Prohibited items</NuxtLink>
-              <NuxtLink to="/pay" class="nav-drop-link" @click="closeAllNav">Pay &amp; fees (Stripe)</NuxtLink>
-              <NuxtLink to="/download" class="nav-drop-link" @click="closeAllNav">Download app</NuxtLink>
-              <NuxtLink to="/roadmap" class="nav-drop-link" @click="closeAllNav">Launch Roadmap</NuxtLink>
-            </div>
+          <div class="header-quick-dock">
+            <NuxtLink to="/browse" class="quick-tile" @click="closeAllNav">Browse</NuxtLink>
+            <NuxtLink to="/sell" class="quick-tile quick-tile--gold" @click="closeAllNav">Sell</NuxtLink>
+            <a href="tel:+18778370527" class="quick-tile" @click="closeAllNav">Call</a>
           </div>
-          <NuxtLink to="/sell" class="nav-link" @click="closeAllNav">Sell</NuxtLink>
-          <NuxtLink to="/download" class="nav-link nav-highlight" @click="closeAllNav">Download app</NuxtLink>
-          <NuxtLink to="/auth/login" class="btn btn-outline btn-sm" @click="closeAllNav">Sign In</NuxtLink>
-          <NuxtLink to="/auth/register" class="btn btn-primary btn-sm" @click="closeAllNav">Join Free</NuxtLink>
+          <NavExploreMega @navigate="closeAllNav" />
+          <NuxtLink to="/auth/login" class="quick-tile" @click="closeAllNav">Sign in</NuxtLink>
+          <NuxtLink to="/auth/register" class="quick-tile quick-tile--gold" @click="closeAllNav">Join free</NuxtLink>
         </nav>
 
         <button class="menu-toggle" @click="menuOpen = !menuOpen" aria-label="Toggle menu">
@@ -88,11 +47,12 @@
     </header>
 
     <div class="site-trust" aria-label="Why buyers and sellers use this marketplace">
-      <div class="container site-trust-inner">
-        <NuxtLink to="/pay" class="trust-pill">Stripe checkout + tax at billing address</NuxtLink>
-        <NuxtLink to="/sell" class="trust-pill">Seller &amp; buyer tools</NuxtLink>
-        <NuxtLink to="/video" class="trust-pill">Video meet built in</NuxtLink>
-        <NuxtLink to="/support" class="trust-pill">Help with mic, email, or live Video</NuxtLink>
+      <div class="container trust-chip-row">
+        <NuxtLink to="/how-it-works" class="trust-chip">Escrow · buyer confirms delivery</NuxtLink>
+        <NuxtLink to="/sell/import" class="trust-chip">Import from eBay</NuxtLink>
+        <NuxtLink to="/store-builder" class="trust-chip">AI Store Builder</NuxtLink>
+        <NuxtLink to="/video" class="trust-chip">Video inspect</NuxtLink>
+        <NuxtLink to="/join/founders10" class="trust-chip">FOUNDERS10 · 3 mo Pro</NuxtLink>
       </div>
     </div>
 
@@ -228,17 +188,7 @@ const { grant } = useOpsSession()
 const { isOwner } = useOwnerMode()
 
 const menuOpen = ref(false)
-const moreOpen = ref(false)
 const onHome = computed(() => route.path === '/')
-
-let exploreHoverOk = true
-onMounted(() => {
-  if (!import.meta.client) { return }
-  const mq = window.matchMedia('(min-width: 769px)')
-  const sync = () => { exploreHoverOk = mq.matches }
-  sync()
-  mq.addEventListener('change', sync)
-})
 
 const opModalOpen = ref(false)
 const opPhrase = ref('')
@@ -277,17 +227,6 @@ watch(
 
 function closeAllNav () {
   menuOpen.value = false
-  moreOpen.value = false
-}
-
-function onNavMoreEnter () {
-  if (import.meta.client && exploreHoverOk) { moreOpen.value = true }
-}
-function onNavMoreLeave () {
-  if (import.meta.client && exploreHoverOk) { moreOpen.value = false }
-}
-function toggleExplore () {
-  moreOpen.value = !moreOpen.value
 }
 
 /**
@@ -501,12 +440,15 @@ async function submitOpModal () {
   }
   .header-nav.open { display: flex; }
   .nav-more { width: 100%; }
-  .nav-more-panel {
+  .nav-mega-panel {
     position: static;
     margin-top: 8px;
     width: 100%;
+    grid-template-columns: 1fr;
     box-shadow: none;
   }
+  .header-quick-dock { width: 100%; justify-content: stretch; }
+  .quick-tile { flex: 1; justify-content: center; }
 }
 
 .site-main { min-height: calc(100vh - 70px - 300px); }
