@@ -1,5 +1,20 @@
 # The Franks Standard - Social Media Ad Campaign
 
+**Live copy (ops UI):** `/ops/ads` — includes X rebrand from ZFuel, Facebook, Instagram, TikTok, Telegram.  
+**Automated posts:** `npm run post:social` · **X profile API:** `npm run x:rebrand` · shared strings: `utils/socialBrandCopy.cjs`
+
+### Platform features to highlight (2026)
+- COA or signed guarantee on every listing · permanent ban for counterfeits
+- Stripe escrow · sale fees 4–5% by plan (3% launch)
+- AI Store Builder · **full AI dropship setup** (`/sell/dropship-setup?ai=1`)
+- **eBay Seller Hub CSV import** (`/sell/import`)
+- Auctions · Buy It Now · video rooms · seller reviews / top sellers
+- FOUNDERS10 (10 spots) · HONOR26 (military/first responders)
+- (877) 837-0527 · Founder Charles Franks · Open Door policy
+- **Profile image:** `public/franks-pavilion.png` (not ZFuel branding)
+
+---
+
 ## Target Audience
 Sellers of authentic collectibles, memorabilia, accessories, and specialty goods who are frustrated with buyer distrust and scam accusations on other platforms.
 
@@ -172,6 +187,12 @@ Text: "COA Required. Always."
 5. **X/Twitter**: Engage with collector communities, share marketplace updates
 
 ---
+
+## X (Twitter) rebrand from ZFuel
+- [ ] Run `npm run x:rebrand` (name, bio, URL, profile photo)
+- [ ] Manually change `@zfuel` → `@thefranksstandard` in X settings
+- [ ] Replace header/banner with Franks brand art
+- [ ] Pin tweet using copy from `/ops/ads` → X section
 
 ## Quick-Start Checklist
 - [ ] Create business social media accounts (@thefranksstandard)

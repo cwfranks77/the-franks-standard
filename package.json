@@ -12,6 +12,7 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "post:social": "node scripts/post-franks-social.cjs",
+    "x:rebrand": "node scripts/update-x-profile.cjs",
     "post:social:founders": "node scripts/post-franks-social.cjs --founders",
     "post:social:honor": "node scripts/post-franks-social.cjs --honor",
     "secrets:push-x": "powershell -ExecutionPolicy Bypass -File scripts/push-x-secrets.ps1",
