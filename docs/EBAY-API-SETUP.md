@@ -12,24 +12,27 @@ Required OAuth scope (default for client credentials):
 
 - `https://api.ebay.com/oauth/api_scope`
 
-## 2. Add secrets to Supabase
+## 2. Add secrets to Supabase (one command)
 
-From the repo root (PowerShell), with real values in `.env` or paste when prompted:
-
-```powershell
-supabase link --project-ref rochesyrxiyrxhzmkuwk
-supabase secrets set EBAY_CLIENT_ID=YourAppIdHere
-supabase secrets set EBAY_CLIENT_SECRET=YourCertIdHere
-supabase secrets set EBAY_MARKETPLACE_ID=EBAY_US
-```
-
-Or run:
+From the repo root (PowerShell). You will be prompted for App ID and Cert ID unless they are in `.env` or `franks-standard-credentials/ebay.env`:
 
 ```powershell
-.\scripts\push-ebay-api-secrets.ps1
+npm run ebay:setup
 ```
 
-GitHub Actions deploys functions automatically; secrets are read at runtime.
+That script:
+
+1. Saves keys to `franks-standard-credentials/ebay.env` (never committed)
+2. Sets GitHub secrets `EBAY_CLIENT_ID` and `EBAY_CLIENT_SECRET`
+3. Pushes to Supabase Edge secrets on project `rochesyrxiyrxhzmkuwk` (paste `sbp_` token if asked)
+
+Or trigger from GitHub after secrets exist:
+
+```powershell
+gh workflow run push-supabase-ebay-secrets.yml --repo cwfranks77/the-franks-standard
+```
+
+Edge functions read secrets at runtime — no redeploy required after pushing secrets.
 
 ## 3. Verify
 

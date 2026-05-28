@@ -33,7 +33,10 @@
     "health": "node scripts/health-check.cjs",
     "mail:test": "node scripts/test-mailbox.cjs",
     "mail:fix": "node scripts/apply-email-password.cjs",
-    "namecheap:recover": "powershell -ExecutionPolicy Bypass -File scripts/namecheap-recover.ps1"
+    "namecheap:recover": "powershell -ExecutionPolicy Bypass -File scripts/namecheap-recover.ps1",
+    "mail:set-now": "powershell -ExecutionPolicy Bypass -File scripts/set-mailbox-now.ps1",
+    "ebay:setup": "powershell -ExecutionPolicy Bypass -File scripts/setup-ebay-api.ps1",
+    "ebay:secrets": "powershell -ExecutionPolicy Bypass -File scripts/push-ebay-api-secrets.ps1"
   },
   "dependencies": {
     "@nuxtjs/supabase": "^2.0.6",

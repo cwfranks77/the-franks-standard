@@ -3,13 +3,22 @@
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
-$envFile = Join-Path $root '.env'
-if (Test-Path $envFile) {
+$credEbay = Join-Path (Split-Path -Parent $root) 'franks-standard-credentials\ebay.env'
+foreach ($envFile in @(
+  (Join-Path $root '.env'),
+  (Join-Path $root '.env.local'),
+  $credEbay
+)) {
+  if (-not (Test-Path $envFile)) { continue }
   Get-Content $envFile | ForEach-Object {
     if ($_ -match '^\s*([A-Za-z_][A-Za-z0-9_]*)=(.*)$') {
       [Environment]::SetEnvironmentVariable($matches[1], $matches[2].Trim(), 'Process')
     }
   }
+}
+
+if ($env:SUPABASE_ACCESS_TOKEN) {
+  $env:SUPABASE_ACCESS_TOKEN = $env:SUPABASE_ACCESS_TOKEN
 }
 
 $id = $env:EBAY_CLIENT_ID
@@ -21,13 +30,17 @@ if (-not $id -or -not $secret) {
 }
 
 Push-Location $root
-npx supabase@latest link --project-ref rochesyrxiyrxhzmkuwk
-npx supabase@latest secrets set "EBAY_CLIENT_ID=$id"
-npx supabase@latest secrets set "EBAY_CLIENT_SECRET=$secret"
-if ($env:EBAY_MARKETPLACE_ID) {
-  npx supabase@latest secrets set "EBAY_MARKETPLACE_ID=$($env:EBAY_MARKETPLACE_ID)"
-} else {
-  npx supabase@latest secrets set EBAY_MARKETPLACE_ID=EBAY_US
+if (-not $env:SUPABASE_ACCESS_TOKEN) {
+  Write-Host 'Set SUPABASE_ACCESS_TOKEN (sbp_...) or run: npm run ebay:setup' -ForegroundColor Yellow
+  exit 1
 }
+npx supabase@latest secrets set "EBAY_CLIENT_ID=$id" --project-ref rochesyrxiyrxhzmkuwk
+npx supabase@latest secrets set "EBAY_CLIENT_SECRET=$secret" --project-ref rochesyrxiyrxhzmkuwk
+if ($env:EBAY_MARKETPLACE_ID) {
+  npx supabase@latest secrets set "EBAY_MARKETPLACE_ID=$($env:EBAY_MARKETPLACE_ID)" --project-ref rochesyrxiyrxhzmkuwk
+} else {
+  npx supabase@latest secrets set EBAY_MARKETPLACE_ID=EBAY_US --project-ref rochesyrxiyrxhzmkuwk
+}
+npx supabase@latest secrets set EBAY_API_ENV=production --project-ref rochesyrxiyrxhzmkuwk
 Write-Host 'eBay API secrets set. Redeploy edge functions if needed (push to master or workflow_dispatch).'
 Pop-Location
