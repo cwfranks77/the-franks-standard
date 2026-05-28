@@ -35,6 +35,7 @@
     "mail:fix": "node scripts/apply-email-password.cjs",
     "namecheap:recover": "powershell -ExecutionPolicy Bypass -File scripts/namecheap-recover.ps1",
     "mail:set-now": "powershell -ExecutionPolicy Bypass -File scripts/set-mailbox-now.ps1",
+    "ebay:easy": "powershell -ExecutionPolicy Bypass -File scripts/ebay-easy.ps1",
     "ebay:setup": "powershell -ExecutionPolicy Bypass -File scripts/setup-ebay-api.ps1",
     "ebay:secrets": "powershell -ExecutionPolicy Bypass -File scripts/push-ebay-api-secrets.ps1"
   },

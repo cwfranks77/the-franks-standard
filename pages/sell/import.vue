@@ -3,20 +3,38 @@
     <div class="container narrow">
       <h1>Import inventory</h1>
       <p class="lead text-muted">
-        Skim your active eBay listings or upload a CSV export - review, then import as drafts or publish on The Franks Standard.
-        Buyers pay here with Stripe escrow, not old eBay checkout links.
+        Easiest: save your eBay active listings page and upload it here (no developer account).
+        Or use CSV from Seller Hub. Review, then publish on The Franks Standard with Stripe escrow.
       </p>
 
       <div class="tabs">
-        <button type="button" class="tab" :class="{ active: tab === 'ebay' }" @click="tab = 'ebay'">eBay skim</button>
+        <button type="button" class="tab" :class="{ active: tab === 'ebay' }" @click="tab = 'ebay'">eBay (easy)</button>
         <button type="button" class="tab" :class="{ active: tab === 'csv' }" @click="tab = 'csv'">CSV upload</button>
       </div>
 
-      <div v-if="tab === 'ebay'" class="card panel">
-        <h2>eBay seller username</h2>
+      <div v-if="tab === 'ebay'" class="card panel easy-panel">
+        <h2>Easy import (2 minutes)</h2>
+        <ol class="easy-steps text-muted small">
+          <li>
+            <a
+              v-if="ebayUsername.trim()"
+              class="btn btn-primary btn-sm"
+              :href="ebayStoreUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+            >Open your eBay store ↗</a>
+            <span v-else>Enter your eBay username below, then open your store.</span>
+            Scroll until listings show.
+          </li>
+          <li><strong>Ctrl+S</strong> → save as <strong>Webpage, HTML only</strong>.</li>
+          <li>Upload that file in the box below (we read it in your browser — eBay cannot block this).</li>
+        </ol>
+        <input type="file" accept=".html,.htm,text/html" class="file-block" @change="onEbayHtmlFile" />
+
+        <details class="ebay-fallback mt-2">
+          <summary>Optional: username preview (needs server eBay API keys)</summary>
         <p class="text-muted small">
-          Enter your eBay seller username and click <strong>Preview listings</strong> — automatic when eBay API keys are set on the server.
-          No eBay password required. CSV and saved HTML still work as backup.
+          Enter your eBay seller username and click <strong>Preview listings</strong> when API keys are configured.
         </p>
         <div class="form-row">
           <input
@@ -38,14 +56,6 @@
         </div>
         <p v-if="previewError" class="error-text">{{ previewError }}</p>
 
-        <details class="ebay-fallback mt-2">
-          <summary>When preview fails — save your eBay page (recommended)</summary>
-          <ol class="small text-muted">
-            <li>Click <strong>Open eBay store</strong> (or go to your Seller Hub → Active listings).</li>
-            <li>Scroll so listings load, then <strong>Ctrl+S</strong> (Mac: <strong>Cmd+S</strong>) → save as <strong>Webpage, HTML only</strong>.</li>
-            <li>Upload that file here — we parse it in your browser (eBay cannot block that).</li>
-          </ol>
-          <input type="file" accept=".html,.htm,text/html" @change="onEbayHtmlFile" />
         </details>
       </div>
 
@@ -285,4 +295,9 @@ async function runImport () {
 }
 .ebay-fallback summary { cursor: pointer; font-weight: 600; color: var(--gold); }
 .ebay-fallback ol { margin: 0.5rem 0; padding-left: 1.2rem; line-height: 1.55; }
+.easy-panel { border-color: rgba(247, 202, 0, 0.35); }
+.easy-panel h2 { color: var(--gold); }
+.easy-steps { line-height: 1.65; padding-left: 1.2rem; margin: 0.75rem 0; }
+.easy-steps li { margin-bottom: 0.65rem; }
+.file-block { display: block; margin-top: 10px; }
 </style>
