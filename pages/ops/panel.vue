@@ -43,7 +43,9 @@
           <NuxtLink to="/ops/status" class="btn btn-dark btn-lg">Transaction readiness</NuxtLink>
           <NuxtLink to="/ops/test-checkout" class="btn btn-primary btn-lg">Run QA tests</NuxtLink>
           <NuxtLink to="/ops/mail-setup" class="btn btn-outline btn-lg">Fix info@ on phone</NuxtLink>
-          <NuxtLink to="/ops/ebay-prospects" class="btn btn-primary btn-lg">eBay seller skim</NuxtLink>
+          <NuxtLink to="/ops/find-sellers" class="btn btn-primary btn-lg">Find sellers (Google ↗)</NuxtLink>
+          <NuxtLink to="/ops/ebay-prospects" class="btn btn-outline btn-lg">eBay skim (HTML file)</NuxtLink>
+          <NuxtLink to="/sell/import" class="btn btn-outline btn-lg">Import my eBay (CSV)</NuxtLink>
         </div>
         <div class="free-access-perks">
           <div class="perk-item"><span class="perk-check">✓</span> Listing fees waived</div>
@@ -102,7 +104,9 @@
             <li><NuxtLink to="/ops/dropship"><strong>Dropship automation</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/ads"><strong>Social Media Ads</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/marketing"><strong>Marketing &amp; get found</strong></NuxtLink></li>
-            <li><NuxtLink to="/ops/ebay-prospects"><strong>eBay seller prospect skim</strong></NuxtLink> (auto with API keys)</li>
+            <li><NuxtLink to="/ops/find-sellers"><strong>Find sellers — Google links</strong></NuxtLink> (paste usernames)</li>
+            <li><NuxtLink to="/ops/ebay-prospects"><strong>eBay skim from saved page</strong></NuxtLink></li>
+            <li><NuxtLink to="/sell/import"><strong>Import your eBay listings (CSV)</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/status"><strong>Transaction readiness</strong></NuxtLink></li>
           </ul>
         </section>

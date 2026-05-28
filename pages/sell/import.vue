@@ -3,70 +3,26 @@
     <div class="container narrow">
       <h1>Import inventory</h1>
       <p class="lead text-muted">
-        Easiest: save your eBay active listings page and upload it here (no developer account).
-        Or use CSV from Seller Hub. Review, then publish on The Franks Standard with Stripe escrow.
+        <strong>Best for eBay:</strong> CSV from Seller Hub (recommended). HTML save works when the page includes listings.
       </p>
 
       <div class="tabs">
-        <button type="button" class="tab" :class="{ active: tab === 'ebay' }" @click="tab = 'ebay'">eBay (easy)</button>
-        <button type="button" class="tab" :class="{ active: tab === 'csv' }" @click="tab = 'csv'">CSV upload</button>
+        <button type="button" class="tab" :class="{ active: tab === 'csv' }" @click="tab = 'csv'">eBay CSV (best)</button>
+        <button type="button" class="tab" :class="{ active: tab === 'ebay' }" @click="tab = 'ebay'">eBay HTML</button>
       </div>
 
-      <div v-if="tab === 'ebay'" class="card panel easy-panel">
-        <h2>Easy import (2 minutes)</h2>
+      <div v-if="tab === 'csv'" class="card panel csv-panel">
+        <h2>eBay Seller Hub → CSV (recommended)</h2>
         <ol class="easy-steps text-muted small">
-          <li>
-            <a
-              v-if="ebayUsername.trim()"
-              class="btn btn-primary btn-sm"
-              :href="ebayStoreUrl"
-              target="_blank"
-              rel="noopener noreferrer"
-            >Open your eBay store ↗</a>
-            <span v-else>Enter your eBay username below, then open your store.</span>
-            Scroll until listings show.
-          </li>
-          <li><strong>Ctrl+S</strong> → save as <strong>Webpage, HTML only</strong>.</li>
-          <li>Upload that file in the box below (we read it in your browser — eBay cannot block this).</li>
+          <li>Go to <a href="https://www.ebay.com/sh/reports/downloads" target="_blank" rel="noopener noreferrer">eBay Seller Hub downloads ↗</a></li>
+          <li>Download <strong>Active listings</strong> (CSV file).</li>
+          <li>Upload that file below — titles and prices import reliably.</li>
         </ol>
-        <input type="file" accept=".html,.htm,text/html" class="file-block" @change="onEbayHtmlFile" />
-        <p v-if="ebayUploadStatus" class="import-status">{{ ebayUploadStatus }}</p>
-
-        <details class="ebay-fallback mt-2">
-          <summary>Optional: username preview (needs server eBay API keys)</summary>
-        <p class="text-muted small">
-          Enter your eBay seller username and click <strong>Preview listings</strong> when API keys are configured.
-        </p>
-        <div class="form-row">
-          <input
-            v-model="ebayUsername"
-            class="input"
-            placeholder="e.g. your_ebay_store_name"
-            autocomplete="off"
-          />
-          <button type="button" class="btn btn-primary" :disabled="previewLoading" @click="loadEbay">
-            {{ previewLoading ? 'Loading…' : 'Preview listings' }}
-          </button>
-          <a
-            v-if="ebayUsername.trim()"
-            class="btn btn-outline btn-sm"
-            :href="ebayStoreUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-          >Open eBay store ↗</a>
-        </div>
-        <p v-if="previewError" class="error-text">{{ previewError }}</p>
-
-        </details>
-      </div>
-
-      <div v-else class="card panel">
-        <h2>CSV file</h2>
-        <p class="text-muted small">
-          Upload a CSV export. We support eBay exports and most supplier exports (Doba / Inventory Source) as long as it includes a Title/Name,
-          a Retail/Price column, and a Supplier SKU.
-        </p>
-        <input type="file" accept=".csv,text/csv" @change="onCsvFile" />
+        <label class="upload-zone">
+          <span class="upload-zone-title">Choose your eBay .csv file</span>
+          <input type="file" accept=".csv,text/csv" class="upload-zone-input" @change="onCsvFile" />
+        </label>
+        <p v-if="csvUploadStatus" class="import-status">{{ csvUploadStatus }}</p>
         <label class="check-row mt-2">
           <input v-model="isDropshipCsv" type="checkbox" />
           This CSV is dropship inventory (Doba) — import as dropship drafts
@@ -74,6 +30,43 @@
         <p v-if="isDropshipCsv" class="text-muted small">
           Dropship imports require a <strong>Supplier SKU</strong> per row. Wholesale cost is optional (recommended for accurate payout splits).
         </p>
+        <p class="text-muted small mt-1">Also works: Doba / supplier CSV with Title and Price columns.</p>
+      </div>
+
+      <div v-else class="card panel easy-panel">
+        <h2>eBay HTML (backup)</h2>
+        <p class="text-muted small">If CSV fails, save your store page after listings load.</p>
+        <div class="form-row">
+          <input
+            v-model="ebayUsername"
+            class="input"
+            placeholder="Your eBay username"
+            autocomplete="off"
+          />
+          <a
+            v-if="ebayUsername.trim()"
+            class="btn btn-primary btn-sm"
+            :href="ebayStoreUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+          >Open store ↗</a>
+        </div>
+        <ol class="easy-steps text-muted small">
+          <li>Scroll until all listings show. Wait 5 seconds.</li>
+          <li><strong>Ctrl+S</strong> → <strong>Webpage, Complete</strong> (not HTML only).</li>
+          <li>Upload below or paste HTML in Notepad copy.</li>
+        </ol>
+        <label class="upload-zone">
+          <span class="upload-zone-title">Choose saved .html file</span>
+          <input type="file" accept=".html,.htm,text/html" class="upload-zone-input" @change="onEbayHtmlFile" />
+        </label>
+        <details class="mt-1">
+          <summary>Paste HTML instead</summary>
+          <textarea v-model="htmlPaste" class="input paste-area" rows="5" />
+          <button type="button" class="btn btn-outline btn-sm" :disabled="!htmlPaste.trim()" @click="parseHtmlPaste">Parse pasted HTML</button>
+        </details>
+        <p v-if="ebayUploadStatus" class="import-status">{{ ebayUploadStatus }}</p>
+        <p v-if="previewError" class="error-text">{{ previewError }}</p>
       </div>
 
       <div v-if="previewItems.length" class="card panel mt-3">
@@ -163,7 +156,9 @@ useSeoMeta({
   description: 'Import listings from eBay or CSV into The Franks Standard marketplace.',
 })
 
-const tab = ref('ebay')
+const tab = ref('csv')
+const htmlPaste = ref('')
+const csvUploadStatus = ref('')
 const ebayUsername = ref('')
 const publishNow = ref(false)
 const useGuarantee = ref(true)
@@ -199,36 +194,48 @@ function onEbayHtmlFile (e) {
   importResult.value = null
   const file = e.target.files?.[0]
   if (!file) {
-    ebayUploadStatus.value = 'No file selected — choose your .html file again.'
+    ebayUploadStatus.value = 'No file selected.'
     return
   }
-  ebayUploadStatus.value = `Got it: ${file.name} — reading listings…`
+  ebayUploadStatus.value = `Got it: ${file.name} — reading…`
   const reader = new FileReader()
   reader.onload = () => {
-    previewEbayFromHtml(reader.result, 60)
+    const { hint } = previewEbayFromHtml(reader.result, 80)
     const n = previewItems.value.length
     ebayUploadStatus.value = n > 0
-      ? `Done — ${n} items below. Check boxes, then Import selected.`
-      : (previewError.value || 'Done — 0 items. Re-save eBay (Webpage, Complete) and try again.')
+      ? `Done — ${n} items below. Select rows → Import selected.`
+      : (hint || previewError.value || '0 items — use eBay CSV tab instead.')
   }
-  reader.onerror = () => {
-    ebayUploadStatus.value = 'Could not read file — try saving eBay again.'
-  }
+  reader.onerror = () => { ebayUploadStatus.value = 'Could not read file.' }
   reader.readAsText(file)
+}
+
+function parseHtmlPaste () {
+  importResult.value = null
+  ebayUploadStatus.value = 'Parsing pasted HTML…'
+  const { hint } = previewEbayFromHtml(htmlPaste.value, 80)
+  const n = previewItems.value.length
+  ebayUploadStatus.value = n > 0 ? `Done — ${n} items.` : (hint || '0 items — use CSV tab.')
 }
 
 function onCsvFile (e) {
   importResult.value = null
   const file = e.target.files?.[0]
-  if (!file) return
+  if (!file) {
+    csvUploadStatus.value = 'No file selected.'
+    return
+  }
+  csvUploadStatus.value = `Reading ${file.name}…`
   const reader = new FileReader()
   reader.onload = () => {
     const items = parseInventoryCsv(reader.result)
     if (!items.length) {
-      previewError.value = 'No rows found — check CSV headers (Title, Price, PicURL).'
+      previewError.value = 'No rows found — need columns like Title and Price (eBay Active listings export).'
+      csvUploadStatus.value = previewError.value
       return
     }
     setCsvPreview(items)
+    csvUploadStatus.value = `Done — ${items.length} rows. Scroll down → Import selected.`
   }
   reader.readAsText(file)
 }
@@ -312,7 +319,20 @@ async function runImport () {
 .easy-panel h2 { color: var(--gold); }
 .easy-steps { line-height: 1.65; padding-left: 1.2rem; margin: 0.75rem 0; }
 .easy-steps li { margin-bottom: 0.65rem; }
-.file-block { display: block; margin-top: 10px; }
+.upload-zone {
+  display: block;
+  position: relative;
+  padding: 1.5rem 1rem;
+  margin-top: 10px;
+  border: 2px dashed rgba(247, 202, 0, 0.5);
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+}
+.upload-zone-title { color: var(--gold); font-weight: 700; }
+.upload-zone-input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.csv-panel h2 { color: var(--gold); }
+.paste-area { width: 100%; margin-top: 8px; min-height: 100px; }
 .import-status {
   margin-top: 12px;
   padding: 0.85rem 1rem;

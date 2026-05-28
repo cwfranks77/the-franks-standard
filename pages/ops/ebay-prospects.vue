@@ -116,8 +116,16 @@
         </div>
       </section>
 
+      <section class="card panel alt-way">
+        <h2>Easier: paste usernames only</h2>
+        <p class="text-muted small">No HTML file — each name gets a gold <strong>Google ↗</strong> button.</p>
+        <NuxtLink to="/ops/find-sellers" class="btn btn-primary">Open Find sellers (Google)</NuxtLink>
+      </section>
+
       <p class="back-link">
         <NuxtLink to="/ops/panel">← Operator console</NuxtLink>
+        ·
+        <NuxtLink to="/ops/find-sellers">Find sellers (Google)</NuxtLink>
         ·
         <NuxtLink to="/sell/import">Import your listings</NuxtLink>
       </p>
@@ -296,6 +304,7 @@ async function copyCsv () {
 .action-cell .link-sm { margin-right: 10px; }
 .link-sm { color: #93c5fd; }
 .link-google { color: var(--gold); font-weight: 600; }
+.alt-way h2 { color: var(--gold); font-size: 1rem; }
 .back-link { margin-top: 1.5rem; }
 .small { font-size: 0.85rem; }
 </style>

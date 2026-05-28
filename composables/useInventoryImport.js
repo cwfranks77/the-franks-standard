@@ -1,5 +1,5 @@
 import { LISTING_CATEGORIES } from '~/utils/marketplaceCategories'
-import { parseEbaySellerHtml } from '~/utils/ebayParse.js'
+import { parseEbaySellerHtmlWithDiagnostics } from '~/utils/ebayParse.js'
 
 const DEFAULT_CATEGORY = 'Sports Cards & Memorabilia'
 
@@ -144,13 +144,13 @@ export function useInventoryImport () {
   }
 
   /** Parse a saved eBay store/search page in the browser (works when eBay blocks servers). */
-  function previewEbayFromHtml (html, limit = 48) {
+  function previewEbayFromHtml (html, limit = 60) {
     previewLoading.value = true
     previewError.value = ''
     try {
-      const items = parseEbaySellerHtml(String(html || ''), limit)
-      applyEbayPreviewItems(items)
-      return { count: items.length, items, source: 'html' }
+      const { items, hint } = parseEbaySellerHtmlWithDiagnostics(String(html || ''), limit)
+      applyEbayPreviewItems(items, hint)
+      return { count: items.length, items, source: 'html', hint }
     } finally {
       previewLoading.value = false
     }
