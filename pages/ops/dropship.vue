@@ -40,6 +40,18 @@
           </div>
         </section>
 
+        <section class="card ai-card">
+          <h2>Full AI + automation setup</h2>
+          <p class="text-muted small">Sellers use <strong>/sell/dropship-setup</strong> → “Full AI dropship setup” (generates provider, fulfillment, import steps). Platform side:</p>
+          <ol class="small setup-list">
+            <li>Run <code>scripts/setup-doba-automation.ps1</code> (FLXPOINT + Doba secrets + deploy functions).</li>
+            <li>Confirm cron: <code>.github/workflows/dropship-dispatch-cron.yml</code> every 2–5 min.</li>
+            <li>Sellers import catalog: <NuxtLink to="/sell/import">/sell/import</NuxtLink> → <strong>eBay CSV (best)</strong> tab.</li>
+            <li>Each listing: dropship mode + supplier SKU + COA/guarantee.</li>
+          </ol>
+          <NuxtLink to="/sell/dropship-setup?ai=1" class="btn btn-primary btn-sm mt-2">Open AI dropship wizard</NuxtLink>
+        </section>
+
         <section class="card">
           <h2>Provider setup (FLXPOINT + Doba)</h2>
           <ol class="small setup-list">

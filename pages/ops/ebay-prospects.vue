@@ -119,7 +119,8 @@
       <section class="card panel alt-way">
         <h2>Easier: paste usernames only</h2>
         <p class="text-muted small">No HTML file — each name gets a gold <strong>Google ↗</strong> button.</p>
-        <NuxtLink to="/ops/find-sellers" class="btn btn-primary">Open Find sellers (Google)</NuxtLink>
+        <NuxtLink to="/ops/sellers-phone" class="btn btn-primary">Phone: paste names + Google</NuxtLink>
+        <NuxtLink to="/ops/find-sellers" class="btn btn-outline btn-sm" style="margin-left:8px">Desktop</NuxtLink>
       </section>
 
       <p class="back-link">

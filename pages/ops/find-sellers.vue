@@ -4,7 +4,10 @@
       <p class="eyebrow">Owner toolkit</p>
       <h1>Find eBay sellers — Google links</h1>
       <p class="lead text-muted">
-        No HTML upload. Paste seller usernames (one per line) from eBay, a spreadsheet, or your notes — each row gets a <strong>Google ↗</strong> link to find Instagram, website, or phone.
+        No HTML upload. Paste seller usernames (one per line) — each row gets a <strong>Google ↗</strong> link.
+      </p>
+      <p class="phone-link">
+        <NuxtLink to="/ops/sellers-phone" class="btn btn-primary btn-sm">Use phone-optimized page instead →</NuxtLink>
       </p>
 
       <section class="card panel hero">
@@ -28,7 +31,17 @@
           <h2>{{ rows.length }} sellers</h2>
           <button type="button" class="btn btn-outline btn-sm" @click="copyAllGoogle">Copy all Google URLs</button>
         </div>
-        <div class="table-wrap">
+        <div class="mobile-cards">
+          <article v-for="r in rows" :key="r.username" class="m-card">
+            <div class="m-name">{{ r.username }}</div>
+            <a :href="r.google_url" class="btn-google block" target="_blank" rel="noopener noreferrer">Google ↗</a>
+            <div class="m-links">
+              <a :href="r.profile_url" target="_blank" rel="noopener noreferrer">eBay profile</a>
+              <a :href="r.store_url" target="_blank" rel="noopener noreferrer">Store</a>
+            </div>
+          </article>
+        </div>
+        <div class="table-wrap desktop-only">
           <table>
             <thead>
               <tr>
@@ -38,7 +51,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="r in rows" :key="r.username">
+              <tr v-for="r in rows" :key="'t-' + r.username">
                 <td>{{ r.username }}</td>
                 <td>
                   <a :href="r.google_url" class="btn-google" target="_blank" rel="noopener noreferrer">Google ↗</a>
@@ -114,5 +127,23 @@ th, td { padding: 10px; border-bottom: 1px solid #374151; text-align: left; }
 }
 .link-sm { color: #93c5fd; }
 .alt ul { line-height: 1.8; padding-left: 1.2rem; }
+.phone-link { margin-bottom: 1rem; }
+.mobile-cards { display: none; }
+.m-card {
+  border: 1px solid #374151;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
+}
+.m-name { font-weight: 700; margin-bottom: 10px; word-break: break-all; }
+.btn-google.block { display: block; text-align: center; margin-bottom: 8px; padding: 12px; }
+.m-links { display: flex; gap: 12px; font-size: 0.88rem; }
+.m-links a { color: #93c5fd; }
+@media (max-width: 768px) {
+  .mobile-cards { display: block; }
+  .desktop-only { display: none; }
+  .paste-area { font-size: 16px; min-height: 140px; }
+  .btn-primary.btn-lg { width: 100%; padding: 14px; }
+}
 .back-link { margin-top: 1.5rem; }
 </style>
