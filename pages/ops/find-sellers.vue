@@ -28,7 +28,7 @@
         </button>
         <p v-if="status" class="status-banner" role="status">{{ status }}</p>
         <p class="text-muted small mt-1">
-          One username per line, or comma-separated. Full eBay profile URLs work too.
+          One username per line, comma-separated, or paste eBay profile (<code>/usr/</code>) or store (<code>/str/</code>) links.
         </p>
       </section>
 
@@ -43,7 +43,7 @@
             <a :href="r.google_url" class="btn-google block" target="_blank" rel="noopener noreferrer">Google ↗</a>
             <div class="m-links">
               <a :href="r.profile_url" target="_blank" rel="noopener noreferrer">eBay profile</a>
-              <a :href="r.store_url" target="_blank" rel="noopener noreferrer">Store</a>
+              <a :href="r.store_url" target="_blank" rel="noopener noreferrer">{{ r.is_ebay_store ? 'eBay store' : 'Listings' }}</a>
             </div>
           </article>
         </div>
@@ -65,7 +65,7 @@
                 <td>
                   <a :href="r.profile_url" class="link-sm" target="_blank" rel="noopener noreferrer">Profile</a>
                   ·
-                  <a :href="r.store_url" class="link-sm" target="_blank" rel="noopener noreferrer">Store</a>
+                  <a :href="r.store_url" class="link-sm" target="_blank" rel="noopener noreferrer">{{ r.is_ebay_store ? 'eBay store' : 'Listings' }}</a>
                 </td>
               </tr>
             </tbody>
@@ -109,7 +109,7 @@ function buildList () {
     })
   } else {
     status.value =
-      'No valid usernames found. Paste one name per line (letters, numbers, dot, underscore, hyphen) or paste full eBay profile URLs.'
+      'No valid sellers found. Paste a username, eBay profile (/usr/), or store link (/str/) like microbaycoins.'
   }
 }
 

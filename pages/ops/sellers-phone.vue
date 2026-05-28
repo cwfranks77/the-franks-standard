@@ -37,7 +37,7 @@
         <div class="seller-name">{{ r.username }}</div>
         <div class="seller-actions">
           <a :href="r.google_url" class="btn-google" target="_blank" rel="noopener noreferrer">Google ↗</a>
-          <a :href="r.profile_url" class="btn-secondary" target="_blank" rel="noopener noreferrer">eBay</a>
+          <a :href="r.store_url" class="btn-secondary" target="_blank" rel="noopener noreferrer">{{ r.is_ebay_store ? 'Store' : 'eBay' }}</a>
         </div>
         <button type="button" class="btn-copy-msg" @click="copyPitch(r)">Copy invite text</button>
       </article>
