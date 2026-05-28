@@ -130,9 +130,10 @@ export function parseEbayProspectsFromHtml (html, limit = 150) {
 }
 
 export function prospectsToCsv (rows) {
-  const header = 'username,feedback_pct,feedback_count,listings_on_page,sample_title,store_url,profile_url'
+  const header = 'username,feedback_pct,feedback_count,listings_on_page,sample_title,store_url,profile_url,google_search'
   const lines = rows.map((r) => {
     const esc = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`
+    const google = `https://www.google.com/search?q=${encodeURIComponent(`"${r.username}" ebay seller collectibles instagram OR facebook OR contact OR website`)}`
     return [
       esc(r.username),
       esc(r.feedback_pct ?? ''),
@@ -141,6 +142,7 @@ export function prospectsToCsv (rows) {
       esc(r.sample_titles?.[0] ?? ''),
       esc(r.store_url),
       esc(r.profile_url),
+      esc(google),
     ].join(',')
   })
   return [header, ...lines].join('\n')

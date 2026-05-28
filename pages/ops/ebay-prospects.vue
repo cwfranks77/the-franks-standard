@@ -76,7 +76,9 @@
             {{ csvCopied ? 'Copied' : 'Copy CSV' }}
           </button>
         </div>
-        <p class="text-muted small">Click a username → eBay profile → <strong>Contact seller</strong>. Use Copy CSV to track outreach.</p>
+        <p class="text-muted small">
+          <strong>Find on Google</strong> → IG, website, or phone. eBay username is backup only. Use Copy CSV to track who you contacted.
+        </p>
         <div class="table-wrap">
           <table class="prospect-table">
             <thead>
@@ -85,7 +87,7 @@
                 <th>Feedback</th>
                 <th>Hits</th>
                 <th>Sample</th>
-                <th></th>
+                <th>Find contact</th>
               </tr>
             </thead>
             <tbody>
@@ -99,7 +101,13 @@
                 </td>
                 <td>{{ row.listing_hits }}</td>
                 <td class="sample">{{ row.sample_titles?.[0] || '—' }}</td>
-                <td>
+                <td class="action-cell">
+                  <a
+                    :href="googleSearchUrl(row.username)"
+                    class="link-sm link-google"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >Google ↗</a>
                   <a :href="outreachMailto(row)" class="link-sm">Email draft</a>
                 </td>
               </tr>
@@ -120,7 +128,7 @@
 <script setup>
 import { EBAY_PROSPECT_PRESETS, buildEbaySearchUrl } from '~/utils/ebaySearchUrls.js'
 import { prospectsToCsv } from '~/utils/ebayProspectParse.js'
-import { buildProspectOutreachMailto } from '~/utils/prospectOutreach.js'
+import { buildProspectOutreachMailto, buildSellerGoogleSearchUrl } from '~/utils/prospectOutreach.js'
 
 definePageMeta({ middleware: 'ops-auth' })
 useSeoMeta({ title: 'Find eBay sellers — Ops', robots: 'noindex' })
@@ -207,6 +215,10 @@ function parsePaste () {
     : (diag?.hint || 'Done — 0 sellers. Paste a fuller HTML save from Notepad.')
 }
 
+function googleSearchUrl (username) {
+  return buildSellerGoogleSearchUrl(username)
+}
+
 function outreachMailto (row) {
   return buildProspectOutreachMailto(row)
 }
@@ -280,7 +292,10 @@ async function copyCsv () {
 .prospect-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
 .prospect-table th, .prospect-table td { padding: 8px 10px; border-bottom: 1px solid #374151; }
 .sample { max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.action-cell { white-space: nowrap; }
+.action-cell .link-sm { margin-right: 10px; }
 .link-sm { color: #93c5fd; }
+.link-google { color: var(--gold); font-weight: 600; }
 .back-link { margin-top: 1.5rem; }
 .small { font-size: 0.85rem; }
 </style>
