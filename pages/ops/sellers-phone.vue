@@ -74,7 +74,7 @@ function buildList () {
   rows.value = parseSellerUsernameList(rawList.value)
   status.value = rows.value.length
     ? `Ready — ${rows.value.length} sellers. Tap Google on each row.`
-    : 'No valid usernames — paste one name per line (letters, numbers, underscore only).'
+    : 'No valid usernames — one per line, comma-separated, or paste eBay profile URLs.'
 }
 
 async function copyPitch (row) {

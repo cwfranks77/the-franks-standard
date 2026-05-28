@@ -18,15 +18,21 @@
           rows="10"
           placeholder="cardshop99&#10;breaks_n_cards&#10;psa_seller_ohio"
         />
-        <button type="button" class="btn btn-primary btn-lg mt-1" @click="buildList">
+        <button
+          type="button"
+          class="btn btn-primary btn-lg mt-1"
+          :disabled="!rawList.trim()"
+          @click="buildList"
+        >
           Build Google + eBay links
         </button>
+        <p v-if="status" class="status-banner" role="status">{{ status }}</p>
         <p class="text-muted small mt-1">
-          Tip: On eBay search results, click a listing → seller name → copy username from the profile URL.
+          One username per line, or comma-separated. Full eBay profile URLs work too.
         </p>
       </section>
 
-      <section v-if="rows.length" class="card panel">
+      <section v-if="rows.length" ref="resultsRef" class="card panel">
         <div class="panel-head">
           <h2>{{ rows.length }} sellers</h2>
           <button type="button" class="btn btn-outline btn-sm" @click="copyAllGoogle">Copy all Google URLs</button>
@@ -90,9 +96,21 @@ useSeoMeta({ title: 'Find sellers — Google', robots: 'noindex' })
 
 const rawList = ref('')
 const rows = ref([])
+const status = ref('')
+const resultsRef = ref(null)
 
 function buildList () {
+  status.value = ''
   rows.value = parseSellerUsernameList(rawList.value)
+  if (rows.value.length) {
+    status.value = `Built ${rows.value.length} seller link${rows.value.length === 1 ? '' : 's'} — scroll down for Google buttons.`
+    nextTick(() => {
+      resultsRef.value?.scrollIntoView?.({ behavior: 'smooth', block: 'start' })
+    })
+  } else {
+    status.value =
+      'No valid usernames found. Paste one name per line (letters, numbers, dot, underscore, hyphen) or paste full eBay profile URLs.'
+  }
 }
 
 async function copyAllGoogle () {
@@ -146,4 +164,15 @@ th, td { padding: 10px; border-bottom: 1px solid #374151; text-align: left; }
   .btn-primary.btn-lg { width: 100%; padding: 14px; }
 }
 .back-link { margin-top: 1.5rem; }
+.status-banner {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: rgba(247, 202, 0, 0.15);
+  border: 1px solid rgba(247, 202, 0, 0.45);
+  color: #fef3c7;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 </style>
