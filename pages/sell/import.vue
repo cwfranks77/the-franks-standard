@@ -15,8 +15,8 @@
       <div v-if="tab === 'ebay'" class="card panel">
         <h2>eBay seller username</h2>
         <p class="text-muted small">
-          We try to load your public active listings. No eBay password required.
-          If preview is empty, eBay often blocks automated fetches — use the <strong>saved page</strong> or <strong>CSV</strong> steps below.
+          Enter your eBay seller username and click <strong>Preview listings</strong> — automatic when eBay API keys are set on the server.
+          No eBay password required. CSV and saved HTML still work as backup.
         </p>
         <div class="form-row">
           <input

@@ -1,4 +1,8 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
+import {
+  isEbayApiConfigured,
+  searchEbaySellerListings,
+} from '../_shared/ebayApi.ts'
 import { parseEbaySellerHtml } from '../_shared/ebayParse.ts'
 import { corsHeaders, json } from '../_shared/stripe.ts'
 
@@ -38,9 +42,36 @@ Deno.serve(async (req) => {
     return json({ error: 'invalid_username' }, 400)
   }
 
-  const limit = Math.min(60, Math.max(1, Number(body.limit) || 24))
-  const url = `https://www.ebay.com/sch/i.html?_ssn=${encodeURIComponent(username)}&_ipg=120&rt=nc`
+  const limit = Math.min(120, Math.max(1, Number(body.limit) || 48))
+  const apiConfigured = isEbayApiConfigured()
 
+  if (apiConfigured) {
+    try {
+      const { items, items_scanned } = await searchEbaySellerListings({
+        sellerUsername: username,
+        limit,
+      })
+      return json({
+        seller_username: username,
+        api_configured: true,
+        method: 'ebay_browse_api',
+        source_url: `https://www.ebay.com/sch/i.html?_ssn=${encodeURIComponent(username)}`,
+        count: items.length,
+        items_scanned,
+        items,
+        blocked: false,
+        hint: items.length === 0
+          ? 'No active listings returned from eBay API for this username.'
+          : null,
+      })
+    } catch (e) {
+      const detail = String(e?.message || e)
+      // fall through to HTML attempt
+      console.error('ebay_api_listing_preview_failed', detail)
+    }
+  }
+
+  const url = `https://www.ebay.com/sch/i.html?_ssn=${encodeURIComponent(username)}&_ipg=120&rt=nc`
   let res: Response
   try {
     res = await fetch(url, {
@@ -52,25 +83,27 @@ Deno.serve(async (req) => {
       },
     })
   } catch (e) {
-    return json({ error: 'fetch_failed', detail: String(e) }, 502)
+    return json({ error: 'fetch_failed', detail: String(e), api_configured: apiConfigured }, 502)
   }
 
   const html = await res.text()
   const items = parseEbaySellerHtml(html, limit)
-
   const blocked = res.status === 403 || res.status === 429
   let hint: string | null = null
   if (items.length === 0) {
     if (blocked) {
-      hint =
-        'eBay blocked our server (common). Open your eBay store in Chrome, save the page as HTML, then upload it on the Import page — or use eBay CSV export.'
+      hint = apiConfigured
+        ? 'HTML blocked; API also failed — check eBay app keys or use CSV import.'
+        : 'eBay blocked our server. Add EBAY_CLIENT_ID + EBAY_CLIENT_SECRET to Supabase for automatic import, or use CSV / saved HTML.'
     } else {
-      hint = 'No listings parsed. Save your eBay store page as HTML and upload it, or use CSV export.'
+      hint = 'No listings parsed. Use CSV export or saved store HTML on the Import page.'
     }
   }
 
   return json({
     seller_username: username,
+    api_configured: apiConfigured,
+    method: 'html_scrape',
     source_url: url,
     http_status: res.status,
     blocked,

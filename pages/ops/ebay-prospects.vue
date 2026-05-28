@@ -4,59 +4,64 @@
       <p class="eyebrow">Owner toolkit</p>
       <h1>eBay seller prospect skim</h1>
       <p class="lead text-muted">
-        Find <strong>possible sellers</strong> on eBay by keyword or category — usernames, feedback, and store links
-        for outreach. This is <em>not</em> the inventory import at
-        <NuxtLink to="/sell/import">/sell/import</NuxtLink> (that copies <em>your</em> listings).
+        One click finds <strong>possible sellers</strong> on eBay (usernames, feedback, store links) for outreach.
+        Fully automatic when eBay API keys are configured in Supabase.
+      </p>
+
+      <p v-if="method" class="status-pill" :class="method">
+        {{ methodLabel }}
+        <span v-if="itemsScanned"> · {{ itemsScanned }} listings scanned</span>
+      </p>
+      <p v-else-if="!loading && !apiConfigured" class="setup-hint card">
+        <strong>One-time setup for automation:</strong>
+        Add <code>EBAY_CLIENT_ID</code> and <code>EBAY_CLIENT_SECRET</code> to Supabase
+        (<NuxtLink to="/ops/panel">ops panel</NuxtLink> → see repo <code>docs/EBAY-API-SETUP.md</code>).
+        Then this page runs automatically on load.
       </p>
 
       <section class="card panel">
-        <h2>1 — Build an eBay search</h2>
         <div class="preset-row">
           <button
             v-for="p in presets"
             :key="p.id"
             type="button"
             class="btn btn-outline btn-sm"
+            :class="{ active: activePreset === p.id }"
             @click="applyPreset(p)"
           >
             {{ p.label }}
           </button>
         </div>
         <label class="label">Keywords</label>
-        <input v-model="keywords" class="input" placeholder="e.g. PSA baseball cards" />
+        <input v-model="keywords" class="input" placeholder="e.g. PSA baseball cards" @keyup.enter="runAutoSkim" />
         <label class="label mt">Category ID (optional)</label>
-        <input v-model="categoryId" class="input" placeholder="e.g. 2536 for trading cards" />
-        <div class="actions-row">
-          <a :href="searchUrl" class="btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer">
-            Open eBay search ↗
-          </a>
-          <button type="button" class="btn btn-outline btn-sm" :disabled="loading" @click="runServerSkim">
-            {{ loading ? 'Skimming…' : 'Try auto-skim (server)' }}
-          </button>
-        </div>
-        <p class="text-muted small">
-          Auto-skim often fails with HTTP 403 — eBay blocks datacenters. When that happens, use step 2.
-        </p>
-      </section>
+        <input v-model="categoryId" class="input" placeholder="2536 = trading cards" @keyup.enter="runAutoSkim" />
 
-      <section class="card panel">
-        <h2>2 — Save page &amp; upload (reliable)</h2>
-        <ol class="small text-muted">
-          <li>Open the eBay search (button above) and scroll through 2–3 pages so sellers load.</li>
-          <li><strong>Ctrl+S</strong> / <strong>Cmd+S</strong> → <strong>Webpage, HTML only</strong>.</li>
-          <li>Upload the file here — parsing runs in your browser.</li>
-        </ol>
-        <input type="file" accept=".html,.htm,text/html" @change="onHtmlFile" />
+        <button
+          type="button"
+          class="btn btn-primary btn-lg find-btn"
+          :disabled="loading"
+          @click="runAutoSkim"
+        >
+          {{ loading ? 'Searching eBay…' : 'Find sellers now' }}
+        </button>
       </section>
 
       <p v-if="error" class="error-text">{{ error }}</p>
-      <p v-if="blocked && !prospects.length" class="warn-text">
-        eBay blocked the server fetch. Use the HTML upload above.
-      </p>
+
+      <details v-if="!apiConfigured || blocked" class="fallback-details">
+        <summary>Manual fallback (if API not set up yet)</summary>
+        <p class="text-muted small">
+          Open
+          <a :href="searchUrl" target="_blank" rel="noopener noreferrer">eBay search ↗</a>,
+          save page as HTML, upload below.
+        </p>
+        <input type="file" accept=".html,.htm,text/html" @change="onHtmlFile" />
+      </details>
 
       <section v-if="prospects.length" class="card panel">
         <div class="panel-head">
-          <h2>{{ prospects.length }} possible sellers</h2>
+          <h2>{{ filteredProspects.length }} possible sellers</h2>
           <div class="panel-actions">
             <label class="filter-label">
               Min feedback %
@@ -67,15 +72,14 @@
             </button>
           </div>
         </div>
-        <p v-if="sourceUrl" class="text-muted small">Source: {{ sourceUrl }}</p>
         <div class="table-wrap">
           <table class="prospect-table">
             <thead>
               <tr>
                 <th>Seller</th>
                 <th>Feedback</th>
-                <th>Hits</th>
-                <th>Sample listing</th>
+                <th>Listings</th>
+                <th>Sample</th>
                 <th></th>
               </tr>
             </thead>
@@ -94,15 +98,14 @@
                 <td class="sample">{{ row.sample_titles?.[0] || '—' }}</td>
                 <td class="actions">
                   <a :href="row.store_url" target="_blank" rel="noopener noreferrer" class="link-sm">Store</a>
-                  <a :href="outreachMailto(row)" class="link-sm">Draft email</a>
+                  <a :href="outreachMailto(row)" class="link-sm">Email</a>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
         <p class="text-muted small mt">
-          Only contact sellers when you have permission (existing relationship, opt-in, or they asked).
-          See <NuxtLink to="/ops/marketing">Marketing</NuxtLink> for CAN-SPAM rules.
+          Outreach only with permission — see <NuxtLink to="/ops/marketing">Marketing</NuxtLink>.
         </p>
       </section>
 
@@ -124,14 +127,34 @@ useSeoMeta({ title: 'eBay seller prospects — Ops', robots: 'noindex' })
 const presets = EBAY_PROSPECT_PRESETS
 const keywords = ref('sports cards PSA')
 const categoryId = ref('2536')
+const activePreset = ref('sports-cards')
 const minFeedback = ref(98)
 const csvCopied = ref(false)
 
-const { loading, error, blocked, prospects, sourceUrl, skimFromHtml, skimFromServer } = useEbayProspectSkim()
+const {
+  loading,
+  error,
+  blocked,
+  prospects,
+  sourceUrl,
+  method,
+  apiConfigured,
+  itemsScanned,
+  skimFromHtml,
+  skimFromServer,
+} = useEbayProspectSkim()
 
 const searchUrl = computed(() =>
   buildEbaySearchUrl({ keywords: keywords.value, categoryId: categoryId.value, itemsPerPage: 60 }),
 )
+
+const methodLabel = computed(() => {
+  const m = method.value
+  if (m === 'ebay_browse_api') return 'eBay API (fully automated)'
+  if (m === 'html_scrape' || m === 'html_scrape_fallback') return 'HTML scrape (limited)'
+  if (m === 'browser_html') return 'Uploaded HTML'
+  return m || 'Ready'
+})
 
 const filteredProspects = computed(() => {
   const min = Number(minFeedback.value) || 0
@@ -139,21 +162,21 @@ const filteredProspects = computed(() => {
 })
 
 function applyPreset (p) {
+  activePreset.value = p.id
   keywords.value = p.keywords
   categoryId.value = p.categoryId || ''
 }
 
-async function runServerSkim () {
+async function runAutoSkim () {
   csvCopied.value = false
   await skimFromServer({
     keywords: keywords.value.trim(),
     categoryId: categoryId.value.trim(),
-    limit: 60,
+    limit: 80,
   })
 }
 
 function onHtmlFile (e) {
-  csvCopied.value = false
   const file = e.target.files?.[0]
   if (!file) return
   const reader = new FileReader()
@@ -175,6 +198,10 @@ async function copyCsv () {
     setTimeout(() => { csvCopied.value = false }, 2500)
   } catch {}
 }
+
+onMounted(() => {
+  runAutoSkim()
+})
 </script>
 
 <style scoped>
@@ -185,15 +212,38 @@ async function copyCsv () {
   text-transform: uppercase;
   color: var(--gold);
 }
-.lead { max-width: 720px; line-height: 1.6; margin: 0.75rem 0 1.5rem; }
+.lead { max-width: 720px; line-height: 1.6; margin: 0.75rem 0 1rem; }
+.status-pill {
+  display: inline-block;
+  font-size: 0.85rem;
+  padding: 6px 14px;
+  border-radius: 999px;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(4, 120, 87, 0.4);
+  background: rgba(4, 120, 87, 0.12);
+  color: #86efac;
+}
+.status-pill.html_scrape,
+.status-pill.html_scrape_fallback {
+  border-color: rgba(251, 191, 36, 0.4);
+  background: rgba(251, 191, 36, 0.1);
+  color: #fde68a;
+}
+.setup-hint {
+  padding: 12px 14px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
 .card.panel { padding: 1.25rem; margin-bottom: 1.25rem; }
-.card h2 { font-size: 1.05rem; color: var(--gold); margin-bottom: 0.75rem; }
 .preset-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.preset-row .btn.active { border-color: var(--gold); color: var(--gold); }
 .label { display: block; font-size: 0.85rem; margin-bottom: 4px; color: #9ca3af; }
 .mt { margin-top: 10px; }
-.actions-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.find-btn { width: 100%; margin-top: 1rem; }
 .error-text { color: #f87171; }
-.warn-text { color: #fbbf24; margin-bottom: 1rem; }
+.fallback-details { margin-bottom: 1rem; color: #9ca3af; }
+.fallback-details summary { cursor: pointer; color: var(--gold); font-weight: 600; }
 .panel-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; align-items: center; }
 .filter-label { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #9ca3af; }
 .input-sm { width: 64px; padding: 4px 8px; }
@@ -201,9 +251,8 @@ async function copyCsv () {
 .prospect-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
 .prospect-table th, .prospect-table td { padding: 8px 10px; border-bottom: 1px solid #374151; text-align: left; }
 .sample { max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.actions { white-space: nowrap; }
 .link-sm { color: #93c5fd; margin-right: 10px; }
 .back-link { margin-top: 1.5rem; }
-.small { font-size: 0.9rem; line-height: 1.55; }
-ol { padding-left: 1.2rem; }
+.small { font-size: 0.9rem; }
+.mt { margin-top: 0.75rem; }
 </style>

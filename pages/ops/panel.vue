@@ -102,7 +102,7 @@
             <li><NuxtLink to="/ops/dropship"><strong>Dropship automation</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/ads"><strong>Social Media Ads</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/marketing"><strong>Marketing &amp; get found</strong></NuxtLink></li>
-            <li><NuxtLink to="/ops/ebay-prospects"><strong>eBay seller prospect skim</strong></NuxtLink></li>
+            <li><NuxtLink to="/ops/ebay-prospects"><strong>eBay seller prospect skim</strong></NuxtLink> (auto with API keys)</li>
             <li><NuxtLink to="/ops/status"><strong>Transaction readiness</strong></NuxtLink></li>
           </ul>
         </section>
