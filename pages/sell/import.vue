@@ -30,6 +30,7 @@
           <li>Upload that file in the box below (we read it in your browser — eBay cannot block this).</li>
         </ol>
         <input type="file" accept=".html,.htm,text/html" class="file-block" @change="onEbayHtmlFile" />
+        <p v-if="ebayUploadStatus" class="import-status">{{ ebayUploadStatus }}</p>
 
         <details class="ebay-fallback mt-2">
           <summary>Optional: username preview (needs server eBay API keys)</summary>
@@ -169,6 +170,7 @@ const useGuarantee = ref(true)
 const sellerLegalName = ref('')
 const importResult = ref(null)
 const isDropshipCsv = ref(false)
+const ebayUploadStatus = ref('')
 
 const {
   previewLoading,
@@ -196,10 +198,21 @@ async function loadEbay () {
 function onEbayHtmlFile (e) {
   importResult.value = null
   const file = e.target.files?.[0]
-  if (!file) return
+  if (!file) {
+    ebayUploadStatus.value = 'No file selected — choose your .html file again.'
+    return
+  }
+  ebayUploadStatus.value = `Got it: ${file.name} — reading listings…`
   const reader = new FileReader()
   reader.onload = () => {
     previewEbayFromHtml(reader.result, 60)
+    const n = previewItems.value.length
+    ebayUploadStatus.value = n > 0
+      ? `Done — ${n} items below. Check boxes, then Import selected.`
+      : (previewError.value || 'Done — 0 items. Re-save eBay (Webpage, Complete) and try again.')
+  }
+  reader.onerror = () => {
+    ebayUploadStatus.value = 'Could not read file — try saving eBay again.'
   }
   reader.readAsText(file)
 }
@@ -300,4 +313,13 @@ async function runImport () {
 .easy-steps { line-height: 1.65; padding-left: 1.2rem; margin: 0.75rem 0; }
 .easy-steps li { margin-bottom: 0.65rem; }
 .file-block { display: block; margin-top: 10px; }
+.import-status {
+  margin-top: 12px;
+  padding: 0.85rem 1rem;
+  background: rgba(247, 202, 0, 0.15);
+  border: 1px solid rgba(247, 202, 0, 0.45);
+  border-radius: 8px;
+  color: #fef3c7;
+  font-size: 0.95rem;
+}
 </style>

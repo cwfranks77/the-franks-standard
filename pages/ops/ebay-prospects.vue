@@ -6,6 +6,7 @@
       <p class="lead text-muted">
         Save an eBay search page, upload it here (or paste HTML). We list seller usernames for outreach.
       </p>
+      <p class="page-id text-muted small">You are on: <strong>Find eBay sellers</strong> (not Import inventory).</p>
 
       <section class="card panel easy-hero">
         <h2>Upload your saved eBay page</h2>
@@ -41,7 +42,10 @@
           </button>
         </details>
 
-        <p v-if="loading" class="text-muted mt-1">Reading your file…</p>
+        <div v-if="uploadStatus" class="status-banner" role="status">
+          {{ uploadStatus }}
+        </div>
+        <p v-else-if="loading" class="status-banner">Reading your file…</p>
 
         <div v-if="lastUpload" class="upload-report">
           <p><strong>Last file:</strong> {{ lastUpload.fileName || '(pasted HTML)' }} — {{ formatKb(lastUpload.bytes) }}</p>
@@ -128,6 +132,7 @@ const csvCopied = ref(false)
 const fileInput = ref(null)
 const htmlPaste = ref('')
 const dragOver = ref(false)
+const uploadStatus = ref('')
 
 const {
   loading,
@@ -155,10 +160,25 @@ function formatKb (bytes) {
 }
 
 function readHtmlFile (file) {
-  if (!file) return
+  if (!file) {
+    uploadStatus.value = 'No file selected — tap the gold box and pick your .html file again.'
+    return
+  }
+  uploadStatus.value = `Got it: ${file.name} (${formatKb(file.size)}) — reading now…`
   const reader = new FileReader()
   reader.onload = () => {
-    skimFromHtml(reader.result, 150, { fileName: file.name })
+    const { items, diag } = skimFromHtml(reader.result, 150, { fileName: file.name })
+    const n = items?.length ?? 0
+    if (n > 0) {
+      uploadStatus.value = `Done — ${n} sellers found. Scroll down to the green table.`
+    } else {
+      uploadStatus.value = diag?.hint
+        ? `Done — 0 sellers. ${diag.hint}`
+        : 'Done — 0 sellers in that file. Re-save eBay (Webpage, Complete) and upload again.'
+    }
+  }
+  reader.onerror = () => {
+    uploadStatus.value = 'Could not read that file. Use “Paste HTML instead” below.'
   }
   reader.readAsText(file)
 }
@@ -166,7 +186,6 @@ function readHtmlFile (file) {
 function onHtmlFile (e) {
   const file = e.target.files?.[0]
   readHtmlFile(file)
-  if (fileInput.value) fileInput.value.value = ''
 }
 
 function onDrop (e) {
@@ -180,7 +199,12 @@ function onDrop (e) {
 }
 
 function parsePaste () {
-  skimFromHtml(htmlPaste.value, 150, { fileName: 'pasted.html' })
+  uploadStatus.value = 'Parsing pasted HTML…'
+  const { items, diag } = skimFromHtml(htmlPaste.value, 150, { fileName: 'pasted.html' })
+  const n = items?.length ?? 0
+  uploadStatus.value = n > 0
+    ? `Done — ${n} sellers found. Scroll down.`
+    : (diag?.hint || 'Done — 0 sellers. Paste a fuller HTML save from Notepad.')
 }
 
 function outreachMailto (row) {
@@ -228,6 +252,17 @@ async function copyCsv () {
 .paste-fallback summary { cursor: pointer; color: #93c5fd; font-size: 0.9rem; }
 .paste-area { width: 100%; margin-top: 8px; font-family: inherit; min-height: 120px; }
 .mt-1 { margin-top: 10px; }
+.status-banner {
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  background: rgba(247, 202, 0, 0.15);
+  border: 1px solid rgba(247, 202, 0, 0.45);
+  border-radius: 8px;
+  color: #fef3c7;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.page-id { margin-bottom: 1rem; }
 .upload-report {
   margin-top: 1rem;
   padding: 0.75rem 1rem;
