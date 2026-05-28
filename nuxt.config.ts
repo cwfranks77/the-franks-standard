@@ -73,6 +73,12 @@ export default defineNuxtConfig({
 
   modules: ['@nuxtjs/supabase', '@vite-pwa/nuxt'],
 
+  routeRules: {
+    '/ops/**': {
+      headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
+    },
+  },
+
   pwa: {
     registerType: 'autoUpdate',
     injectRegister: 'auto',

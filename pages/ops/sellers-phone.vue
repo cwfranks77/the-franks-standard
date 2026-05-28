@@ -19,13 +19,14 @@
     <section class="phone-card">
       <h2>2. Paste here</h2>
       <textarea
+        ref="pasteRef"
         v-model="rawList"
         class="paste"
         rows="8"
         placeholder="seller_one&#10;seller_two&#10;seller_three"
         enterkeyhint="done"
       />
-      <button type="button" class="btn-build" :disabled="!rawList.trim()" @click="buildList">
+      <button type="button" class="btn-build" @click="buildList">
         Build {{ rows.length ? rows.length : '' }} seller links
       </button>
       <p v-if="status" class="status">{{ status }}</p>
@@ -57,24 +58,20 @@
 </template>
 
 <script setup>
-import { parseSellerUsernameList } from '~/utils/parseSellerUsernames.js'
-
 definePageMeta({ middleware: 'ops-auth', layout: 'default' })
 useSeoMeta({ title: 'Sellers (phone)', robots: 'noindex' })
 
-const rawList = ref('')
-const rows = ref([])
-const status = ref('')
+const pasteRef = ref(null)
+const { rawList, rows, status, buildFromText } = useSellerLinkBuilder()
 
 const defaultPitch =
   'Hi — I run The Franks Standard, a collectibles marketplace with escrow checkout and lower seller fees. ' +
   'If you want a second place to list: thefranksstandard.com/sell — happy to help. — Charles'
 
 function buildList () {
-  rows.value = parseSellerUsernameList(rawList.value)
-  status.value = rows.value.length
-    ? `Ready — ${rows.value.length} sellers. Tap Google on each row.`
-    : 'No valid usernames — one per line, comma-separated, or paste eBay profile URLs.'
+  const text = pasteRef.value?.value ?? rawList.value
+  rawList.value = text
+  buildFromText(text)
 }
 
 async function copyPitch (row) {
