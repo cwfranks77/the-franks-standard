@@ -123,6 +123,7 @@ const categoryId = ref('2536')
 const minFeedback = ref(0)
 const csvCopied = ref(false)
 const opened = ref(false)
+const fileInput = ref(null)
 
 const {
   loading,
@@ -146,6 +147,10 @@ const filteredProspects = computed(() => {
 function applyPreset (p) {
   keywords.value = p.keywords
   categoryId.value = p.categoryId || ''
+}
+
+function pickHtmlFile () {
+  fileInput.value?.click()
 }
 
 function onHtmlFile (e) {
