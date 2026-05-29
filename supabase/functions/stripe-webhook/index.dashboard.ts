@@ -76,7 +76,7 @@ Deno.serve(async (req) => {
   let event
   try {
     if (!WEBHOOK_SECRET) throw new Error('STRIPE_WEBHOOK_SECRET is not configured')
-    event = stripe.webhooks.constructEvent(rawBody, signature, WEBHOOK_SECRET)
+    event = await stripe.webhooks.constructEventAsync(rawBody, signature, WEBHOOK_SECRET)
   } catch (e) {
     const message = e instanceof Error ? e.message : 'invalid_signature'
     return json({ error: message }, 400)
