@@ -135,6 +135,7 @@ async function dispatchEvent (event: Stripe.Event) {
   }
 }
 
+// CI deploy: explicit --project-ref on all edge functions (2026-05-29)
 Deno.serve(async (req) => {
   if (req.method === 'GET' || req.method === 'HEAD') {
     const cfg = configStatus()
