@@ -1,7 +1,17 @@
 import { SELLER_INQUIRY_EMAIL } from '~/utils/inquiryMailto'
-import { buildSellerGoogleSearchUrl } from '~/utils/sellerGoogleSearch.js'
+import {
+  buildSellerGoogleSearchUrl,
+  buildSellerGooglePhysicalSearchUrl,
+  buildSellerMapsSearchUrl,
+  buildBusinessEbayCheckUrl,
+} from '~/utils/sellerGoogleSearch.js'
 
-export { buildSellerGoogleSearchUrl }
+export {
+  buildSellerGoogleSearchUrl,
+  buildSellerGooglePhysicalSearchUrl,
+  buildSellerMapsSearchUrl,
+  buildBusinessEbayCheckUrl,
+}
 
 export function buildProspectOutreachMailto (prospect, siteOrigin = 'https://thefranksstandard.com') {
   const name = prospect?.username || 'there'

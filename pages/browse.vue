@@ -9,7 +9,9 @@
         <p class="text-muted">
           The floor lists live inventory as sellers and shops go on board; every public item is COA- or guarantee-backed.
           <NuxtLink to="/sellers">Apply to add your store</NuxtLink>.
+          · <NuxtLink to="/collections">Niche collections &amp; limited drops</NuxtLink>
         </p>
+        <p v-if="filterBanner" class="filter-banner">{{ filterBanner }}</p>
       </div>
 
       <MarketplacePageDock :tiles="browseDockTiles" aria-label="Browse shortcuts" />
@@ -63,6 +65,7 @@
             <span v-if="item.donateProceeds" class="charity-badge listing-coa">
               {{ item.charityPercent >= 100 ? 'Charity' : `${item.charityPercent}% charity` }}
             </span>
+            <span v-if="item.limitedLabel" class="limited-badge listing-coa">{{ item.limitedLabel }}</span>
           </div>
           <div class="card-body">
             <p class="listing-category text-muted">{{ item.category }}</p>
@@ -94,14 +97,20 @@
 
 <script setup>
 import { LISTING_CATEGORIES } from '~/utils/marketplaceCategories'
+import {
+  isLimitedEditionListing,
+  limitedBadgeLabel,
+  getNicheBySlug,
+  getLimitedDropBySlug,
+} from '~/utils/nicheCollections.js'
 
 const { publicUrlForPath } = useListingImageUrl()
 const supabase = useSupabaseClient()
 
 const browseDockTiles = [
   { to: '/sell', icon: '📤', label: 'Sell an item', hint: 'COA or signed guarantee', variant: 'primary' },
-  { to: '/sell/import', icon: '📥', label: 'Import from eBay', hint: 'CSV or store link', variant: 'accent' },
-  { to: '/categories', icon: '🏷️', label: 'Categories', hint: 'Curated niches' },
+  { to: '/collections', icon: '✨', label: 'Collections', hint: 'Limited drops & niches', variant: 'accent' },
+  { to: '/sell/import', icon: '📥', label: 'Import from eBay', hint: 'CSV or store link' },
   { to: '/join/founders10', icon: '🎁', label: 'FOUNDERS10', hint: '3 mo Pro free', variant: 'dark' },
 ]
 
@@ -110,19 +119,36 @@ const selectedCategory = ref('')
 const selectedCondition = ref('')
 const sortBy = ref('newest')
 const loadError = ref('')
+const onlyLimited = ref(false)
+const filterCollectionSlug = ref('')
 
 const categories = LISTING_CATEGORIES
 
 const listings = ref([])
 
+const LISTING_SELECT_WITH_COLLECTIONS =
+  'id, title, description, category, price, condition, coa_type, image_paths, created_at, donate_proceeds, charity_name, charity_percent, sale_type, current_bid, starting_bid, auction_ends_at, buy_now_price, bid_count, is_limited_edition, collection_slug, collection_label, seller:profiles!listings_seller_id_fkey(full_name)'
+
+const LISTING_SELECT_BASE =
+  'id, title, category, price, condition, coa_type, image_paths, created_at, donate_proceeds, charity_name, charity_percent, sale_type, current_bid, starting_bid, auction_ends_at, buy_now_price, bid_count, seller:profiles!listings_seller_id_fkey(full_name)'
+
 async function loadListings() {
   loadError.value = ''
-  const { data, error } = await supabase
+  let select = LISTING_SELECT_WITH_COLLECTIONS
+  let { data, error } = await supabase
     .from('listings')
-    .select('id, title, category, price, condition, coa_type, image_paths, created_at, donate_proceeds, charity_name, charity_percent, sale_type, current_bid, starting_bid, auction_ends_at, buy_now_price, bid_count, seller:profiles!listings_seller_id_fkey(full_name)')
-
+    .select(select)
     .eq('status', 'published')
     .order('created_at', { ascending: false })
+
+  if (error && /collection_|is_limited_edition/i.test(error.message || '')) {
+    select = LISTING_SELECT_BASE
+    ;({ data, error } = await supabase
+      .from('listings')
+      .select(select)
+      .eq('status', 'published')
+      .order('created_at', { ascending: false }))
+  }
 
   if (error) {
     loadError.value = error.message
@@ -131,7 +157,10 @@ async function loadListings() {
   listings.value = (data || []).map((r) => ({
     id: r.id,
     title: r.title,
+    description: r.description || '',
     category: r.category,
+    collectionSlug: r.collection_slug || '',
+    isLimitedEdition: !!r.is_limited_edition,
     price: Number(r.price),
     condition: r.condition || '',
     coaType: r.coa_type,
@@ -149,25 +178,43 @@ async function loadListings() {
     auctionEndsAt: r.auction_ends_at,
     buyNowPrice: r.buy_now_price != null ? Number(r.buy_now_price) : null,
     bidCount: r.bid_count ?? 0,
+    limitedLabel: limitedBadgeLabel(r),
+    isLimited: isLimitedEditionListing(r),
   }))
 }
 
 const route = useRoute()
 
-function applyCategoryFromRoute () {
+function applyFiltersFromRoute () {
   const q = route.query.category
   if (q && typeof q === 'string') {
     selectedCategory.value = decodeURIComponent(q)
   }
+  onlyLimited.value = route.query.limited === '1' || route.query.limited === 'true'
+  const coll = route.query.collection
+  filterCollectionSlug.value = typeof coll === 'string' ? coll : ''
 }
 
+const filterBanner = computed(() => {
+  if (onlyLimited.value) {
+    return 'Showing limited-edition and exclusive-drop listings — COA or guarantee + Stripe escrow on every item.'
+  }
+  if (filterCollectionSlug.value) {
+    const niche = getNicheBySlug(filterCollectionSlug.value)
+    const drop = getLimitedDropBySlug(filterCollectionSlug.value)
+    if (niche) return `Collection: ${niche.name} — ${niche.tagline}`
+    if (drop) return `Floor drop: ${drop.label}`
+  }
+  return ''
+})
+
 onMounted(() => {
-  applyCategoryFromRoute()
+  applyFiltersFromRoute()
   loadListings()
 })
 
-watch(() => route.query.category, () => {
-  applyCategoryFromRoute()
+watch(() => [route.query.category, route.query.limited, route.query.collection], () => {
+  applyFiltersFromRoute()
 })
 
 const filteredListings = computed(() => {
@@ -183,6 +230,21 @@ const filteredListings = computed(() => {
   }
   if (selectedCondition.value) {
     results = results.filter((i) => i.condition === selectedCondition.value)
+  }
+  if (onlyLimited.value) {
+    results = results.filter((i) => i.isLimited)
+  }
+  if (filterCollectionSlug.value) {
+    const drop = getLimitedDropBySlug(filterCollectionSlug.value)
+    const niche = getNicheBySlug(filterCollectionSlug.value)
+    results = results.filter((i) => {
+      if (i.collectionSlug === filterCollectionSlug.value) return true
+      if (niche) return i.category === niche.category
+      if (drop?.categories?.includes(i.category)) {
+        return onlyLimited.value ? i.isLimited : true
+      }
+      return false
+    })
   }
   if (sortBy.value === 'newest') {
     results = [...results].sort(
@@ -203,6 +265,22 @@ const filteredListings = computed(() => {
 .browse-page { padding: 40px 0; }
 .browse-header { margin-bottom: 24px; }
 .browse-header h1 { font-size: 2rem; }
+.filter-banner {
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: rgba(251, 191, 36, 0.15);
+  border: 1px solid rgba(180, 83, 9, 0.35);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  max-width: 640px;
+}
+.limited-badge {
+  top: auto;
+  bottom: 8px;
+  left: 8px;
+  background: #92400e;
+}
 
 .filter-bar {
   display: flex;

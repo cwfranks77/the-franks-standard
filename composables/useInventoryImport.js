@@ -230,12 +230,22 @@ export function useInventoryImport () {
 
         const normalizedProviderKey = String(dropshipProviderKey || '').trim()
         const normalizedProviderName = String(dropshipProviderName || '').trim()
+        const title = String(item.title).trim().slice(0, 200)
+        const description =
+            (item.description || '').trim() ||
+            `Imported listing. Review photos and add COA or signed guarantee before publishing.`
+        const { scanOffPlatformContent } = await import('~/utils/offPlatformGuard.js')
+        const guard = scanOffPlatformContent(`${title}\n${description}`)
+        if (!guard.ok) {
+          results.failed++
+          results.errors.push(`${item.title}: off-platform content blocked — remove emails, phones, or outside payment links`)
+          continue
+        }
+
         const payload = {
           seller_id: user.id,
-          title: String(item.title).trim().slice(0, 200),
-          description:
-            (item.description || '').trim() ||
-            `Imported listing. Review photos and add COA or signed guarantee before publishing.`,
+          title,
+          description,
           category: LISTING_CATEGORIES.includes(defaultCategory)
             ? defaultCategory
             : DEFAULT_CATEGORY,

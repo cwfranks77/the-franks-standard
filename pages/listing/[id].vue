@@ -278,7 +278,7 @@ const isWinningBidder = computed(() => {
 const auctionClosedMessage = computed(() => {
   if (!listing.value || listing.value.saleType !== 'auction') return ''
   if (!listing.value.bidCount) return 'No bids were placed.'
-  if (!reserveOk.value) return 'Reserve was not met — seller may relist or contact bidders.'
+  if (!reserveOk.value) return 'Reserve was not met — seller may relist; winning bidders must checkout on-platform only.'
   if (isWinningBidder.value) return 'You have the winning bid — pay above to complete checkout.'
   return 'Another bidder won this auction.'
 })

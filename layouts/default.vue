@@ -90,6 +90,10 @@
             <NuxtLink to="/honor">Honor Our Heroes (6 mo Pro)</NuxtLink>
             <NuxtLink to="/how-it-works">How It Works</NuxtLink>
             <NuxtLink to="/seller-tools">Appraisal &amp; comp tools</NuxtLink>
+            <NuxtLink to="/learn">Guides &amp; free tools</NuxtLink>
+            <NuxtLink to="/collections">Collections &amp; limited drops</NuxtLink>
+            <NuxtLink to="/partners/creators">Creator affiliates</NuxtLink>
+            <NuxtLink to="/social">Social promotion</NuxtLink>
             <NuxtLink to="/top-sellers">Top sellers program</NuxtLink>
             <NuxtLink to="/support">Support</NuxtLink>
           </div>

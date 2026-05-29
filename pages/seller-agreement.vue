@@ -27,7 +27,15 @@
         requests.
       </p>
 
-      <h2>5. Contact</h2>
+      <h2>5. On-platform communication and checkout only</h2>
+      <p>
+        You may not solicit buyers or sellers to complete a transaction, send payment, or communicate outside The Franks Standard
+        (including personal email, phone, social media, or third-party payment apps). Listings, store pages, and messages must not
+        include contact or payment information meant to bypass platform escrow and fees. Violations may result in listing removal
+        and account suspension.
+      </p>
+
+      <h2>6. Contact</h2>
       <p>
         <NuxtLink to="/contact">Contact</NuxtLink> or
         <a href="mailto:info@thefranksstandard.com">info@thefranksstandard.com</a>

@@ -15,7 +15,7 @@ export const LIVE_NOW_FEATURES = [
 
 export const COMING_SOON_FEATURES = [
   { title: 'Platform money-back guarantee', desc: 'We use escrow + buyer confirm today; a formal MBG program is not live yet.' },
-  { title: 'In-app messaging', desc: 'Buyer ↔ seller threads inside the marketplace.' },
+  { title: 'In-app messaging', desc: 'Buyer ↔ seller threads on-platform only (no off-site deals).' },
   { title: 'Wishlists & price alerts', desc: 'Save items and get notified on drops.' },
   { title: 'Full order-tracking hub', desc: 'Shipment timeline dashboard for every order.' },
 ]

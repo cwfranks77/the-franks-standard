@@ -22,13 +22,12 @@
           Tactical, hunting, fishing, and outdoor gear — checkout and buyer protection on
           <NuxtLink to="/">The Franks Standard</NuxtLink>.
         </p>
-        <p v-if="store.contactEmail" class="store-contact">
-          Questions:
-          <a :href="`mailto:${store.contactEmail}`">{{ store.contactEmail }}</a>
+        <p class="store-contact text-muted small">
+          Buyer questions go through the marketplace — escrow checkout and Video Call on listings. Off-platform deals are not allowed.
         </p>
         <div class="store-actions">
           <NuxtLink to="/browse" class="btn btn-outline btn-sm">All marketplace</NuxtLink>
-          <a v-if="storeContactMailto" :href="storeContactMailto" class="btn btn-outline btn-sm">Email store</a>
+          <a :href="platformStoreMailto" class="btn btn-outline btn-sm">Message store (via platform)</a>
         </div>
       </header>
 
@@ -100,10 +99,13 @@ const storeOnHold = computed(() => isBrandyStoreOnHold(canonicalSlug.value))
 const holdHeadline = BRANDY_HOLD_HEADLINE
 const holdMessage = BRANDY_HOLD_MESSAGE
 
-const storeContactMailto = computed(() => {
-  if (!store.value?.contactEmail) return ''
-  const subject = encodeURIComponent(`Question for ${store.value.displayName}`)
-  return `mailto:${store.value.contactEmail}?subject=${subject}`
+const platformStoreMailto = computed(() => {
+  if (!store.value?.displayName) return 'mailto:info@thefranksstandard.com'
+  const subject = encodeURIComponent(`Store question: ${store.value.displayName}`)
+  const body = encodeURIComponent(
+    `Hi,\n\nI have a question about the store "${store.value.displayName}" on The Franks Standard.\n\n`,
+  )
+  return `mailto:info@thefranksstandard.com?subject=${subject}&body=${body}`
 })
 
 const filteredListings = computed(() => {

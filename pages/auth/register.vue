@@ -95,9 +95,11 @@ import {
   getPendingHonorCategory,
   savePendingHonorCategory,
 } from '~/utils/honorPromo.js'
+import { syncSignupAttributionToProfile } from '~/utils/syncSignupAttribution.js'
 
 const route = useRoute()
 const { savePendingPromo, fetchAvailability, redeemCode } = usePromoCode()
+const { captureFromRoute, getSignupMetadataFields } = useOutreachAttribution()
 
 function postRegisterPath (type) {
   if (type === 'sell' || type === 'seller') return '/sell'
@@ -111,11 +113,12 @@ const honorBanner = ref(false)
 const spotsRemaining = ref(null)
 const serviceCategory = ref('')
 const promoPlaceholder = computed(() =>
-  honorBanner.value ? HONOR_PROMO_CODE : 'FOUNDERS10 or HONOR26'
+  honorBanner.value ? HONOR_PROMO_CODE : 'FOUNDERS10, HONOR26, or CREATOR'
 )
 
 onMounted(async () => {
   useGuestOnly()
+  captureFromRoute(route)
   const qPromo = String(route.query.promo || '').trim().toUpperCase()
   const qAccount = String(route.query.account || '').trim().toLowerCase()
   const qHonor = String(route.query.honor || getPendingHonorCategory() || '').trim().toLowerCase()
@@ -184,6 +187,7 @@ async function handleRegister() {
           pending_promo: promoCode.value ? promoCode.value.trim().toUpperCase() : null,
           service_category: serviceCategory.value || null,
           honor_category: serviceCategory.value || null,
+          ...getSignupMetadataFields(),
         },
       },
     })
@@ -201,11 +205,18 @@ async function handleRegister() {
       }
       return
     }
-    if (data.session && promoCode.value) {
-      const extra = honorBanner.value && serviceCategory.value
-        ? { service_category: serviceCategory.value }
-        : {}
-      await redeemCode(promoCode.value, extra).catch(() => {})
+    if (data.session) {
+      const { data: { user: sessionUser } } = await supabase.auth.getUser()
+      await syncSignupAttributionToProfile(supabase, sessionUser)
+      if (promoCode.value) {
+        const code = promoCode.value.trim().toUpperCase()
+        const extra = honorBanner.value && serviceCategory.value
+          ? { service_category: serviceCategory.value }
+          : {}
+        if (code !== 'STORE90' && code !== 'CREATOR') {
+          await redeemCode(code, extra).catch(() => {})
+        }
+      }
     }
     await navigateTo(postRegisterPath(accountType.value))
   } catch (err) {

@@ -3,7 +3,7 @@
     <h1>Contact</h1>
     <p class="text-muted lead">
       Questions from buyers and sellers, press, and partnerships. Use the form below — it reaches the team even while
-      the <strong>info@</strong> inbox is being restored on Namecheap.
+      if <strong>info@</strong> webmail fails, reset the mailbox password in Namecheap (see ops <NuxtLink to="/ops/mail-setup">mail setup</NuxtLink> after owner unlock).
     </p>
 
     <div v-if="formSuccess" class="card success-card" role="status">

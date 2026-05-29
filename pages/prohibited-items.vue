@@ -33,6 +33,13 @@
           <li>Slings, bipods, and shooting accessories</li>
         </ul>
 
+        <h2>Off-platform deals and contact</h2>
+        <p>
+          <strong>Not allowed:</strong> asking buyers to pay via Venmo, Zelle, Cash App, PayPal outside checkout, wire transfer, crypto,
+          or to email/text/call you off-site to “avoid fees.” All sales must complete through The Franks Standard escrow checkout.
+          Use <strong>Message seller</strong> or <strong>Video Call</strong> on listings — not personal contact info in descriptions.
+        </p>
+
         <h2>Seller Responsibility</h2>
         <p>Sellers are responsible for ensuring their items comply with all applicable federal, state, and local laws. Listing a prohibited item will result in immediate removal and potential permanent ban from the platform.</p>
 

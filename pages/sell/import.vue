@@ -1,9 +1,9 @@
 <template>
   <div class="import-page">
     <div class="container narrow">
-      <h1>Import inventory</h1>
+      <h1>AI inventory transfer</h1>
       <p class="lead text-muted">
-        <strong>Best for eBay:</strong> CSV from Seller Hub (recommended). HTML save works when the page includes listings.
+        <strong>Move your catalog from eBay or CSV</strong> — titles, prices, and image URLs map in; you review each row, add COA or signed guarantee, then publish. Off-platform contact or payment links in descriptions are blocked automatically.
       </p>
 
       <div class="tabs">

@@ -1,4 +1,5 @@
 import { categoryListForAi } from '~/utils/marketplaceCategories'
+import { formatOffPlatformBlockMessage, scanOffPlatformContent, OFF_PLATFORM_POLICY_SUMMARY } from '~/utils/offPlatformGuard.js'
 
 /**
  * AI Customer Service Assistant for The Franks Standard.
@@ -47,6 +48,20 @@ export function getAiReply (message: string): string {
   if (/^(thanks|thank you|thx|ty|appreciate|cheers|cool thanks)/i.test(q)) {
     return 'You\'re welcome! Is there anything else I can help you with? ' +
       'If you need to speak with a person, call (877) 837-0527 or email info@thefranksstandard.com.'
+  }
+
+  // Off-platform payment / contact (policy + detect pasted violations)
+  const offPlatformScan = scanOffPlatformContent(message)
+  if (!offPlatformScan.ok || matchAny(q, [/venmo|zelle|cash app|pay outside|off platform|avoid fees|skip fees|paypal me|wire me|text me at|email me at|deal off ebay|contact.*outside/])) {
+    ctx.lastTopic = 'off-platform'
+    const block = !offPlatformScan.ok ? `\n\n${formatOffPlatformBlockMessage(offPlatformScan)}` : ''
+    return '**All sales and buyer contact stay on The Franks Standard.**\n\n' +
+      OFF_PLATFORM_POLICY_SUMMARY + '\n\n' +
+      '• **Buy:** Use **Buy now** / winning bid checkout (Stripe escrow)\n' +
+      '• **Ask questions:** **Message seller** or **Video Call** on the listing\n' +
+      '• **Never** pay sellers via Venmo, Zelle, PayPal outside checkout, or wire — that bypasses protection and is not allowed\n\n' +
+      'Sellers: remove personal emails/phones from listing text — our publish checker blocks them.' +
+      block
   }
 
   // Phone / call / speak to human

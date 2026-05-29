@@ -17,6 +17,62 @@
         <p class="text-muted small">Full playbook: <code>docs/GET-FOUND-AND-GROW.md</code> in the repo.</p>
       </section>
 
+      <section class="mkt-card">
+        <h2>Influencers &amp; affiliates</h2>
+        <p class="text-muted">
+          Nano/micro creators get tracked short links <code>/r/handle</code>, promo <code>CREATOR</code>, and signup attribution on profiles.
+        </p>
+        <ul class="mkt-list">
+          <li><NuxtLink to="/ops/influencers">Ops → Influencers</NuxtLink> — link generator, media kit, SQL stats</li>
+          <li>Public: <NuxtLink to="/partners">/partners</NuxtLink> · <NuxtLink to="/partners/creators">/partners/creators</NuxtLink></li>
+          <li>Playbook: <code>docs/INFLUENCER-AFFILIATE.md</code></li>
+        </ul>
+      </section>
+
+      <section class="mkt-card">
+        <h2>Social promotion (3 platforms)</h2>
+        <p class="text-muted">
+          Instagram + TikTok (younger/collectibles visual) and LinkedIn (shop owners). Reels, Shorts, polls, UGC templates.
+        </p>
+        <ul class="mkt-list">
+          <li><NuxtLink to="/ops/social-promo">Ops → Social promotion</NuxtLink> — caption builder, contests, weekly rhythm</li>
+          <li>Public: <NuxtLink to="/social">/social</NuxtLink></li>
+          <li>Automated posts: <code>npm run post:social</code> · Ads copy: <NuxtLink to="/ops/ads">/ops/ads</NuxtLink></li>
+        </ul>
+        <p class="text-muted small">Playbook: <code>docs/SOCIAL-PROMOTION.md</code></p>
+      </section>
+
+      <section class="mkt-card">
+        <h2>Niche collections &amp; limited drops</h2>
+        <p class="text-muted">
+          Curated floors (graded cards, coins, TCG) and limited-edition campaigns — exclusivity with COA + escrow, not generic eBay search.
+        </p>
+        <ul class="mkt-list">
+          <li><NuxtLink to="/ops/niche-collections">Ops → Niche collections</NuxtLink> — promo copy per niche</li>
+          <li>Public: <NuxtLink to="/collections">/collections</NuxtLink> · <NuxtLink to="/browse?limited=1">Limited editions</NuxtLink></li>
+          <li>Learn: <NuxtLink to="/learn/niche-collections-vs-ebay">Niche vs eBay article</NuxtLink></li>
+          <li>Migration: <code>020_limited_collections.sql</code> · <code>docs/NICHE-LIMITED-COLLECTIONS.md</code></li>
+        </ul>
+      </section>
+
+      <section class="mkt-card">
+        <h2>Content marketing (live on site)</h2>
+        <p class="text-muted">
+          Public hub at <NuxtLink to="/learn">/learn</NuxtLink> — articles, free calculators, printable checklist, and video slots for YouTube.
+        </p>
+        <ul class="mkt-list">
+          <li><strong>Articles</strong> — edit <code>utils/contentHub.js</code> (import guide, best-of, COA, fees, playbook).</li>
+          <li><strong>Tools</strong> — fee calculator, listing estimator, authenticity checklist (shareable URLs for social).</li>
+          <li><strong>Videos</strong> — film queue on <NuxtLink to="/learn/videos">/learn/videos</NuxtLink>; set <code>youtubeId</code> per video when published.</li>
+          <li><strong>SEO</strong> — submit new <code>/learn/*</code> URLs in Search Console after deploy; sitemap includes key learn pages.</li>
+        </ul>
+        <p class="text-muted small">Playbook: <code>docs/CONTENT-MARKETING.md</code></p>
+        <div class="mkt-actions">
+          <NuxtLink to="/learn" class="btn btn-primary btn-sm" target="_blank">Open Learn hub ↗</NuxtLink>
+          <NuxtLink to="/learn/tools/fee-calculator" class="btn btn-outline btn-sm" target="_blank">Fee calculator ↗</NuxtLink>
+        </div>
+      </section>
+
       <section class="mkt-card mkt-alert">
         <h2>eBay seller prospect skim</h2>
         <p class="text-muted">

@@ -133,7 +133,8 @@
           </div>
           <div class="form-group">
             <label class="label">Customer support email</label>
-            <input v-model="form.storeContactEmail" class="input" type="email" placeholder="brandy@thefranksstandard.com" />
+            <input v-model="form.storeContactEmail" class="input" type="email" placeholder="yourname@thefranksstandard.com" />
+            <p class="text-muted small">Must be @thefranksstandard.com — buyers reach you through platform checkout &amp; Video Call, not personal inboxes.</p>
           </div>
           <h3 class="mt-3">Supplier account</h3>
           <p v-if="selectedProvider" class="text-muted">{{ selectedProvider.note }}</p>
@@ -353,6 +354,12 @@ function applyAiPlan () {
 }
 
 async function persistPartial (complete = false) {
+  const { validateStoreContactEmail } = await import('~/utils/offPlatformGuard.js')
+  const contactCheck = validateStoreContactEmail(form.storeContactEmail)
+  if (!contactCheck.ok) {
+    alert(contactCheck.message)
+    return { ok: false }
+  }
   return saveSetup({
     setupComplete: complete,
     setupStep: step.value,
@@ -382,6 +389,12 @@ async function goNext () {
 }
 
 async function finishSetup () {
+  const { validateStoreContactEmail } = await import('~/utils/offPlatformGuard.js')
+  const contactCheck = validateStoreContactEmail(form.storeContactEmail)
+  if (!contactCheck.ok) {
+    alert(contactCheck.message)
+    return
+  }
   const res = await saveSetup({
     setupComplete: true,
     setupStep: 5,

@@ -10,6 +10,7 @@ export const NAV_EXPLORE_SECTIONS = [
       { label: 'Categories A–Z', to: '/categories', desc: 'Cards, watches, gear, and more' },
       { label: 'Video meetups', to: '/video', desc: 'Inspect before you buy' },
       { label: 'How we compare', to: '/compare', desc: 'Fees and perks vs big marketplaces' },
+      { label: 'Learn & free tools', to: '/learn', desc: 'Guides, calculators, videos' },
     ],
   },
   {
@@ -48,6 +49,9 @@ export const NAV_EXPLORE_SECTIONS = [
     label: 'Company & apps',
     accent: 'violet',
     items: [
+      { label: 'Learn hub', to: '/learn', desc: 'Guides, fee tools, video tutorials' },
+      { label: 'Creator partnerships', to: '/partners/creators', desc: 'Influencer & affiliate program' },
+      { label: 'Social promotion', to: '/social', desc: 'Instagram, TikTok, LinkedIn playbooks' },
       { label: 'Our story', to: '/about', desc: 'Mission and founder' },
       { label: 'Open Door Policy', to: '/open-door', desc: 'Charles Franks reads feedback' },
       { label: 'Support & tech', to: '/support', desc: 'Help center' },

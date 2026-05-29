@@ -94,6 +94,17 @@
       return 'https://www.google.com/search?q=' + encodeURIComponent(q)
     }
 
+    function physicalUrl (username) {
+      const q = '"' + username + '" (ebay store OR "ebay.com/str" OR collectibles) ("address" OR "hours" OR "visit us" OR "located at" OR storefront)'
+      return 'https://www.google.com/search?q=' + encodeURIComponent(q)
+    }
+
+    function mapsUrl (username) {
+      const label = String(username || '').replace(/[-_]/g, ' ')
+      const q = label + ' sports cards OR coin shop OR collectibles store'
+      return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q)
+    }
+
     function parsePaste (text) {
       const seen = new Set()
       const rows = []
@@ -124,6 +135,8 @@
             ? 'https://www.ebay.com/str/' + encodeURIComponent(u)
             : 'https://www.ebay.com/sch/i.html?_ssn=' + encodeURIComponent(u) + '&_ipg=60&rt=nc',
           google: googleUrl(u),
+          physical: physicalUrl(u),
+          maps: mapsUrl(u),
         })
       }
 
@@ -173,7 +186,9 @@
         card.className = 'card'
         card.innerHTML =
           '<div class="name">' + r.username + '</div>' +
-          '<a class="btn-google" href="' + r.google + '" target="_blank" rel="noopener">Google ↗ — find Instagram / contact</a>' +
+          '<a class="btn-google" href="' + r.physical + '" target="_blank" rel="noopener">Physical store ↗</a>' +
+          '<a class="btn-google" href="' + r.maps + '" target="_blank" rel="noopener" style="margin-top:6px">Google Maps ↗</a>' +
+          '<a class="btn-google" href="' + r.google + '" target="_blank" rel="noopener" style="margin-top:6px;opacity:.85">Contact / IG ↗</a>' +
           '<div class="links">' +
           '<a href="' + r.store + '" target="_blank" rel="noopener">' + (r.isStore ? 'eBay store' : 'Listings') + '</a>' +
           '<a href="' + r.profile + '" target="_blank" rel="noopener">eBay profile</a>' +

@@ -1,4 +1,8 @@
-import { buildSellerGoogleSearchUrl } from '~/utils/sellerGoogleSearch.js'
+import {
+  buildSellerGoogleSearchUrl,
+  buildSellerGooglePhysicalSearchUrl,
+  buildSellerMapsSearchUrl,
+} from '~/utils/sellerGoogleSearch.js'
 
 export const SELLER_LINK_BUILD_STAMP = 'seller-links-2026-05-20c'
 
@@ -29,6 +33,8 @@ function row (username, isEbayStore = false) {
       ? `https://www.ebay.com/str/${u}`
       : `https://www.ebay.com/sch/i.html?_ssn=${u}&_ipg=60&rt=nc`,
     google_url: buildSellerGoogleSearchUrl(username),
+    google_physical_url: buildSellerGooglePhysicalSearchUrl(username),
+    google_maps_url: buildSellerMapsSearchUrl(username),
     is_ebay_store: isEbayStore,
   }
 }

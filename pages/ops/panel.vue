@@ -47,6 +47,9 @@
           <NuxtLink to="/ops/sellers-phone" class="btn btn-outline btn-lg">Find sellers — phone</NuxtLink>
           <NuxtLink to="/seller-lookup.html" class="btn btn-outline btn-lg">Find sellers — desktop</NuxtLink>
           <NuxtLink to="/ops/ebay-prospects" class="btn btn-outline btn-lg">eBay skim (HTML)</NuxtLink>
+          <NuxtLink to="/ops/mail-prospects" class="btn btn-primary btn-lg">Mail physical sellers</NuxtLink>
+          <a href="/mail/postcard-design.html" class="btn btn-outline btn-lg" target="_blank" rel="noopener noreferrer">Postcard design ↗</a>
+          <a href="/go/postcard?ref=pcard500" class="btn btn-outline btn-lg" target="_blank" rel="noopener noreferrer">Tracked postcard URL ↗</a>
           <NuxtLink to="/sell/import" class="btn btn-outline btn-lg">Import my eBay (CSV)</NuxtLink>
         </div>
         <div class="free-access-perks">
@@ -105,7 +108,11 @@
             <li><NuxtLink to="/contact">Contact</NuxtLink></li>
             <li><NuxtLink to="/ops/dropship"><strong>Dropship automation</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/ads"><strong>Social Media Ads</strong></NuxtLink></li>
+            <li><NuxtLink to="/ops/google-ads"><strong>Google Ads setup &amp; copy</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/marketing"><strong>Marketing &amp; get found</strong></NuxtLink></li>
+            <li><NuxtLink to="/ops/influencers"><strong>Influencers &amp; affiliates</strong></NuxtLink></li>
+            <li><NuxtLink to="/ops/social-promo"><strong>Social promotion</strong></NuxtLink></li>
+            <li><NuxtLink to="/ops/niche-collections"><strong>Niche collections &amp; limited drops</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/sellers-phone"><strong>Find eBay sellers (phone)</strong></NuxtLink> — paste names, tap Google</li>
             <li><NuxtLink to="/seller-lookup.html"><strong>Find sellers — desktop</strong></NuxtLink> (works without app cache)</li>
             <li><NuxtLink to="/sell/dropship-setup?ai=1"><strong>AI dropship setup</strong></NuxtLink> (full plan + wizard)</li>

@@ -75,6 +75,7 @@
           <button type="button" class="btn btn-outline btn-sm" @click="copyCsv">
             {{ csvCopied ? 'Copied' : 'Copy CSV' }}
           </button>
+          <NuxtLink to="/ops/mail-prospects" class="btn btn-primary btn-sm">Mail physical →</NuxtLink>
         </div>
         <p class="text-muted small">
           <strong>Find on Google</strong> → IG, website, or phone. eBay username is backup only. Use Copy CSV to track who you contacted.
@@ -87,7 +88,8 @@
                 <th>Feedback</th>
                 <th>Hits</th>
                 <th>Sample</th>
-                <th>Find contact</th>
+                <th>Store?</th>
+                <th>Find address</th>
               </tr>
             </thead>
             <tbody>
@@ -101,14 +103,29 @@
                 </td>
                 <td>{{ row.listing_hits }}</td>
                 <td class="sample">{{ row.sample_titles?.[0] || '—' }}</td>
+                <td>
+                  <span v-if="row.is_ebay_store" class="store-pill">Store</span>
+                  <span v-else class="text-muted">—</span>
+                </td>
                 <td class="action-cell">
                   <a
-                    :href="googleSearchUrl(row.username)"
+                    :href="physicalSearchUrl(row.username)"
                     class="link-sm link-google"
                     target="_blank"
                     rel="noopener noreferrer"
-                  >Google ↗</a>
-                  <a :href="outreachMailto(row)" class="link-sm">Email draft</a>
+                  >Physical ↗</a>
+                  <a
+                    :href="mapsSearchUrl(row.username)"
+                    class="link-sm link-maps"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >Maps ↗</a>
+                  <a
+                    :href="googleSearchUrl(row.username)"
+                    class="link-sm"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >Contact ↗</a>
                 </td>
               </tr>
             </tbody>
@@ -137,7 +154,12 @@
 <script setup>
 import { EBAY_PROSPECT_PRESETS, buildEbaySearchUrl } from '~/utils/ebaySearchUrls.js'
 import { prospectsToCsv } from '~/utils/ebayProspectParse.js'
-import { buildProspectOutreachMailto, buildSellerGoogleSearchUrl } from '~/utils/prospectOutreach.js'
+import {
+  buildProspectOutreachMailto,
+  buildSellerGoogleSearchUrl,
+  buildSellerGooglePhysicalSearchUrl,
+  buildSellerMapsSearchUrl,
+} from '~/utils/prospectOutreach.js'
 
 definePageMeta({ middleware: 'ops-auth' })
 useSeoMeta({ title: 'Find eBay sellers — Ops', robots: 'noindex' })
@@ -228,6 +250,14 @@ function googleSearchUrl (username) {
   return buildSellerGoogleSearchUrl(username)
 }
 
+function physicalSearchUrl (username) {
+  return buildSellerGooglePhysicalSearchUrl(username)
+}
+
+function mapsSearchUrl (username) {
+  return buildSellerMapsSearchUrl(username)
+}
+
 function outreachMailto (row) {
   return buildProspectOutreachMailto(row)
 }
@@ -305,6 +335,11 @@ async function copyCsv () {
 .action-cell .link-sm { margin-right: 10px; }
 .link-sm { color: #93c5fd; }
 .link-google { color: var(--gold); font-weight: 600; }
+.link-maps { color: #67e8f9; font-weight: 600; }
+.store-pill {
+  font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 4px;
+  background: rgba(247, 202, 0, 0.25); color: var(--gold);
+}
 .alt-way h2 { color: var(--gold); font-size: 1rem; }
 .back-link { margin-top: 1.5rem; }
 .small { font-size: 0.85rem; }

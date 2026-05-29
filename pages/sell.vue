@@ -156,6 +156,27 @@
               <p class="text-muted small">Hidden from buyers. Item only sells if the high bid meets or beats this amount.</p>
             </div>
 
+            <div class="form-section form-section--inline">
+              <h3 class="form-subhead">Collections &amp; limited edition</h3>
+              <label class="check-row">
+                <input type="checkbox" v-model="collectionMeta.isLimitedEdition" />
+                <span>Limited edition / exclusive drop</span>
+              </label>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="label">Collection tag (optional)</label>
+                  <select class="select" v-model="collectionMeta.collectionSlug">
+                    <option v-for="opt in collectionSlugOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="label">Badge label (optional)</label>
+                  <input class="input" v-model="collectionMeta.collectionLabel" placeholder="e.g. Floor Drop #001" />
+                </div>
+              </div>
+              <p class="text-muted small">Featured on <NuxtLink to="/collections">/collections</NuxtLink> and limited-edition browse. Proof + escrow still required.</p>
+            </div>
+
             <div class="form-group">
               <label class="label">Condition</label>
               <select class="select" v-model="form.condition" required>
@@ -180,6 +201,9 @@
                   {{ aiDescGenerating ? 'Writing…' : (form.description.trim() ? 'Rewrite with AI' : 'Write with AI') }}
                 </button>
               </div>
+              <p class="text-muted small platform-only-hint">
+                <strong>Platform-only sales:</strong> Do not put personal emails, phone numbers, social handles, or off-platform payment links (Venmo, PayPal, Zelle, etc.) in titles or descriptions — our system blocks them so escrow and fees stay protected.
+              </p>
               <p class="text-muted small ai-desc-hint">
                 <template v-if="canGenerateAiDescription">
                   AI drafts condition, authenticity, shipping, and buyer-trust copy — you edit before publishing.
@@ -461,6 +485,7 @@ import { CHARITY_OPTIONS, charityByKey } from '~/utils/charities.js'
 import { calcCharitySplit, CHARITY_PERCENT_PRESETS } from '~/utils/charitySplit.js'
 import { auctionEndsAtFromDays } from '~/utils/auctionHelpers.js'
 import { DROPSHIP_PROVIDER_CATALOG, useSellerDropship } from '~/composables/useSellerDropship.js'
+import { COLLECTION_SLUG_OPTIONS } from '~/utils/nicheCollections.js'
 
 const sellDockTiles = [
   { to: '/sell/import', icon: '📥', label: 'Import inventory', hint: 'eBay CSV or store', variant: 'primary' },
@@ -538,6 +563,14 @@ const charity = reactive({
   percent: 25,
 })
 
+const collectionMeta = reactive({
+  isLimitedEdition: false,
+  collectionSlug: '',
+  collectionLabel: '',
+})
+
+const collectionSlugOptions = COLLECTION_SLUG_OPTIONS
+
 const charityPercentPresets = CHARITY_PERCENT_PRESETS
 const selectedCharity = computed(() => charityByKey(charity.key))
 
@@ -596,7 +629,7 @@ function buildListingDescription (input) {
   const CONDITION = { new: 'New / Sealed', 'like-new': 'Like New', excellent: 'Excellent', good: 'Good', fair: 'Fair' }
   const TONE_OPENER = {
     professional: 'Offered with full transparency on The Franks Standard.',
-    friendly: 'Happy to answer questions — message or start a Video Call from this listing.',
+    friendly: 'Questions? Use Video Call or Message seller on this listing — all sales stay on The Franks Standard.',
     collector: 'Built for serious collectors who want proof before they buy.',
     luxury: 'Presented with careful attention to condition, provenance, and presentation.',
   }
@@ -623,7 +656,7 @@ function buildListingDescription (input) {
     '',
     `Category: ${category}. This listing is for ${hook}. ${TONE_OPENER[tone] || TONE_OPENER.professional}`,
   ]
-  if (priceStr) lines.push(`Price: ${priceStr} — message the seller for bundle offers.`)
+  if (priceStr) lines.push(`Price: ${priceStr} — bundle offers through checkout on this listing.`)
   lines.push('', 'Condition & details', `• Condition: ${conditionLabel}.`, '• Includes: Everything shown in photos unless noted.', '• Packaging: See photos for wear and completeness.')
   if (notes) {
     lines.push('', 'Seller notes')
@@ -800,6 +833,13 @@ async function submitListing() {
       return
     }
   }
+  const { scanOffPlatformContent, formatOffPlatformBlockMessage } = await import('~/utils/offPlatformGuard.js')
+  const listingText = `${form.title}\n${form.description}`
+  const guard = scanOffPlatformContent(listingText)
+  if (!guard.ok) {
+    alert(formatOffPlatformBlockMessage(guard))
+    return
+  }
   submitting.value = true
   try {
     const { data: { user } } = await supabase.auth.getUser()
@@ -882,6 +922,20 @@ async function submitListing() {
     }
 
     // Dropship columns only exist after migration 002 — do not send them for direct sale.
+    if (collectionMeta.isLimitedEdition) {
+      listingPayload.is_limited_edition = true
+    }
+    if (collectionMeta.collectionSlug) {
+      listingPayload.collection_slug = collectionMeta.collectionSlug
+      const slugLabel = collectionSlugOptions.find((o) => o.value === collectionMeta.collectionSlug)?.label
+      const custom = String(collectionMeta.collectionLabel || '').trim()
+      if (custom || slugLabel) {
+        listingPayload.collection_label = custom || slugLabel
+      }
+    } else if (String(collectionMeta.collectionLabel || '').trim()) {
+      listingPayload.collection_label = collectionMeta.collectionLabel.trim()
+    }
+
     if (listingMode.value === 'dropship') {
       Object.assign(listingPayload, {
         listing_mode: 'dropship',
@@ -926,6 +980,21 @@ async function submitListing() {
         .single())
       if (!insErr) {
         alert('Listing saved, but Buy It Now needs migration 015_auction_buy_now.sql in Supabase. Run migrations, then edit the listing.')
+      }
+    }
+
+    if (insErr && /collection_|is_limited_edition/i.test(insErr.message || '')) {
+      const fallback = { ...listingPayload }
+      delete fallback.is_limited_edition
+      delete fallback.collection_slug
+      delete fallback.collection_label
+      ;({ data: row, error: insErr } = await supabase
+        .from('listings')
+        .insert(fallback)
+        .select('id')
+        .single())
+      if (!insErr) {
+        alert('Listing saved. Run migration 020_limited_collections.sql in Supabase to enable collection tags and limited-edition badges.')
       }
     }
 
@@ -985,6 +1054,9 @@ async function submitListing() {
 </script>
 
 <style scoped>
+.check-row { display: flex; align-items: center; gap: 10px; font-weight: 600; margin-bottom: 12px; cursor: pointer; }
+.form-subhead { font-size: 1rem; margin: 0 0 12px; font-weight: 800; }
+.form-section--inline { margin: 16px 0; padding: 16px; background: #f8fafc; border-radius: 8px; border: 1px solid #e5e7eb; }
 .sell-page { padding: 40px 0; }
 .sell-wrapper { max-width: 720px; margin: 0 auto; }
 .sell-header { margin-bottom: 30px; }

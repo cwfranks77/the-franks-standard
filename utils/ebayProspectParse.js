@@ -125,9 +125,30 @@ export function parseEbayProspectsFromHtml (html, limit = 150) {
     if (username) upsert(map, username, { listing_hits: 0 })
   }
 
+  const storeNames = new Set()
+  const strRe = /ebay\.com\/str\/([A-Za-z0-9._%-]{2,64})/gi
+  let sm
+  while ((sm = strRe.exec(text)) !== null) {
+    const username = cleanUsername(sm[1])
+    if (username) storeNames.add(username.toLowerCase())
+  }
+
   return [...map.values()]
+    .map((p) => {
+      const isStore = storeNames.has(p.username.toLowerCase())
+      return {
+        ...p,
+        is_ebay_store: isStore,
+        store_url: isStore
+          ? `https://www.ebay.com/str/${encodeURIComponent(p.username)}`
+          : p.store_url,
+      }
+    })
     .filter((p) => p.listing_hits > 0 || p.sample_titles.length)
-    .sort((a, b) => b.listing_hits - a.listing_hits || (b.feedback_pct || 0) - (a.feedback_pct || 0))
+    .sort((a, b) => {
+      if (a.is_ebay_store !== b.is_ebay_store) return a.is_ebay_store ? -1 : 1
+      return b.listing_hits - a.listing_hits || (b.feedback_pct || 0) - (a.feedback_pct || 0)
+    })
     .slice(0, limit)
 }
 

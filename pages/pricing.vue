@@ -51,6 +51,10 @@
 
       <div class="compare-section mt-4">
         <h2 class="section-title text-center">See how we compare</h2>
+        <p class="text-muted text-center compare-lede">
+          Illustrative fee snapshot — full chart with disclaimers and eBay / Etsy / Amazon columns on
+          <NuxtLink to="/compare">How we compare</NuxtLink>.
+        </p>
         <div class="compare-table-wrap">
           <table class="compare-table">
             <thead>
@@ -118,6 +122,13 @@
               </tr>
             </tbody>
           </table>
+        </div>
+        <p class="text-muted text-center compare-foot small mt-2">
+          Trademarks belong to their owners; we are not affiliated with eBay, Etsy, or Amazon.
+          Verify fees on each platform’s official site.
+        </p>
+        <div class="text-center mt-2">
+          <NuxtLink to="/compare" class="btn btn-outline btn-sm">Open full comparison chart</NuxtLink>
         </div>
       </div>
 
@@ -326,6 +337,8 @@ const faqs = [
 .plan-features li { font-size: 0.88rem; color: var(--stone-200); display: flex; align-items: flex-start; gap: 8px; }
 .check { color: var(--trust-green); font-weight: 800; flex: 0 0 auto; }
 .compare-section { padding-top: 48px; }
+.compare-lede { max-width: 560px; margin: 0 auto 16px; font-size: 0.92rem; }
+.compare-foot { font-size: 0.82rem; max-width: 640px; margin-left: auto; margin-right: auto; }
 .compare-table-wrap { overflow-x: auto; margin-top: 24px; }
 .compare-table {
   width: 100%; border-collapse: collapse; font-size: 0.88rem;

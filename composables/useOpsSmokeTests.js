@@ -9,10 +9,10 @@ export function useOpsSmokeTests () {
 
   const criticalPages = [
     { path: '/', label: 'Homepage' },
-    { path: '/sell', label: 'Sell' },
-    { path: '/browse', label: 'Browse' },
-    { path: '/pay', label: 'Pay' },
-    { path: '/ops/test-checkout', label: 'This page' },
+    { path: '/sell', label: 'Sell (charities, COA form)' },
+    { path: '/browse', label: 'Browse listings' },
+    { path: '/pay', label: 'Pay and fees' },
+    { path: '/ops/test-checkout', label: 'Stripe checkout tests' },
   ]
 
   async function checkCharitiesModule () {

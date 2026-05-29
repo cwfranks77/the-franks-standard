@@ -19,6 +19,7 @@
     "setup:all": "powershell -ExecutionPolicy Bypass -File scripts/execute-all-setup.ps1",
     "email:campaign": "node scripts/send-email-campaign.cjs",
     "mail:lob-sample": "node scripts/lob-send-postcard.cjs",
+    "mail:lob-batch": "node scripts/lob-send-batch.cjs",
     "seo:ping": "node scripts/seo-ping.cjs",
     "check:routes": "node scripts/check-site-routes.cjs",
     "secrets:check": "node scripts/secrets-check.cjs",
