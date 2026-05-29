@@ -1,0 +1,47 @@
+name: Production health check
+
+on:
+  schedule:
+    - cron: '0 14 * * *'
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - 'Deploy Franks Standard to GitHub Pages'
+      - 'Deploy Supabase Edge Functions'
+    types:
+      - completed
+
+jobs:
+  health:
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name != 'workflow_run' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install (health scripts only)
+        run: npm install --no-audit --no-fund dotenv
+
+      - name: Run production health + auth verify
+        env:
+          NUXT_PUBLIC_SUPABASE_URL: ${{ secrets.NUXT_PUBLIC_SUPABASE_URL }}
+          NUXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NUXT_PUBLIC_SUPABASE_KEY }}
+        run: |
+          node scripts/health-check.cjs
+          node scripts/verify-auth-email.cjs
+
+      - name: Telegram alert on failure
+        if: failure()
+        continue-on-error: true
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_NOTIFY_CHAT_ID: ${{ secrets.TELEGRAM_NOTIFY_CHAT_ID }}
+        run: |
+          if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_NOTIFY_CHAT_ID" ]; then
+            echo "No Telegram notify secrets — skip alert"
+            exit 0
+          fi
+          node scripts/notify-telegram.cjs "The Franks Standard: production health check FAILED. See Actions → Production health check."

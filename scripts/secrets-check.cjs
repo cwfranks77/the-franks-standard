@@ -23,6 +23,15 @@ const GROUPS = [
     note: 'Need Supabase URL + anon key. Ops: set OPS_ACCESS_KEY or its HASH (hash preferred).',
   },
   {
+    title: 'Signup email (GitHub → Push SendGrid secrets to Supabase workflow)',
+    vars: [
+      ['SENDGRID_API_KEY', true],
+      ['SENDGRID_FROM_EMAIL', false],
+      ['SENDGRID_FROM_NAME', false],
+    ],
+    note: 'Required in GitHub Secrets so auth mail survives redeploys. See docs/OWNER-ONE-TIME.md',
+  },
+  {
     title: 'Email campaigns (local .env only — never commit)',
     vars: [
       ['SENDGRID_API_KEY', true],
