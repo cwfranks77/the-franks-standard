@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { assertAccountNotFrozen } from '../_shared/sellerAccountFreeze.ts'
+import { assertSellerNotOnIntegrityHold } from '../_shared/sellerIntegrityHold.ts'
 import { assertSellerPoliciesAccepted } from '../_shared/sellerPolicyAcceptance.ts'
 import { calcCharitySplit, calcDropshipSplit, calcFees, corsHeaders, json, siteUrl, stripeClient } from '../_shared/stripe.ts'
 import { marketplaceListingTaxOptions, stripeTaxEnabled, TAX_CODE_TANGIBLE } from '../_shared/stripeTax.ts'
@@ -72,6 +73,11 @@ Deno.serve(async (req) => {
     const sellerFreeze = await assertAccountNotFrozen(admin, listing.seller_id)
     if (!sellerFreeze.ok) {
       return json({ error: 'seller_account_frozen', message: 'This seller account is frozen and cannot complete sales.' }, 403)
+    }
+
+    const sellerHold = await assertSellerNotOnIntegrityHold(admin, listing.seller_id)
+    if (!sellerHold.ok) {
+      return json({ error: sellerHold.error, message: sellerHold.message }, 403)
     }
 
     const sellerPolicies = await assertSellerPoliciesAccepted(admin, listing.seller_id)

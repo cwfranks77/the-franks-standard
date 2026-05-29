@@ -1,6 +1,12 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { scanListingIntegrity } from '../_shared/authenticityScan.ts'
 import { verifyOpsKey } from '../_shared/opsAuth.ts'
+import {
+  banSellerAfterIntegrityHold,
+  DEFAULT_HOLD_DAYS,
+  liftIntegrityHold,
+  placeIntegrityHold,
+} from '../_shared/sellerIntegrityHold.ts'
 import { corsHeaders, json } from '../_shared/stripe.ts'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
@@ -88,7 +94,65 @@ Deno.serve(async (req) => {
     return json({ ok: true })
   }
 
+  if (action === 'hold_seller_for_review') {
+    const targetSeller = sellerId || ''
+    if (!targetSeller && listingId) {
+      const { data: listing } = await admin.from('listings').select('seller_id').eq('id', listingId).maybeSingle()
+      if (listing?.seller_id) {
+        const hold = await placeIntegrityHold(admin, {
+          sellerId: listing.seller_id,
+          listingId,
+          reason: String(body.hold_reason ?? 'Authenticity review — wrong item, COA mismatch, or misrepresentation reported.'),
+          holdDays: Number(body.hold_days ?? DEFAULT_HOLD_DAYS) || DEFAULT_HOLD_DAYS,
+          opsNote: String(body.notes ?? '') || null,
+        })
+        if (!hold.ok) return json({ error: hold.error }, 500)
+
+        const reportId = String(body.report_id ?? '')
+        if (reportId) {
+          await admin.from('authenticity_reports').update({
+            status: 'under_review',
+            resolution_notes: String(body.notes ?? 'Seller on integrity hold — evidence requested.'),
+          }).eq('id', reportId)
+        }
+
+        return json({ ok: true, integrity_hold: true, expires_at: hold.expiresAt })
+      }
+      return json({ error: 'missing_seller' }, 400)
+    }
+    if (!targetSeller) return json({ error: 'missing_seller_id' }, 400)
+
+    const hold = await placeIntegrityHold(admin, {
+      sellerId: targetSeller,
+      listingId: listingId || null,
+      reason: String(body.hold_reason ?? 'Authenticity review — submit evidence to info@thefranksstandard.com.'),
+      holdDays: Number(body.hold_days ?? DEFAULT_HOLD_DAYS) || DEFAULT_HOLD_DAYS,
+      opsNote: String(body.notes ?? '') || null,
+    })
+    if (!hold.ok) return json({ error: hold.error }, 500)
+    return json({ ok: true, integrity_hold: true, expires_at: hold.expiresAt })
+  }
+
+  if (action === 'lift_integrity_hold' && sellerId) {
+    const lifted = await liftIntegrityHold(admin, {
+      sellerId,
+      opsNote: String(body.notes ?? '') || null,
+    })
+    if (!lifted.ok) return json({ error: lifted.error }, 500)
+    return json({ ok: true, integrity_hold_lifted: true })
+  }
+
+  if (action === 'ban_seller_after_hold' && sellerId) {
+    await banSellerAfterIntegrityHold(admin, {
+      sellerId,
+      banReason: String(body.ban_reason ?? 'Authenticity policy violation after review'),
+      opsNote: String(body.notes ?? '') || null,
+    })
+    return json({ ok: true, seller_banned: true })
+  }
+
   if (action === 'confirm_counterfeit' && listingId) {
+    const banImmediately = body.ban_immediately === true || body.ban_immediately === 'true'
     const { data: listing } = await admin.from('listings').select('seller_id').eq('id', listingId).maybeSingle()
     await admin.from('listings').update({
       status: 'archived',
@@ -96,19 +160,47 @@ Deno.serve(async (req) => {
       integrity_scanned_at: new Date().toISOString(),
     }).eq('id', listingId)
 
+    let sellerBanned = false
+    let integrityHold = false
+    let holdExpiresAt: string | null = null
+
     if (listing?.seller_id) {
-      await admin.from('profiles').update({
-        seller_banned_at: new Date().toISOString(),
-        seller_ban_reason: String(body.ban_reason ?? 'Proven counterfeit / misrepresentation'),
-      }).eq('id', listing.seller_id)
+      if (banImmediately) {
+        await admin.from('profiles').update({
+          seller_banned_at: new Date().toISOString(),
+          seller_ban_reason: String(body.ban_reason ?? 'Proven counterfeit / misrepresentation'),
+          integrity_hold_at: null,
+          integrity_hold_reason: null,
+          integrity_hold_expires_at: null,
+        }).eq('id', listing.seller_id)
+        sellerBanned = true
+      } else {
+        const hold = await placeIntegrityHold(admin, {
+          sellerId: listing.seller_id,
+          listingId,
+          reason: String(body.hold_reason ?? 'Counterfeit or misrepresentation confirmed on listing — account paused pending final review.'),
+          holdDays: Number(body.hold_days ?? DEFAULT_HOLD_DAYS) || DEFAULT_HOLD_DAYS,
+          opsNote: String(body.notes ?? '') || null,
+          archivePublishedListings: true,
+        })
+        if (hold.ok) {
+          integrityHold = true
+          holdExpiresAt = hold.expiresAt
+        }
+      }
     }
 
     const reportId = String(body.report_id ?? '')
     if (reportId) {
       await admin.from('authenticity_reports').update({
-        status: 'confirmed',
-        resolution_notes: String(body.notes ?? 'Counterfeit confirmed — listing removed, seller banned.'),
-        resolved_at: new Date().toISOString(),
+        status: banImmediately ? 'confirmed' : 'under_review',
+        resolution_notes: String(
+          body.notes ??
+            (banImmediately
+              ? 'Counterfeit confirmed — listing removed, seller banned.'
+              : 'Counterfeit confirmed on listing — seller on integrity hold for evidence window.'),
+        ),
+        resolved_at: banImmediately ? new Date().toISOString() : null,
       }).eq('id', reportId)
     }
 
@@ -121,7 +213,12 @@ Deno.serve(async (req) => {
       }).eq('id', certId)
     }
 
-    return json({ ok: true, seller_banned: !!listing?.seller_id })
+    return json({
+      ok: true,
+      seller_banned: sellerBanned,
+      integrity_hold: integrityHold,
+      hold_expires_at: holdExpiresAt,
+    })
   }
 
   if (action === 'clear_listing' && listingId) {

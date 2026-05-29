@@ -23,4 +23,4 @@ jobs:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         run: |
           npx supabase@latest link --project-ref rochesyrxiyrxhzmkuwk
-          npx supabase@latest db push --yes
+          npx supabase@latest db push --yes --include-all

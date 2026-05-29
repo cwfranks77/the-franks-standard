@@ -23,7 +23,12 @@
         />
 
         <template v-else>
-        <div v-if="accountFrozen" class="sell-freeze-banner" role="alert">
+        <div v-if="integrityHold" class="sell-freeze-banner sell-hold-banner" role="alert">
+          <strong>Account paused — authenticity review</strong>
+          <p>{{ integrityHoldText }}</p>
+        </div>
+
+        <div v-else-if="accountFrozen" class="sell-freeze-banner" role="alert">
           <strong>Account frozen</strong>
           <p>{{ freezeBannerText }}</p>
         </div>
@@ -542,7 +547,9 @@ const supabase = useSupabaseClient()
 const route = useRoute()
 const submitting = ref(false)
 const accountFrozen = ref(false)
+const integrityHold = ref(false)
 const freezeBannerText = ref('')
+const integrityHoldText = ref('')
 const listingMode = ref('direct')
 const modeNotice = ref('')
 
@@ -756,7 +763,10 @@ onMounted(async () => {
   const { data: { user } } = await supabase.auth.getUser()
   if (user) {
     const freeze = await loadFreezeState(user.id)
-    if (freeze.frozen) {
+    if (freeze.integrityHold) {
+      integrityHold.value = true
+      integrityHoldText.value = integrityHoldAlertMessage(freeze.profile)
+    } else if (freeze.frozen) {
       accountFrozen.value = true
       freezeBannerText.value = freezeAlertMessage(freeze.profile)
     }
@@ -920,11 +930,16 @@ async function submitListing() {
     }
     const { data: profile } = await supabase
       .from('profiles')
-      .select('seller_banned_at, seller_ban_reason, account_frozen_at, seller_debt_status, seller_debt_paid_at, account_freeze_reason, seller_debt_balance')
+      .select('seller_banned_at, seller_ban_reason, account_frozen_at, seller_debt_status, seller_debt_paid_at, account_freeze_reason, seller_debt_balance, integrity_hold_at, integrity_hold_reason, integrity_hold_expires_at')
       .eq('id', user.id)
       .maybeSingle()
     if (profile?.seller_banned_at) {
       alert(`Your seller account is suspended: ${profile.seller_ban_reason || 'Authenticity policy violation.'}`)
+      submitting.value = false
+      return
+    }
+    if (profile?.integrity_hold_at && (!profile.integrity_hold_expires_at || new Date(profile.integrity_hold_expires_at) > new Date())) {
+      alert(integrityHoldAlertMessage(profile))
       submitting.value = false
       return
     }

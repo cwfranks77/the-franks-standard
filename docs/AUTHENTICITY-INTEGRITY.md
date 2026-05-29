@@ -41,12 +41,19 @@ After confirming counterfeit or when the seller will not refund: use **`/ops/ref
 | `scan_all` | Re-scan every published listing |
 | `list_queue` | Flagged listings + open reports |
 | `suspend_listing` | Archive + `suspended` |
-| `confirm_counterfeit` | Archive + `counterfeit_confirmed`, **ban seller**, resolve report, revoke Franks COA if any |
+| `hold_seller_for_review` | **14-day integrity hold** — pause buy/sell/list; archive listings; seller emails evidence |
+| `lift_integrity_hold` | Clear hold after review (seller may resume) |
+| `ban_seller_after_hold` | Permanent ban after hold window / failed appeal |
+| `confirm_counterfeit` | Archive + `counterfeit_confirmed`; default **hold** (not ban); pass `ban_immediately: true` for proven fraud |
 | `clear_listing` | Clear flags / `clear` |
 | `dismiss_report` | Close report as dismissed |
 | `ban_seller` | Ban + archive seller’s live listings |
 
-Checkout blocks listings in `review`, `suspended`, or `counterfeit_confirmed`, and sellers with `seller_banned_at`.
+Checkout blocks listings in `review`, `suspended`, or `counterfeit_confirmed`, sellers with `seller_banned_at`, debt freeze, or active **integrity hold** (`026_integrity_hold.sql`).
+
+### 5. Integrity hold (benefit of the doubt)
+
+For COA mismatch, not-as-described, wrong item, or first-time disputes: ops uses **Hold seller (14d)** instead of instant ban. Seller activity is paused; they contact `info@thefranksstandard.com` with proof. **Confirm + ban now** remains for obvious/repeat fraud.
 
 ### 4. Franks issued COA (year-scoped serial + floor office)
 

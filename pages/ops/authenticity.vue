@@ -4,8 +4,9 @@
       <p class="eyebrow">Owner toolkit</p>
       <h1>Authenticity &amp; counterfeit enforcement</h1>
       <p class="lead text-muted">
-        Automated risk scan, buyer reports, and one-click actions: suspend listing, confirm counterfeit, ban seller.
-        Franks COAs use year-scoped serials (<code>FS-2026-000001</code>) — verify at <code>/verify/coa/[serial]</code>.
+        Automated risk scan, buyer reports, and enforcement actions. Default for serious disputes:
+        <strong>14-day integrity hold</strong> (seller paused; they email evidence). Instant ban only for proven or repeat fraud.
+        Franks COAs: <code>FS-2026-000001</code> — verify at <code>/verify/coa/[serial]</code>.
       </p>
 
       <section class="card panel">
@@ -33,7 +34,9 @@
             <NuxtLink :to="`/listing/${item.id}`" class="btn btn-outline btn-sm">View</NuxtLink>
             <button type="button" class="btn btn-outline btn-sm" @click="clearListing(item.id)">Clear</button>
             <button type="button" class="btn btn-outline btn-sm" @click="suspendListing(item.id)">Suspend</button>
-            <button type="button" class="btn btn-primary btn-sm danger" @click="confirmFake(item)">Confirm fake + ban</button>
+            <button type="button" class="btn btn-primary btn-sm" @click="holdSeller(item)">Hold seller (14d)</button>
+            <button type="button" class="btn btn-outline btn-sm danger" @click="confirmFake(item, '', false)">Confirm + hold</button>
+            <button type="button" class="btn btn-primary btn-sm danger" @click="confirmFake(item, '', true)">Confirm + ban now</button>
           </div>
         </div>
       </section>
@@ -48,7 +51,9 @@
           </div>
           <div class="queue-actions">
             <button type="button" class="btn btn-outline btn-sm" @click="dismissReport(r.id)">Dismiss</button>
-            <button type="button" class="btn btn-primary btn-sm danger" @click="confirmFake({ id: r.listing_id }, r.id)">Confirm fake + ban</button>
+            <button type="button" class="btn btn-primary btn-sm" @click="holdSeller({ id: r.listing_id }, r.id)">Hold seller (14d)</button>
+            <button type="button" class="btn btn-outline btn-sm danger" @click="confirmFake({ id: r.listing_id }, r.id, false)">Confirm + hold</button>
+            <button type="button" class="btn btn-primary btn-sm danger" @click="confirmFake({ id: r.listing_id }, r.id, true)">Confirm + ban now</button>
           </div>
         </div>
       </section>
@@ -89,15 +94,37 @@ async function clearListing (listingId) {
   await refreshQueue()
 }
 
-async function confirmFake (item, reportId = '') {
-  const notes = window.prompt('Resolution notes (optional):', 'Proven counterfeit — permanent ban per policy.')
+async function holdSeller (item, reportId = '') {
+  const notes = window.prompt('Hold notes (optional):', 'Authenticity review — seller may email evidence to info@thefranksstandard.com.')
   if (notes === null) return
-  if (!confirm('Confirm counterfeit, remove listing, and PERMANENTLY ban seller?')) return
+  if (!confirm('Pause this seller for 14 days (no buy/sell/list) and archive live listings?')) return
+  await callOps('hold_seller_for_review', {
+    listing_id: item.id,
+    report_id: reportId || undefined,
+    notes: notes || undefined,
+    hold_reason: 'Authenticity review — submit evidence to clear your name.',
+  })
+  await refreshQueue()
+}
+
+async function confirmFake (item, reportId = '', banImmediately = false) {
+  const notes = window.prompt(
+    'Resolution notes (optional):',
+    banImmediately
+      ? 'Proven counterfeit — permanent ban per policy.'
+      : 'Listing confirmed problematic — seller on 14-day integrity hold for evidence.',
+  )
+  if (notes === null) return
+  const msg = banImmediately
+    ? 'Confirm counterfeit, remove listing, and PERMANENTLY ban seller?'
+    : 'Confirm listing issue, remove listing, and place seller on 14-day integrity hold (not instant ban)?'
+  if (!confirm(msg)) return
   await callOps('confirm_counterfeit', {
     listing_id: item.id,
     report_id: reportId || undefined,
     notes: notes || undefined,
     ban_reason: 'Proven counterfeit / misrepresentation',
+    ban_immediately: banImmediately,
   })
   await refreshQueue()
 }
