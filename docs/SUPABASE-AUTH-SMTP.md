@@ -28,6 +28,15 @@ We deploy `auth-send-email` — it sends branded mail through **SendGrid** when 
 
 Test: register with a Gmail **not** on your Supabase team → inbox should show **The Franks Standard** confirm link.
 
+### Common mistake
+
+Hook endpoint must be the **Edge Function URL**, not a Supabase dashboard link:
+
+- **Wrong:** `https://supabase.com/dashboard/project/...`
+- **Right:** `https://rochesyrxiyrxhzmkuwk.supabase.co/functions/v1/auth-send-email`
+
+Run: `npm run auth:verify`
+
 ### What the agent cannot do
 
 - Log into your Supabase or SendGrid account

@@ -8,8 +8,8 @@
           We sent a confirmation link to <strong>{{ email }}</strong>. Open it on this device to finish setting up your account.
         </p>
         <p class="text-muted fine">
-          Check spam and All Mail. Mail should come from <strong>info@thefranksstandard.com</strong> once SMTP is configured in Supabase.
-          Still nothing after 10 minutes? The project needs <strong>Authentication → Custom SMTP</strong> (we use SendGrid) — not automatic with deploy.
+          Check spam and All Mail. Confirmation mail comes from <strong>info@thefranksstandard.com</strong>.
+          Still nothing after 10 minutes?
           <a href="mailto:info@thefranksstandard.com?subject=Signup%20confirmation%20help">Email support</a> or call <a href="tel:+18778370527">(877) 837-0527</a>.
         </p>
         <p v-if="emailHint" class="form-err email-hint" role="status">{{ emailHint }}</p>
@@ -207,7 +207,7 @@ async function handleRegister() {
       const identities = data.user.identities?.length ?? 0
       if (!confirmed && identities === 0) {
         emailHint.value =
-          'We could not confirm that a message was sent. Our team must enable outbound auth mail in Supabase (custom SMTP). If this persists, email info@thefranksstandard.com or call (877) 837-0527.'
+          'If you do not receive mail within 10 minutes, check spam or contact info@thefranksstandard.com or (877) 837-0527.'
       }
       return
     }

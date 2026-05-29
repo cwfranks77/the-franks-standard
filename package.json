@@ -39,6 +39,7 @@
     "stripe:webhook:verify": "node scripts/verify-stripe-webhook.cjs",
     "stripe:reconcile": "node scripts/reconcile-stripe-orders.cjs",
     "health": "node scripts/health-check.cjs",
+    "auth:verify": "node scripts/verify-auth-email.cjs",
     "mail:test": "node scripts/test-mailbox.cjs",
     "mail:fix": "node scripts/apply-email-password.cjs",
     "namecheap:recover": "powershell -ExecutionPolicy Bypass -File scripts/namecheap-recover.ps1",

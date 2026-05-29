@@ -21,6 +21,9 @@ Run **three full passes** after every production push. Do not skip passes becaus
 | 9 | Footer (any page) | Marketplace Policies + Protection links present |
 | 10 | `/sell` (new seller account) | Policy gate blocks form until legal name + sign |
 | 11 | `/sell/import` | Same gate before CSV import |
+| 12 | `/auth/register` | Submit test signup → inbox from **info@thefranksstandard.com** → link opens `/auth/verify` |
+
+Run `npm run auth:verify` on CI machine or locally after deploy.
 
 Record pass 1: PASS / FAIL — notes: ___________
 
