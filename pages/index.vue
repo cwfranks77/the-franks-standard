@@ -4,7 +4,7 @@
       <div class="hero-aurora" aria-hidden="true" />
       <div class="container hero-grid">
         <div class="hero-copy">
-          <p class="hero-pulse-ribbon">Proof-first marketplace. <span>Live floor energy.</span></p>
+          <p class="hero-pulse-ribbon">A new leash on collectibles. <span>Proof-first. Built to operate.</span></p>
           <h1 class="hero-title-epic">
             <span class="t-line">If it is here,</span>
             <span class="t-line t-gold-shine">it is real.</span>
@@ -21,8 +21,13 @@
             <a href="mailto:info@thefranksstandard.com">info@thefranksstandard.com</a>
           </p>
         </div>
+        <HomeHeroVisual />
       </div>
     </section>
+
+    <HomeShowcaseReel />
+
+    <HomeBrowsePreview />
 
     <section class="founder-bar" aria-label="Founder is reachable">
       <div class="container founder-bar-inner">
@@ -164,9 +169,15 @@ const tickerBeltDoubled = [...tickerBelt, ...tickerBelt]
   position: relative;
   display: grid;
   grid-template-columns: 1fr;
-  max-width: 760px;
-  gap: 24px;
+  max-width: 1120px;
+  gap: 28px;
   align-items: center;
+}
+@media (min-width: 960px) {
+  .hero-grid {
+    grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
+    gap: 32px;
+  }
 }
 .hero-pulse-ribbon {
   display: inline-block;

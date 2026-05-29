@@ -1,21 +1,23 @@
 /**
  * Homepage quick navigation — dense departments + role-based shortcuts.
  */
-import { CATEGORY_FALLBACK_IMAGE } from '~/utils/homeBrowseSamples.js'
+import { CATEGORY_SHOWCASE_PHOTOS } from '~/utils/marketplaceShowcaseImages.js'
+
+const P = CATEGORY_SHOWCASE_PHOTOS
 
 export const HOME_DEPARTMENTS = [
-  { shortLabel: 'Sports cards', name: 'Sports Cards & Memorabilia', image: '/img/reel-cards.svg' },
-  { shortLabel: 'Coins', name: 'Coins & Currency', image: '/img/reel-coins.svg' },
-  { shortLabel: 'Watches', name: 'Watches & Jewelry', image: '/img/reel-watches.svg' },
-  { shortLabel: 'Sneakers', name: 'Sneakers & Streetwear', image: '/img/reel-sneakers.svg' },
-  { shortLabel: 'Guitars', name: 'Musical Instruments', image: '/img/reel-guitars.svg' },
-  { shortLabel: 'Art', name: 'Art & Antiques', image: '/img/reel-art.svg' },
-  { shortLabel: 'Cameras', name: 'Photography & Film Gear', image: '/img/reel-camera.svg' },
-  { shortLabel: 'Retro games', name: 'Vintage Electronics & Games', image: '/img/reel-vintage.svg' },
-  { shortLabel: 'Estate finds', name: 'Home & Estate Collectibles', image: '/img/reel-estate.svg' },
-  { shortLabel: 'TCG', name: 'Trading Card Games (Pokemon, MTG, etc.)', image: '/img/reel-cards.svg' },
-  { shortLabel: 'Comics', name: 'Comics & Graphic Novels', image: '/img/reel-art.svg' },
-  { shortLabel: 'All categories', name: '', image: '/img/reel-cards.svg', to: '/categories' },
+  { shortLabel: 'Sports cards', name: 'Sports Cards & Memorabilia', image: P.cards },
+  { shortLabel: 'Coins', name: 'Coins & Currency', image: P.coins },
+  { shortLabel: 'Watches', name: 'Watches & Jewelry', image: P.watches },
+  { shortLabel: 'Sneakers', name: 'Sneakers & Streetwear', image: P.sneakers },
+  { shortLabel: 'Guitars', name: 'Musical Instruments', image: P.guitars },
+  { shortLabel: 'Art', name: 'Art & Antiques', image: P.art },
+  { shortLabel: 'Cameras', name: 'Photography & Film Gear', image: P.camera },
+  { shortLabel: 'Retro games', name: 'Vintage Electronics & Games', image: P.vintage },
+  { shortLabel: 'Estate finds', name: 'Home & Estate Collectibles', image: P.estate },
+  { shortLabel: 'TCG', name: 'Trading Card Games (Pokemon, MTG, etc.)', image: P.cards },
+  { shortLabel: 'Comics', name: 'Comics & Graphic Novels', image: P.comics },
+  { shortLabel: 'All categories', name: '', image: P.art, to: '/categories' },
 ]
 
 export function departmentBrowseTo (dept) {
@@ -25,25 +27,39 @@ export function departmentBrowseTo (dept) {
 }
 
 export const HOME_BUYER_SHORTCUTS = [
-  { label: 'Search floor', hint: 'Filters & sort', to: '/browse', image: '/img/reel-cards.svg' },
-  { label: 'Collections', hint: 'Curated floors', to: '/collections', image: '/img/reel-coins.svg' },
-  { label: 'Verify COA', hint: 'Scan serial', to: '/verify/coa/FS-2026-000001', image: '/img/reel-watches.svg' },
-  { label: 'Video inspect', hint: 'Live rooms', to: '/video', image: '/img/reel-camera.svg' },
-  { label: 'Protection', hint: 'Escrow rules', to: '/protection', image: '/img/reel-estate.svg' },
-  { label: 'How to buy', hint: 'Step-by-step', to: '/how-it-works', image: '/img/reel-art.svg' },
+  { label: 'Search floor', hint: 'Filters & sort', to: '/browse', image: P.cards },
+  { label: 'Collections', hint: 'Curated floors', to: '/collections', image: P.coins },
+  { label: 'Verify COA', hint: 'Scan serial', to: '/verify/coa/FS-2026-000001', image: P.watches },
+  { label: 'Video inspect', hint: 'Live rooms', to: '/video', image: P.camera },
+  { label: 'Protection', hint: 'Escrow rules', to: '/protection', image: P.estate },
+  { label: 'How to buy', hint: 'Step-by-step', to: '/how-it-works', image: P.art },
 ]
 
 export const HOME_SELLER_SHORTCUTS = [
-  { label: 'List item', hint: 'COA required', to: '/sell', image: '/img/reel-guitars.svg' },
-  { label: 'Import eBay', hint: 'CSV / skim', to: '/sell/import', image: '/img/reel-cards.svg' },
-  { label: 'Store builder', hint: 'AI bios & SEO', to: '/store-builder', image: '/img/reel-watches.svg' },
-  { label: 'Dropship', hint: 'Supplier wizard', to: '/sell/dropship-setup', image: '/img/reel-sneakers.svg' },
-  { label: 'Pricing', hint: '4–5% fees', to: '/pricing', image: '/img/reel-coins.svg' },
-  { label: 'Top sellers', hint: 'Volume rewards', to: '/top-sellers', image: '/img/reel-art.svg' },
-  { label: 'Seller hub', hint: 'Stores & pros', to: '/sellers', image: '/img/reel-estate.svg' },
-  { label: 'Dashboard', hint: 'Orders & listings', to: '/dashboard', image: '/img/reel-camera.svg' },
+  { label: 'List item', hint: 'COA required', to: '/sell', image: P.guitars },
+  { label: 'Import eBay', hint: 'CSV / skim', to: '/sell/import', image: P.cards },
+  { label: 'Store builder', hint: 'AI bios & SEO', to: '/store-builder', image: P.watches },
+  { label: 'Dropship', hint: 'Supplier wizard', to: '/sell/dropship-setup', image: P.sneakers },
+  { label: 'Pricing', hint: '4–5% fees', to: '/pricing', image: P.coins },
+  { label: 'Top sellers', hint: 'Volume rewards', to: '/top-sellers', image: P.art },
+  { label: 'Seller hub', hint: 'Stores & pros', to: '/sellers', image: P.estate },
+  { label: 'Dashboard', hint: 'Orders & listings', to: '/dashboard', image: P.camera },
 ]
 
 export function imageForCategory (categoryName) {
-  return CATEGORY_FALLBACK_IMAGE[categoryName] || '/img/reel-estate.svg'
+  const map = {
+    'Musical Instruments': P.guitars,
+    'Watches & Jewelry': P.watches,
+    'Sports Cards & Memorabilia': P.cards,
+    'Trading Card Games (Pokemon, MTG, etc.)': P.cards,
+    'Coins & Currency': P.coins,
+    'Sneakers & Streetwear': P.sneakers,
+    'Art & Antiques': P.art,
+    'Photography & Film Gear': P.camera,
+    'Vintage Electronics & Games': P.vintage,
+    'Home & Estate Collectibles': P.estate,
+    'Comics & Graphic Novels': P.comics,
+    'Other (describe in listing)': P.estate,
+  }
+  return map[categoryName] || P.estate
 }
