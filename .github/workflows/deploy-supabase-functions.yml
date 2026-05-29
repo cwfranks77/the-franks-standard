@@ -37,3 +37,4 @@ jobs:
           npx supabase@latest functions deploy tax-inspect-session --no-verify-jwt
           npx supabase@latest functions deploy ops-force-refund --no-verify-jwt
           npx supabase@latest functions deploy accept-seller-policies
+          npx supabase@latest functions deploy auth-send-email --no-verify-jwt

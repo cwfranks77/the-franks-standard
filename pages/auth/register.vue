@@ -8,8 +8,9 @@
           We sent a confirmation link to <strong>{{ email }}</strong>. Open it on this device to finish setting up your account.
         </p>
         <p class="text-muted fine">
-          Gmail: search for mail from <strong>Supabase</strong> or <strong>noreply</strong> in Spam and All Mail.
-          Still nothing after 10 minutes? Supabase must send through custom SMTP (or add your email to the org team) — see note below.
+          Check spam and All Mail. Mail should come from <strong>info@thefranksstandard.com</strong> once SMTP is configured in Supabase.
+          Still nothing after 10 minutes? The project needs <strong>Authentication → Custom SMTP</strong> (we use SendGrid) — not automatic with deploy.
+          <a href="mailto:info@thefranksstandard.com?subject=Signup%20confirmation%20help">Email support</a> or call <a href="tel:+18778370527">(877) 837-0527</a>.
         </p>
         <p v-if="emailHint" class="form-err email-hint" role="status">{{ emailHint }}</p>
         <NuxtLink to="/auth/login" class="btn btn-primary mt-2" style="width: 100%;">Go to sign in</NuxtLink>
@@ -206,7 +207,7 @@ async function handleRegister() {
       const identities = data.user.identities?.length ?? 0
       if (!confirmed && identities === 0) {
         emailHint.value =
-          'Supabase may not have sent mail yet. On the free default sender, only org team emails receive mail — set up SMTP in Supabase (Authentication → SMTP) or add your Gmail to the Supabase org team.'
+          'We could not confirm that a message was sent. Our team must enable outbound auth mail in Supabase (custom SMTP). If this persists, email info@thefranksstandard.com or call (877) 837-0527.'
       }
       return
     }
