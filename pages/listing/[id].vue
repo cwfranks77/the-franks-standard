@@ -35,10 +35,24 @@
           </span>
           <h1>{{ listing.title }}</h1>
 
+          <CoaFloorBond
+            v-if="listing.coaType === 'franks_issued' && coaBond"
+            :bond="coaBond"
+            :floor-slot="listing.floorSlot || listing.coaSerial"
+            :listing-id="listing.id"
+            :serial="listing.coaSerial"
+          />
+
           <div class="listing-coa-box">
-            <span class="coa-badge">{{ listing.coaType === 'upload' ? 'COA document on file' : 'Franks Standard guarantee' }}</span>
+            <span class="coa-badge">{{ coaBadgeLabel }}</span>
             <p class="text-muted" style="font-size: 0.8rem; margin-top: 6px;">
-              <template v-if="listing.coaType === 'upload'">
+              <template v-if="listing.coaType === 'franks_issued'">
+                Franks Standard issued COA
+                <template v-if="listing.coaSerial">
+                  — serial <NuxtLink :to="`/verify/coa/${listing.coaSerial}`">{{ listing.coaSerial }}</NuxtLink>
+                </template>
+              </template>
+              <template v-else-if="listing.coaType === 'upload'">
                 Seller provided a COA. Details may be in photos or the COA file on file with the team.
               </template>
               <template v-else>
@@ -46,6 +60,10 @@
               </template>
             </p>
           </div>
+
+          <p v-if="listing.integrityStatus === 'review'" class="integrity-warning" role="alert">
+            This listing is under authenticity review. Checkout is paused until cleared.
+          </p>
 
           <div class="listing-price-row">
             <template v-if="listing.saleType === 'auction'">
@@ -157,7 +175,7 @@
               type="button"
               class="btn btn-primary btn-lg"
               style="flex: 1;"
-              :disabled="checkoutLoading || isOwnListing"
+              :disabled="checkoutLoading || isOwnListing || listing.integrityStatus === 'review' || (coaBond && !coaBond.paired)"
               @click="buyNow"
             >{{ checkoutLoading ? 'Opening checkout…' : `Buy now — $${listing.price.toLocaleString()} + tax at checkout` }}</button>
             <button
@@ -176,6 +194,12 @@
               :disabled="checkoutLoading"
               @click="buyNow"
             >{{ checkoutLoading ? 'Opening checkout…' : `Pay winning bid — $${displayBid.toLocaleString()} + tax` }}</button>
+            <button
+              v-if="!isOwnListing"
+              type="button"
+              class="btn btn-outline btn-sm"
+              @click="showReportModal = true"
+            >Report authenticity concern</button>
             <a
               :href="messageSellerHref"
               class="btn btn-outline btn-lg"
@@ -204,6 +228,13 @@
         </div>
       </div>
     </div>
+
+    <ReportAuthenticityModal
+      v-if="listing"
+      :open="showReportModal"
+      :listing-id="listing.id"
+      @close="showReportModal = false"
+    />
   </div>
 </template>
 
@@ -232,6 +263,15 @@ const isOwnListing = computed(() => {
 const selectedImage = ref(0)
 const loading = ref(true)
 const listing = ref(null)
+const coaBond = ref(null)
+const showReportModal = ref(false)
+
+const coaBadgeLabel = computed(() => {
+  if (!listing.value) return ''
+  if (listing.value.coaType === 'franks_issued') return 'Franks issued COA'
+  if (listing.value.coaType === 'upload') return 'COA document on file'
+  return 'Franks Standard guarantee'
+})
 const shareCopied = ref(false)
 let shareTimer = null
 
@@ -367,12 +407,18 @@ async function load() {
 
   const { data, error } = await supabase
     .from('listings')
-    .select('id, title, description, category, price, condition, coa_type, guarantee_signed, seller_legal_name, image_paths, status, created_at, seller_id, donate_proceeds, charity_key, charity_name, charity_percent, sale_type, starting_bid, current_bid, current_bidder_id, bid_increment, bid_count, reserve_price, auction_ends_at, buy_now_price, seller:profiles!listings_seller_id_fkey(full_name, created_at)')
+    .select('id, title, description, category, price, condition, coa_type, coa_serial_number, floor_slot_code, coa_certificate_id, guarantee_signed, seller_legal_name, image_paths, status, integrity_status, created_at, seller_id, donate_proceeds, charity_key, charity_name, charity_percent, sale_type, starting_bid, current_bid, current_bidder_id, bid_increment, bid_count, reserve_price, auction_ends_at, buy_now_price, seller:profiles!listings_seller_id_fkey(full_name, created_at)')
     .eq('id', id)
     .eq('status', 'published')
     .maybeSingle()
 
   if (error || !data) {
+    loading.value = false
+    return
+  }
+
+  const integrity = data.integrity_status || 'clear'
+  if (integrity === 'suspended' || integrity === 'counterfeit_confirmed') {
     loading.value = false
     return
   }
@@ -392,6 +438,10 @@ async function load() {
     price: Number(data.price),
     condition: data.condition,
     coaType: data.coa_type,
+    coaSerial: data.coa_serial_number || '',
+    floorSlot: data.floor_slot_code || data.coa_serial_number || '',
+    coaCertificateId: data.coa_certificate_id || null,
+    integrityStatus: integrity,
     guaranteeName: data.seller_legal_name,
     images,
     profileName: data.seller && data.seller.full_name,
@@ -412,6 +462,21 @@ async function load() {
     buyNowPrice: data.buy_now_price != null ? Number(data.buy_now_price) : null,
   }
   bidAmount.value = String(minNextBid(listing.value))
+  coaBond.value = null
+  if (data.coa_type === 'franks_issued' && data.coa_certificate_id) {
+    const { evaluateCoaListingBond } = await import('~/utils/coaListingBond.js')
+    const { data: cert } = await supabase
+      .from('coa_certificates')
+      .select('id, serial_number, listing_id, status, image_fingerprint, description_excerpt')
+      .eq('id', data.coa_certificate_id)
+      .maybeSingle()
+    if (cert) {
+      coaBond.value = evaluateCoaListingBond(
+        { ...data, image_paths: paths },
+        cert,
+      )
+    }
+  }
   refreshAuctionClock()
   if (auctionTimer) clearInterval(auctionTimer)
   auctionTimer = setInterval(refreshAuctionClock, 30000)
@@ -460,6 +525,15 @@ watch(
 .thumb img { width: 100%; height: 100%; object-fit: cover; }
 
 .listing-details h1 { font-size: 1.6rem; margin: 12px 0 16px; }
+.integrity-warning {
+  padding: 10px 14px;
+  background: #fef3c7;
+  border: 1px solid #d97706;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
 .listing-coa-box {
   padding: 14px;
   background: rgba(46, 204, 113, 0.06);

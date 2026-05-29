@@ -107,7 +107,7 @@ export function getAiReply (message: string): string {
     ctx.lastTopic = 'storebuilder'
     return '**AI Store Builder:**\n\n' +
       'Our AI Store Builder helps you get set up in minutes:\n\n' +
-      '1. Go to **AI Store Builder** in the Explore menu\n' +
+      '1. Go to **AI Store Builder** in the Features or Settings menu\n' +
       '2. Tell us your store name, what you sell, and your style (direct or dropship)\n' +
       '3. Click "Build my store with AI"\n' +
       '4. Get your store bio, listing descriptions, pricing strategy, and launch checklist\n\n' +
@@ -122,7 +122,7 @@ export function getAiReply (message: string): string {
       '• **3% transaction fee** for first 90 days (then 4–5% by plan: Starter 5%, Pro 4.5%, Store 4%)\n' +
       '• **Free AI Store Builder** to design your shop\n' +
       '• **Referral bonus** — invite a seller, both get 1 month Pro free\n\n' +
-      'Go to **Launch Offer** in the Explore menu for full details, or create your free account to get started.'
+      'Go to **Launch Offer** in the Features or Settings menu for full details, or create your free account to get started.'
   }
 
   // Fees / pricing / cost
@@ -331,7 +331,7 @@ export function getAiReply (message: string): string {
       '| Fakes policy | Permanent ban | Strike system |\n' +
       '| Video calls | Built in | Not available |\n' +
       '| Focus | Collectors & authenticity | Everything |\n\n' +
-      'Visit **Compare** in the Explore menu for the full side-by-side breakdown.'
+      'Visit **Compare** in the Features or Settings menu for the full side-by-side breakdown.'
   }
 
   // Operator / ops / owner / hidden panel

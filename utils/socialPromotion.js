@@ -4,8 +4,26 @@
  */
 
 import { PRICING_PUBLIC } from '~/utils/pricingPublic.js'
+import {
+  SECURITY_DIFFERENTIATORS,
+  securityBulletsForSocial,
+  REDDIT_COMMUNITY_TARGETS,
+  BLOG_OUTREACH_TARGETS,
+  buildRedditValuePost,
+  buildBlogArticleOutline,
+  securityStackOneLiner,
+} from '~/utils/securityDifferentiators.js'
 
 export const SITE_URL = 'https://thefranksstandard.com'
+
+export {
+  SECURITY_DIFFERENTIATORS,
+  REDDIT_COMMUNITY_TARGETS,
+  BLOG_OUTREACH_TARGETS,
+  buildRedditValuePost,
+  buildBlogArticleOutline,
+  securityStackOneLiner,
+}
 
 /** Focus on 2–3 platforms (don't dilute). */
 export const SOCIAL_PLATFORM_FOCUS = [
@@ -37,6 +55,20 @@ export const SOCIAL_PLATFORM_FOCUS = [
     ],
   },
   {
+    id: 'reddit',
+    label: 'Reddit & forums',
+    icon: '🔶',
+    audience: 'Hobby subs, flippers, eBay sellers, founders (value-first posts)',
+    priority: 'community',
+    formats: ['Educational text post (no link in title)', 'AMA in comments', 'Fee/COA infographic', 'Cross-post to Indie Hackers / PH'],
+    postingCadence: '2–3 helpful comments/week per sub · 1 value post/month per sub max',
+    links: [
+      { label: 'Community playbook', url: `${SITE_URL}/social/community` },
+      { label: 'Protection summary', url: `${SITE_URL}/protection` },
+      { label: 'Marketplace policies', url: `${SITE_URL}/marketplace-policy` },
+    ],
+  },
+  {
     id: 'linkedin',
     label: 'LinkedIn',
     icon: '💼',
@@ -59,6 +91,7 @@ export const HASHTAG_PACKS = {
   seller: ['#Reseller', '#SideHustle', '#eBaySeller', '#SmallBusiness'],
   launch: ['#NewMarketplace', '#SellerTips', '#LowFees'],
   trending: ['#MarketplaceTips', '#CollectorsCommunity', '#TrustYourSeller'],
+  security: ['#TrustBothSides', '#EscrowCheckout', '#AntiCounterfeit', '#ProofBeforePublish'],
 }
 
 export const FORMAT_SPECS = {
@@ -155,7 +188,17 @@ If you already list on eBay, you can import Active Listings CSV and test the flo
 
 #collectibles #sportscards #marketplace #entrepreneurship`,
   },
+  reddit: {
+    education: buildRedditValuePost({ variant: 'education' }),
+    founder: buildRedditValuePost({ variant: 'founder', subreddit: 'sportscards' }),
+  },
 }
+
+const SECURITY_CAPTION_BLOCK = `Security stack (what sets us apart):
+{{securityBullets}}
+
+Full enforcement: {{policyUrl}}
+Protection overview: {{protectionUrl}}`
 
 export function hashtagString (packKeys = ['core', 'cards', 'launch']) {
   const tags = new Set()
@@ -174,8 +217,28 @@ export function buildSocialCaption ({ platform = 'instagram', format = 'reel', t
   let template = plat[format] || plat.reel || plat.post || plat.short
   if (!template) template = CAPTION_TEMPLATES.instagram.reel
 
-  const packs = topic === 'coa' ? ['core', 'cards'] : topic === 'coins' ? ['core', 'coins'] : ['core', 'cards', 'seller', 'launch']
+  const packs =
+    topic === 'security'
+      ? ['core', 'security', 'trending']
+      : topic === 'coa'
+        ? ['core', 'cards', 'security']
+        : topic === 'coins'
+          ? ['core', 'coins']
+          : ['core', 'cards', 'seller', 'launch']
   const hashtags = hashtagString(packs)
+
+  if (topic === 'security' && platform !== 'reddit') {
+    const securityBlock = SECURITY_CAPTION_BLOCK
+      .replace('{{securityBullets}}', securityBulletsForSocial(5))
+      .replace('{{policyUrl}}', `${SITE_URL}/marketplace-policy`)
+      .replace('{{protectionUrl}}', `${SITE_URL}/protection`)
+    template = `${template}\n\n${securityBlock}`
+  }
+
+  if (platform === 'reddit') {
+    template = CAPTION_TEMPLATES.reddit[format] || CAPTION_TEMPLATES.reddit.education
+    return template.trim()
+  }
 
   return template
     .replace(/\{\{fees\}\}/g, fees)
@@ -191,7 +254,16 @@ export const REEL_SCRIPT_IDEAS = [
   { hook: 'Buyers asked "is it real?" 50 times — so we changed marketplaces', body: 'Explain COA requirement + escrow in 30s', cta: '/how-it-works' },
   { hook: 'Fee math on a $1,000 card sale', body: 'Green screen calculator vs 13% stacked', cta: '/learn/tools/fee-calculator' },
   { hook: 'Video inspect before you pay', body: 'Show /video room on a high-value SKU', cta: '/video' },
+  { hook: 'What happens if a seller refuses a refund?', body: 'Walk through escrow → policy → forced refund → account freeze (on-screen bullets)', cta: '/marketplace-policy' },
+  { hook: 'Scan this COA before you pay', body: 'Screen record /verify/coa + listing match', cta: '/protection' },
+  { hook: 'We make sellers sign policies before listing', body: 'Show SellerPolicyAgreement + digital signature', cta: '/seller-agreement' },
 ]
+
+export const SECURITY_SOCIAL_CARDS = SECURITY_DIFFERENTIATORS.map((f) => ({
+  title: f.title,
+  hook: f.socialHook,
+  link: f.link,
+}))
 
 export const AUTOMATION_COMMANDS = [
   { cmd: 'npm run post:social', desc: 'Post to Telegram, Facebook Page, X (env keys required)' },

@@ -12,16 +12,18 @@ const X_PROFILE = {
 
 const PLATFORM_BLURB = `The Franks Standard — authenticity-first marketplace for collectibles & gear.
 
-✓ COA or signed guarantee on every listing
+✓ COA or signed guarantee on every listing (floor office serial FS-YYYY-NNNNNN)
+✓ Verify COA at thefranksstandard.com/verify/coa before you pay
 ✓ Stripe escrow — buyer confirms before payout
+✓ Listing scan blocks off-platform payments & fake disclaimers
+✓ Written enforcement: forced refund, account freeze, seller policy signature
 ✓ Sale fees 4–5% by plan (3% launch) vs typical 13%+
 ✓ AI Store Builder + full AI dropship setup wizard
 ✓ Import from eBay (Seller Hub CSV)
-✓ Auctions, Buy It Now, video rooms, seller reviews
-✓ Dropship automation (your supplier, optional API)
+✓ Auctions, Buy It Now, video inspect rooms, seller reviews
 ✓ Founding sellers: FOUNDERS10 · Military/first responders: HONOR26
 
-thefranksstandard.com/sell · /browse · /pricing`
+thefranksstandard.com/sell · /protection · /marketplace-policy`
 
 function xTweetShort (uniq = '') {
   const tail = uniq ? ` ·${uniq}` : ''

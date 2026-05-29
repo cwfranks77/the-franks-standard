@@ -7,6 +7,7 @@
           <option value="instagram">Instagram</option>
           <option value="tiktok">TikTok</option>
           <option value="linkedin">LinkedIn</option>
+          <option value="reddit">Reddit (text post)</option>
         </select>
       </label>
       <label>
@@ -20,6 +21,7 @@
         <select v-model="topic" class="select">
           <option value="fees">Fees &amp; comparison</option>
           <option value="coa">COA / trust</option>
+          <option value="security">Security stack (full)</option>
           <option value="import">eBay import</option>
           <option value="founders">FOUNDERS10</option>
         </select>
@@ -32,6 +34,9 @@
           <option value="/go/postcard">/go/postcard (tracked)</option>
           <option value="/join/founders10">FOUNDERS10</option>
           <option value="/learn/import-ebay-to-franks-standard">Import guide</option>
+          <option value="/protection">Protection overview</option>
+          <option value="/marketplace-policy">Marketplace policies</option>
+          <option value="/social/community">Reddit &amp; blogs hub</option>
         </select>
       </label>
     </div>
@@ -59,6 +64,13 @@ const formatOptions = computed(() => {
     ]
   }
   if (platform.value === 'tiktok') return [{ id: 'short', label: 'Short' }]
+  if (platform.value === 'reddit') {
+    return [
+      { id: 'education', label: 'Educational post' },
+      { id: 'founder', label: 'Founder story' },
+      { id: 'ama', label: 'AMA' },
+    ]
+  }
   return [{ id: 'post', label: 'Text post' }]
 })
 

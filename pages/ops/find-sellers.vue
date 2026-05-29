@@ -14,8 +14,8 @@ useSeoMeta({ title: 'Find sellers — Google', robots: 'noindex' })
 const route = useRoute()
 const lookupHref = computed(() => {
   const q = route.query.url || route.query.q
-  if (q) return `/seller-lookup.html?url=${encodeURIComponent(String(q))}`
-  return '/seller-lookup.html'
+  if (q) return `/ops/seller-lookup?url=${encodeURIComponent(String(q))}`
+  return '/ops/seller-lookup'
 })
 
 onMounted(() => {

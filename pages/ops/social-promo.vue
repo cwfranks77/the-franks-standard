@@ -4,11 +4,25 @@
       <p class="eyebrow">Owner toolkit</p>
       <h1>Social promotion</h1>
       <p class="lead text-muted">
-        3-platform focus (Instagram, TikTok, LinkedIn), caption builder, engagement templates, and automated posting commands.
+        Instagram, TikTok, LinkedIn, plus Reddit/blogs. Lead every post with security differentiators from
+        <NuxtLink to="/social/community">/social/community</NuxtLink>.
       </p>
 
       <section class="card panel">
-        <h2>Strategy (2–3 platforms only)</h2>
+        <h2>Security stack (copy into posts)</h2>
+        <ul class="ops-list compact">
+          <li v-for="f in SECURITY_DIFFERENTIATORS" :key="f.id">
+            <strong>{{ f.title }}</strong> — {{ f.socialHook }}
+          </li>
+        </ul>
+        <p class="text-muted small">
+          <NuxtLink to="/social/community">Reddit &amp; blog playbook</NuxtLink> ·
+          <code>docs/REDDIT-AND-BLOG-OUTREACH.md</code>
+        </p>
+      </section>
+
+      <section class="card panel">
+        <h2>Strategy (platforms)</h2>
         <ul class="ops-list">
           <li v-for="p in SOCIAL_PLATFORM_FOCUS" :key="p.id">
             <strong>{{ p.label }}</strong> — {{ p.postingCadence }}
@@ -51,10 +65,10 @@
       <section class="card panel">
         <h2>Weekly rhythm (suggested)</h2>
         <ol class="ops-list">
-          <li><strong>Mon</strong> — LinkedIn fee math post → /compare</li>
-          <li><strong>Tue/Wed</strong> — TikTok Short + Instagram Reel (same edit)</li>
-          <li><strong>Thu</strong> — Story poll + link to fee calculator</li>
-          <li><strong>Fri</strong> — UGC reshare or FOUNDERS10 spot check</li>
+          <li><strong>Mon</strong> — LinkedIn fee math or enforcement transparency → /compare or /marketplace-policy</li>
+          <li><strong>Tue/Wed</strong> — TikTok Short + Instagram Reel (security hook from stack)</li>
+          <li><strong>Thu</strong> — 5 helpful Reddit comments + Story poll → fee calculator</li>
+          <li><strong>Fri</strong> — UGC reshare OR 1 Reddit value post / blog draft</li>
         </ol>
       </section>
 
@@ -62,6 +76,7 @@
         <NuxtLink to="/ops/marketing">← Marketing</NuxtLink>
         · <NuxtLink to="/ops/ads">Social ads</NuxtLink>
         · <NuxtLink to="/social" target="_blank">Public /social ↗</NuxtLink>
+        · <NuxtLink to="/social/community" target="_blank">Reddit &amp; blogs ↗</NuxtLink>
       </p>
     </div>
   </div>
@@ -72,6 +87,7 @@ import {
   SOCIAL_PLATFORM_FOCUS,
   ENGAGEMENT_PLAYBOOK,
   AUTOMATION_COMMANDS,
+  SECURITY_DIFFERENTIATORS,
 } from '~/utils/socialPromotion.js'
 
 definePageMeta({ middleware: 'ops-auth' })

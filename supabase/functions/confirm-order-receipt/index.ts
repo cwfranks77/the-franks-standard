@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
+import { assertAccountNotFrozen, loadProfileFreezeState } from '../_shared/sellerAccountFreeze.ts'
 import { transferDropshipSellerMargin } from '../_shared/dropshipStripeSplit.ts'
 import { corsHeaders, json, stripeClient } from '../_shared/stripe.ts'
 
@@ -37,7 +38,7 @@ Deno.serve(async (req) => {
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, { auth: { persistSession: false } })
     const { data: order, error: orderError } = await admin
       .from('orders')
-      .select('id, buyer_id, seller_id, status, escrow_status, seller_payout, seller_margin, listing_mode, stripe_payment_intent_id, stripe_seller_transfer_id, connect_checkout')
+      .select('id, buyer_id, seller_id, status, escrow_status, seller_payout, seller_margin, listing_mode, stripe_payment_intent_id, stripe_seller_transfer_id, connect_checkout, escrow_frozen_at')
       .eq('id', orderId)
       .maybeSingle()
 
@@ -49,6 +50,22 @@ Deno.serve(async (req) => {
     }
     if (!['paid', 'shipped', 'delivered'].includes(order.status)) {
       return json({ error: 'order_not_ready_to_confirm' }, 400)
+    }
+
+    if (order.escrow_frozen_at) {
+      return json({
+        error: 'escrow_frozen',
+        message: 'Escrow cannot be released — seller account is frozen pending repayment to the platform.',
+      }, 403)
+    }
+
+    const sellerProfile = await loadProfileFreezeState(admin, order.seller_id)
+    const sellerFreeze = await assertAccountNotFrozen(admin, order.seller_id)
+    if (!sellerFreeze.ok || sellerProfile?.seller_banned_at) {
+      return json({
+        error: 'escrow_frozen_seller',
+        message: 'Escrow cannot be released to this seller until platform debt is resolved.',
+      }, 403)
     }
 
     if (!order.connect_checkout) {

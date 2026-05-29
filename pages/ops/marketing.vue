@@ -43,6 +43,15 @@
       </section>
 
       <section class="mkt-card">
+        <h2>Authenticity &amp; counterfeit enforcement</h2>
+        <ul class="mkt-list">
+          <li><NuxtLink to="/ops/authenticity">Ops → Authenticity</NuxtLink> — scan, reports, ban/suspend</li>
+          <li>COA verify: <code>/verify/coa/FS-2026-000001</code></li>
+          <li><code>docs/AUTHENTICITY-INTEGRITY.md</code></li>
+        </ul>
+      </section>
+
+      <section class="mkt-card">
         <h2>Niche collections &amp; limited drops</h2>
         <p class="text-muted">
           Curated floors (graded cards, coins, TCG) and limited-edition campaigns — exclusivity with COA + escrow, not generic eBay search.
@@ -195,15 +204,15 @@ npm run email:campaign -- --template seller-outreach --list ./recipients.csv --d
 definePageMeta({ layout: 'default', middleware: 'ops-auth' })
 useSeoMeta({ title: 'Marketing — The Franks Standard', robots: 'noindex, nofollow' })
 
-const postcardCopy = `THE FRANKS STANDARD
-Authenticated collectibles & gear — proof before publish.
+const postcardCopy = `THE FRANKS STANDARD — sell where proof is required
 
-• COA or signed guarantee on every listing
-• 4–5% sale fees by plan (3% launch) · escrow · video inspect
-• List free: thefranksstandard.com/sell
+SECURITY: COA + escrow · verify COA · enforcement in writing
+LOW FEES: 4–5% by plan (3% launch) — not 13%+ stacked
+PERKS: FOUNDERS10 (3 mo Pro) · HONOR26 · AI store · eBay import
+VOLUME REWARDS: Seller Excellence every 6 mo — #1 = 0% platform fees 30 days
 
-Charles Franks · (877) 837-0527
-thefranksstandard.com`
+thefranksstandard.com/sell · thefranksstandard.com/go/postcard
+Charles Franks · (877) 837-0527`
 
 const shopLetter = `Charles Franks
 The Franks Standard LLC

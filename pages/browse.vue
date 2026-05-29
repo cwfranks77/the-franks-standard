@@ -58,7 +58,7 @@
         >
           <div class="listing-image">
             <img :src="item.image" :alt="item.title" />
-            <span class="coa-badge listing-coa">COA Verified</span>
+            <span class="coa-badge listing-coa">{{ item.coaSerial ? `COA ${item.coaSerial}` : 'COA Verified' }}</span>
             <span v-if="item.saleType === 'auction'" class="auction-badge listing-coa">
               {{ item.buyNowPrice ? 'Auction + BIN' : 'Auction' }}
             </span>
@@ -127,7 +127,7 @@ const categories = LISTING_CATEGORIES
 const listings = ref([])
 
 const LISTING_SELECT_WITH_COLLECTIONS =
-  'id, title, description, category, price, condition, coa_type, image_paths, created_at, donate_proceeds, charity_name, charity_percent, sale_type, current_bid, starting_bid, auction_ends_at, buy_now_price, bid_count, is_limited_edition, collection_slug, collection_label, seller:profiles!listings_seller_id_fkey(full_name)'
+  'id, title, description, category, price, condition, coa_type, coa_serial_number, image_paths, created_at, donate_proceeds, charity_name, charity_percent, sale_type, current_bid, starting_bid, auction_ends_at, buy_now_price, bid_count, is_limited_edition, collection_slug, collection_label, integrity_status, seller:profiles!listings_seller_id_fkey(full_name)'
 
 const LISTING_SELECT_BASE =
   'id, title, category, price, condition, coa_type, image_paths, created_at, donate_proceeds, charity_name, charity_percent, sale_type, current_bid, starting_bid, auction_ends_at, buy_now_price, bid_count, seller:profiles!listings_seller_id_fkey(full_name)'
@@ -154,7 +154,11 @@ async function loadListings() {
     loadError.value = error.message
     return
   }
-  listings.value = (data || []).map((r) => ({
+  const rows = (data || []).filter((r) => {
+    const st = r.integrity_status || 'clear'
+    return st === 'clear'
+  })
+  listings.value = rows.map((r) => ({
     id: r.id,
     title: r.title,
     description: r.description || '',
@@ -164,6 +168,7 @@ async function loadListings() {
     price: Number(r.price),
     condition: r.condition || '',
     coaType: r.coa_type,
+    coaSerial: r.coa_serial_number || '',
     createdAt: r.created_at,
     image: publicUrlForPath(r.image_paths?.[0]),
     seller: (r.seller && r.seller.full_name) ? r.seller.full_name : 'Seller',

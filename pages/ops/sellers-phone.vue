@@ -52,7 +52,7 @@
 
     <nav class="phone-nav">
       <NuxtLink to="/ops/panel">← Console</NuxtLink>
-      <NuxtLink to="/seller-lookup.html">Desktop lookup</NuxtLink>
+      <NuxtLink to="/ops/seller-lookup">Desktop lookup</NuxtLink>
     </nav>
   </div>
 </template>

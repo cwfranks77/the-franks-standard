@@ -19,6 +19,12 @@
         <span class="owner-fee-text">All fees waived — list freely, sell without charges</span>
       </div>
 
+      <div v-if="accountFrozen" class="freeze-banner">
+        <strong>Account frozen</strong>
+        <p>{{ freezeMessage }}</p>
+        <p class="text-muted small">Repay the balance to info@thefranksstandard.com. After payment, your account may still be permanently closed per policy.</p>
+      </div>
+
       <div class="quick-actions">
         <NuxtLink v-if="!isOwner" to="/pay" class="btn btn-primary btn-sm">Pay fees (Stripe)</NuxtLink>
         <NuxtLink v-else to="/ops/panel" class="btn btn-primary btn-sm">Owner toolkit</NuxtLink>
@@ -133,7 +139,10 @@ definePageMeta({ layout: 'default', middleware: 'requires-auth' })
 useSeoMeta({ title: 'Dashboard - The Franks Standard' })
 
 const { isOwner } = useOwnerMode()
+const { loadFreezeState, freezeAlertMessage } = useAccountFreeze()
 const supabase = useSupabaseClient()
+const accountFrozen = ref(false)
+const freezeMessage = ref('')
 const { loading: connectLoading, error: connectError, startOnboarding } = useStripeConnect()
 const stats = reactive({ count: 0, totalSales: '0.00', pendingOrders: 0 })
 const myListings = ref([])
@@ -171,6 +180,10 @@ function formatFoundingDate (iso) {
 
 async function removeListing (id) {
   if (!id || removingId.value) return
+  if (accountFrozen.value) {
+    removeMessage.value = freezeMessage.value
+    return
+  }
   removingId.value = id
   removeMessage.value = ''
   const { error } = await supabase
@@ -267,6 +280,12 @@ onMounted(async () => {
 
   await loadSellerDropship()
   await loadDropshipFulfill(user.id)
+
+  const freeze = await loadFreezeState(user.id)
+  if (freeze.frozen) {
+    accountFrozen.value = true
+    freezeMessage.value = freezeAlertMessage(freeze.profile)
+  }
 
   const { data, error } = await supabase
     .from('listings')
@@ -404,6 +423,16 @@ onMounted(async () => {
   background: rgba(201, 168, 76, 0.18); color: var(--gold); border: 1px solid rgba(201, 168, 76, 0.4);
 }
 .owner-fee-text { font-size: 0.88rem; color: var(--trust-green); font-weight: 600; }
+.freeze-banner {
+  margin-top: 1rem;
+  padding: 16px 20px;
+  background: rgba(139, 38, 53, 0.15);
+  border: 1px solid #8b2635;
+  border-radius: var(--radius-lg);
+}
+.freeze-banner strong { color: #e8a0a8; display: block; margin-bottom: 6px; }
+.freeze-banner p { margin: 0; font-size: 0.9rem; line-height: 1.5; color: #f0d0d4; }
+
 .founding-banner {
   display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
   margin-top: 14px; padding: 14px 18px;

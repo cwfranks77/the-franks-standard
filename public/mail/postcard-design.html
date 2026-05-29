@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>The Franks Standard — 4×6 postcard (print / Lob)</title>
+  <title>The Franks Standard — 4×6 advertising postcard (sample)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@600;700;800&display=swap" rel="stylesheet" />
@@ -47,7 +47,6 @@
       justify-content: center;
       align-items: flex-start;
     }
-    /* 4×6 inch postcard at 300 DPI ≈ 1800×1200 px; use 6in×4in for print */
     .postcard {
       width: 6in;
       height: 4in;
@@ -61,7 +60,7 @@
     .postcard-front {
       background: linear-gradient(145deg, #0f0a1a 0%, #1a1035 42%, #0c1829 100%);
       color: #f8fafc;
-      padding: 0.28in 0.32in;
+      padding: 0.24in 0.3in;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -70,28 +69,40 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 0.12in;
+      gap: 0.1in;
     }
     .brand {
       font-family: Syne, sans-serif;
       font-weight: 800;
-      font-size: 0.22in;
+      font-size: 0.2in;
       letter-spacing: 0.04em;
       line-height: 1.1;
       color: #fde047;
     }
     .brand-sub {
       display: block;
-      font-size: 0.1in;
+      font-size: 0.09in;
       font-weight: 700;
       color: #67e8f9;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      margin-top: 0.04in;
+      margin-top: 0.03in;
+    }
+    .pill-security {
+      display: inline-block;
+      margin-top: 0.05in;
+      padding: 0.03in 0.08in;
+      font-size: 0.075in;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #0f172a;
+      background: #00f5a0;
+      border-radius: 4px;
     }
     .qr {
-      width: 0.85in;
-      height: 0.85in;
+      width: 0.8in;
+      height: 0.8in;
       border-radius: 6px;
       background: #fff;
       padding: 4px;
@@ -100,71 +111,90 @@
     .qr img { width: 100%; height: 100%; display: block; }
     .headline {
       font-family: Syne, sans-serif;
-      font-size: 0.26in;
+      font-size: 0.23in;
       font-weight: 800;
-      line-height: 1.08;
-      margin: 0.1in 0 0.08in;
+      line-height: 1.06;
+      margin: 0.06in 0 0.05in;
       color: #fff;
     }
     .headline em {
       font-style: normal;
-      color: #fde047;
+      color: #00f5a0;
+    }
+    .subhead {
+      font-size: 0.09in;
+      font-weight: 700;
+      color: #94a3b8;
+      margin-bottom: 0.05in;
     }
     .bullets {
       list-style: none;
-      font-size: 0.105in;
+      font-size: 0.098in;
       font-weight: 700;
-      line-height: 1.35;
+      line-height: 1.32;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.04in 0.14in;
+      gap: 0.03in 0.12in;
     }
     .bullets li {
-      padding-left: 0.14in;
+      padding-left: 0.13in;
       position: relative;
     }
     .bullets li::before {
       content: '✓';
       position: absolute;
       left: 0;
-      color: #00f5a0;
+      color: #fde047;
       font-weight: 800;
     }
-    .founders {
-      margin-top: 0.06in;
-      padding: 0.06in 0.1in;
-      border-radius: 6px;
-      background: linear-gradient(90deg, rgba(253, 224, 71, 0.25), rgba(255, 45, 122, 0.15));
-      border: 1px solid rgba(253, 224, 71, 0.55);
-      font-size: 0.1in;
+    .banners {
+      display: flex;
+      flex-direction: column;
+      gap: 0.04in;
+      margin-top: 0.04in;
+    }
+    .banner {
+      padding: 0.05in 0.08in;
+      border-radius: 5px;
+      font-size: 0.085in;
       font-weight: 800;
+      line-height: 1.25;
+    }
+    .banner-founders {
+      background: linear-gradient(90deg, rgba(253, 224, 71, 0.3), rgba(255, 45, 122, 0.12));
+      border: 1px solid rgba(253, 224, 71, 0.55);
       color: #fef9c3;
+    }
+    .banner-excellence {
+      background: rgba(0, 245, 160, 0.12);
+      border: 1px solid rgba(0, 245, 160, 0.45);
+      color: #a7f3d0;
     }
     .front-foot {
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
-      font-size: 0.095in;
+      font-size: 0.09in;
       font-weight: 700;
       color: #cbd5e1;
       border-top: 1px solid rgba(0, 224, 255, 0.35);
-      padding-top: 0.06in;
+      padding-top: 0.05in;
     }
-    .url { color: #67e8f9; font-size: 0.11in; }
+    .url { color: #67e8f9; font-size: 0.105in; }
     .postcard-back {
-      padding: 0.3in 0.34in;
-      font-size: 0.1in;
+      padding: 0.26in 0.3in;
+      font-size: 0.088in;
       font-weight: 600;
-      line-height: 1.45;
+      line-height: 1.38;
       color: #1e293b;
       white-space: pre-wrap;
     }
     .back-title {
       font-family: Syne, sans-serif;
-      font-size: 0.16in;
+      font-size: 0.14in;
       font-weight: 800;
       color: #0f172a;
-      margin-bottom: 0.08in;
+      margin-bottom: 0.06in;
     }
     @media print {
       body { background: #fff; padding: 0; }
@@ -181,13 +211,13 @@
 </head>
 <body>
   <div class="instructions">
-    <h1>4×6 seller outreach postcard</h1>
-    <p><strong>Front</strong> = bold design below. <strong>Back</strong> = same text as <code>assets/email-campaign/postcard-copy.txt</code> (Lob can print it as text).</p>
+    <h1>Advertising sample — 4×6 seller postcard</h1>
+    <p>This is your <strong>print-ready sample</strong>: security, low fees, seller perks, and <strong>Seller Excellence</strong> volume rewards.</p>
     <ol>
-      <li>Print front: browser <strong>Print → Save as PDF</strong> (paper 6×4 in landscape, margins none).</li>
-      <li>Or screenshot at 1800×1200 px and upload to <a href="https://dashboard.lob.com" style="color:#67e8f9">Lob</a> → get <code>LOB_POSTCARD_FRONT_URL</code>.</li>
-      <li>Mail prospects: <strong>Owner → Mail physical sellers</strong> (<code>/ops/mail-prospects</code>).</li>
-      <li>Send test: <code>npm run mail:lob-sample -- --dry-run ...</code></li>
+      <li><strong>Preview</strong> — front + back below (same as mailed copy).</li>
+      <li><strong>Print PDF</strong> — Print → Save as PDF (6×4 in, no margins) for local print shop.</li>
+      <li><strong>Lob mail</strong> — Upload front PDF/screenshot to <a href="https://dashboard.lob.com" style="color:#67e8f9">Lob</a> → <code>LOB_POSTCARD_FRONT_URL</code> · back uses <code>assets/email-campaign/postcard-copy.txt</code>.</li>
+      <li><strong>Batch mail</strong> — Ops → <a href="/ops/mail-prospects" style="color:#67e8f9">Mail physical sellers</a> (I can run Lob when you add keys).</li>
     </ol>
   </div>
 
@@ -196,54 +226,52 @@
       <div class="front-top">
         <div>
           <div class="brand">THE FRANKS<span class="brand-sub">STANDARD</span></div>
+          <span class="pill-security">COA · Escrow · Enforced</span>
         </div>
-        <div class="qr" title="QR to founders offer">
+        <div class="qr" title="QR to sell + FOUNDERS10">
           <img
-            src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&amp;data=https://thefranksstandard.com/go/postcard?ref=postcard&amp;promo=FOUNDERS10"
-            alt="QR code — founders offer"
+            src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&amp;data=https://thefranksstandard.com/go/postcard?ref=postcard&amp;utm_source=postcard&amp;utm_medium=mail&amp;promo=FOUNDERS10"
+            alt="QR — thefranksstandard.com/go/postcard"
             width="200"
             height="200"
           />
         </div>
       </div>
-      <p class="headline">Sell where <em>proof</em> is required — keep more of every sale.</p>
+      <p class="subhead">Proof-first marketplace for serious sellers</p>
+      <p class="headline"><em>Security</em> built in. Fees half the big sites.</p>
       <ul class="bullets">
-        <li>4–5% fees, not ~13% stacked</li>
-        <li>AI transfer · eBay/CSV import</li>
-        <li>COA or signed guarantee</li>
-        <li>Stripe escrow checkout</li>
-        <li>AI store + video inspect</li>
-        <li>Dropship tools built in</li>
+        <li>COA + escrow every sale</li>
+        <li>4–5% fees — not ~13%</li>
+        <li>Refund rules in writing</li>
+        <li>eBay import · AI store</li>
+        <li>Video inspect · dropship</li>
+        <li>Top volume → fee rewards</li>
       </ul>
-      <p class="founders">FOUNDERS10 — 3 months Pro FREE (early stores)</p>
+      <div class="banners">
+        <p class="banner banner-founders">FOUNDERS10 — 3 months Pro FREE (limited)</p>
+        <p class="banner banner-excellence">Seller Excellence — #1 wins 0% platform fees 30 days</p>
+      </div>
       <div class="front-foot">
         <span class="url">thefranksstandard.com/sell</span>
         <span>(877) 837-0527</span>
       </div>
     </section>
 
-    <section class="postcard postcard-back" aria-label="Postcard back preview">
+    <section class="postcard postcard-back" aria-label="Postcard back">
       <p class="back-title">THE FRANKS STANDARD</p>
-      <p id="backCopy">Loading back copy…</p>
+      <p id="backCopy">Loading…</p>
     </section>
   </div>
 
   <script>
     const fallback = `THE FRANKS STANDARD — sell where proof is required
 
-Why shops list here (not another bazaar):
-• 4–5% sale fees by plan — not ~13% stacked fees elsewhere
-• Free to list your first 10 items · import from eBay in minutes
-• COA or signed in-platform guarantee on every listing — buyers trust it
-• Stripe escrow — you get paid after the buyer confirms delivery
-• AI store builder, video inspect rooms, dropship tools built in
-• FOUNDERS10: 3 months Pro FREE for early stores (limited)
+SECURITY: COA required · verify COA · escrow · enforcement in writing
+LOW FEES: 4–5% by plan · 3% launch · not 13%+ stacked
+PERKS: FOUNDERS10 · HONOR26 · AI store · eBay import
+VOLUME: Seller Excellence every 6 mo — #1 gets 0% fees 30 days
 
-Start: thefranksstandard.com/sell
-Scan QR or: thefranksstandard.com/go/postcard
-
-Charles Franks · (877) 837-0527
-info@thefranksstandard.com`
+thefranksstandard.com/sell · (877) 837-0527`
     const el = document.getElementById('backCopy')
     fetch('/mail/postcard-copy.txt')
       .then((r) => (r.ok ? r.text() : Promise.reject()))

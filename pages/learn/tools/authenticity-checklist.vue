@@ -40,6 +40,11 @@
         </ul>
       </section>
 
+      <p class="no-print text-muted" style="font-weight: 600; margin-top: 24px;">
+        Buying or selling coins?
+        <NuxtLink to="/learn/tools/coin-study-guide">Coin authentication study guide</NuxtLink>
+        (struck vs cast, counterfeit red flags).
+      </p>
       <p class="footer-line">The Franks Standard · thefranksstandard.com · (877) 837-0527</p>
     </div>
   </div>

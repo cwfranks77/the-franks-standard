@@ -2,60 +2,92 @@
   <div class="page">
     <div class="container legal">
       <h1>Terms of Service</h1>
-      <p class="updated">Last updated: April 26, 2026. These terms may be updated; continued use of the site means you accept the current version.</p>
+      <p class="updated">
+        Last updated: {{ POLICY_LAST_UPDATED }}. These terms may be updated; continued use of the site means you accept the
+        current version. See also our
+        <NuxtLink to="/marketplace-policy">Marketplace Policies &amp; Enforcement</NuxtLink> (platform operating standards).
+      </p>
 
       <h2>1. The service</h2>
       <p>
-        The Franks Standard is an online marketplace for buyers and sellers of items that require proof of authenticity. By using
-        the site, you agree to these terms and to our <NuxtLink to="/privacy">Privacy Policy</NuxtLink> and, if you sell,
-        the <NuxtLink to="/seller-agreement">Seller Agreement</NuxtLink>.
+        The Franks Standard (&quot;Platform,&quot; &quot;we,&quot; &quot;us&quot;) is an online marketplace for buyers and sellers of items that
+        require proof of authenticity. By using the site, you agree to these Terms, our
+        <NuxtLink to="/privacy">Privacy Policy</NuxtLink>,
+        <NuxtLink to="/marketplace-policy">Marketplace Policies</NuxtLink>, and, if you sell, the
+        <NuxtLink to="/seller-agreement">Seller Agreement</NuxtLink>.
       </p>
 
       <h2>2. Marketplace facilitator</h2>
       <p>
-        The Franks Standard is a <em>platform</em> and marketplace facilitator. We are not the seller of items listed by third
-        parties, and we are not a bank, money transmitter, or escrow agent except where we say otherwise in a specific
-        product flow or in the terms of a payment provider you choose at checkout. Individual sales are between the buyer
-        and the seller; the platform, payment processors, and (where used) your card issuer or bank have their own terms and
-        roles, which you should read at checkout. Features such as public listing shelves, connect payouts, and hold-and-release
-        payments may be offered in phases—see
+        The Platform is a <em>marketplace facilitator</em>, not the seller of third-party listed items. We are not a bank,
+        money transmitter, or escrow agent except as described in our payment flows and
+        <NuxtLink to="/marketplace-policy">Marketplace Policies</NuxtLink>. Individual sales are contracts between buyer and
+        seller; Stripe and your financial institutions have separate terms at checkout. Features roll out in phases — see
         <NuxtLink to="/sellers">For sellers</NuxtLink>,
         <NuxtLink to="/how-it-works">How it works</NuxtLink>, and
-        <NuxtLink to="/contact">Contact</NuxtLink> for what is available and how to work with the team to go live.
+        <NuxtLink to="/contact">Contact</NuxtLink>.
       </p>
 
       <h2>3. Accounts</h2>
-      <p>You are responsible for your account credentials and for all activity under your account. You must provide accurate information.</p>
+      <p>
+        You are responsible for your credentials and all activity under your account. Information you provide must be accurate.
+        <strong>Sellers</strong> must digitally sign all current policies (Terms, Marketplace Policies, Seller Agreement,
+        Prohibited Items, Privacy) before listing, importing, or dropshipping — see
+        <NuxtLink to="/marketplace-policy">Marketplace Policies §3</NuxtLink>.
+        We may suspend, freeze, or terminate accounts under the Marketplace Policies (including for authenticity violations,
+        refusal to honor valid refunds, or unpaid platform debt).
+      </p>
 
       <h2>4. Listings and authenticity</h2>
       <p>
-        Sellers must comply with our authenticity requirements, including providing a COA or signed in-platform guarantee as
-        required. Prohibited or illegal items are not allowed; see <NuxtLink to="/prohibited-items">Prohibited Items</NuxtLink>.
+        Sellers must comply with authenticity requirements (COA or in-platform guarantee), accurate descriptions, and
+        <NuxtLink to="/prohibited-items">Prohibited Items</NuxtLink>. The Platform may scan listings, suspend or remove them,
+        revoke COAs, and ban sellers as described in the
+        <NuxtLink to="/marketplace-policy">Marketplace Policies</NuxtLink>.
       </p>
 
-      <h2>5. Payments and disputes</h2>
+      <h2>5. Payments, escrow, refunds, and disputes</h2>
       <p>
-        Payment processing and escrow (where applicable) will follow the flows and provider terms we describe at checkout.
-        Platform fees are transaction fees on completed sales, optional subscription plans, and listing fees as shown on
-        <NuxtLink to="/pricing">Pricing</NuxtLink> — we do not charge buyers or sellers a separate dispute or mediation fee.
-        We take counterfeit and misrepresentation seriously; see our <NuxtLink to="/how-it-works">How it works</NuxtLink> page
-        for our standards.
+        Payments are processed by Stripe. Where escrow applies, funds are held until release conditions in the Marketplace
+        Policies are met. Platform fees are described on
+        <NuxtLink to="/pricing">Pricing</NuxtLink>; we do not charge a separate per-dispute mediation fee.
+      </p>
+      <p>
+        Refund and dispute standards (including seller-at-fault refunds, forced refunds when sellers refuse, account freeze,
+        escrow holds, and permanent bans) are defined in the
+        <NuxtLink to="/marketplace-policy">Marketplace Policies</NuxtLink> and Seller Agreement — not in marketing copy alone.
+        Any discretionary buyer protection program is limited and funded by the business entity, not personally by the founder.
       </p>
 
       <h2>6. Limitation of liability</h2>
       <p>
-        The service is provided &quot;as is.&quot; To the maximum extent permitted by law, The Franks Standard and its
-        operators are not liable for indirect or consequential damages. Some jurisdictions do not allow certain limitations;
-        in those cases, our liability is limited to the fullest extent allowed by law.
+        The service is provided &quot;as is.&quot; To the maximum extent permitted by law, the Platform and its operators are not
+        liable for indirect or consequential damages. Some jurisdictions do not allow certain limitations; in those cases,
+        liability is limited to the fullest extent allowed by law. Nothing in these Terms limits rights consumers may have
+        under mandatory law.
       </p>
 
-      <h2>7. Contact</h2>
-      <p>For terms questions: <NuxtLink to="/contact">Contact</NuxtLink> or <a href="mailto:info@thefranksstandard.com">info@thefranksstandard.com</a></p>
+      <h2>7. Governing framework</h2>
+      <p>
+        Enforcement actions (listing suspension, integrity review, forced refund, account freeze for platform debt, chargeback
+        allocation, and permanent ban) are implemented as described in the
+        <NuxtLink to="/marketplace-policy">Marketplace Policies</NuxtLink>. If you sell, you additionally agree to the
+        <NuxtLink to="/seller-agreement">Seller Agreement</NuxtLink>.
+      </p>
+
+      <h2>8. Contact</h2>
+      <p>
+        Terms questions:
+        <NuxtLink to="/contact">Contact</NuxtLink> or
+        <a href="mailto:info@thefranksstandard.com">info@thefranksstandard.com</a>
+      </p>
     </div>
   </div>
 </template>
 
 <script setup>
+import { POLICY_LAST_UPDATED } from '~/utils/marketplacePolicyMeta.js'
+
 useSeoMeta({
   title: 'Terms of Service - The Franks Standard',
   description: 'Terms of Service for The Franks Standard marketplace.',

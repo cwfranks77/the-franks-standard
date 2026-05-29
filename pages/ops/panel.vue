@@ -42,13 +42,14 @@
           <NuxtLink to="/dashboard" class="btn btn-outline btn-lg">My Dashboard</NuxtLink>
           <NuxtLink to="/browse" class="btn btn-dark btn-lg">Browse Floor</NuxtLink>
           <NuxtLink to="/ops/status" class="btn btn-dark btn-lg">Transaction readiness</NuxtLink>
-          <NuxtLink to="/ops/test-checkout" class="btn btn-primary btn-lg">Run QA tests</NuxtLink>
+          <NuxtLink to="/ops/site-qa" class="btn btn-primary btn-lg">Full site QA (all routes)</NuxtLink>
+          <NuxtLink to="/ops/test-checkout" class="btn btn-primary btn-lg">Checkout QA</NuxtLink>
           <NuxtLink to="/ops/mail-setup" class="btn btn-outline btn-lg">Fix info@ on phone</NuxtLink>
           <NuxtLink to="/ops/sellers-phone" class="btn btn-outline btn-lg">Find sellers — phone</NuxtLink>
-          <NuxtLink to="/seller-lookup.html" class="btn btn-outline btn-lg">Find sellers — desktop</NuxtLink>
+          <NuxtLink to="/ops/seller-lookup" class="btn btn-outline btn-lg">Find sellers — desktop</NuxtLink>
           <NuxtLink to="/ops/ebay-prospects" class="btn btn-outline btn-lg">eBay skim (HTML)</NuxtLink>
           <NuxtLink to="/ops/mail-prospects" class="btn btn-primary btn-lg">Mail physical sellers</NuxtLink>
-          <a href="/mail/postcard-design.html" class="btn btn-outline btn-lg" target="_blank" rel="noopener noreferrer">Postcard design ↗</a>
+          <a href="/mail/postcard-design.html" class="btn btn-primary btn-lg" target="_blank" rel="noopener noreferrer">Postcard sample (print/mail) ↗</a>
           <a href="/go/postcard?ref=pcard500" class="btn btn-outline btn-lg" target="_blank" rel="noopener noreferrer">Tracked postcard URL ↗</a>
           <NuxtLink to="/sell/import" class="btn btn-outline btn-lg">Import my eBay (CSV)</NuxtLink>
         </div>
@@ -113,12 +114,16 @@
             <li><NuxtLink to="/ops/influencers"><strong>Influencers &amp; affiliates</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/social-promo"><strong>Social promotion</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/niche-collections"><strong>Niche collections &amp; limited drops</strong></NuxtLink></li>
+            <li><NuxtLink to="/ops/authenticity"><strong>Authenticity &amp; counterfeit enforcement</strong></NuxtLink></li>
+            <li><NuxtLink to="/ops/refunds"><strong>Forced buyer refunds</strong></NuxtLink> — when seller won&apos;t refund</li>
             <li><NuxtLink to="/ops/sellers-phone"><strong>Find eBay sellers (phone)</strong></NuxtLink> — paste names, tap Google</li>
-            <li><NuxtLink to="/seller-lookup.html"><strong>Find sellers — desktop</strong></NuxtLink> (works without app cache)</li>
+            <li><NuxtLink to="/ops/seller-lookup"><strong>Find sellers — desktop</strong></NuxtLink></li>
             <li><NuxtLink to="/sell/dropship-setup?ai=1"><strong>AI dropship setup</strong></NuxtLink> (full plan + wizard)</li>
             <li><NuxtLink to="/ops/ebay-prospects"><strong>eBay skim from saved page</strong></NuxtLink></li>
             <li><NuxtLink to="/sell/import"><strong>Import your eBay listings (CSV)</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/status"><strong>Transaction readiness</strong></NuxtLink></li>
+            <li><NuxtLink to="/ops/site-qa"><strong>Full site QA (routes + links)</strong></NuxtLink></li>
+            <li><NuxtLink to="/ops/test-checkout"><strong>Checkout API smoke</strong></NuxtLink></li>
           </ul>
         </section>
 
@@ -146,6 +151,37 @@
               </div>
               <div class="coa-v-problems">
                 <span v-for="p in v.problems" :key="p" class="coa-v-tag">{{ p }}</span>
+              </div>
+              <NuxtLink :to="`/listing/${v.id}`" class="btn btn-outline btn-sm">View</NuxtLink>
+            </div>
+          </div>
+        </section>
+
+        <section class="card wide integrity-monitor-card">
+          <div class="coa-monitor-header">
+            <h2>Counterfeit &amp; misrepresentation monitor</h2>
+            <button type="button" class="btn btn-primary btn-sm" @click="runIntegrityScan" :disabled="integrityChecking">
+              {{ integrityChecking ? 'Scanning...' : 'Scan risk signals' }}
+            </button>
+          </div>
+          <p class="small text-muted">
+            Detects replica language, fake-claim patterns (coins, slabs, sneakers), and listings already suspended or under review.
+            <NuxtLink to="/ops/authenticity">Full enforcement toolkit →</NuxtLink>
+          </p>
+          <p v-if="integrityLastCheck" class="small text-muted" style="margin-top: 6px;">Last scan: {{ integrityLastCheck }}</p>
+          <div v-if="riskListings.length === 0 && integrityLastCheck" class="coa-all-clear">
+            <span class="coa-clear-icon">✅</span>
+            <p><strong>No elevated risk</strong> on published listings (COA compliance is a separate scan above).</p>
+          </div>
+          <div v-if="riskListings.length > 0" class="coa-violations">
+            <p class="coa-alert-count">⚠️ {{ riskListings.length }} listing{{ riskListings.length === 1 ? '' : 's' }} need review:</p>
+            <div v-for="v in riskListings.slice(0, 12)" :key="v.id" class="coa-violation-row">
+              <div class="coa-v-info">
+                <p class="coa-v-title">{{ v.title }}</p>
+                <p class="coa-v-meta text-muted">{{ v.category }} · {{ v.severity || v.integrityStatus }}</p>
+              </div>
+              <div class="coa-v-problems">
+                <span v-for="p in v.problems.slice(0, 2)" :key="p" class="coa-v-tag">{{ p }}</span>
               </div>
               <NuxtLink :to="`/listing/${v.id}`" class="btn btn-outline btn-sm">View</NuxtLink>
             </div>
@@ -322,11 +358,13 @@ definePageMeta({ layout: 'default', middleware: 'ops-auth' })
 const router = useRouter()
 const { revoke } = useOpsSession()
 const { violations: coaViolations, lastCheck: coaLastCheck, checking: coaChecking, scan: runCoaScan } = useCoaMonitor()
+const { riskListings, lastCheck: integrityLastCheck, checking: integrityChecking, scan: runIntegrityScan } = useAuthenticityMonitor()
 const { published, drafts, profiles, loading: statsLoading, error: statsError, refresh: refreshStats } = useOpsStats()
 const { configuredCount: paymentLinkCount } = usePaymentLinks()
 
 onMounted(() => {
   runCoaScan()
+  runIntegrityScan()
   refreshStats()
 })
 
@@ -467,6 +505,7 @@ function flashCopied () {
 .snapshot-num { display: block; font-size: 1.5rem; font-weight: 800; color: #111827; }
 .snapshot-label { font-size: 0.78rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.06em; }
 .coa-monitor-card { border-color: rgba(255, 77, 142, 0.25); }
+.integrity-monitor-card { border-color: rgba(185, 28, 28, 0.35); }
 .coa-monitor-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
 .coa-monitor-header h2 { margin: 0; }
 .coa-all-clear {

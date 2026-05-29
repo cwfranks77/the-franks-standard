@@ -202,6 +202,19 @@ export function useInventoryImport () {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Sign in required')
 
+      const { SELLER_POLICY_VERSION } = await import('~/utils/sellerPolicyBundle.js')
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('seller_policies_accepted_at, seller_policies_version')
+        .eq('id', user.id)
+        .maybeSingle()
+      if (
+        !profile?.seller_policies_accepted_at ||
+        profile.seller_policies_version !== SELLER_POLICY_VERSION
+      ) {
+        throw new Error('Digitally sign all seller policies at /sell before importing or publishing listings.')
+      }
+
       const selected = previewItems.value.filter((i) => i.selected)
       if (!selected.length) throw new Error('Select at least one item')
 

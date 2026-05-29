@@ -32,6 +32,11 @@
         <p><strong>Escrow:</strong> {{ escrowLabel(order.escrow_status) }}</p>
         <p class="text-muted small">Placed {{ formatDate(order.created_at) }}</p>
         <p v-if="order.paid_at" class="text-muted small">Paid {{ formatDate(order.paid_at) }}</p>
+        <p v-if="order.refunded_at" class="refund-notice">
+          Refunded {{ formatDate(order.refunded_at) }}
+          <span v-if="order.refund_amount"> — ${{ Number(order.refund_amount).toLocaleString() }}</span>
+          <span v-if="order.refund_reason"> ({{ order.refund_reason.replace(/_/g, ' ') }})</span>
+        </p>
       </div>
 
       <div v-if="isBuyer && canConfirm" class="order-actions">

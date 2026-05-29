@@ -190,7 +190,7 @@ export const LEARN_ARTICLES = /** @type {LearnArticle[]} */ ([
     readMinutes: 12,
     published: '2026-05-01',
     tags: ['ebook', 'sellers', 'checklist'],
-    related: ['import-ebay-to-franks-standard', 'card-shop-fees-explained'],
+    related: ['import-ebay-to-franks-standard', 'card-shop-fees-explained', 'coin-counterfeit-detection-guide'],
     blocks: [
       { type: 'p', text: 'This playbook is your offline reference — share with staff at your card shop or coin counter.' },
       { type: 'h2', text: 'Chapter 1 — Why proof-first selling wins' },
@@ -220,6 +220,43 @@ export const LEARN_ARTICLES = /** @type {LearnArticle[]} */ ([
       ] },
       { type: 'cta', label: 'Start selling', to: '/sell' },
       { type: 'cta', label: 'Print authenticity checklist', to: '/learn/tools/authenticity-checklist' },
+    ],
+  },
+  {
+    slug: 'coin-counterfeit-detection-guide',
+    title: 'Spot fake coins before you buy (Morgan dollars & more)',
+    description:
+      'Struck vs cast, the 10-point checklist, Morgan CC/S diagnostics, and why “too cheap” key dates are almost always counterfeits.',
+    category: 'trust',
+    readMinutes: 3,
+    published: '2026-05-29',
+    tags: ['coins', 'counterfeit', 'morgan', 'buyers', 'authenticity'],
+    related: ['coa-vs-signed-guarantee', 'seller-playbook'],
+    blocks: [
+      {
+        type: 'p',
+        text:
+          'Counterfeit Morgans, fake PCGS slabs, and cast copies flood general marketplaces. This short intro links to our free printable study guide — the same framework we use when reviewing authenticity reports.',
+      },
+      { type: 'h2', text: 'Three rules that catch most scams' },
+      {
+        type: 'ul',
+        items: [
+          '**Price vs comps** — key dates (1885-CC, 1889-CC, 1893-S) at generic silver prices are not real.',
+          '**Struck vs cast** — micro-voids in jaw/neck recesses and dead luster point to cast metal, not Mint strike.',
+          '**Verify slabs** — PCGS/NGC cert numbers must match on the grading service website; $50–$90 “MS64 CC” slabs are a known pattern.',
+        ],
+      },
+      {
+        type: 'cta',
+        label: 'Open full coin study guide (printable)',
+        to: '/learn/tools/coin-study-guide',
+      },
+      {
+        type: 'cta',
+        label: 'Report a listing on Franks Standard',
+        to: '/how-it-works',
+      },
     ],
   },
   {
@@ -330,6 +367,12 @@ export const LEARN_TOOLS = [
     title: 'Authenticity checklist (printable)',
     description: 'Pre-publish COA and guarantee checklist for staff.',
     icon: '✓',
+  },
+  {
+    slug: 'coin-study-guide',
+    title: 'Coin study guide (printable)',
+    description: 'Struck vs cast, Morgan diagnostics, 10-point checklist — free buyer & dealer reference.',
+    icon: '🪙',
   },
 ]
 

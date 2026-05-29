@@ -17,7 +17,7 @@ Also ensure `002_dropship_full_automation.sql` ran (creates `orders` table).
 3. **Settings → Connect** — enable Connect; platform is the marketplace.
 4. **Developers → Webhooks → Add endpoint**
    - URL: `https://<PROJECT_REF>.supabase.co/functions/v1/stripe-webhook`
-   - Events: `checkout.session.completed`, `account.updated`
+   - Events: `checkout.session.completed`, `account.updated`, `charge.refunded`
    - Copy **Signing secret** (`whsec_...`).
 
 ## 3. Supabase Edge secrets
@@ -71,6 +71,8 @@ Catalog products may stay **non-taxable** in Stripe (avoids extra tax on static 
 Set `STRIPE_TAX_ENABLED=false` in Edge secrets only if you need to turn off address-based tax entirely.
 
 `stripe-webhook` must use `--no-verify-jwt` so Stripe can POST without a Supabase user JWT.
+
+If Stripe emails about webhook failures, see **`docs/STRIPE-WEBHOOK-FIX.md`** and run `npm run stripe:webhook:verify`.
 
 ## 5. Redeploy the website
 

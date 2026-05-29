@@ -15,6 +15,19 @@
           <MarketplacePageDock :tiles="sellDockTiles" aria-label="Seller shortcuts" />
         </div>
 
+        <div v-if="policyLoading" class="text-muted" style="padding: 24px 0;">Loading seller requirements…</div>
+
+        <SellerPolicyAgreement
+          v-else-if="needsPolicyAcceptance"
+          @accepted="onPoliciesAccepted"
+        />
+
+        <template v-else>
+        <div v-if="accountFrozen" class="sell-freeze-banner" role="alert">
+          <strong>Account frozen</strong>
+          <p>{{ freezeBannerText }}</p>
+        </div>
+
         <div v-if="isOwner" class="sell-owner-banner" role="status">
           <span class="sell-owner-badge">Owner mode</span>
           <p>
@@ -440,7 +453,19 @@
                   <p>You personally vouch for this item's authenticity. Your name, reputation, and account are on the line.</p>
                 </div>
               </label>
+
+              <label class="coa-option" :class="{ active: form.coaType === 'franks_issued' }">
+                <input type="radio" v-model="form.coaType" value="franks_issued" name="coaType" />
+                <div class="coa-option-content">
+                  <h4>Franks Standard issued COA</h4>
+                  <p>One listing = one floor office. Serial (<code>FS-{{ currentYear }}-000001</code>) is the office number on the COA and on the listing. Issued only after photos + description — certifies that exact item, not a lookalike.</p>
+                </div>
+              </label>
             </div>
+
+            <p v-if="form.coaType === 'franks_issued'" class="text-muted small">
+              Upload photos first. On publish we issue your serial and link it to this listing only.
+            </p>
 
             <!-- Upload COA -->
             <div v-if="form.coaType === 'upload'" class="mt-3">
@@ -474,6 +499,7 @@
             {{ submitting ? 'Publishing…' : 'Publish to marketplace' }}
           </button>
         </form>
+        </template>
       </div>
     </div>
   </div>
@@ -505,14 +531,23 @@ useSeoMeta({
 })
 
 const { isOwner } = useOwnerMode()
+const { loadFreezeState, freezeAlertMessage } = useAccountFreeze()
+const {
+  needsAcceptance: needsPolicyAcceptance,
+  loading: policyLoading,
+  loadStatus: loadPolicyStatus,
+} = useSellerPolicyAcceptance()
 const applicationMailto = buildSellerApplicationMailto()
 const supabase = useSupabaseClient()
 const route = useRoute()
 const submitting = ref(false)
+const accountFrozen = ref(false)
+const freezeBannerText = ref('')
 const listingMode = ref('direct')
 const modeNotice = ref('')
 
 const categories = LISTING_CATEGORIES
+const currentYear = new Date().getFullYear()
 
 const dropshipProviders = DROPSHIP_PROVIDER_CATALOG.filter((p) => p.key !== 'custom')
 
@@ -717,6 +752,15 @@ async function generateAiDescription () {
 }
 
 onMounted(async () => {
+  await loadPolicyStatus()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (user) {
+    const freeze = await loadFreezeState(user.id)
+    if (freeze.frozen) {
+      accountFrozen.value = true
+      freezeBannerText.value = freezeAlertMessage(freeze.profile)
+    }
+  }
   await loadSellerDropship()
   const mode = String(route.query.mode || '').toLowerCase()
   if (mode === 'dropship') {
@@ -789,7 +833,15 @@ function handleCOA(e) {
   coaFileName.value = coaFile.value?.name || ''
 }
 
+async function onPoliciesAccepted () {
+  await loadPolicyStatus()
+}
+
 async function submitListing() {
+  if (needsPolicyAcceptance.value) {
+    alert('You must digitally sign all seller policies before publishing.')
+    return
+  }
   if (!form.coaType) {
     alert('You must provide a Certificate of Authenticity or sign The Franks Standard Guarantee.')
     return
@@ -834,10 +886,29 @@ async function submitListing() {
     }
   }
   const { scanOffPlatformContent, formatOffPlatformBlockMessage } = await import('~/utils/offPlatformGuard.js')
+  const { scanListingIntegrity } = await import('~/utils/authenticityScan.js')
   const listingText = `${form.title}\n${form.description}`
   const guard = scanOffPlatformContent(listingText)
   if (!guard.ok) {
     alert(formatOffPlatformBlockMessage(guard))
+    return
+  }
+  if (form.coaType === 'franks_issued' && !photoFiles.value.length) {
+    alert('Upload at least one item photo before publishing with a Franks issued COA.')
+    return
+  }
+  const integrityPreview = scanListingIntegrity({
+    title: form.title,
+    description: form.description,
+    category: form.category,
+    price: Number(form.price),
+    coa_type: form.coaType,
+    coa_storage_path: form.coaType === 'upload' && coaFile.value ? 'pending' : null,
+    guarantee_signed: form.guaranteeSigned,
+  })
+  if (!integrityPreview.ok) {
+    const lines = integrityPreview.flags.map((f) => `• ${f.label}`).join('\n')
+    alert(`This listing was blocked by authenticity screening:\n\n${lines}\n\nRemove misleading language or fix COA/guarantee before publishing.`)
     return
   }
   submitting.value = true
@@ -845,6 +916,21 @@ async function submitListing() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
       await navigateTo({ path: '/auth/login', query: { redirect: '/sell' } })
+      return
+    }
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('seller_banned_at, seller_ban_reason, account_frozen_at, seller_debt_status, seller_debt_paid_at, account_freeze_reason, seller_debt_balance')
+      .eq('id', user.id)
+      .maybeSingle()
+    if (profile?.seller_banned_at) {
+      alert(`Your seller account is suspended: ${profile.seller_ban_reason || 'Authenticity policy violation.'}`)
+      submitting.value = false
+      return
+    }
+    if (profile?.account_frozen_at && profile?.seller_debt_status === 'pending' && !profile?.seller_debt_paid_at) {
+      alert(freezeAlertMessage(profile))
+      submitting.value = false
       return
     }
     const listingPayload = {
@@ -1041,6 +1127,37 @@ async function submitListing() {
 
     if (updErr) {
       throw new Error(updErr.message)
+    }
+
+    if (form.coaType === 'franks_issued') {
+      const { data: { session } } = await supabase.auth.getSession()
+      const base = String(useRuntimeConfig().public.supabaseUrl || '').replace(/\/+$/, '')
+      const issueRes = await fetch(`${base}/functions/v1/issue-coa-certificate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+        body: JSON.stringify({ listing_id: listingId }),
+      })
+      const issueData = await issueRes.json().catch(() => ({}))
+      if (!issueRes.ok) {
+        alert(`Listing saved but COA issue failed: ${issueData.message || issueData.error || 'Run migration 021 and deploy issue-coa-certificate.'}`)
+      } else {
+        await supabase.from('listings').update({
+          integrity_flags: integrityPreview.flags,
+          integrity_score: integrityPreview.score,
+          integrity_status: integrityPreview.severity === 'review' ? 'review' : 'clear',
+          integrity_scanned_at: new Date().toISOString(),
+        }).eq('id', listingId)
+      }
+    } else {
+      await supabase.from('listings').update({
+        integrity_flags: integrityPreview.flags,
+        integrity_score: integrityPreview.score,
+        integrity_status: integrityPreview.severity === 'review' ? 'review' : 'clear',
+        integrity_scanned_at: new Date().toISOString(),
+      }).eq('id', listingId).then(() => {})
     }
 
     await navigateTo(`/listing/${listingId}`)
@@ -1332,6 +1449,15 @@ async function submitListing() {
   font-size: 0.82rem;
   color: #1f2937;
 }
+.sell-freeze-banner {
+  margin-bottom: 24px; padding: 18px 20px;
+  border-radius: var(--radius-lg);
+  border: 2px solid rgba(139, 38, 53, 0.5);
+  background: rgba(139, 38, 53, 0.12);
+}
+.sell-freeze-banner strong { color: #e8a0a8; display: block; margin-bottom: 8px; }
+.sell-freeze-banner p { margin: 0; font-size: 0.9rem; line-height: 1.55; color: #f0d0d4; }
+
 .sell-owner-banner {
   display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
   margin-bottom: 24px; padding: 18px 20px;

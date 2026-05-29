@@ -1,4 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
+import { assertAccountNotFrozen } from '../_shared/sellerAccountFreeze.ts'
+import { assertSellerPoliciesAccepted } from '../_shared/sellerPolicyAcceptance.ts'
 import { calcCharitySplit, calcDropshipSplit, calcFees, corsHeaders, json, siteUrl, stripeClient } from '../_shared/stripe.ts'
 import { marketplaceListingTaxOptions, stripeTaxEnabled, TAX_CODE_TANGIBLE } from '../_shared/stripeTax.ts'
 
@@ -36,9 +38,14 @@ Deno.serve(async (req) => {
 
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, { auth: { persistSession: false } })
 
+    const buyerFreeze = await assertAccountNotFrozen(admin, user.id)
+    if (!buyerFreeze.ok) {
+      return json({ error: buyerFreeze.error, message: buyerFreeze.message }, 403)
+    }
+
     const { data: listing, error: listingError } = await admin
       .from('listings')
-      .select('id, title, price, status, seller_id, listing_mode, dropship_wholesale_cost, donate_proceeds, charity_key, charity_name, charity_percent, sale_type, starting_bid, current_bid, current_bidder_id, reserve_price, auction_ends_at, buy_now_price, bid_count')
+      .select('id, title, price, status, seller_id, integrity_status, listing_mode, dropship_wholesale_cost, donate_proceeds, charity_key, charity_name, charity_percent, sale_type, starting_bid, current_bid, current_bidder_id, reserve_price, auction_ends_at, buy_now_price, bid_count')
       .eq('id', listingId)
       .eq('status', 'published')
       .maybeSingle()
@@ -47,11 +54,30 @@ Deno.serve(async (req) => {
       return json({ error: 'listing_not_found' }, 404)
     }
 
+    const integrity = String((listing as { integrity_status?: string }).integrity_status ?? 'clear')
+    if (integrity === 'suspended' || integrity === 'counterfeit_confirmed' || integrity === 'review') {
+      return json({ error: 'listing_not_available', message: 'This listing is under authenticity review or has been removed.' }, 403)
+    }
+
     const { data: sellerProfile } = await admin
       .from('profiles')
-      .select('stripe_account_id, stripe_charges_enabled, seller_tier, award_fee_bps, award_fee_until')
+      .select('stripe_account_id, stripe_charges_enabled, seller_tier, award_fee_bps, award_fee_until, seller_banned_at, account_frozen_at, seller_debt_status, seller_debt_paid_at')
       .eq('id', listing.seller_id)
       .maybeSingle()
+
+    if (sellerProfile?.seller_banned_at) {
+      return json({ error: 'seller_suspended', message: 'This seller is not permitted to sell on The Franks Standard.' }, 403)
+    }
+
+    const sellerFreeze = await assertAccountNotFrozen(admin, listing.seller_id)
+    if (!sellerFreeze.ok) {
+      return json({ error: 'seller_account_frozen', message: 'This seller account is frozen and cannot complete sales.' }, 403)
+    }
+
+    const sellerPolicies = await assertSellerPoliciesAccepted(admin, listing.seller_id)
+    if (!sellerPolicies.ok) {
+      return json({ error: sellerPolicies.error, message: sellerPolicies.message }, 403)
+    }
 
     if (listing.seller_id === user.id) {
       return json({ error: 'cannot_buy_own_listing' }, 400)

@@ -35,3 +35,5 @@ jobs:
           npx supabase@latest functions deploy reconcile-orders --no-verify-jwt
           npx supabase@latest functions deploy create-platform-checkout-session
           npx supabase@latest functions deploy tax-inspect-session --no-verify-jwt
+          npx supabase@latest functions deploy ops-force-refund --no-verify-jwt
+          npx supabase@latest functions deploy accept-seller-policies

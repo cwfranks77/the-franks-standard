@@ -1,4 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
+import { assertAccountNotFrozen } from '../_shared/sellerAccountFreeze.ts'
+import { assertSellerPoliciesAccepted } from '../_shared/sellerPolicyAcceptance.ts'
 import { transferDropshipSupplierPortion } from '../_shared/dropshipStripeSplit.ts'
 import { corsHeaders, json, stripeClient } from '../_shared/stripe.ts'
 
@@ -46,6 +48,16 @@ Deno.serve(async (req) => {
     }
     if (order.seller_id !== user.id) {
       return json({ error: 'forbidden' }, 403)
+    }
+
+    const sellerFreeze = await assertAccountNotFrozen(admin, user.id)
+    if (!sellerFreeze.ok) {
+      return json({ error: sellerFreeze.error, message: sellerFreeze.message }, 403)
+    }
+
+    const sellerPolicies = await assertSellerPoliciesAccepted(admin, user.id)
+    if (!sellerPolicies.ok) {
+      return json({ error: sellerPolicies.error, message: sellerPolicies.message }, 403)
     }
     if (order.status !== 'paid') {
       return json({ error: 'order_not_ready_to_ship' }, 400)

@@ -30,6 +30,7 @@ const {
   INSTAGRAM_CAPTION,
   xTweetShort,
 } = require('../utils/socialBrandCopy.cjs')
+const { getCampaign } = require('../utils/adCampaignCopy.cjs')
 
 const LINK_REGISTER = `${SITE}/auth/register`
 const LINK_SELL = `${SITE}/sell`
@@ -290,9 +291,10 @@ async function postX (tweet = X_TWEET) {
 }
 
 const argv = process.argv.slice(2)
-const CAMPAIGN_FLAGS = new Set(['--founders', '--honor'])
+const CAMPAIGN_FLAGS = new Set(['--founders', '--honor', '--security'])
 const founders = argv.includes('--founders')
 const honor = argv.includes('--honor')
+const security = argv.includes('--security')
 const channels = argv.filter((a) => a.startsWith('--') && !CAMPAIGN_FLAGS.has(a))
 const all = channels.length === 0
 
@@ -363,6 +365,18 @@ async function runCampaign ({ label, telegramText, facebookText, xText, instagra
       facebookText: HONOR_FACEBOOK,
       xText: honorXTweet(),
       instagramText: `Honoring veterans & first responders: 6 months Pro free when you sell on The Franks Standard. Code HONOR26\n${LINK_HONOR}\n#ThankYouForYourService #TheFranksStandard`,
+    })
+    return
+  }
+  if (security) {
+    const sec = getCampaign('security')
+    assertCampaignBrandCopy(`${sec.telegram}\n${sec.facebook}\n${sec.x}`)
+    await runCampaign({
+      label: 'security',
+      telegramText: sec.telegram,
+      facebookText: sec.facebook,
+      xText: sec.x,
+      instagramText: sec.instagram,
     })
     return
   }

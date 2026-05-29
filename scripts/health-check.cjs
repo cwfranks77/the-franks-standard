@@ -85,8 +85,17 @@ async function check(name, fn) {
     return { ok: r.status === 200, detail: 'HTTP ' + r.status }
   })
   await check('Edge stripe-webhook alive', async () => {
-    const r = await post(sbUrl + '/functions/v1/stripe-webhook', '{}')
-    return { ok: r.status !== 404, detail: 'HTTP ' + r.status }
+    const r = await get(sbUrl + '/functions/v1/stripe-webhook')
+    if (r.status === 200) {
+      try {
+        const j = JSON.parse(await r.text())
+        return { ok: !!j.ok, detail: j.ok ? 'secrets OK' : 'missing: ' + JSON.stringify(j) }
+      } catch {
+        return { ok: true, detail: 'HTTP 200' }
+      }
+    }
+    const r2 = await post(sbUrl + '/functions/v1/stripe-webhook', '{}')
+    return { ok: r2.status === 400, detail: 'HTTP ' + r2.status + ' (deploy health GET after push)' }
   })
   await check('Supabase dropship_orders', async () => {
     const r = await get(sbUrl + '/rest/v1/dropship_orders?select=id&limit=1', { apikey: sbKey, Authorization: 'Bearer ' + sbKey })

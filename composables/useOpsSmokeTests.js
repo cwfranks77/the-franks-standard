@@ -9,10 +9,17 @@ export function useOpsSmokeTests () {
 
   const criticalPages = [
     { path: '/', label: 'Homepage' },
-    { path: '/sell', label: 'Sell (charities, COA form)' },
+    { path: '/sell', label: 'Sell (policy gate + COA)' },
+    { path: '/sell/import', label: 'Import' },
     { path: '/browse', label: 'Browse listings' },
+    { path: '/collections', label: 'Collections' },
+    { path: '/protection', label: 'Protection overview' },
+    { path: '/marketplace-policy', label: 'Marketplace Policies' },
     { path: '/pay', label: 'Pay and fees' },
+    { path: '/ops/site-qa', label: 'Full site QA runner' },
     { path: '/ops/test-checkout', label: 'Stripe checkout tests' },
+    { path: '/ops/refunds', label: 'Ops forced refunds' },
+    { path: '/ops/authenticity', label: 'Ops authenticity' },
   ]
 
   async function checkCharitiesModule () {
@@ -81,6 +88,8 @@ export function useOpsSmokeTests () {
     { id: 'tax-config', label: 'Tax checkout build flag', run: async () => checkTaxConfig() },
     { id: 'home-html', label: 'Homepage HTML', run: () => checkStaticRoute('/') },
     { id: 'sell-html', label: 'Sell page HTML', run: () => checkStaticRoute('/sell') },
+    { id: 'policy-html', label: 'Marketplace policy HTML', run: () => checkStaticRoute('/marketplace-policy') },
+    { id: 'terms-html', label: 'Terms HTML', run: () => checkStaticRoute('/terms') },
     { id: 'platform-api', label: 'Platform checkout API ($1 smoke)', run: checkPlatformCheckout },
     { id: 'listing-api', label: 'Buy now checkout API', run: checkListingCheckout },
   ]

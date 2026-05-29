@@ -9,10 +9,11 @@
           Use Reels, Shorts, polls, and UGC to drive traffic to proof-first listings.
         </p>
         <div class="hero-actions">
-          <a href="#caption-builder" class="btn btn-primary btn-sm">Caption builder</a>
+          <a href="#security-stack" class="btn btn-primary btn-sm">Security &amp; trust stack</a>
+          <NuxtLink to="/social/community" class="btn btn-primary btn-sm">Reddit &amp; blogs</NuxtLink>
+          <a href="#caption-builder" class="btn btn-outline btn-sm">Caption builder</a>
           <NuxtLink to="/learn" class="btn btn-outline btn-sm">Learn hub</NuxtLink>
-          <NuxtLink to="/collections" class="btn btn-outline btn-sm">Collections</NuxtLink>
-          <NuxtLink to="/partners/creators" class="btn btn-outline btn-sm">Creator affiliates</NuxtLink>
+          <NuxtLink to="/protection" class="btn btn-outline btn-sm">Protection page</NuxtLink>
         </div>
       </div>
     </section>
@@ -43,7 +44,28 @@
       </div>
     </section>
 
-    <section id="caption-builder" class="section section-alt">
+    <section id="security-stack" class="section section-alt">
+      <div class="container">
+        <h2 class="section-title">Security addons — what sets us apart</h2>
+        <p class="text-muted mb-2">
+          Use these in Reels, carousels, Reddit posts, and blog intros. Binding rules:
+          <NuxtLink to="/marketplace-policy">Marketplace Policies</NuxtLink>.
+        </p>
+        <div class="sec-grid">
+          <article v-for="f in SECURITY_DIFFERENTIATORS" :key="f.id" class="sec-card">
+            <span class="sec-icon">{{ f.icon }}</span>
+            <h3>{{ f.title }}</h3>
+            <p>{{ f.socialHook }}</p>
+          </article>
+        </div>
+        <p class="mt-2">
+          <NuxtLink to="/social/community" class="btn btn-primary btn-sm">Reddit &amp; blog playbook →</NuxtLink>
+          <NuxtLink to="/ops/ads" class="btn btn-outline btn-sm">Social ads copy</NuxtLink>
+        </p>
+      </div>
+    </section>
+
+    <section id="caption-builder" class="section">
       <div class="container">
         <h2 class="section-title">Caption &amp; hashtag builder</h2>
         <p class="text-muted mb-2">Platform-specific copy with trending collectibles hashtags — copy and paste into Reels, Shorts, or LinkedIn.</p>
@@ -85,6 +107,20 @@
       </div>
     </section>
 
+    <section class="section section-alt">
+      <div class="container">
+        <h2 class="section-title">Protection ad copy (IG / X / TikTok)</h2>
+        <p class="text-muted mb-2">Balanced buyer + seller messaging — copy from ops or paste into posts.</p>
+        <div class="ads-grid">
+          <article v-for="ad in SOCIAL_ADS_PROTECTION" :key="ad.platform" class="ads-card">
+            <h3>{{ ad.icon }} {{ ad.platform }}</h3>
+            <p class="format text-muted small">{{ ad.format }}</p>
+            <pre class="ad-text">{{ ad.text }}</pre>
+          </article>
+        </div>
+      </div>
+    </section>
+
     <section class="section">
       <div class="container">
         <h2 class="section-title">Hashtag packs</h2>
@@ -116,7 +152,9 @@ import {
   ENGAGEMENT_PLAYBOOK,
   REEL_SCRIPT_IDEAS,
   HASHTAG_PACKS,
+  SECURITY_DIFFERENTIATORS,
 } from '~/utils/socialPromotion.js'
+import { SOCIAL_ADS_PROTECTION } from '~/utils/protectionMessaging.js'
 
 useSeoMeta({
   title: 'Social media promotion — Instagram, TikTok, LinkedIn | The Franks Standard',
@@ -207,4 +245,38 @@ useSeoMeta({
   background: rgba(201, 168, 76, 0.1);
   border-radius: 12px;
 }
+.sec-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+.sec-card {
+  padding: 14px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+.sec-icon { font-size: 1.3rem; }
+.sec-card h3 { font-size: 0.95rem; font-weight: 800; margin: 6px 0; }
+.sec-card p { font-size: 0.85rem; font-weight: 600; color: #374151; margin: 0; line-height: 1.45; }
+.mt-2 { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 10px; }
+.ads-grid { display: grid; gap: 16px; }
+.ads-card {
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+.ads-card h3 { font-size: 1rem; font-weight: 800; margin: 0 0 8px; }
+.ad-text {
+  white-space: pre-wrap;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  margin: 0;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+  color: #111827;
+}
+.platform-card.community { border-style: dashed; }
 </style>

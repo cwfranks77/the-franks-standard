@@ -65,8 +65,13 @@
 
         <label class="terms-check">
           <input type="checkbox" v-model="agreeTerms" required />
-          <span>I agree to the <NuxtLink to="/terms">Terms of Service</NuxtLink> and <NuxtLink to="/privacy">Privacy Policy</NuxtLink></span>
+          <span>I agree to the <NuxtLink to="/terms">Terms of Service</NuxtLink>, <NuxtLink to="/marketplace-policy">Marketplace Policies</NuxtLink>, and <NuxtLink to="/privacy">Privacy Policy</NuxtLink></span>
         </label>
+
+        <p v-if="accountType === 'sell' || accountType === 'both'" class="seller-policy-note text-muted small">
+          Sellers: after sign-in you must complete a <strong>digital signature</strong> (full legal name) for all seller policies on
+          <NuxtLink to="/sell">Sell</NuxtLink> before your first listing, import, or dropship publish.
+        </p>
 
         <button type="submit" class="btn btn-primary mt-2" style="width: 100%;" :disabled="loading">
           {{ loading ? 'Creating Account...' : 'Create Free Account' }}

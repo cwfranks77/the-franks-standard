@@ -4,6 +4,21 @@
 **Automated posts:** `npm run post:social` · **X profile API:** `npm run x:rebrand` · shared strings: `utils/socialBrandCopy.cjs`
 
 ### Platform features to highlight (2026)
+
+**Security & trust (lead with these on social + Reddit):**
+- Floor office COA — serial `FS-YYYY-NNNNNN` tied to one listing · verify at `/verify/coa`
+- Proof before publish — COA or signed guarantee required
+- Listing authenticity scan — blocks off-platform pay apps & “no guarantee” wording
+- Stripe escrow until buyer confirms delivery
+- Report → ops → enforce — proven fakes = ban + COA revoked
+- **Forced refund** when seller at fault refuses (per Marketplace Policies)
+- **Account freeze + platform debt** until repaid
+- **Seller digital signature** on full policy bundle before first listing
+- Video inspect rooms before high-$ escrow
+- Binding rules: `/marketplace-policy` · summary: `/protection`
+- Reddit/blog playbook: `/social/community` · `docs/REDDIT-AND-BLOG-OUTREACH.md`
+
+**Product:**
 - COA or signed guarantee on every listing · permanent ban for counterfeits
 - Stripe escrow · sale fees 4–5% by plan (3% launch)
 - AI Store Builder · **full AI dropship setup** (`/sell/dropship-setup?ai=1`)
@@ -12,6 +27,34 @@
 - FOUNDERS10 (10 spots) · HONOR26 (military/first responders)
 - (877) 837-0527 · Founder Charles Franks · Open Door policy
 - **Profile image:** `public/franks-pavilion.png` (not ZFuel branding)
+
+---
+
+## AD SET 0: "Security stack" (All platforms + Reddit)
+
+### Ad 0A - Trust both sides
+**Headline:** Proof Before Publish — Not “Trust Me Bro”
+**Body:**
+The Franks Standard is built for collectors tired of fakes and fee stacking:
+
+✓ COA serial = one listing office (verify before you pay)
+✓ Stripe escrow until delivery confirmed
+✓ Sellers sign policies before listing — escrow, refunds, freeze rules in writing
+✓ Forced refund + account freeze when seller at fault refuses
+
+Honest sellers get a real floor. Serious buyers get proof.
+
+**CTA:** See protection → thefranksstandard.com/protection
+**Reddit:** Use educational post from `/social/community` — no link in title.
+
+### Ad 0B - Enforcement transparency
+**Headline:** We Published the Enforcement Rules
+**Body:**
+Refunds, freezes, bans — all in our Marketplace Policies. No hidden “contact support” maze.
+
+Seller at fault? Buyer refund path. Seller refuses? Ops may force-refund and freeze the account until platform debt is repaid.
+
+**CTA:** Read policies → thefranksstandard.com/marketplace-policy
 
 ---
 

@@ -9,6 +9,9 @@
           </p>
         </header>
 
+        <div v-if="policyLoading" class="text-muted text-center">Loading seller requirements…</div>
+        <SellerPolicyAgreement v-else-if="needsPolicyAcceptance" @accepted="loadPolicyStatus" />
+        <template v-else>
         <section class="ai-coach" :class="{ open: showAi }">
           <button type="button" class="ai-coach-toggle" @click="showAi = !showAi">
             {{ showAi ? '▼' : '▶' }} Full AI dropship setup (start here)
@@ -250,6 +253,7 @@
         <p class="text-center mt-3">
           <NuxtLink to="/sell?mode=dropship">Skip for now — go to sell page</NuxtLink>
         </p>
+        </template>
       </div>
     </div>
   </div>
@@ -260,6 +264,14 @@ import { providerByKey, useSellerDropship } from '~/composables/useSellerDropshi
 import { buildDropshipAiPlan } from '~/utils/dropshipAiSetup'
 
 definePageMeta({ middleware: 'requires-auth' })
+
+const {
+  needsAcceptance: needsPolicyAcceptance,
+  loading: policyLoading,
+  loadStatus: loadPolicyStatus,
+} = useSellerPolicyAcceptance()
+
+onMounted(() => loadPolicyStatus())
 
 useSeoMeta({
   title: 'Dropship setup — The Franks Standard',

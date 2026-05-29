@@ -8,6 +8,25 @@
         Run <code>npm run x:rebrand</code> for X profile API update — see <code>docs/X-PROFILE-REBRAND.md</code>.
       </p>
 
+      <section class="rebrand-card automation-card">
+        <h2>Bot automation (you set up accounts — bots run ads)</h2>
+        <p class="text-muted small">
+          Organic posts run <strong>Mon/Wed/Fri</strong> via GitHub Actions when secrets are set.
+          Paid Meta creates <strong>PAUSED</strong> campaigns until you enable spend.
+        </p>
+        <ol>
+          <li>Add GitHub secrets — see <code>docs/ADS-AUTOMATION-SETUP.md</code></li>
+          <li>Actions → <strong>Post Franks Social Ads</strong> → campaign <strong>security</strong></li>
+          <li>Actions → <strong>Run ads (organic + optional Meta paid)</strong> — dry-run first</li>
+          <li>Local: <code>npm run post:social:security</code> · <code>npm run ads:meta:dry</code></li>
+          <li>Reddit/Google paid: <code>npm run ads:run</code> exports copy → <code>assets/paid-ads-export/</code></li>
+        </ol>
+        <p class="text-muted small">
+          <NuxtLink to="/social/community">Reddit organic playbook</NuxtLink> ·
+          <NuxtLink to="/ops/marketing">Marketing panel</NuxtLink>
+        </p>
+      </section>
+
       <section class="rebrand-card">
         <h2>X profile checklist</h2>
         <ol>

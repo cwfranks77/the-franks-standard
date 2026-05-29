@@ -4,7 +4,7 @@
       <div class="container site-ribbon-inner">
         <span class="ribbon-txt">COA or signed guarantee on every listing</span>
         <span class="ribbon-dot" aria-hidden="true" />
-        <span class="ribbon-txt">Escrow until buyer confirms — not MBG yet</span>
+        <span class="ribbon-txt">Escrow until buyer confirms delivery</span>
         <span class="ribbon-dot" aria-hidden="true" />
         <span class="ribbon-txt">4–5% seller fees · FOUNDERS10: 3 mo Pro free</span>
       </div>
@@ -35,7 +35,8 @@
             <NuxtLink to="/sell" class="quick-tile quick-tile--gold" @click="closeAllNav">Sell</NuxtLink>
             <a href="tel:+18778370527" class="quick-tile" @click="closeAllNav">Call</a>
           </div>
-          <NavExploreMega @navigate="closeAllNav" />
+          <NavMegaDropdown label="Features" :sections="navFeatures" @navigate="closeAllNav" />
+          <NavMegaDropdown label="Settings" :sections="navSettings" @navigate="closeAllNav" />
           <NuxtLink to="/auth/login" class="quick-tile" @click="closeAllNav">Sign in</NuxtLink>
           <NuxtLink to="/auth/register" class="quick-tile quick-tile--gold" @click="closeAllNav">Join free</NuxtLink>
         </nav>
@@ -100,6 +101,8 @@
           <div class="footer-col">
             <h4>Legal</h4>
             <NuxtLink to="/terms">Terms of Service</NuxtLink>
+            <NuxtLink to="/marketplace-policy">Marketplace Policies</NuxtLink>
+            <NuxtLink to="/protection">Protection overview</NuxtLink>
             <NuxtLink to="/privacy">Privacy Policy</NuxtLink>
             <NuxtLink to="/prohibited-items">Prohibited Items</NuxtLink>
             <NuxtLink to="/seller-agreement">Seller Agreement</NuxtLink>
@@ -184,6 +187,11 @@
 
 <script setup>
 import { normalizeOpsPhrase } from '~/utils/opsPhrase'
+import { NAV_FEATURES_SECTIONS } from '~/utils/navFeaturesMenu.js'
+import { NAV_SETTINGS_SECTIONS } from '~/utils/navSettingsMenu.js'
+
+const navFeatures = NAV_FEATURES_SECTIONS
+const navSettings = NAV_SETTINGS_SECTIONS
 
 const route = useRoute()
 const router = useRouter()
@@ -296,17 +304,19 @@ async function submitOpModal () {
 .site-header {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 200;
   background: linear-gradient(180deg, rgba(10, 5, 24, 0.97) 0%, rgba(18, 10, 40, 0.92) 100%);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(0, 224, 255, 0.12);
   box-shadow: 0 4px 32px rgba(255, 45, 122, 0.08);
+  overflow: visible;
 }
 .header-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: 70px;
+  overflow: visible;
 }
 .header-left { flex: 0 0 auto; }
 .header-brand {
@@ -338,6 +348,7 @@ async function submitOpModal () {
   gap: 18px;
   flex-wrap: wrap;
   justify-content: flex-end;
+  overflow: visible;
 }
 .nav-link {
   color: var(--stone-300);

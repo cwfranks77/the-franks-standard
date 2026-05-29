@@ -6,6 +6,9 @@
         <strong>Move your catalog from eBay or CSV</strong> — titles, prices, and image URLs map in; you review each row, add COA or signed guarantee, then publish. Off-platform contact or payment links in descriptions are blocked automatically.
       </p>
 
+      <div v-if="policyLoading" class="text-muted">Loading seller requirements…</div>
+      <SellerPolicyAgreement v-else-if="needsPolicyAcceptance" @accepted="loadPolicyStatus" />
+      <template v-else>
       <div class="tabs">
         <button type="button" class="tab" :class="{ active: tab === 'csv' }" @click="tab = 'csv'">eBay CSV (best)</button>
         <button type="button" class="tab" :class="{ active: tab === 'ebay' }" @click="tab = 'ebay'">eBay HTML</button>
@@ -144,12 +147,21 @@
         ·
         <NuxtLink to="/dashboard">Dashboard</NuxtLink>
       </p>
+      </template>
     </div>
   </div>
 </template>
 
 <script setup>
 definePageMeta({ middleware: 'requires-auth' })
+
+const {
+  needsAcceptance: needsPolicyAcceptance,
+  loading: policyLoading,
+  loadStatus: loadPolicyStatus,
+} = useSellerPolicyAcceptance()
+
+onMounted(() => loadPolicyStatus())
 
 useSeoMeta({
   title: 'Import inventory — The Franks Standard',

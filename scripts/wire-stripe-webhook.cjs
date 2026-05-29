@@ -13,7 +13,11 @@ if (!SECRET) {
 }
 
 const WEBHOOK_URL = 'https://rochesyrxiyrxhzmkuwk.supabase.co/functions/v1/stripe-webhook'
-const EVENTS = ['checkout.session.completed', 'account.updated']
+const EVENTS = [
+  'checkout.session.completed',
+  'account.updated',
+  'charge.refunded',
+]
 
 const stripe = new Stripe(SECRET)
 
@@ -24,9 +28,18 @@ if (existing) {
   console.log('Webhook already configured:', existing.id)
   console.log('URL:', existing.url)
   console.log('Events:', existing.enabled_events.join(', '))
+  const missing = EVENTS.filter((e) => !existing.enabled_events.includes(e))
+  if (missing.length) {
+    const updated = await stripe.webhookEndpoints.update(existing.id, {
+      enabled_events: [...new Set([...existing.enabled_events, ...EVENTS])],
+    })
+    console.log('Updated events:', updated.enabled_events.join(', '))
+  }
   console.log('')
-  console.log('If orders stay pending after payment, copy signing secret to Supabase:')
-  console.log('  supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_...')
+  console.log('Signing secret: Stripe Dashboard → Webhooks → this endpoint → Reveal')
+  console.log('  Must match Supabase secret STRIPE_WEBHOOK_SECRET (whsec_...)')
+  console.log('  GitHub: Actions → "Push Stripe secrets to Supabase" after updating STRIPE_WEBHOOK_SECRET')
+  console.log('  node scripts/verify-stripe-webhook.cjs')
   process.exit(0)
 }
 

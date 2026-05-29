@@ -1,17 +1,29 @@
 # Social media promotion playbook
 
 Public hub: **https://thefranksstandard.com/social**  
+Reddit & blogs: **https://thefranksstandard.com/social/community**  
 Ops toolkit: **https://thefranksstandard.com/ops/social-promo**
 
-## Focus: 3 platforms only
+## Security messaging (lead with this)
+
+All social posts should mention at least 2 differentiators from `utils/securityDifferentiators.js`:
+
+- COA office serial · verify · escrow · authenticity scan · forced refund · account freeze · seller policy signature · video inspect
+
+Caption builder topic: **Security stack (full)** · Reddit platform in builder.
+
+Full playbook: `docs/REDDIT-AND-BLOG-OUTREACH.md`
+
+## Focus: 3 platforms + community
 
 | Platform | Audience | Best formats |
 |----------|----------|--------------|
 | **Instagram** | Card breaks, shop staff, younger collectors | Reels, Stories (polls), carousels |
 | **TikTok** | Gen Z/Millennial hobbyists, break clips | Shorts &lt;60s, green-screen explainers |
 | **LinkedIn** | Shop owners, dealers, serious resellers | Text posts, PDF carousels, founder story |
+| **Reddit / blogs** | Hobby subs, flippers, founders | Value-first text, AMA, Medium/Substack |
 
-Do **not** add a fourth primary channel until one of these shows signups in `profiles.signup_utm_source`.
+Do **not** add another paid channel until Instagram, TikTok, or Reddit shows signups in `profiles.signup_utm_source`.
 
 ## Content mix
 
