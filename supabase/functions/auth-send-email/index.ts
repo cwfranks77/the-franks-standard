@@ -4,7 +4,7 @@
  * Secrets (Supabase Edge): SENDGRID_API_KEY, SEND_EMAIL_HOOK_SECRET (auto when hook enabled).
  */
 import { Webhook } from 'https://esm.sh/standardwebhooks@1.0.0'
-import { sendViaSendgrid } from '../_shared/sendgridMail.ts'
+import { sendAuthMail } from '../_shared/sendAuthMail.ts'
 
 const HOOK_SECRET = Deno.env.get('SEND_EMAIL_HOOK_SECRET') ?? ''
 const SUPABASE_URL = (Deno.env.get('SUPABASE_URL') ?? '').replace(/\/+$/, '')
@@ -101,7 +101,7 @@ Deno.serve(async (req) => {
   const confirmUrl = buildConfirmUrl(data.email_data)
   const copy = emailCopy(action, confirmUrl)
 
-  const sent = await sendViaSendgrid({
+  const sent = await sendAuthMail({
     to,
     subject: copy.subject,
     text: copy.text,
@@ -109,7 +109,7 @@ Deno.serve(async (req) => {
   })
 
   if (!sent.ok) {
-    console.error('auth-send-email sendgrid error', sent.error)
+    console.error('auth-send-email error', sent.error)
     return new Response(JSON.stringify({ error: sent.error }), { status: 500 })
   }
 

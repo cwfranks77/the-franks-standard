@@ -41,6 +41,8 @@
     "health": "node scripts/health-check.cjs",
     "auth:verify": "node scripts/verify-auth-email.cjs",
     "mail:test": "node scripts/test-mailbox.cjs",
+    "mail:push-supabase": "node scripts/push-mailbox-secrets-to-supabase.cjs",
+    "mail:sync-github": "node scripts/sync-mailbox-secrets-to-github.cjs",
     "mail:fix": "node scripts/apply-email-password.cjs",
     "namecheap:recover": "powershell -ExecutionPolicy Bypass -File scripts/namecheap-recover.ps1",
     "mail:set-now": "powershell -ExecutionPolicy Bypass -File scripts/set-mailbox-now.ps1",
