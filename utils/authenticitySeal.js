@@ -1,7 +1,15 @@
 /**
- * Authenticity seal, seller guarantee, and COA template disclosures.
- * Not legal advice; aligns product copy with Terms and Marketplace Policy.
+ * Authenticity seal and listing disclosures.
+ * COA / Seller Written Guarantee language: utils/franksCoaModel.js
  */
+
+import {
+  COA_FINE_PRINT_FULL,
+  COA_FINE_PRINT_SHORT,
+  SELLER_WRITTEN_GUARANTEE_LABEL,
+} from '~/utils/franksCoaModel.js'
+
+export { COA_FINE_PRINT_FULL, COA_FINE_PRINT_SHORT }
 
 export const SEAL_ASSET = '/franks-authenticity-seal.svg'
 
@@ -16,8 +24,8 @@ export const SEAL_COMPACT_LABEL = 'Seller backs item'
 
 export const SEAL_MEANS = [
   'The seller named on this listing backs the authenticity and description of this item.',
-  'The seller supplied required proof (uploaded COA, signed Seller Authenticity Guarantee, or a Franks Standard COA template serial tied to this listing).',
-  'Franks Standard COA documents are an in-platform template and registry — they record seller representation and listing pairing at issue time.',
+  'Required proof is on file: uploaded third-party COA and/or a Franks Standard COA serial with the seller\'s Written Guarantee digitally attached to that certificate.',
+  'One Franks serial (FS-YYYY-NNNNNN) binds one listing office — photos and description at issue time — not a blank reusable form.',
   'Checkout and disputes run on-platform with escrow and enforcement under our Marketplace Policies if the item is later proven fake or misrepresented.',
 ]
 
@@ -28,19 +36,13 @@ export const SEAL_DOES_NOT_MEAN = [
   'Automated integrity screening reduces risk; it is not laboratory authentication.',
 ]
 
-/** Fine print — full (COA verify page, legal-adjacent UI) */
-export const COA_FINE_PRINT_FULL =
-  'The Franks Standard Certificate of Authenticity (COA) is a platform-issued document template that links this listing\'s photos and description to a serial number at the time of issue. It is not a guarantee, warranty, or expert opinion by The Franks Standard LLC. The seller of this item is solely responsible for representing that the item is authentic and as described. The Platform may enforce Marketplace Policies (including refunds and account action) when an item is proven counterfeit or misrepresented; that enforcement does not mean the Platform vouched for authenticity at sale.'
+/** @deprecated Use SELLER_WRITTEN_GUARANTEE_LABEL — legacy listings only */
+export const SELLER_GUARANTEE_TITLE = SELLER_WRITTEN_GUARANTEE_LABEL
+export const SELLER_GUARANTEE_SUBTITLE = '(on Franks COA — seller backs item, not the Platform)'
 
-/** Fine print — short (listing cards, sell flow, under seal) */
-export const COA_FINE_PRINT_SHORT =
-  'Franks Standard COA = seller-backed template only. Not a Platform guarantee of authenticity. See Terms and Marketplace Policies.'
-
-export const SELLER_GUARANTEE_TITLE = 'Seller Authenticity Guarantee'
-export const SELLER_GUARANTEE_SUBTITLE = '(Franks Standard template — you back this item, not the Platform)'
-
+/** Legacy standalone form copy — retired for new listings */
 export const GUARANTEE_TEMPLATE_INTRO =
-  'This is the Franks Standard in-platform guarantee template. By signing, you — the seller — back this item. The Franks Standard does not guarantee or warrant authenticity; we provide the form, listing rules, and enforcement if policies are violated.'
+  'Legacy standalone guarantee forms are retired for new listings. New collectibles use uploaded COA or Franks COA with Seller Written Guarantee on the certificate.'
 
 export const GUARANTEE_WITH_SEAL_INTRO = GUARANTEE_TEMPLATE_INTRO
 

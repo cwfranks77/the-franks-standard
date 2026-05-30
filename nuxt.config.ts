@@ -57,6 +57,7 @@ export default defineNuxtConfig({
         '/ops/documents',
         '/ops/print-pack',
         '/ops/print-coa',
+        '/verify/coa',
       ],
     },
   },

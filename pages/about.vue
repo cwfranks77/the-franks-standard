@@ -15,7 +15,7 @@
           <article class="about-card">
             <h2>Our standard</h2>
             <p class="text-muted">
-              Collectible listings require seller-provided proof (COA or signed guarantee template).
+              Collectible listings require seller-provided proof (uploaded COA or Franks Standard COA serial).
               We screen listings, hold funds in escrow, and enforce policies when misrepresentation is proven — that is not a Platform warranty of genuineness.
             </p>
           </article>

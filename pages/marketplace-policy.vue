@@ -16,6 +16,10 @@
           litigation, advertising, or investor materials. The Platform operator is the business entity (LLC), not any
           individual founder personally.
         </p>
+        <p class="mt-1">
+          <strong>Attorney review (May 29, 2026 draft):</strong> Print this document and linked Terms / Seller Agreement for counsel.
+          When you receive stamped final copies, send them to the team to replace this version on the site.
+        </p>
       </div>
 
       <h2>1. Document hierarchy</h2>
@@ -30,7 +34,8 @@
       <ul class="policy-ul">
         <li><strong>Platform</strong> — The Franks Standard website, apps, and related services operated by the business entity.</li>
         <li><strong>Escrow (hold-and-release)</strong> — Buyer payment collected via Stripe and held until delivery confirmation or other release conditions in these policies.</li>
-        <li><strong>COA</strong> — Certificate of Authenticity, including Franks-issued serials (format <code>FS-YYYY-NNNNNN</code>) bound to a single listing &quot;floor office.&quot;</li>
+        <li><strong>COA</strong> — Certificate of Authenticity, including third-party uploads and Franks-issued serials (format <code>FS-YYYY-NNNNNN</code>) bound to a single listing &quot;floor office.&quot;</li>
+        <li><strong>Seller Written Guarantee</strong> — The seller&apos;s authenticity attestation text on a Franks Standard COA, digitally attached in the registry to one serial and listing snapshot at issue — a <em>seller</em> representation, not a Platform warranty.</li>
         <li><strong>Floor office</strong> — The unique listing slot to which a Franks COA serial and item fingerprint (photos + description at issue) are locked.</li>
         <li><strong>Seller at fault</strong> — A determination that the seller, not the buyer, caused the loss (see Section 6).</li>
         <li><strong>Platform debt</strong> — Amount the seller owes the Platform after the Platform refunds a buyer when the seller refused or failed to honor a valid refund obligation.</li>
@@ -57,23 +62,38 @@
       </p>
 
       <h2>4. Authenticity, COA, and listing integrity</h2>
-      <h3>4.1 Seller obligations</h3>
+      <h3>4.1 Seller obligations (collectible categories)</h3>
       <p>
-        Each listing must meet authenticity requirements on the Sell flow: upload a COA or complete the in-platform
-        <strong>Seller Authenticity Guarantee</strong> (legally binding <em>seller</em> representation — Franks Standard template only).
-        Listings must accurately describe the item offered, including photos and condition. You may not reuse a COA issued for
-        one listing office on a different item or listing.
+        Each collectible listing must include <strong>one</strong> of the following before publish:
       </p>
-      <h3>4.1a Franks Standard COA template</h3>
+      <ul class="policy-ul">
+        <li><strong>Uploaded third-party COA</strong> — readable image or PDF (PSA, PCGS, issuer, etc.) stored with the listing; or</li>
+        <li><strong>Franks Standard COA</strong> — platform template with a unique serial and the seller&apos;s <strong>Seller Written Guarantee</strong> digitally attached in the registry to that listing&apos;s photos and description at issue.</li>
+      </ul>
       <p>
-        When the Platform issues a COA serial, it is assigned to that listing&apos;s floor office. Photos and description text
-        at issue time are frozen on the certificate. Buyers may verify at <code>/verify/coa/[serial]</code>. A mismatch between
-        verification and the live listing is grounds for review.
+        Listings must accurately describe the item offered. You may not reuse a Franks serial or certificate issued for one
+        floor office on a different item or listing. A retired standalone &quot;sign guarantee without COA&quot; path is not
+        permitted for new listings.
+      </p>
+      <h3>4.1a Franks Standard COA — serial binding and Seller Written Guarantee</h3>
+      <p>
+        When the Platform issues a COA serial, it is assigned to that listing&apos;s floor office only. Photos and description
+        at issue time are frozen into a certificate fingerprint. The seller&apos;s <strong>Seller Written Guarantee</strong>
+        (seller&apos;s legally binding authenticity statement) is stored on the certificate record together with the seller&apos;s
+        legal name from policy acceptance and listing metadata. Buyers may verify at <code>/verify/coa/[serial]</code>. A mismatch
+        between verification and the live listing is grounds for review.
       </p>
       <p class="text-muted small">
-        <strong>Disclosure:</strong> A Franks Standard COA is a platform document template — not a guarantee, warranty, or expert
-        opinion by the Platform. The <strong>seller</strong> backs authenticity; the Platform may enforce these policies when an
-        item is proven counterfeit or misrepresented, but enforcement does not mean the Platform vouched for genuineness at sale.
+        <strong>Disclosure:</strong> The words &quot;guarantee&quot; on a Franks COA refer to the <strong>seller&apos;s</strong>
+        written representation on that certificate — not a guarantee, warranty, or expert opinion by The Franks Standard LLC.
+        The Platform provides the template, serial registry, verification tools, and policy enforcement. Enforcement when an item
+        is proven counterfeit or misrepresented does not mean the Platform vouched for genuineness at sale.
+      </p>
+      <h3>4.1b Uploaded third-party COA</h3>
+      <p>
+        When you upload a third-party COA, you represent that it matches the item in your listing photos. The Platform does not
+        guarantee the accuracy of third-party grading or issuer documents. Graded claims without a matching upload may be flagged
+        for review.
       </p>
       <h3>4.2 Automated integrity screening</h3>
       <p>

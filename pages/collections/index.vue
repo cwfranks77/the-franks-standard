@@ -59,7 +59,7 @@
       <div class="container trust-band">
         <h2>Exclusivity + secure transactions</h2>
         <ul>
-          <li><strong>Proof required</strong> — seller COA or signed guarantee on collectible listings in these floors</li>
+          <li><strong>Proof required</strong> — uploaded COA or Franks COA on collectible listings in these floors</li>
           <li><strong>Escrow checkout</strong> — Stripe; seller paid after buyer confirms delivery</li>
           <li><strong>Lower fees</strong> — {{ txRange }} sale fees by plan, not ~{{ competitor }} stacked on big marketplaces</li>
           <li><strong>Video inspect</strong> — high-value niches can use live inspection before payment</li>

@@ -20,7 +20,7 @@ export const SECURITY_DIFFERENTIATORS = [
     id: 'proof-gate',
     icon: '📋',
     title: 'Proof before publish',
-    short: 'COA upload or in-platform signed guarantee required — listings cannot go live without it.',
+    short: 'Uploaded COA or Franks COA serial required on collectibles — listings cannot go live without proof.',
     link: '/how-it-works',
     socialHook: 'We blocked “DM me on Venmo” — escrow stays on-platform.',
   },

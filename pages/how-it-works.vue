@@ -44,8 +44,8 @@
 <script setup>
 const steps = [
   { title: 'Create Your Account', desc: 'Sign up for free in 30 seconds. Choose whether you want to buy, sell, or both. No listing fees to get started.' },
-  { title: 'List With Authenticity Proof', desc: 'When you list an item, you must either upload a COA or sign the Seller Authenticity Guarantee — you back the item; Franks Standard provides the template and marketplace rules, not a Platform guarantee of genuineness.' },
-  { title: 'Buyers Shop With Confidence', desc: 'Listings show what proof the seller provided (COA type, guarantee, or general merchandise standards). The Platform facilitates the sale and enforces policies — it does not warrant that any item is authentic.' },
+  { title: 'List With Authenticity Proof', desc: 'Collectibles need an uploaded third-party COA or a Franks COA with your Seller Written Guarantee on one serial (FS-YYYY-NNNNNN) — digitally attached to that listing\'s photos at issue. You back the item; we provide template, registry, and rules — not a Platform guarantee of genuineness.' },
+  { title: 'Buyers Shop With Confidence', desc: 'Listings show what proof the seller provided (uploaded COA, Franks serial, or general merchandise standards). The Platform facilitates the sale and enforces policies — it does not warrant that any item is authentic.' },
   { title: 'Secure Escrow Payments', desc: 'When a buyer purchases, their payment is held in secure escrow via Stripe. The money is released to the seller only after the buyer confirms the item arrived as described.' },
   { title: 'Zero Tolerance for Proven Fakes', desc: 'Proven counterfeits: listing removed, buyer refunded, seller account frozen or banned per our Marketplace Policies. COA revoked when applicable. See /marketplace-policy for the full enforcement list.' },
 ]
@@ -63,9 +63,9 @@ const faqs = reactive([
   },
   { q: 'Is it free to sign up?', a: 'Yes, creating an account is completely free for buyers and sellers.', open: false },
   { q: 'What fees does The Franks Standard charge?', a: 'Sellers pay a sale fee when an item sells: 5% on Starter, 4.5% on Pro ($14.99/mo), 4% on Store ($32.99/mo). New sellers get 3% for the first 90 days. Buyers pay no platform fee on top of the list price, but applicable sales tax is added at Stripe checkout from the buyer billing address (the total can be higher than the listed price).', open: false },
-  { q: 'What is a Franks Standard COA?', a: 'A platform-issued serial (FS-YYYY-NNNNNN) tied to your listing photos and description at publish, stored in our coa_certificates registry. You — the seller — back the item; it is not a Platform warranty that the item is genuine. Buyers can verify at /verify/coa.', open: false },
+  { q: 'What is a Franks Standard COA?', a: 'A platform certificate with a unique serial (FS-YYYY-NNNNNN) and your Seller Written Guarantee digitally attached in our registry — bound to one listing\'s photos and description at issue. You make the authenticity representation; The Franks Standard provides the template and verification — not a warranty that the item is genuine. Verify at /verify/coa.', open: false },
   { q: 'Where are refund and account-freeze rules written?', a: 'In our Marketplace Policies & Enforcement at /marketplace-policy — incorporated into Terms and the Seller Agreement. Marketing pages summarize; policies govern.', open: false },
-  { q: 'What if I don\'t have a third-party COA?', a: 'Use the Franks Standard COA template when you list a collectible. We issue a serial at publish and record it with your listing. You still back authenticity; there is no signature-only bypass.', open: false },
+  { q: 'What if I don\'t have a third-party COA?', a: 'Choose Franks COA + Seller Written Guarantee on the sell form. We issue one serial per listing and attach your guarantee to that certificate in the registry — not a separate blank signature form.', open: false },
   { q: 'Can I sell firearms?', a: 'We do not allow firearms or items that require ATF/FBI reporting. Accessories like optics, parts, triggers (non-NFA items), and gear are welcome.', open: false },
   { q: 'What categories can I sell in?', a: 'Sports cards, memorabilia, musical instruments, firearms accessories, coins, art, watches, jewelry, sneakers, vintage electronics, and more. See our full category list on the Browse page.', open: false },
   { q: 'How do I get paid?', a: 'Sellers connect their bank account via Stripe. When a buyer confirms receipt, your payment is released automatically.', open: false },

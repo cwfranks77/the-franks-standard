@@ -11,10 +11,10 @@ export const PROTECTION_HEADLINE = 'Trust both sides — not trust no one'
 
 /** Seller-facing rule — every collectible is recorded on-platform (no signature-only bypass). */
 export const COLLECTIBLE_PROOF_REGISTRY =
-  'Every collectible listed on The Franks Standard must have proof on file: either a third-party COA upload (PSA, PCGS, issuer, etc.) or a Franks Standard COA serial (FS-YYYY-NNNNNN) issued at publish and stored in our registry. There is no signature-only or written-guarantee bypass — each item is tied to a listing, photos, and verify at /verify/coa.'
+  'Every collectible on our floor has proof on file: a third-party COA upload (PSA, PCGS, issuer, etc.) or a Franks Standard COA with your Seller Written Guarantee digitally attached to one serial (FS-YYYY-NNNNNN). One serial binds one listing\'s photos and description at issue — verify at /verify/coa. The Franks Standard provides the template and registry; the seller makes the authenticity representation — we do not guarantee items are genuine.'
 
 export const BUYER_PILLARS = [
-  { icon: '🏢', title: 'Floor office COA', desc: 'Each Franks COA is tied to one listing slot (FS-YYYY-NNNNNN) and the photos/description at issue — not a blank form.' },
+  { icon: '🏢', title: 'Seller Written Guarantee on COA', desc: 'Each Franks serial (FS-YYYY-NNNNNN) carries the seller\'s written guarantee on our certificate — digitally attached to one listing and item snapshot at issue.' },
   { icon: '🔍', title: 'Verify before you buy', desc: 'Scan serial at /verify/coa — registry must match the listing you are viewing.' },
   { icon: '🔒', title: 'Escrow checkout', desc: 'Payment held until you confirm delivery — room to open a dispute if the item is wrong.' },
   { icon: '🚫', title: 'Zero tolerance for proven fakes', desc: 'Confirmed counterfeits: seller ban + listing removed + COA revoked.' },

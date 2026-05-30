@@ -225,7 +225,7 @@
             <li><strong>Fulfillment:</strong> {{ form.fulfillmentMode === 'integrated' ? 'Auto-dispatch (when keys set)' : 'Manual — you place supplier orders' }}</li>
             <li><strong>Next:</strong> Create a dropship listing with supplier name, contact, and SKU per product.</li>
           </ul>
-          <p class="text-muted">Remember: seller proof (COA or signed guarantee) is required when the item category requires it — you back the item, not the Platform.</p>
+          <p class="text-muted">Remember: seller proof (uploaded COA or Franks COA) is required when the item category requires it — you back the item, not the Platform.</p>
         </section>
 
         <div class="setup-actions">

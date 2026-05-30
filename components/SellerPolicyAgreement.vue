@@ -5,6 +5,7 @@
     <p class="version text-muted small">
       Policy version: <strong>{{ SELLER_POLICY_VERSION }}</strong> (effective {{ SELLER_POLICY_EFFECTIVE_LABEL }})
     </p>
+    <p class="attorney-note text-muted small" role="note">{{ SELLER_POLICY_ATTORNEY_NOTICE }}</p>
 
     <ul class="doc-list">
       <li v-for="doc in SELLER_POLICY_DOCUMENTS" :key="doc.id">
@@ -63,6 +64,7 @@ import {
   SELLER_POLICY_VERSION,
   SELLER_POLICY_EFFECTIVE_LABEL,
   SELLER_DIGITAL_AGREEMENT_INTRO,
+  SELLER_POLICY_ATTORNEY_NOTICE,
   SELLER_DIGITAL_AGREEMENT_CLOSING,
 } from '~/utils/sellerPolicyBundle.js'
 

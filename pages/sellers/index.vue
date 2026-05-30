@@ -42,7 +42,7 @@
       <div class="card callout">
         <h2>What we need from you</h2>
         <ul>
-          <li>Seller proof (COA or signed guarantee) on collectible listings as required, per our
+          <li>Seller proof (uploaded COA or Franks COA) on collectible listings as required, per our
             <NuxtLink to="/how-it-works">How it works</NuxtLink> and
             <NuxtLink to="/seller-agreement">Seller agreement</NuxtLink>.
           </li>

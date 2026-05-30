@@ -1,6 +1,6 @@
 /**
  * COA proof types for new collectible listings.
- * Written "seller guarantee" removed — use third-party COA upload or Franks issued serial (registry).
+ * Seller Written Guarantee lives ON the Franks COA (one serial per listing) — not a standalone signature-only form.
  */
 
 export const COA_PROOF_TYPES = Object.freeze(['upload', 'franks_issued'])

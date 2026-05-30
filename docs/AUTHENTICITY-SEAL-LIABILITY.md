@@ -1,34 +1,33 @@
-# Seller-backed authenticity, COA template, and liability (internal)
+# Seller-backed COA, Seller Written Guarantee, and liability (internal)
 
-**Not legal advice.** Have a licensed attorney review before marketing nationally.
+**Not legal advice.** Have a licensed attorney review before marketing nationally. See `docs/ATTORNEY-REVIEW-PACKAGE.md`.
 
 ## Core rule
 
 | Who backs the item? | **The seller** |
-| Who guarantees genuineness? | **Nobody at the Platform** — templates + enforcement only |
-| What is a Franks COA? | **Platform template + serial registry** tied to listing photos at issue time |
-| What is the seal? | Seller proof on file + screening passed — **not** Platform certification |
+| Who guarantees genuineness to buyers? | **The seller** — via Seller Written Guarantee on Franks COA or third-party COA |
+| What does the Platform guarantee? | **Nothing about authenticity** — template, serial registry, verification, enforcement only |
+| What is a Franks COA? | Certificate template + **one serial** + registry record + **Seller Written Guarantee digitally attached** to one listing snapshot |
 
-## Copy to use everywhere
+## Safe use of the word "guarantee"
 
-- "The **seller** backs this item"
-- "Franks Standard **COA template**" (not "Franks certified genuine")
-- "**Seller Authenticity Guarantee**" (Franks Standard template)
-- Fine print: `COA_FINE_PRINT_FULL` / `COA_FINE_PRINT_SHORT` in `utils/authenticitySeal.js`
-- Component: `components/CoaSellerDisclosure.vue`
+| OK | Avoid |
+|----|--------|
+| "Seller Written Guarantee on the Franks COA" | "Franks guaranteed authentic" |
+| "Your guarantee — our template and serial" | "We guarantee this item is real" |
+| "Digitally attached to serial FS-YYYY-NNNNNN" | "Guaranteed by The Franks Standard" |
 
-## What the Platform still does (without vouching)
+## Copy source of truth
 
-- Escrow, dispute policy, forced refunds, bans, COA/listing pairing checks
-- **Listing integrity screening** — not authentication
+- `utils/franksCoaModel.js` — how COA + Seller Written Guarantee works
+- `utils/authenticitySeal.js` — seal + disclosures (re-exports fine print)
+- `components/FranksCoaExplainer.vue` — sell / verify / COA picker UI
+- `components/CoaSellerDisclosure.vue` — short/full fine print
 
-## Does analysis increase liability?
+## Retired for new listings
 
-Yes if marketed as Platform authentication. No if framed as seller representation + screening + policy enforcement.
+Standalone "sign guarantee without Franks serial" — no item binding. Legacy DB rows may still display.
 
-## Assets
+## Attorney handoff
 
-- Seal SVG: `public/franks-authenticity-seal.svg` — "SELLER BACKS THIS ITEM"
-- `components/FranksAuthenticitySeal.vue`
-- `utils/authenticitySeal.js`
-- `/protection#authenticity-seal`, Terms §4, Marketplace Policy §4.1a
+Policies dated **May 29, 2026** (`SELLER_POLICY_VERSION` **2026-05-29**). User will print for counsel; replace with stamped finals when received.

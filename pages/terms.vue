@@ -7,6 +7,9 @@
         current version. See also our
         <NuxtLink to="/marketplace-policy">Marketplace Policies &amp; Enforcement</NuxtLink> (platform operating standards).
       </p>
+      <p class="policy-draft-note text-muted small" role="note">
+        <strong>Attorney review:</strong> This draft is prepared for outside counsel. When you receive stamped final policy copies, send them to the team to replace this version on the site.
+      </p>
 
       <h2>1. The service</h2>
       <p>
@@ -21,7 +24,7 @@
       <h2>2. Marketplace facilitator</h2>
       <p>
         The Platform is a <em>marketplace facilitator</em>, not the seller of third-party listed items and not a guarantor of item authenticity.
-        Seller COA documents and guarantee forms are templates recording seller representations. We are not a bank,
+        Seller COA documents (including the Franks Standard COA with Seller Written Guarantee) record seller representations in our registry. We are not a bank,
         money transmitter, or escrow agent except as described in our payment flows and
         <NuxtLink to="/marketplace-policy">Marketplace Policies</NuxtLink>. Individual sales are contracts between buyer and
         seller; Stripe and your financial institutions have separate terms at checkout. Features roll out in phases — see
@@ -42,11 +45,16 @@
 
       <h2>4. Listings and authenticity</h2>
       <p>
-        Sellers must comply with authenticity requirements (COA or Seller Authenticity Guarantee) for collectible categories,
-        accurate descriptions, and <NuxtLink to="/prohibited-items">Prohibited Items</NuxtLink>.
-        <strong>The seller backs the item</strong> — not the Platform. Franks Standard COA documents and guarantee forms are
-        in-platform <strong>templates</strong> that record seller representation and listing pairing; they are
-        <strong>not</strong> a warranty or guarantee by The Franks Standard LLC that an item is genuine.
+        Sellers must comply with authenticity requirements for collectible categories: either an uploaded third-party COA
+        or a <strong>Franks Standard COA</strong> with the seller&apos;s <strong>Seller Written Guarantee</strong> digitally
+        attached to a unique serial (<code>FS-YYYY-NNNNNN</code>) bound to that listing&apos;s photos and description at issue.
+        Accurate descriptions and <NuxtLink to="/prohibited-items">Prohibited Items</NuxtLink> rules also apply.
+        <strong>The seller backs the item</strong> — not the Platform.
+      </p>
+      <p>
+        The <strong>Seller Written Guarantee</strong> is the seller&apos;s own attestation on the Franks COA certificate and
+        in our registry. It is <strong>not</strong> a guarantee, warranty, or certification by The Franks Standard LLC.
+        A standalone signature-only guarantee form without a Franks serial is <strong>not</strong> accepted for new listings.
       </p>
       <p>
         The <NuxtLink to="/protection#authenticity-seal">seller-backed listing seal</NuxtLink> means required seller proof
@@ -115,5 +123,13 @@ useSeoMeta({
 .legal h1 { font-size: 2rem; margin-bottom: 8px; }
 .legal h2 { font-size: 1.15rem; color: var(--gold); margin: 28px 0 10px; }
 .legal p { color: #374151; line-height: 1.7; font-size: 0.95rem; }
-.updated { color: #4b5563; font-size: 0.86rem; margin-bottom: 24px; }
+.updated { color: #4b5563; font-size: 0.86rem; margin-bottom: 12px; }
+.policy-draft-note {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
 </style>

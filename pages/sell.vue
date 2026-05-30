@@ -4,7 +4,7 @@
       <div class="sell-wrapper">
         <div class="sell-header text-center">
           <h1>Sell on The Franks Standard</h1>
-          <p class="text-muted">List in minutes. COA or signed guarantee is required only for collectibles, antiques, and similar categories — general merchandise uses accurate photos and description.</p>
+          <p class="text-muted">List in minutes. Collectible categories need an uploaded COA or a Franks Standard COA serial — general merchandise uses accurate photos and description.</p>
         </div>
 
         <div v-if="policyLoading" class="text-muted" style="padding: 24px 0;">Loading seller requirements…</div>
@@ -44,7 +44,7 @@
 
         <div v-else class="sell-notice" role="status">
           <p>
-            <strong>Sign in required.</strong> Collectible categories need COA or guarantee; general merchandise does not. Stores and high volume:
+            <strong>Sign in required.</strong> Collectible categories need uploaded COA or Franks COA; general merchandise does not. Stores and high volume:
             <NuxtLink to="/sellers">Apply as a store</NuxtLink>
             or
             <a :href="applicationMailto">info@thefranksstandard.com</a>.
@@ -142,7 +142,7 @@
                   <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
                 </select>
                 <p v-if="!form.category" class="text-muted small mt-1">Pick a category first. The COA step appears only for collectibles and antiques.</p>
-                <p v-else-if="requiresCoa" class="text-muted small mt-1 coa-cat-hint">This category requires proof — you will add COA or guarantee after photos.</p>
+                <p v-else-if="requiresCoa" class="text-muted small mt-1 coa-cat-hint">This category requires proof — upload a COA or use Franks COA after photos.</p>
                 <p v-else class="text-muted small mt-1">General merchandise — no COA section for this category.</p>
               </div>
               <div class="form-group">
@@ -197,7 +197,7 @@
                   <input class="input" v-model="collectionMeta.collectionLabel" placeholder="e.g. Floor Drop #001" />
                 </div>
               </div>
-              <p class="text-muted small">Featured on <NuxtLink to="/collections">/collections</NuxtLink> and limited-edition browse. Collectible categories need COA or guarantee; general merchandise needs accurate photos and description.</p>
+              <p class="text-muted small">Featured on <NuxtLink to="/collections">/collections</NuxtLink> and limited-edition browse. Collectible categories need uploaded COA or Franks COA; general merchandise needs accurate photos and description.</p>
             </div>
 
             <div class="form-group">
@@ -450,7 +450,7 @@
           <div v-if="requiresCoa" id="coa-section" class="form-section coa-section">
             <h2>Certificate of Authenticity</h2>
             <p v-if="coaRequiredByKeywords" class="coa-keyword-note" role="alert">
-              Your wording looks like a collectible or antique. Even under <strong>{{ form.category }}</strong>, you need COA or guarantee — or change category / wording if this is general retail.
+              Your wording looks like a collectible or antique. Even under <strong>{{ form.category }}</strong>, you need uploaded COA or Franks COA — or change category / wording if this is general retail.
             </p>
             <p class="text-muted mb-2">Required for this listing. Choose one option:</p>
 
@@ -463,27 +463,28 @@
                 </div>
               </label>
 
-              <label class="coa-option" :class="{ active: form.coaType === 'guarantee' }">
-                <input type="radio" v-model="form.coaType" value="guarantee" name="coaType" />
-                <div class="coa-option-content">
-                  <h4>Sign Seller Authenticity Guarantee</h4>
-                  <p>You — the seller — back this item. Franks Standard provides the template only; we do not guarantee authenticity.</p>
-                </div>
-              </label>
-
               <label class="coa-option" :class="{ active: form.coaType === 'franks_issued' }">
                 <input type="radio" v-model="form.coaType" value="franks_issued" name="coaType" />
                 <div class="coa-option-content">
-                  <h4>Franks Standard COA template</h4>
-                  <p>One listing = one floor office. Serial (<code>FS-{{ currentYear }}-000001</code>) links photos and description at issue time. <strong>You back the item</strong> — the COA is our template, not a Platform guarantee of genuineness.</p>
+                  <h4>Franks Standard COA + Seller Written Guarantee</h4>
+                  <p>{{ FRANKS_COA_OPTION_LEAD }}</p>
                 </div>
               </label>
             </div>
 
-            <p v-if="form.coaType === 'franks_issued'" class="text-muted small">
-              Upload photos first. On publish we issue your serial and link it to this listing only.
-            </p>
-            <CoaSellerDisclosure v-if="form.coaType === 'franks_issued'" variant="full" />
+            <template v-if="form.coaType === 'franks_issued'">
+              <p class="text-muted small">
+                Upload photos first. On publish we issue serial <code>FS-{{ currentYear }}-000001</code> (your floor office number) and attach your Seller Written Guarantee to that certificate in our registry.
+              </p>
+              <FranksCoaExplainer :show-roles="false" compact />
+              <label class="coa-franks-ack">
+                <input v-model="coaFranksAck" type="checkbox" />
+                <span>
+                  I understand my <strong>Seller Written Guarantee</strong> will be digitally attached to one Franks COA serial for this listing only, that I — not The Franks Standard — back authenticity, and that the Platform does not guarantee the item is genuine.
+                </span>
+              </label>
+              <CoaSellerDisclosure variant="full" />
+            </template>
 
             <!-- Upload COA -->
             <div v-if="form.coaType === 'upload'" class="mt-3 coa-upload-block">
@@ -504,30 +505,12 @@
               </label>
             </div>
 
-            <!-- Sign Guarantee -->
-            <div v-if="form.coaType === 'guarantee'" class="guarantee-box mt-3">
-              <div class="guarantee-text">
-                <p><strong>{{ SELLER_GUARANTEE_TITLE }}</strong> <span class="text-muted small">{{ SELLER_GUARANTEE_SUBTITLE }}</span></p>
-                <p class="text-muted small">{{ guaranteeSealIntro }}</p>
-                <p>I, <strong>{{ form.sellerName || '[Your Name]' }}</strong>, as the seller, back and certify that the item listed above is authentic, genuine, and accurately described based on the information and proof I provided. I understand that The Franks Standard LLC does <strong>not</strong> guarantee or warrant the authenticity of this item — it provides this guarantee template, listing integrity screening (not laboratory authentication), and Marketplace Policy enforcement if this item is proven counterfeit or misrepresented. If that happens, my account may be permanently banned and the buyer may receive a refund from escrow or enforcement funds.</p>
-                <p>I am staking my name and reputation on this listing — not the Platform&apos;s.</p>
-                <CoaSellerDisclosure variant="full" />
-              </div>
-              <div class="form-group mt-2">
-                <label class="label">Your Full Legal Name</label>
-                <input class="input" v-model="form.sellerName" placeholder="Type your full name to sign" required />
-              </div>
-              <label class="guarantee-check">
-                <input type="checkbox" v-model="form.guaranteeSigned" required />
-                <span>I have read and agree to the Seller Authenticity Guarantee above. I understand I — not The Franks Standard — back this item, and this signature is legally binding.</span>
-              </label>
-            </div>
           </div>
 
           <div v-else-if="form.category" class="form-section general-merch-note">
             <h2>Listing standards</h2>
             <p class="text-muted mb-2">
-              <strong>{{ form.category }}</strong> — no COA or signed guarantee required.
+              <strong>{{ form.category }}</strong> — no COA required.
               Use clear photos and an honest description. Counterfeit or replica language is still blocked.
             </p>
           </div>
@@ -549,13 +532,8 @@ import {
   listingRequiresCoa,
   textSuggestsCollectible,
 } from '~/utils/marketplaceCategories'
-import {
-  GUARANTEE_WITH_SEAL_INTRO,
-  SELLER_GUARANTEE_SUBTITLE,
-  SELLER_GUARANTEE_TITLE,
-} from '~/utils/authenticitySeal.js'
-
-const guaranteeSealIntro = GUARANTEE_WITH_SEAL_INTRO
+import { isAllowedCoaProofType } from '~/utils/coaProofTypes.js'
+import { FRANKS_COA_OPTION_LEAD } from '~/utils/franksCoaModel.js'
 import { CHARITY_OPTIONS, charityByKey } from '~/utils/charities.js'
 import { calcCharitySplit, CHARITY_PERCENT_PRESETS } from '~/utils/charitySplit.js'
 import { auctionEndsAtFromDays } from '~/utils/auctionHelpers.js'
@@ -694,6 +672,7 @@ const photoFiles = ref([])
 const coaFile = ref(null)
 const coaFileName = ref('')
 const coaCompareAck = ref(false)
+const coaFranksAck = ref(false)
 
 const aiDescTone = ref('professional')
 const aiDescNotes = ref('')
@@ -742,7 +721,7 @@ const showListingPathChooser = computed(() => {
   return true
 })
 
-const allowedCoaTypes = new Set(['upload', 'guarantee', 'franks_issued'])
+const allowedCoaTypes = new Set(['upload', 'franks_issued'])
 
 function applyListingKindFromQuery () {
   const kind = String(route.query.kind || '').toLowerCase()
@@ -805,10 +784,10 @@ function buildListingDescription (input) {
   const conditionLabel = CONDITION[condition] || condition || 'As described'
   const needsProof = listingRequiresCoa(category, title, notes)
   let auth = needsProof
-    ? 'Authenticity: COA uploaded or signed Franks Standard guarantee required — add proof in the COA section below.'
+    ? 'Authenticity: Upload a COA or use Franks Standard COA — add proof in the COA section below.'
     : 'Condition: Item is described accurately with clear photos. General merchandise — no COA required for this category.'
   if (coaType === 'upload') auth = 'Authenticity: Certificate of Authenticity (COA) on file with this listing.'
-  if (coaType === 'guarantee') auth = 'Authenticity: Seller backs this item via signed Seller Authenticity Guarantee (Franks Standard template).'
+  if (coaType === 'franks_issued') auth = 'Authenticity: Franks COA serial with Seller Written Guarantee digitally attached to this listing (seller-backed; Platform template and registry).'
   if (coaType === 'none' || (!needsProof && !coaType)) auth = 'Condition: Accurate description and photos; sold as described on The Franks Standard.'
   let ship = 'Shipping: Ships within 2 business days after escrow — insured and tracked when applicable.'
   if (listingMode === 'dropship') {
@@ -986,11 +965,11 @@ async function submitListing() {
   const needsCoa = listingRequiresCoa(form.category, form.title, form.description)
   if (needsCoa) {
     if (!form.coaType) {
-      alert('This listing requires a COA upload, Franks COA template, or signed Seller Authenticity Guarantee. Scroll to the Certificate of Authenticity section.')
+      alert('This listing requires an uploaded COA or Franks Standard COA. Scroll to the Certificate of Authenticity section.')
       return
     }
-    if (form.coaType === 'guarantee' && !form.guaranteeSigned) {
-      alert('You must sign the Seller Authenticity Guarantee to list this item.')
+    if (!isAllowedCoaProofType(form.coaType)) {
+      alert('Choose uploaded COA or Franks Standard COA — written guarantee is no longer accepted for new listings.')
       return
     }
     if (form.coaType === 'upload') {
@@ -1006,6 +985,10 @@ async function submitListing() {
         alert('Confirm that your COA close-up matches the item in your listing photos.')
         return
       }
+    }
+    if (form.coaType === 'franks_issued' && !coaFranksAck.value) {
+      alert('Confirm that you understand the Seller Written Guarantee on your Franks COA serial before publishing.')
+      return
     }
   }
   if (photoFiles.value.length < 1) {
@@ -1059,7 +1042,7 @@ async function submitListing() {
     price: Number(form.price),
     coa_type: effectiveCoaType,
     coa_storage_path: effectiveCoaType === 'upload' && coaFile.value ? 'pending' : null,
-    guarantee_signed: effectiveCoaType === 'guarantee' ? form.guaranteeSigned : false,
+    guarantee_signed: false,
   })
   if (!integrityPreview.ok) {
     const lines = integrityPreview.flags.map((f) => `• ${f.label}`).join('\n')
@@ -1101,8 +1084,8 @@ async function submitListing() {
       price: Number(form.price),
       condition: form.condition,
       coa_type: effectiveCoaType,
-      guarantee_signed: effectiveCoaType === 'guarantee' ? !!form.guaranteeSigned : false,
-      seller_legal_name: effectiveCoaType === 'guarantee' ? form.sellerName.trim() : null,
+      guarantee_signed: false,
+      seller_legal_name: null,
       coa_storage_path: null,
       image_paths: [],
       status: 'published',
@@ -1534,6 +1517,17 @@ async function submitListing() {
   color: var(--stone-200);
 }
 .coa-compare-check input { margin-top: 4px; accent-color: var(--gold); }
+.coa-franks-ack {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 12px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: #374151;
+}
+.coa-franks-ack input { margin-top: 4px; accent-color: var(--gold); }
 .coa-warn { color: #fcd34d; }
 .coa-section { border-color: var(--gold); border-width: 2px; }
 

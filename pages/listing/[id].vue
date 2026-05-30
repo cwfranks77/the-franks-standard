@@ -68,18 +68,18 @@
             <span class="coa-badge">{{ coaBadgeLabel }}</span>
             <p class="text-muted" style="font-size: 0.8rem; margin-top: 6px;">
               <template v-if="listing.coaType === 'franks_issued'">
-                Franks Standard COA template (serial
+                Franks COA with Seller Written Guarantee (serial
                 <template v-if="listing.coaSerial">
                   <NuxtLink :to="`/verify/coa/${listing.coaSerial}`">{{ listing.coaSerial }}</NuxtLink>
                 </template>
                 <template v-else>pending</template>
-                ) — <strong>the seller backs this item</strong>, not the Platform.
+                ) — digitally attached to this listing. <strong>The seller backs this item</strong>, not the Platform.
               </template>
               <template v-else-if="listing.coaType === 'upload'">
                 Seller-uploaded COA on file. The seller backs this item; the Platform does not guarantee third-party COA content.
               </template>
               <template v-else>
-                <strong>{{ listing.guaranteeName }}</strong> signed the Seller Authenticity Guarantee — the seller backs this item, not the Platform.
+                <strong>{{ listing.guaranteeName }}</strong> — legacy standalone guarantee (retired for new listings). The seller backs this item, not the Platform.
               </template>
             </p>
             <CoaSellerDisclosure v-if="listing.coaType === 'franks_issued' || listing.coaType === 'guarantee'" />

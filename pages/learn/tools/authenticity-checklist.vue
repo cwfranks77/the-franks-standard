@@ -6,13 +6,13 @@
         <button type="button" class="btn btn-primary btn-sm" @click="printPage">Print / Save as PDF</button>
       </div>
       <h1>Authenticity &amp; listing checklist</h1>
-      <p class="text-muted">Staff checklist — collectible SKUs need seller COA or signed guarantee; general merchandise uses listing standards.</p>
+      <p class="text-muted">Staff checklist — collectible SKUs need uploaded COA or Franks COA; general merchandise uses listing standards.</p>
 
       <section class="check-block">
         <h2>Before you photograph</h2>
         <ul class="check-list">
           <li><label><input type="checkbox" /> Cert number matches item (PSA, PCGS, etc.)</label></li>
-          <li><label><input type="checkbox" /> COA on file or guarantee path selected</label></li>
+          <li><label><input type="checkbox" /> COA on file (upload or Franks serial)</label></li>
           <li><label><input type="checkbox" /> No off-platform contact in title or description</label></li>
         </ul>
       </section>

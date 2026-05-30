@@ -7,6 +7,9 @@
         <NuxtLink to="/terms">Terms of Service</NuxtLink> and
         <NuxtLink to="/marketplace-policy">Marketplace Policies &amp; Enforcement</NuxtLink>.
       </p>
+      <p class="policy-draft-note text-muted small" role="note">
+        <strong>Attorney review:</strong> Draft for outside counsel — replace with stamped finals when received.
+      </p>
 
       <h2>1. Mandatory digital policy acceptance</h2>
       <p>
@@ -23,10 +26,14 @@
 
       <h2>2. Authenticity and COA</h2>
       <p>
-        You may only list items you have the right to sell. Each listing must include a Certificate of Authenticity (COA) or the
-        in-platform Seller Authenticity Guarantee (Franks Standard template — you back the item, not the Platform) as required.
-        Misrepresentation, counterfeit items, or COA misuse may result in
-        listing removal, COA revocation, buyer refunds, platform debt, account freeze, and permanent ban — as detailed in the
+        You may only list items you have the right to sell. When a category requires proof, you must provide either an uploaded
+        third-party COA or a <strong>Franks Standard COA</strong> with your <strong>Seller Written Guarantee</strong> digitally
+        attached to one serial bound to that listing. You — not The Franks Standard — make the authenticity representation;
+        our COA is a template and registry, not a Platform warranty that the item is genuine.
+      </p>
+      <p>
+        Misrepresentation, counterfeit items, serial reuse, or COA misuse may result in listing removal, COA revocation, buyer
+        refunds, platform debt, account freeze, and permanent ban — as detailed in the
         <NuxtLink to="/marketplace-policy">Marketplace Policies</NuxtLink>.
       </p>
 
@@ -115,5 +122,13 @@ useSeoMeta({
 .legal h2 { font-size: 1.15rem; color: var(--gold); margin: 28px 0 10px; }
 .legal p { color: #374151; line-height: 1.7; font-size: 0.95rem; }
 .policy-ul { line-height: 1.65; color: #374151; font-size: 0.95rem; }
-.updated { color: var(--stone-500); font-size: 0.86rem; margin-bottom: 24px; }
+.updated { color: var(--stone-500); font-size: 0.86rem; margin-bottom: 12px; }
+.policy-draft-note {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
 </style>

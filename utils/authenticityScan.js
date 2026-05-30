@@ -76,9 +76,14 @@ export function scanListingIntegrity (row = {}) {
     score += 30
   }
 
-  if (proofRequired && row.coa_type === 'guarantee' && !row.guarantee_signed) {
-    flags.push({ id: 'guarantee_unsigned', label: 'Guarantee selected but not signed', severity: 'block', weight: 50 })
-    score += 50
+  if (proofRequired && row.coa_type === 'guarantee') {
+    flags.push({
+      id: 'guarantee_retired',
+      label: 'Written seller guarantee is no longer accepted — use uploaded COA or Franks issued COA',
+      severity: 'block',
+      weight: 55,
+    })
+    score += 55
   }
 
   if (proofRequired && GRADE_CLAIM.test(text) && row.coa_type === 'guarantee' && !row.coa_storage_path) {

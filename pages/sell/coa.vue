@@ -19,15 +19,15 @@
         <label class="coa-pick coa-pick--featured" :class="{ active: coaType === 'franks_issued' }">
           <input v-model="coaType" type="radio" value="franks_issued" name="coaPick" />
           <div>
-            <h2>Franks Standard COA</h2>
-            <p>Platform serial (<code>FS-YYYY-NNNNNN</code>) issued at publish — tied to your photos, description, and listing ID in our registry.</p>
+            <h2>Franks COA + Seller Written Guarantee</h2>
+            <p>One serial (<code>FS-YYYY-NNNNNN</code>) per listing — your written guarantee digitally attached to the certificate and registry at publish.</p>
           </div>
         </label>
       </div>
 
-      <p class="registry-note">
-        Franks COA is our floor-office template and database record — not a Platform warranty that the item is genuine.
-        Sellers remain responsible for authenticity; we enforce policies when proof fails.
+      <FranksCoaExplainer v-if="coaType === 'franks_issued'" />
+      <p v-else class="registry-note">
+        Upload path: you supply a third-party COA file. You back the listing; we do not guarantee third-party certificate content.
       </p>
 
       <CoaSellerDisclosure variant="full" />

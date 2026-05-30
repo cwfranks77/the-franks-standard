@@ -3,7 +3,7 @@
     <div class="container narrow">
       <h1>AI inventory transfer</h1>
       <p class="lead text-muted">
-        <strong>Move your catalog from eBay or CSV</strong> — titles, prices, and image URLs map in. Collectible categories need COA or signed guarantee; general merchandise does not. Off-platform contact or payment links are blocked automatically.
+        <strong>Move your catalog from eBay or CSV</strong> — titles, prices, and image URLs map in. Collectible categories need uploaded COA or Franks COA before publish; general merchandise does not. Off-platform contact or payment links are blocked automatically.
       </p>
 
       <div v-if="policyLoading" class="text-muted">Loading seller requirements…</div>
@@ -108,23 +108,16 @@
               <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
             </select>
             <p class="text-muted small">
-              {{ importNeedsCoa ? 'Collectible category — signed guarantee or COA required when publishing.' : 'General merchandise — no COA required.' }}
+              {{ importNeedsCoa ? 'Collectible category — add uploaded COA or Franks COA on each listing before publish.' : 'General merchandise — no COA required.' }}
             </p>
           </div>
           <label class="check-row">
             <input v-model="publishNow" type="checkbox" />
             Publish immediately (otherwise save as drafts)
           </label>
-          <template v-if="importNeedsCoa">
-            <label class="check-row">
-              <input v-model="useGuarantee" type="checkbox" />
-              Use Franks Standard signed guarantee
-            </label>
-            <div v-if="useGuarantee" class="form-group">
-              <label class="label">Legal name (for guarantee)</label>
-              <input v-model="sellerLegalName" class="input" placeholder="Your full legal name" />
-            </div>
-          </template>
+          <p v-if="importNeedsCoa && publishNow" class="text-muted small">
+            Collectible rows import as drafts until COA proof is added — publish now only works when proof is on file.
+          </p>
         </div>
 
         <button
@@ -194,8 +187,6 @@ const htmlPaste = ref('')
 const csvUploadStatus = ref('')
 const ebayUsername = ref('')
 const publishNow = ref(false)
-const useGuarantee = ref(true)
-const sellerLegalName = ref('')
 const importResult = ref(null)
 const isDropshipCsv = ref(false)
 const ebayUploadStatus = ref('')
@@ -280,17 +271,17 @@ function selectAll (on) {
 async function runImport () {
   importResult.value = null
   const needsCoa = categoryRequiresCoa(importCategory.value)
-  if (needsCoa && useGuarantee.value && !sellerLegalName.value.trim()) {
-    alert('Enter your legal name for the signed guarantee, or turn off guarantee (you will need COA before publishing).')
+  if (needsCoa && publishNow.value) {
+    alert('Collectible imports cannot publish immediately without COA on file. Uncheck “Publish immediately” or use General Merchandise.')
     return
   }
   try {
-    const coaType = needsCoa ? (useGuarantee.value ? 'guarantee' : 'upload') : 'none'
+    const coaType = needsCoa ? 'upload' : 'none'
     importResult.value = await importSelected({
       publish: publishNow.value,
       coaType,
-      guaranteeSigned: needsCoa && useGuarantee.value,
-      sellerLegalName: sellerLegalName.value.trim(),
+      guaranteeSigned: false,
+      sellerLegalName: '',
       defaultCategory: importCategory.value,
       importSource: tab.value === 'ebay' ? 'ebay' : (isDropshipCsv.value ? 'doba_csv' : 'csv'),
       listingMode: tab.value === 'csv' && isDropshipCsv.value ? 'dropship' : 'direct',

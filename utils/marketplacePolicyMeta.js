@@ -1,6 +1,6 @@
 /** Shared legal/policy metadata — keep dates and hierarchy in sync across public pages. */
 
-export const POLICY_LAST_UPDATED = 'May 20, 2026'
+export const POLICY_LAST_UPDATED = 'May 29, 2026'
 
 export const POLICY_HIERARCHY = [
   { label: 'Terms of Service', path: '/terms', role: 'Master agreement for all users' },
