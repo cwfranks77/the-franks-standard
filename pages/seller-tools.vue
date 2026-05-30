@@ -9,7 +9,7 @@
           major grading houses, and sold-market research — the same tools serious dealers use before they list.
         </p>
         <div class="head-actions">
-          <NuxtLink to="/sell" class="btn btn-primary btn-sm">List an item</NuxtLink>
+          <NuxtLink to="/sell/start" class="btn btn-primary btn-sm">List an item</NuxtLink>
           <NuxtLink to="/top-sellers" class="btn btn-outline btn-sm">Seller Excellence program</NuxtLink>
         </div>
       </header>

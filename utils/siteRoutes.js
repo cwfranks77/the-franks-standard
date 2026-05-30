@@ -24,6 +24,8 @@ export const STATIC_SITE_ROUTES = [
   { path: '/compare', label: 'Compare marketplaces', group: 'core' },
   { path: '/listing/sample-id', label: 'Listing detail (dynamic)', group: 'core' },
   { path: '/sell', label: 'Sell (policy gate)', group: 'sell' },
+  { path: '/sell/start', label: 'List item chooser', group: 'sell' },
+  { path: '/sell/coa', label: 'Collectible COA step', group: 'sell' },
   { path: '/sell/import', label: 'eBay / CSV import', group: 'sell' },
   { path: '/sell/dropship-setup', label: 'Dropship setup', group: 'sell' },
   { path: '/sellers', label: 'For sellers / stores', group: 'sell' },

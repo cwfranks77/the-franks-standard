@@ -5,7 +5,7 @@
       <span class="action-tile-label">Browse floor</span>
       <span class="action-tile-hint">Live listings with COA or guarantee</span>
     </NuxtLink>
-    <NuxtLink to="/sell" class="action-tile action-tile--accent">
+    <NuxtLink to="/sell/start" class="action-tile action-tile--accent">
       <span class="action-tile-icon" aria-hidden="true">📤</span>
       <span class="action-tile-label">Sell an item</span>
       <span class="action-tile-hint">List free · import from eBay</span>

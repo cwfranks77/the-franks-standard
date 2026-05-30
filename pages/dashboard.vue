@@ -28,9 +28,10 @@
       <div class="quick-actions">
         <NuxtLink v-if="!isOwner" to="/pay" class="btn btn-primary btn-sm">Pay fees (Stripe)</NuxtLink>
         <NuxtLink v-else to="/ops/panel" class="btn btn-primary btn-sm">Owner toolkit</NuxtLink>
-        <NuxtLink to="/sell" class="btn btn-primary btn-sm">+ New Listing</NuxtLink>
+        <NuxtLink to="/sell/start" class="btn btn-primary btn-sm">+ New Listing</NuxtLink>
         <NuxtLink to="/sell/import" class="btn btn-outline btn-sm">Import from eBay / CSV</NuxtLink>
         <NuxtLink to="/video" class="btn btn-outline btn-sm">Start a video call</NuxtLink>
+        <button type="button" class="btn btn-outline btn-sm" @click="onSignOut">Sign out</button>
       </div>
 
       <SitePromoOffers class="mt-4" :compact="true" :show-heading="false" />
@@ -53,12 +54,12 @@
       <div class="dash-section mt-4">
         <div class="dash-section-header">
           <h2>My Listings</h2>
-          <NuxtLink to="/sell" class="btn btn-primary btn-sm">+ New Listing</NuxtLink>
+          <NuxtLink to="/sell/start" class="btn btn-primary btn-sm">+ New Listing</NuxtLink>
         </div>
         <div v-if="!myListings.length" class="empty-state text-center" style="padding: 40px;">
           <p style="font-size: 2rem;">🏛️</p>
           <p class="text-muted mt-1">You haven't listed anything yet.</p>
-          <NuxtLink to="/sell" class="btn btn-outline btn-sm mt-2">Create Your First Listing</NuxtLink>
+          <NuxtLink to="/sell/start" class="btn btn-outline btn-sm mt-2">Create Your First Listing</NuxtLink>
         </div>
         <ul v-else class="dash-listings">
           <li v-for="l in myListings" :key="l.id" class="dash-listing-row">
@@ -154,6 +155,11 @@ definePageMeta({ layout: 'default', middleware: 'requires-auth' })
 useSeoMeta({ title: 'Dashboard - The Franks Standard' })
 
 const { isOwner } = useOwnerMode()
+const { signOut } = useAuthNav()
+
+async function onSignOut () {
+  await signOut()
+}
 const { loadFreezeState, freezeAlertMessage } = useAccountFreeze()
 const supabase = useSupabaseClient()
 const accountFrozen = ref(false)

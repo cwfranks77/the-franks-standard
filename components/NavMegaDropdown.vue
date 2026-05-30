@@ -30,17 +30,28 @@
         :class="'nav-mega-col--' + section.accent"
       >
         <h4>{{ section.label }}</h4>
-        <NuxtLink
-          v-for="item in section.items"
-          :key="item.to + item.label"
-          :to="item.to"
-          class="nav-mega-link"
-          role="menuitem"
-          @click="onLinkClick"
-        >
-          <strong>{{ item.label }}</strong>
-          <span>{{ item.desc }}</span>
-        </NuxtLink>
+        <template v-for="item in section.items" :key="itemKey(item)">
+          <button
+            v-if="item.action === 'signout'"
+            type="button"
+            class="nav-mega-link nav-mega-link--action"
+            role="menuitem"
+            @click="onActionClick(item)"
+          >
+            <strong>{{ item.label }}</strong>
+            <span>{{ item.desc }}</span>
+          </button>
+          <NuxtLink
+            v-else
+            :to="item.to"
+            class="nav-mega-link"
+            role="menuitem"
+            @click="onLinkClick"
+          >
+            <strong>{{ item.label }}</strong>
+            <span>{{ item.desc }}</span>
+          </NuxtLink>
+        </template>
       </div>
     </div>
   </div>
@@ -52,7 +63,7 @@ const props = defineProps({
   sections: { type: Array, required: true },
 })
 
-const emit = defineEmits(['navigate'])
+const emit = defineEmits(['navigate', 'action'])
 const open = ref(false)
 const rootEl = ref(null)
 
@@ -98,9 +109,19 @@ function onBtnClick () {
   open.value = !open.value
 }
 
+function itemKey (item) {
+  return `${item.action || item.to || ''}-${item.label}`
+}
+
 function onLinkClick () {
   open.value = false
   emit('navigate')
+}
+
+function onActionClick (item) {
+  open.value = false
+  emit('navigate')
+  emit('action', item.action, item)
 }
 
 function onDocClick (e) {

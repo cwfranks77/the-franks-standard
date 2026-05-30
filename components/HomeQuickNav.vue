@@ -4,7 +4,7 @@
       <NuxtLink to="/browse" class="mkt-btn mkt-btn--primary">
         Browse marketplace
       </NuxtLink>
-      <NuxtLink to="/sell" class="mkt-btn mkt-btn--secondary">Sell</NuxtLink>
+      <NuxtLink to="/sell/start" class="mkt-btn mkt-btn--secondary">Sell</NuxtLink>
       <NuxtLink to="/sell/import" class="mkt-btn mkt-btn--secondary">Import eBay</NuxtLink>
       <NuxtLink to="/video" class="mkt-btn mkt-btn--ghost">Video inspect</NuxtLink>
     </div>
@@ -84,10 +84,11 @@ const activeShortcuts = computed(() =>
 .mkt-hero-hint {
   margin: 10px 0 0;
   font-size: 0.82rem;
-  font-weight: 600;
+  font-weight: 700;
   max-width: 520px;
+  color: #000000;
 }
 .mkt-hero-hint strong {
-  color: #111827;
+  color: #000000;
 }
 </style>

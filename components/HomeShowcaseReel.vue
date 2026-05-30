@@ -41,7 +41,7 @@
 
     <div class="container showcase-reel-cta">
       <NuxtLink to="/browse" class="mkt-btn mkt-btn--primary">Browse the floor</NuxtLink>
-      <NuxtLink to="/sell" class="mkt-btn mkt-btn--secondary">List with COA</NuxtLink>
+      <NuxtLink to="/sell/start" class="mkt-btn mkt-btn--secondary">List an item</NuxtLink>
     </div>
   </section>
 </template>

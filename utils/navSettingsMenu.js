@@ -19,7 +19,7 @@ export const NAV_SETTINGS_SECTIONS = [
     label: 'Seller setup',
     accent: 'gold',
     items: [
-      { label: 'List an item', to: '/sell', desc: 'COA or signed guarantee required' },
+      { label: 'List an item', to: '/sell/start', desc: 'Collectible or general merchandise' },
       { label: 'Import from eBay', to: '/sell/import', desc: 'CSV or saved HTML skim' },
       { label: 'Dropship setup', to: '/sell/dropship-setup', desc: 'Supplier & fulfillment wizard' },
       { label: 'AI Store Builder', to: '/store-builder', desc: 'Bio, SEO, templates' },

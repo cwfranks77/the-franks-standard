@@ -32,11 +32,11 @@
         <nav class="header-nav" :class="{ open: menuOpen }">
           <div class="header-quick-dock">
             <NuxtLink to="/browse" class="quick-tile" @click="closeAllNav">Browse</NuxtLink>
-            <NuxtLink to="/sell" class="quick-tile quick-tile--gold" @click="closeAllNav">Sell</NuxtLink>
+            <NuxtLink to="/sell/start" class="quick-tile quick-tile--gold" @click="closeAllNav">Sell</NuxtLink>
             <a href="tel:+18778370527" class="quick-tile" @click="closeAllNav">Call</a>
           </div>
           <NavMegaDropdown label="Features" :sections="navFeatures" @navigate="closeAllNav" />
-          <NavMegaDropdown label="Settings" :sections="navSettings" @navigate="closeAllNav" />
+          <NavMegaDropdown label="Settings" :sections="navSettings" @navigate="closeAllNav" @action="onNavMenuAction" />
           <template v-if="isSignedIn">
             <NuxtLink to="/dashboard" class="quick-tile" @click="closeAllNav">Dashboard</NuxtLink>
             <button type="button" class="quick-tile quick-tile--signout" @click="onSignOut">Sign out</button>
@@ -101,7 +101,7 @@
           <div class="footer-col">
             <h4>Marketplace</h4>
             <NuxtLink to="/browse">Browse All</NuxtLink>
-            <NuxtLink to="/sell">Sell an Item</NuxtLink>
+            <NuxtLink to="/sell/start">Sell an Item</NuxtLink>
             <NuxtLink to="/categories">Categories</NuxtLink>
             <NuxtLink to="/pricing">Pricing</NuxtLink>
             <NuxtLink to="/video">Video Calls</NuxtLink>
@@ -216,7 +216,24 @@ import { NAV_SETTINGS_SECTIONS } from '~/utils/navSettingsMenu.js'
 import { buildSocialLinks } from '~/utils/siteSocial.js'
 
 const navFeatures = NAV_FEATURES_SECTIONS
-const navSettings = NAV_SETTINGS_SECTIONS
+
+const navSettings = computed(() => {
+  const sections = NAV_SETTINGS_SECTIONS.map((section) => ({
+    ...section,
+    items: [...section.items],
+  }))
+  if (isSignedIn.value) {
+    const account = sections.find((s) => s.id === 'account')
+    if (account) {
+      account.items.push({
+        label: 'Sign out',
+        desc: 'End your session on this device',
+        action: 'signout',
+      })
+    }
+  }
+  return sections
+})
 
 const route = useRoute()
 const router = useRouter()
@@ -230,6 +247,10 @@ const socialLinks = computed(() => buildSocialLinks(config.public))
 async function onSignOut () {
   closeAllNav()
   await signOut()
+}
+
+function onNavMenuAction (action) {
+  if (action === 'signout') onSignOut()
 }
 
 const menuOpen = ref(false)

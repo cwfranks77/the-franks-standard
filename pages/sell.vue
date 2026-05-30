@@ -709,7 +709,7 @@ const coaRequiredByKeywords = computed(() => {
 })
 
 watch(() => form.category, (cat) => {
-  if (!listingRequiresCoa(cat, form.title, form.description)) {
+  if (!listingRequiresCoa(cat, form.title, form.description) && listingKind.value !== 'collectible') {
     form.coaType = ''
     form.guaranteeSigned = false
     coaFile.value = null
@@ -719,7 +719,7 @@ watch(() => form.category, (cat) => {
 })
 
 watch(requiresCoa, (needs) => {
-  if (!needs) {
+  if (!needs && listingKind.value !== 'collectible') {
     form.coaType = ''
     form.guaranteeSigned = false
     coaFile.value = null
@@ -727,6 +727,41 @@ watch(requiresCoa, (needs) => {
     coaCompareAck.value = false
   }
 })
+
+/** general | collectible — from /sell/start or /sell/coa */
+const listingKind = ref('')
+
+const allowedCoaTypes = new Set(['upload', 'guarantee', 'franks_issued'])
+
+function applyListingKindFromQuery () {
+  const kind = String(route.query.kind || '').toLowerCase()
+  if (kind === 'general') {
+    listingKind.value = 'general'
+    form.category = 'General Merchandise'
+    form.coaType = ''
+    form.guaranteeSigned = false
+    coaFile.value = null
+    coaFileName.value = ''
+    coaCompareAck.value = false
+    return
+  }
+  if (kind === 'collectible') {
+    listingKind.value = 'collectible'
+    if (form.category === 'General Merchandise') form.category = ''
+    const coa = String(route.query.coaType || route.query.coa || '').toLowerCase()
+    if (allowedCoaTypes.has(coa)) form.coaType = coa
+    nextTick(() => {
+      document.getElementById('coa-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
+  }
+}
+
+watch(
+  () => [route.query.kind, route.query.coaType, route.query.coa],
+  () => {
+    if (import.meta.client) applyListingKindFromQuery()
+  },
+)
 
 const canGenerateAiDescription = computed(() => {
   return !!form.title.trim() && !!form.category
@@ -849,6 +884,7 @@ onMounted(async () => {
     }
   }
   await loadSellerDropship()
+  applyListingKindFromQuery()
   const mode = String(route.query.mode || '').toLowerCase()
   if (mode === 'dropship') {
     listingMode.value = 'dropship'

@@ -89,7 +89,7 @@
         <p style="font-size: 3rem;">🏛️</p>
         <h3 class="mt-2">No Listings Yet</h3>
         <p class="text-muted mt-1">The marketplace is just getting started. Be the first to list an item!</p>
-        <NuxtLink to="/sell" class="btn btn-primary mt-3">List Your First Item</NuxtLink>
+        <NuxtLink to="/sell/start" class="btn btn-primary mt-3">List Your First Item</NuxtLink>
       </div>
     </div>
   </div>
@@ -108,7 +108,7 @@ const { publicUrlForPath } = useListingImageUrl()
 const supabase = useSupabaseClient()
 
 const browseDockTiles = [
-  { to: '/sell', icon: '📤', label: 'Sell an item', hint: 'COA or signed guarantee', variant: 'primary' },
+  { to: '/sell/start', icon: '📤', label: 'Sell an item', hint: 'Collectible or general', variant: 'primary' },
   { to: '/collections', icon: '✨', label: 'Collections', hint: 'Limited drops & niches', variant: 'accent' },
   { to: '/sell/import', icon: '📥', label: 'Import from eBay', hint: 'CSV or store link' },
   { to: '/join/founders10', icon: '🎁', label: 'FOUNDERS10', hint: '3 mo Pro free', variant: 'dark' },

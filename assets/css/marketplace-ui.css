@@ -221,11 +221,19 @@
 .nav-mega-col--violet h4 { color: #c4b5fd; }
 .nav-mega-link {
   display: block;
+  width: 100%;
   padding: 8px 10px;
   border-radius: 8px;
   color: #e2e8f0;
   text-decoration: none;
   transition: background 0.15s, color 0.15s;
+}
+.nav-mega-link--action {
+  border: none;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
 }
 .nav-mega-link:hover {
   background: rgba(255, 255, 255, 0.08);

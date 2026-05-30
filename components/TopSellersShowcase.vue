@@ -46,7 +46,7 @@
       <div v-else class="leader-empty card">
         <p class="text-muted">
           Leaderboard fills as sales complete. Be the first —
-          <NuxtLink to="/sell">list an item</NuxtLink>
+          <NuxtLink to="/sell/start">list an item</NuxtLink>
           and earn your spot.
         </p>
       </div>

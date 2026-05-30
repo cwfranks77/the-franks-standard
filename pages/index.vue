@@ -186,18 +186,18 @@ const tickerBeltDoubled = [...tickerBelt, ...tickerBelt]
 .hero-pulse-ribbon {
   display: inline-block;
   font-size: 0.72rem;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  color: var(--magenta, #ff2d7a);
+  color: #000000;
   margin-bottom: 14px;
-  background: linear-gradient(90deg, rgba(255, 45, 122, 0.15), rgba(0, 224, 255, 0.12));
+  background: rgba(255, 255, 255, 0.92);
   padding: 8px 16px;
   border-radius: 999px;
-  border: 1px solid rgba(0, 224, 255, 0.35);
-  box-shadow: 0 0 0 1px rgba(255, 45, 122, 0.12), 0 0 18px rgba(0, 224, 255, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
-.hero-pulse-ribbon span { color: var(--cyan, #00e0ff); }
+.hero-pulse-ribbon span { color: #000000; font-weight: 800; }
 .hero-title-epic {
   font-family: 'Syne', 'Inter', sans-serif;
   font-size: clamp(2rem, 4.2vw, 3.15rem);
@@ -206,6 +206,11 @@ const tickerBeltDoubled = [...tickerBelt, ...tickerBelt]
   display: flex;
   flex-direction: column;
   gap: 0.1em;
+  color: #000000;
+}
+.t-line:not(.t-gold-shine):not(.t-sub) {
+  color: #000000;
+  -webkit-text-fill-color: #000000;
 }
 .t-gold-shine {
   background: linear-gradient(110deg, var(--gold) 0%, #fff1a8 30%, var(--gold) 55%, var(--magenta) 100%);

@@ -36,7 +36,7 @@ export const HOME_BUYER_SHORTCUTS = [
 ]
 
 export const HOME_SELLER_SHORTCUTS = [
-  { label: 'List item', hint: 'COA required', to: '/sell', image: P.guitars },
+  { label: 'List item', hint: 'Collectible or general', to: '/sell/start', image: P.guitars },
   { label: 'Import eBay', hint: 'CSV / skim', to: '/sell/import', image: P.cards },
   { label: 'Store builder', hint: 'AI bios & SEO', to: '/store-builder', image: P.watches },
   { label: 'Dropship', hint: 'Supplier wizard', to: '/sell/dropship-setup', image: P.sneakers },
