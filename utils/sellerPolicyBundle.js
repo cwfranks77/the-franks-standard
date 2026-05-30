@@ -4,9 +4,9 @@
  */
 
 import { POLICY_LAST_UPDATED } from '~/utils/marketplacePolicyMeta.js'
+import { SELLER_POLICY_VERSION } from '~/utils/sellerPolicyVersion.js'
 
-/** Bump when Terms, Marketplace Policy, Seller Agreement, or Prohibited Items change materially. */
-export const SELLER_POLICY_VERSION = '2026-05-29'
+export { SELLER_POLICY_VERSION }
 
 export const SELLER_POLICY_EFFECTIVE_LABEL = POLICY_LAST_UPDATED
 

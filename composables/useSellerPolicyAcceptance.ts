@@ -106,8 +106,53 @@ export function useSellerPolicyAcceptance () {
     }
   }
 
+  function documentsPayload (documentIds: string[]) {
+    const out: Record<string, boolean> = {}
+    for (const id of documentIds) out[id] = true
+    return out
+  }
+
+  async function recordAcceptanceViaRpc (legalName: string, documentIds: string[]) {
+    const { data, error: rpcErr } = await supabase.rpc('record_seller_policy_acceptance', {
+      p_legal_name: legalName,
+      p_policy_version: SELLER_POLICY_VERSION,
+      p_documents: documentsPayload(documentIds),
+    })
+    if (rpcErr) throw new Error(rpcErr.message)
+    const row = data as {
+      ok?: boolean
+      error?: string
+      message?: string
+      accepted_at?: string
+      signer_name?: string
+    } | null
+    if (row?.error) {
+      throw new Error(String(row.message || row.error))
+    }
+    if (!row?.ok) {
+      throw new Error('Could not record your signature. Refresh and try again.')
+    }
+    return {
+      accepted_at: row.accepted_at || new Date().toISOString(),
+      signer_name: row.signer_name || legalName,
+    }
+  }
+
   async function recordAcceptanceOnProfile (userId: string, legalName: string) {
     const now = new Date().toISOString()
+    const { data: existing } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', userId)
+      .maybeSingle()
+    if (!existing) {
+      const { error: insErr } = await supabase.from('profiles').insert({
+        id: userId,
+        full_name: legalName,
+        account_type: 'seller',
+      })
+      if (insErr) throw new Error(insErr.message)
+    }
     const { error: updErr } = await supabase
       .from('profiles')
       .update({
@@ -135,32 +180,25 @@ export function useSellerPolicyAcceptance () {
       let acceptedAtIso = new Date().toISOString()
 
       try {
-        const invokeResult = await invokeWithTimeout(
-          supabase.functions.invoke('accept-seller-policies', {
-            body: {
-              legal_name: legalName,
-              policy_version: SELLER_POLICY_VERSION,
-              documents: documentIds,
-            },
-          }),
+        const rpc = await invokeWithTimeout(
+          recordAcceptanceViaRpc(legalName, documentIds),
           POLICY_INVOKE_TIMEOUT_MS,
         )
-        const { data, error: fnErr } = invokeResult
-
-        if (fnErr) {
-          throw new Error(await parseSellerPolicyFnError(fnErr, data))
+        signer = rpc.signer_name
+        acceptedAtIso = rpc.accepted_at
+      } catch (rpcErr) {
+        const msg = rpcErr instanceof Error ? rpcErr.message : String(rpcErr)
+        if (/Could not find the function|schema cache|PGRST202/i.test(msg)) {
+          const fallback = await recordAcceptanceOnProfile(authUser.id, legalName)
+          signer = fallback.signer_name
+          acceptedAtIso = fallback.accepted_at
+        } else if (shouldFallbackToProfileUpdate(msg)) {
+          const fallback = await recordAcceptanceOnProfile(authUser.id, legalName)
+          signer = fallback.signer_name
+          acceptedAtIso = fallback.accepted_at
+        } else {
+          throw rpcErr
         }
-        if (data?.error) {
-          throw new Error(String(data.message || data.error))
-        }
-        signer = data?.signer_name || legalName
-        acceptedAtIso = data?.accepted_at || acceptedAtIso
-      } catch (invokeErr) {
-        const msg = invokeErr instanceof Error ? invokeErr.message : String(invokeErr)
-        if (!shouldFallbackToProfileUpdate(msg)) throw invokeErr
-        const fallback = await recordAcceptanceOnProfile(authUser.id, legalName)
-        signer = fallback.signer_name
-        acceptedAtIso = fallback.accepted_at
       }
 
       accepted.value = true

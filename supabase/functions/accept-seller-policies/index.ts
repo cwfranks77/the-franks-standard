@@ -6,7 +6,10 @@ import {
 import { corsHeaders, json } from '../_shared/stripe.ts'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
-const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.get('SERVICE_ROLE_KEY') ?? ''
+const SERVICE_ROLE_KEY =
+  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ??
+  Deno.env.get('SERVICE_ROLE_KEY') ??
+  ''
 
 const REQUIRED_DOC_IDS = [
   'terms',
@@ -57,8 +60,30 @@ Deno.serve(async (req) => {
     }
   }
 
+  if (!SERVICE_ROLE_KEY) {
+    return json({
+      error: 'server_misconfigured',
+      message: 'Policy signing uses record_seller_policy_acceptance in the database. Refresh and try again.',
+    }, 503)
+  }
+
   const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, { auth: { persistSession: false } })
   const now = new Date().toISOString()
+
+  const { data: existingProfile } = await admin
+    .from('profiles')
+    .select('id')
+    .eq('id', user.id)
+    .maybeSingle()
+
+  if (!existingProfile) {
+    const { error: insErr } = await admin.from('profiles').insert({
+      id: user.id,
+      full_name: legalName,
+      account_type: 'seller',
+    })
+    if (insErr) return json({ error: 'profile_create_failed', detail: insErr.message }, 500)
+  }
 
   const { error: profileErr } = await admin
     .from('profiles')
