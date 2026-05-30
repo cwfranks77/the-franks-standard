@@ -70,7 +70,7 @@ useSeoMeta({
 })
 const offers = [
   { label: 'Browse', to: '/browse' },
-  { label: 'Sell', to: '/sell' },
+  { label: 'Sell', to: '/sell/start' },
   { label: 'For sellers', to: '/sellers' },
   { label: 'Pricing', to: '/pricing' },
   { label: 'Video meet', to: '/video' },

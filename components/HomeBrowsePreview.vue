@@ -33,6 +33,7 @@
               loading="lazy"
               width="200"
               height="160"
+              @error="onShowcaseImageError"
             />
           </div>
           <div class="home-browse-meta">
@@ -60,6 +61,7 @@ import {
   shuffleItems,
   browseLinkForCategory,
 } from '~/utils/homeBrowseSamples.js'
+import { onShowcaseImageError } from '~/utils/marketplaceShowcaseImages.js'
 
 const supabase = useSupabaseClient()
 

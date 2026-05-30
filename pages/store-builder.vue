@@ -261,7 +261,7 @@
             </div>
 
             <div class="result-actions">
-              <NuxtLink to="/sell" class="btn btn-primary">Start listing now</NuxtLink>
+              <NuxtLink to="/sell/start" class="btn btn-primary">Start listing now</NuxtLink>
               <button type="button" class="btn btn-outline" @click="copyAll">Copy full pack</button>
               <button type="button" class="btn btn-dark" @click="reset">Start over</button>
             </div>

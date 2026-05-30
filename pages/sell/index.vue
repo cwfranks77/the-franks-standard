@@ -3,19 +3,38 @@
     <div class="container">
       <div class="sell-wrapper">
         <div class="sell-header text-center">
-          <h1>Sell on The Franks Standard</h1>
-          <p class="text-muted">List in minutes. COA or signed guarantee is required only for collectibles, antiques, and similar categories — general merchandise uses accurate photos and description.</p>
+          <template v-if="isGeneralListingFlow">
+            <p class="listing-flow-eyebrow">General merchandise</p>
+            <h1>List your item</h1>
+            <p class="text-muted">
+              No COA required. Use clear photos and an honest description — category defaults to General Merchandise.
+            </p>
+          </template>
+          <template v-else-if="isCollectibleListingFlow">
+            <p class="listing-flow-eyebrow">Collectible listing</p>
+            <h1>Complete your listing</h1>
+            <p class="text-muted">Your COA or guarantee choice is saved — fill in item details below.</p>
+          </template>
+          <template v-else>
+            <h1>Sell on The Franks Standard</h1>
+            <p class="text-muted">List in minutes. COA or signed guarantee is required only for collectibles, antiques, and similar categories — general merchandise uses accurate photos and description.</p>
+          </template>
+          <p v-if="isActiveListingFlow" class="listing-flow-back">
+            <NuxtLink to="/sell/start">← Change listing type</NuxtLink>
+          </p>
         </div>
 
-        <SellListingPathChooser v-if="showListingPathChooser" />
-
-        <template v-else>
-        <div class="sell-switch-banner card" role="status">
+        <template v-if="isActiveListingFlow">
+        <div v-if="!isActiveListingFlow" class="sell-switch-banner card" role="status">
           <p>
             <strong>Coming from eBay or another marketplace?</strong>
             Import your inventory in minutes — skim eBay or upload CSV, then publish here with escrow checkout.
           </p>
           <MarketplacePageDock :tiles="sellDockTiles" aria-label="Seller shortcuts" />
+        </div>
+
+        <div v-if="isGeneralListingFlow && needsPolicyAcceptance && !policyLoading" class="listing-flow-note card" role="status">
+          <p><strong>One-time seller policy signature required.</strong> Sign below to unlock the listing form — general merchandise does not need COA.</p>
         </div>
 
         <div v-if="policyLoading" class="text-muted" style="padding: 24px 0;">Loading seller requirements…</div>
@@ -43,7 +62,7 @@
           </p>
         </div>
 
-        <div v-else class="sell-notice" role="status">
+        <div v-else-if="!isActiveListingFlow" class="sell-notice" role="status">
           <p>
             <strong>Sign in required.</strong> Collectible categories need COA or guarantee; general merchandise does not. Stores and high volume:
             <NuxtLink to="/sellers">Apply as a store</NuxtLink>
@@ -125,7 +144,7 @@
           </button>
         </div>
 
-        <form class="sell-form" @submit.prevent="submitListing">
+        <form id="listing-form" class="sell-form" @submit.prevent="submitListing">
           <!-- Item details -->
           <div class="form-section">
             <h2>Item Details</h2>
@@ -563,6 +582,17 @@ import { calcCharitySplit, CHARITY_PERCENT_PRESETS } from '~/utils/charitySplit.
 import { auctionEndsAtFromDays } from '~/utils/auctionHelpers.js'
 import { DROPSHIP_PROVIDER_CATALOG, useSellerDropship } from '~/composables/useSellerDropship.js'
 import { COLLECTION_SLUG_OPTIONS } from '~/utils/nicheCollections.js'
+import {
+  collectibleNeedsCoaStep,
+  isActiveListingFlow as routeIsActiveListingFlow,
+  LISTING_KIND_COLLECTIBLE,
+  LISTING_KIND_GENERAL,
+  LIST_ITEM_COA_PATH,
+  LIST_ITEM_START_PATH,
+  parseCoaTypeFromQuery,
+  parseListingKind,
+  sellFormRequiresCoaProof,
+} from '~/utils/listItemRoutes.js'
 
 const sellDockTiles = [
   { to: '/sell/import', icon: '📥', label: 'Import inventory', hint: 'eBay CSV or store' },
@@ -573,7 +603,7 @@ const sellDockTiles = [
 
 const charities = CHARITY_OPTIONS
 
-definePageMeta({ middleware: 'requires-auth' })
+definePageMeta({ middleware: ['sell-entry', 'requires-auth'] })
 
 useSeoMeta({
   title: 'Sell — The Franks Standard',
@@ -703,7 +733,7 @@ const aiDescMessage = ref('')
 const aiDescError = ref(false)
 
 const requiresCoa = computed(() =>
-  listingRequiresCoa(form.category, form.title, form.description),
+  sellFormRequiresCoaProof(listingKind.value, form.category, form.title, form.description),
 )
 
 const coaRequiredByKeywords = computed(() => {
@@ -713,7 +743,7 @@ const coaRequiredByKeywords = computed(() => {
 })
 
 watch(() => form.category, (cat) => {
-  if (!listingRequiresCoa(cat, form.title, form.description) && listingKind.value !== 'collectible') {
+  if (!listingRequiresCoa(cat, form.title, form.description) && listingKind.value !== LISTING_KIND_COLLECTIBLE) {
     form.coaType = ''
     form.guaranteeSigned = false
     coaFile.value = null
@@ -723,7 +753,7 @@ watch(() => form.category, (cat) => {
 })
 
 watch(requiresCoa, (needs) => {
-  if (!needs && listingKind.value !== 'collectible') {
+  if (!needs && listingKind.value !== LISTING_KIND_COLLECTIBLE) {
     form.coaType = ''
     form.guaranteeSigned = false
     coaFile.value = null
@@ -735,20 +765,37 @@ watch(requiresCoa, (needs) => {
 /** general | collectible — from /sell/start or /sell/coa */
 const listingKind = ref('')
 
-const showListingPathChooser = computed(() => {
-  const kind = String(route.query.kind || '').toLowerCase()
-  const mode = String(route.query.mode || '').toLowerCase()
-  if (kind === 'general' || kind === 'collectible') return false
-  if (mode === 'dropship' || mode === 'direct') return false
-  return true
-})
+const isActiveListingFlow = computed(() => routeIsActiveListingFlow(route.query))
 
-const allowedCoaTypes = new Set(['upload', 'guarantee', 'franks_issued'])
+const isGeneralListingFlow = computed(() =>
+  parseListingKind(route.query) === LISTING_KIND_GENERAL,
+)
+
+const isCollectibleListingFlow = computed(() =>
+  parseListingKind(route.query) === LISTING_KIND_COLLECTIBLE && !!parseCoaTypeFromQuery(route.query),
+)
+
+function scrollToListingForm () {
+  if (!import.meta.client) return
+  nextTick(() => {
+    document.getElementById('listing-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  })
+}
+
+function enforceListingPathGuard () {
+  if (!import.meta.client) return
+  const mode = String(route.query.mode || '').toLowerCase()
+  if (mode === 'dropship' || mode === 'direct') return
+  if (parseListingKind(route.query) === LISTING_KIND_GENERAL) return
+  if (collectibleNeedsCoaStep(route.query)) {
+    navigateTo(LIST_ITEM_COA_PATH, { replace: true })
+  }
+}
 
 function applyListingKindFromQuery () {
-  const kind = String(route.query.kind || '').toLowerCase()
-  if (kind === 'general') {
-    listingKind.value = 'general'
+  const kind = parseListingKind(route.query)
+  if (kind === LISTING_KIND_GENERAL) {
+    listingKind.value = LISTING_KIND_GENERAL
     form.category = 'General Merchandise'
     form.coaType = ''
     form.guaranteeSigned = false
@@ -757,11 +804,11 @@ function applyListingKindFromQuery () {
     coaCompareAck.value = false
     return
   }
-  if (kind === 'collectible') {
-    listingKind.value = 'collectible'
+  if (kind === LISTING_KIND_COLLECTIBLE) {
+    listingKind.value = LISTING_KIND_COLLECTIBLE
     if (form.category === 'General Merchandise') form.category = ''
-    const coa = String(route.query.coaType || route.query.coa || '').toLowerCase()
-    if (allowedCoaTypes.has(coa)) form.coaType = coa
+    const coa = parseCoaTypeFromQuery(route.query)
+    if (coa) form.coaType = coa
     nextTick(() => {
       document.getElementById('coa-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     })
@@ -769,9 +816,12 @@ function applyListingKindFromQuery () {
 }
 
 watch(
-  () => [route.query.kind, route.query.coaType, route.query.coa],
+  () => [route.query.kind, route.query.coaType, route.query.coa, route.query.mode],
   () => {
-    if (import.meta.client) applyListingKindFromQuery()
+    if (import.meta.client) {
+      enforceListingPathGuard()
+      applyListingKindFromQuery()
+    }
   },
 )
 
@@ -883,6 +933,10 @@ async function generateAiDescription () {
 }
 
 onMounted(async () => {
+  if (!routeIsActiveListingFlow(route.query)) {
+    await navigateTo(LIST_ITEM_START_PATH, { replace: true })
+    return
+  }
   await loadPolicyStatus()
   const { data: { user } } = await supabase.auth.getUser()
   if (user) {
@@ -896,7 +950,11 @@ onMounted(async () => {
     }
   }
   await loadSellerDropship()
+  enforceListingPathGuard()
   applyListingKindFromQuery()
+  if (isActiveListingFlow.value && !needsPolicyAcceptance.value) {
+    scrollToListingForm()
+  }
   const mode = String(route.query.mode || '').toLowerCase()
   if (mode === 'dropship') {
     listingMode.value = 'dropship'
@@ -971,6 +1029,7 @@ function handleCOA(e) {
 
 async function onPoliciesAccepted () {
   await loadPolicyStatus()
+  if (isActiveListingFlow.value) scrollToListingForm()
 }
 
 async function submitListing() {
@@ -978,7 +1037,7 @@ async function submitListing() {
     alert('You must digitally sign all seller policies before publishing.')
     return
   }
-  const needsCoa = listingRequiresCoa(form.category, form.title, form.description)
+  const needsCoa = sellFormRequiresCoaProof(listingKind.value, form.category, form.title, form.description)
   if (needsCoa) {
     if (!form.coaType) {
       alert('This listing requires a COA upload, Franks COA template, or signed Seller Authenticity Guarantee. Scroll to the Certificate of Authenticity section.')
@@ -1065,7 +1124,7 @@ async function submitListing() {
   try {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      await navigateTo({ path: '/auth/login', query: { redirect: '/sell/start' } })
+      await navigateTo(`/auth/login?redirect=${encodeURIComponent(route.fullPath || '/sell')}`)
       return
     }
     const { data: profile } = await supabase
@@ -1342,6 +1401,26 @@ async function submitListing() {
 .sell-wrapper { max-width: 720px; margin: 0 auto; }
 .sell-header { margin-bottom: 30px; }
 .sell-header h1 { font-size: 2rem; }
+.listing-flow-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #92400e;
+  margin: 0 0 8px;
+}
+.listing-flow-back {
+  margin: 12px 0 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+.listing-flow-note {
+  margin-bottom: 20px;
+  padding: 1rem 1.25rem;
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  background: #fffbeb;
+}
+.listing-flow-note p { margin: 0; font-weight: 600; line-height: 1.5; }
 .sell-switch-banner {
   margin-bottom: 24px;
   padding: 1rem 1.25rem;

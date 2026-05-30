@@ -154,7 +154,7 @@
       </div>
 
       <p class="text-muted small mt-3">
-        <NuxtLink to="/sell">Manual listing</NuxtLink>
+        <NuxtLink to="/sell/start">Manual listing</NuxtLink>
         ·
         <NuxtLink to="/dashboard">Dashboard</NuxtLink>
       </p>

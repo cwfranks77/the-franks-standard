@@ -29,7 +29,7 @@
       <label>
         Link in post
         <select v-model="ctaPath" class="select">
-          <option value="/sell">/sell</option>
+          <option value="/sell/start">/sell/start</option>
           <option value="/learn/tools/fee-calculator">Fee calculator</option>
           <option value="/go/postcard">/go/postcard (tracked)</option>
           <option value="/join/founders10">FOUNDERS10</option>
@@ -52,7 +52,7 @@ import { buildSocialCaption, FORMAT_SPECS } from '~/utils/socialPromotion.js'
 const platform = ref('instagram')
 const format = ref('reel')
 const topic = ref('fees')
-const ctaPath = ref('/sell')
+const ctaPath = ref('/sell/start')
 const copied = ref(false)
 
 const formatOptions = computed(() => {

@@ -8,6 +8,7 @@
         height="420"
         fetchpriority="high"
         class="hero-visual-hero-img"
+        @error="onShowcaseImageError"
       />
       <span class="hero-visual-badge">COA · Escrow · Verify</span>
     </div>
@@ -18,7 +19,7 @@
           :key="`${p.label}-${i}`"
           class="hero-visual-thumb"
         >
-          <img :src="p.image" :alt="p.label" width="120" height="96" loading="lazy" />
+          <img :src="p.image" :alt="p.label" width="120" height="96" loading="lazy" @error="onShowcaseImageError" />
           <span>{{ p.label }}</span>
         </div>
       </div>
@@ -27,7 +28,7 @@
 </template>
 
 <script setup>
-import { HERO_MOSAIC_PHOTOS } from '~/utils/marketplaceShowcaseImages.js'
+import { HERO_MOSAIC_PHOTOS, onShowcaseImageError } from '~/utils/marketplaceShowcaseImages.js'
 
 const featured = HERO_MOSAIC_PHOTOS[0]
 const scrollDoubled = [...HERO_MOSAIC_PHOTOS, ...HERO_MOSAIC_PHOTOS]

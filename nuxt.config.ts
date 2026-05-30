@@ -178,9 +178,6 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/png', href: '/franks-pavilion.png' },
         { rel: 'apple-touch-icon', href: '/franks-pavilion.png' },
         { rel: 'manifest', href: '/manifest.webmanifest' },
-        // NOTE: per-page canonical URLs are injected by scripts/inject-spa-fallback.cjs
-        // at build time so each route advertises itself (not the homepage) as canonical.
-        { rel: 'preconnect', href: 'https://images.unsplash.com' },
         { rel: 'preconnect', href: 'https://meet.jit.si' },
         { rel: 'preconnect', href: 'https://js.stripe.com' },
         { rel: 'preconnect', href: 'https://checkout.stripe.com' },

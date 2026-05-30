@@ -6,7 +6,7 @@
       </NuxtLink>
       <NuxtLink to="/sell/start" class="mkt-btn mkt-btn--secondary">Sell</NuxtLink>
       <NuxtLink to="/sell/import" class="mkt-btn mkt-btn--secondary">Import eBay</NuxtLink>
-      <NuxtLink to="/video" class="mkt-btn mkt-btn--ghost">Video inspect</NuxtLink>
+      <NuxtLink to="/video" class="mkt-btn mkt-btn--secondary">Video inspect</NuxtLink>
     </div>
 
     <div class="mkt-role-tabs" role="tablist" aria-label="Shop or sell">
@@ -40,7 +40,7 @@
         class="mkt-dept-tile"
       >
         <span class="mkt-dept-img-wrap">
-          <img :src="d.image" :alt="''" width="64" height="48" loading="lazy" />
+          <img :src="d.image" :alt="''" width="64" height="48" loading="lazy" @error="onShowcaseImageError" />
         </span>
         <span class="mkt-dept-label">{{ d.shortLabel }}</span>
       </NuxtLink>
@@ -53,7 +53,7 @@
         :to="s.to"
         class="mkt-shortcut-tile"
       >
-        <img :src="s.image" :alt="''" width="40" height="32" loading="lazy" class="mkt-shortcut-img" />
+        <img :src="s.image" :alt="''" width="40" height="32" loading="lazy" class="mkt-shortcut-img" @error="onShowcaseImageError" />
         <span class="mkt-shortcut-text">
           <strong>{{ s.label }}</strong>
           <em>{{ s.hint }}</em>
@@ -73,6 +73,7 @@ import {
   HOME_SELLER_SHORTCUTS,
   departmentBrowseTo,
 } from '~/utils/homeQuickLinks.js'
+import { onShowcaseImageError } from '~/utils/marketplaceShowcaseImages.js'
 
 const role = ref('buyer')
 const activeShortcuts = computed(() =>

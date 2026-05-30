@@ -77,7 +77,7 @@ export function getAffiliatePartner (handle, extraRoster = []) {
 
 /** Landing path key → site path */
 export const AFFILIATE_LANDINGS = {
-  sell: '/sell',
+  sell: '/sell/start',
   founders: '/join/founders10',
   learn: '/learn',
   import: '/sell/import',

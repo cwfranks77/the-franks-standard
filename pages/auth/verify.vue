@@ -13,6 +13,7 @@
 
 <script setup>
 import { syncSignupAttributionToProfile } from '~/utils/syncSignupAttribution.js'
+import { LIST_ITEM_START_PATH } from '~/utils/listItemRoutes.js'
 
 useHead({
   title: 'Confirm email - The Franks Standard',
@@ -90,7 +91,7 @@ onMounted(async () => {
     }
 
     phase.value = 'done'
-    if (accountType === 'sell' || accountType === 'seller') await router.replace('/sell')
+    if (accountType === 'sell' || accountType === 'seller') await router.replace(LIST_ITEM_START_PATH)
     else await router.replace('/dashboard')
   } catch (err) {
     phase.value = 'error'

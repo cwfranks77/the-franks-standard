@@ -51,7 +51,7 @@ export const OUTREACH_CAMPAIGNS = {
   sell: {
     slug: 'sell',
     label: 'Sell landing',
-    path: '/sell',
+    path: '/sell/start',
     defaultRef: 'sell',
     defaultUtm: { utm_source: 'outreach', utm_medium: 'print', utm_campaign: 'sell' },
   },
@@ -119,7 +119,7 @@ export function buildTrackedQuery (campaignSlug, overrides = {}) {
 
 export function buildTrackedPath (campaignSlug, overrides = {}) {
   const c = getCampaign(campaignSlug)
-  if (!c) return '/sell'
+  if (!c) return '/sell/start'
   const params = new URLSearchParams()
   const q = buildTrackedQuery(campaignSlug, overrides)
   for (const [k, v] of Object.entries(q)) {

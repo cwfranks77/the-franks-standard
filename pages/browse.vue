@@ -57,7 +57,13 @@
           class="listing-card card"
         >
           <div class="listing-image">
-            <img :src="item.image" :alt="item.title" />
+            <img
+              :src="item.image"
+              :alt="item.title"
+              :data-category="item.category"
+              loading="lazy"
+              @error="onListingImageError"
+            />
             <span class="coa-badge listing-coa">{{ item.coaSerial ? `COA ${item.coaSerial}` : 'COA Verified' }}</span>
             <span v-if="item.saleType === 'auction'" class="auction-badge listing-coa">
               {{ item.buyNowPrice ? 'Auction + BIN' : 'Auction' }}
@@ -103,6 +109,7 @@ import {
   getNicheBySlug,
   getLimitedDropBySlug,
 } from '~/utils/nicheCollections.js'
+import { onListingImageError } from '~/utils/marketplaceShowcaseImages.js'
 
 const { publicUrlForPath } = useListingImageUrl()
 const supabase = useSupabaseClient()

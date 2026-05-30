@@ -38,7 +38,7 @@
         >
           Create seller account
         </NuxtLink>
-        <NuxtLink to="/sell" class="btn btn-outline btn-lg">
+        <NuxtLink to="/sell/start" class="btn btn-outline btn-lg">
           Learn about selling
         </NuxtLink>
       </div>

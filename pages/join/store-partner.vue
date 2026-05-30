@@ -18,7 +18,7 @@
       <div class="partner-actions">
         <NuxtLink :to="importHref" class="btn btn-primary btn-lg">Import inventory — start here</NuxtLink>
         <NuxtLink :to="registerHrefFixed" class="btn btn-outline btn-lg">Create seller account</NuxtLink>
-        <NuxtLink to="/sell" class="btn btn-outline btn-lg">How selling works</NuxtLink>
+        <NuxtLink to="/sell/start" class="btn btn-outline btn-lg">How selling works</NuxtLink>
       </div>
 
       <p class="partner-foot text-muted">

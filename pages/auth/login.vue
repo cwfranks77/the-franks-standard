@@ -47,6 +47,8 @@
 </template>
 
 <script setup>
+import { resolveAuthRedirect } from '~/utils/listItemRoutes.js'
+
 const route = useRoute()
 
 onMounted(() => {
@@ -128,8 +130,7 @@ async function handleLogin() {
     if (error) {
       throw error
     }
-    const raw = route.query.redirect
-    const next = typeof raw === 'string' && raw.startsWith('/') ? raw : '/dashboard'
+    const next = resolveAuthRedirect(route.query)
     await navigateTo(next)
   } catch (err) {
     const msg = err?.message || ''

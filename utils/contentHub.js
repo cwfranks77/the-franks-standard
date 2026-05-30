@@ -218,7 +218,7 @@ export const LEARN_ARTICLES = /** @type {LearnArticle[]} */ ([
         'Ask happy buyers for on-platform reviews',
         'Track postcard/mail campaigns with /go/postcard?ref=your-batch',
       ] },
-      { type: 'cta', label: 'Start selling', to: '/sell' },
+      { type: 'cta', label: 'Start selling', to: '/sell/start' },
       { type: 'cta', label: 'Print authenticity checklist', to: '/learn/tools/authenticity-checklist' },
     ],
   },
@@ -282,7 +282,7 @@ export const LEARN_ARTICLES = /** @type {LearnArticle[]} */ ([
       { type: 'h2', text: 'Promotional campaigns' },
       { type: 'p', text: 'Use collection URLs in email, postcards, and social posts: /collections/graded-sports-cards, /browse?limited=1, and UTM-tagged /go/* links from outreach tracking.' },
       { type: 'cta', label: 'Browse collections', to: '/collections' },
-      { type: 'cta', label: 'List a limited drop', to: '/sell' },
+      { type: 'cta', label: 'List a limited drop', to: '/sell/start' },
     ],
   },
 ])

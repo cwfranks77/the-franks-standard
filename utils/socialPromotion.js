@@ -38,7 +38,7 @@ export const SOCIAL_PLATFORM_FOCUS = [
     links: [
       { label: 'Learn hub', url: `${SITE_URL}/learn` },
       { label: 'Fee calculator', url: `${SITE_URL}/learn/tools/fee-calculator` },
-      { label: 'Sell', url: `${SITE_URL}/sell` },
+      { label: 'Sell', url: `${SITE_URL}/sell/start` },
     ],
   },
   {
@@ -180,7 +180,7 @@ We built a marketplace where:
   linkedin: {
     post: `Card shop owners: authenticity and margin usually don't move together.
 
-The Franks Standard requires a COA or in-platform signed guarantee on every SKU — and sale fees run {{fees}} by plan ({{launch}} for new sellers), not a stacked ~{{competitor}}.
+The Franks Standard requires seller proof on collectible SKUs (marketplace facilitator, not Platform authentication) — sale fees run {{fees}} by plan ({{launch}} for new sellers), not a stacked ~{{competitor}}.
 
 If you already list on eBay, you can import Active Listings CSV and test the floor without abandoning your current channel.
 
@@ -208,7 +208,7 @@ export function hashtagString (packKeys = ['core', 'cards', 'launch']) {
   return [...tags].slice(0, 12).join(' ')
 }
 
-export function buildSocialCaption ({ platform = 'instagram', format = 'reel', topic = 'fees', ctaPath = '/sell' }) {
+export function buildSocialCaption ({ platform = 'instagram', format = 'reel', topic = 'fees', ctaPath = '/sell/start' }) {
   const fees = `${PRICING_PUBLIC.txRangeLabel} (${PRICING_PUBLIC.launchTxPromoPercent}% launch promo 90 days)`
   const competitor = PRICING_PUBLIC.competitorTypical
   const launch = `${PRICING_PUBLIC.launchTxPromoPercent}% for 90 days`

@@ -59,7 +59,13 @@
           class="listing-card card"
         >
           <div class="listing-image">
-            <img :src="item.image" :alt="item.title" />
+            <img
+              :src="item.image"
+              :alt="item.title"
+              :data-category="item.category"
+              loading="lazy"
+              @error="onListingImageError"
+            />
             <span class="coa-badge listing-coa">COA Verified</span>
           </div>
           <div class="card-body">
@@ -87,6 +93,7 @@ import {
   BRANDY_HOLD_HEADLINE,
   BRANDY_HOLD_MESSAGE,
 } from '~/utils/storeSlug'
+import { onListingImageError } from '~/utils/marketplaceShowcaseImages.js'
 
 const route = useRoute()
 const { publicUrlForPath } = useListingImageUrl()

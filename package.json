@@ -37,6 +37,7 @@
     "deploy:gh-pages": "npm run generate && npx --yes gh-pages@6.2.0 -d .output/public -t -m \"chore(gh-pages): static deploy\"",
     "stripe:webhook": "node scripts/wire-stripe-webhook.cjs",
     "stripe:webhook:verify": "node scripts/verify-stripe-webhook.cjs",
+    "stripe:webhook:test": "node scripts/test-stripe-webhook-signed.cjs",
     "stripe:reconcile": "node scripts/reconcile-stripe-orders.cjs",
     "health": "node scripts/health-check.cjs",
     "auth:verify": "node scripts/verify-auth-email.cjs",

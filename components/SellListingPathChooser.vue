@@ -25,12 +25,12 @@
 </template>
 
 <script setup>
-import { LIST_ITEM_COA_PATH, SELL_FORM_PATH } from '~/utils/listItemRoutes.js'
+import { generalListingRoute, LIST_ITEM_COA_PATH } from '~/utils/listItemRoutes.js'
 
 const router = useRouter()
 
 function chooseGeneral () {
-  router.push({ path: SELL_FORM_PATH, query: { kind: 'general' } })
+  router.push(generalListingRoute())
 }
 
 function chooseCollectible () {

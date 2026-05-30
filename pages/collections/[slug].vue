@@ -11,7 +11,7 @@
         <p v-if="page.ebayAngle" class="ebay-angle"><strong>Not eBay:</strong> {{ page.ebayAngle }}</p>
         <div class="hero-actions">
           <NuxtLink :to="browseLink" class="btn btn-primary btn-sm">Browse {{ liveCount }} listing{{ liveCount === 1 ? '' : 's' }}</NuxtLink>
-          <NuxtLink :to="page.ctaPath || '/sell'" class="btn btn-outline btn-sm">List in this niche</NuxtLink>
+          <NuxtLink :to="page.ctaPath || '/sell/start'" class="btn btn-outline btn-sm">List in this niche</NuxtLink>
         </div>
       </div>
     </section>
@@ -27,7 +27,13 @@
             class="listing-card"
           >
             <div class="listing-img">
-              <img :src="item.image" :alt="item.title" />
+              <img
+                :src="item.image"
+                :alt="item.title"
+                :data-category="item.category"
+                loading="lazy"
+                @error="onListingImageError"
+              />
               <span v-if="item.limitedLabel" class="limited-badge">{{ item.limitedLabel }}</span>
               <span class="coa-badge">COA / Guarantee</span>
             </div>
@@ -40,7 +46,7 @@
         </div>
         <div v-else class="empty">
           <p>No live listings in this collection yet — be the first seller in this niche.</p>
-          <NuxtLink :to="page.ctaPath || '/sell'" class="btn btn-primary btn-sm">Create listing</NuxtLink>
+          <NuxtLink :to="page.ctaPath || '/sell/start'" class="btn btn-primary btn-sm">Create listing</NuxtLink>
         </div>
       </div>
     </section>
@@ -63,6 +69,7 @@ import {
   isLimitedEditionListing,
   limitedBadgeLabel,
 } from '~/utils/nicheCollections.js'
+import { onListingImageError } from '~/utils/marketplaceShowcaseImages.js'
 
 const route = useRoute()
 const slug = String(route.params.slug || '')
@@ -85,7 +92,7 @@ const page = computed(() => {
       ebayAngle: niche.ebayAngle,
       buyerHook: niche.buyerHook,
       category: niche.category,
-      ctaPath: '/sell',
+      ctaPath: '/sell/start',
     }
   }
   return {

@@ -47,16 +47,13 @@
 </template>
 
 <script setup>
-import { SELL_FORM_PATH } from '~/utils/listItemRoutes.js'
+import { collectibleListingRoute, SELL_FORM_PATH } from '~/utils/listItemRoutes.js'
 
 const coaType = ref('')
 
 const continueTo = computed(() => {
   if (!coaType.value) return SELL_FORM_PATH
-  return {
-    path: SELL_FORM_PATH,
-    query: { kind: 'collectible', coaType: coaType.value },
-  }
+  return collectibleListingRoute(coaType.value)
 })
 
 useSeoMeta({

@@ -1,0 +1,12 @@
+import {
+  isActiveListingFlow,
+  LIST_ITEM_START_PATH,
+  SELL_FORM_PATH,
+} from '~/utils/listItemRoutes.js'
+
+/** Bare /sell (no kind/mode) → chooser at /sell/start before hub or policy gate. */
+export default defineNuxtRouteMiddleware((to) => {
+  if (to.path !== SELL_FORM_PATH) return
+  if (isActiveListingFlow(to.query)) return
+  return navigateTo(LIST_ITEM_START_PATH)
+})

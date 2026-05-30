@@ -15,7 +15,7 @@
         <span v-html="formatInline(block.text)" />
       </aside>
       <p v-else-if="block.type === 'cta'" class="article-cta-wrap">
-        <NuxtLink :to="block.to || '/sell'" class="btn btn-primary btn-sm">{{ block.label || 'Learn more' }}</NuxtLink>
+        <NuxtLink :to="block.to || '/sell/start'" class="btn btn-primary btn-sm">{{ block.label || 'Learn more' }}</NuxtLink>
       </p>
     </template>
   </article>

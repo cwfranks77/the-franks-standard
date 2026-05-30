@@ -16,7 +16,7 @@ const campaign = computed(() => getCampaign(slug.value))
 
 const label = computed(() => campaign.value?.label || 'The Franks Standard')
 const destination = computed(() => {
-  if (!campaign.value) return '/sell'
+  if (!campaign.value) return '/sell/start'
   return buildTrackedPath(slug.value, {
     ref: route.query.ref,
     promo: route.query.promo,

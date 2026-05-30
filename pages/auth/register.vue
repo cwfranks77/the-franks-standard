@@ -71,7 +71,7 @@
 
         <p v-if="accountType === 'sell' || accountType === 'both'" class="seller-policy-note text-muted small">
           Sellers: after sign-in you must complete a <strong>digital signature</strong> (full legal name) for all seller policies on
-          <NuxtLink to="/sell">Sell</NuxtLink> before your first listing, import, or dropship publish.
+          <NuxtLink to="/sell/start">Sell</NuxtLink> before your first listing, import, or dropship publish.
         </p>
 
         <button type="submit" class="btn btn-primary mt-2" style="width: 100%;" :disabled="loading">
@@ -107,8 +107,10 @@ const route = useRoute()
 const { savePendingPromo, fetchAvailability, redeemCode } = usePromoCode()
 const { captureFromRoute, getSignupMetadataFields } = useOutreachAttribution()
 
+import { LIST_ITEM_START_PATH } from '~/utils/listItemRoutes.js'
+
 function postRegisterPath (type) {
-  if (type === 'sell' || type === 'seller') return '/sell'
+  if (type === 'sell' || type === 'seller') return LIST_ITEM_START_PATH
   if (type === 'both') return '/dashboard'
   return '/dashboard'
 }

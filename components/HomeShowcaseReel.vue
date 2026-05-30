@@ -16,7 +16,7 @@
           :to="browseFor(item)"
           class="showcase-reel-card"
         >
-          <img :src="item.image" :alt="item.title" width="280" height="200" loading="lazy" />
+          <img :src="item.image" :alt="item.title" width="280" height="200" loading="lazy" @error="onShowcaseImageError" />
           <span class="showcase-reel-card-meta">
             <span class="showcase-reel-tag">{{ item.tag }}</span>
             <strong>{{ item.title }}</strong>
@@ -30,7 +30,7 @@
           :to="browseFor(item)"
           class="showcase-reel-card"
         >
-          <img :src="item.image" :alt="item.title" width="280" height="200" loading="lazy" />
+          <img :src="item.image" :alt="item.title" width="280" height="200" loading="lazy" @error="onShowcaseImageError" />
           <span class="showcase-reel-card-meta">
             <span class="showcase-reel-tag">{{ item.tag }}</span>
             <strong>{{ item.title }}</strong>
@@ -47,7 +47,7 @@
 </template>
 
 <script setup>
-import { SHOWCASE_REEL_ITEMS } from '~/utils/marketplaceShowcaseImages.js'
+import { SHOWCASE_REEL_ITEMS, onShowcaseImageError } from '~/utils/marketplaceShowcaseImages.js'
 
 const reelDoubled = [...SHOWCASE_REEL_ITEMS, ...SHOWCASE_REEL_ITEMS]
 const reelDoubledReverse = [...[...SHOWCASE_REEL_ITEMS].reverse(), ...[...SHOWCASE_REEL_ITEMS].reverse()]

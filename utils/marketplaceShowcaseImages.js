@@ -1,23 +1,56 @@
 /**
- * Real collectible photography for homepage showcase (Unsplash CDN).
- * Central source — swap to your own listing photos when ready.
+ * Category art for homepage showcase tiles — bundled SVGs (no external CDN).
+ * Swap paths to your own listing photos when ready.
  */
-export function showcasePhoto (photoId, width = 800) {
-  return `https://images.unsplash.com/${photoId}?w=${width}&q=82&auto=format&fit=crop`
+export const CATEGORY_SHOWCASE_PHOTOS = {
+  cards: '/img/reel-cards.svg',
+  coins: '/img/reel-coins.svg',
+  watches: '/img/reel-watches.svg',
+  sneakers: '/img/reel-sneakers.svg',
+  guitars: '/img/reel-guitars.svg',
+  art: '/img/reel-art.svg',
+  camera: '/img/reel-camera.svg',
+  vintage: '/img/reel-vintage.svg',
+  estate: '/img/reel-estate.svg',
+  comics: '/img/reel-cards.svg',
 }
 
-/** Category → hero-quality photo */
-export const CATEGORY_SHOWCASE_PHOTOS = {
-  cards: showcasePhoto('photo-1606111115765-02aebe61a70d', 640),
-  coins: showcasePhoto('photo-1624365168968-f283d496dafa', 640),
-  watches: showcasePhoto('photo-1523170335258-f5c6d6ecc2e9', 640),
-  sneakers: showcasePhoto('photo-1542291026-7eec264c27ff', 640),
-  guitars: showcasePhoto('photo-1516920040974-1f47fbf54b2f', 640),
-  art: showcasePhoto('photo-1579783902614-a3fb3927b6a5', 640),
-  camera: showcasePhoto('photo-1526170375885-4d8ecf77b99f', 640),
-  vintage: showcasePhoto('photo-1550745165-9bc0b252726f', 640),
-  estate: showcasePhoto('photo-1558618666-fcd25c85cd64', 640),
-  comics: showcasePhoto('photo-1612036781340-922b57262d08', 640),
+/** Neutral fallback if a tile image fails at runtime */
+export const SHOWCASE_IMAGE_FALLBACK = '/img/hero-showcase-v2.svg'
+
+export function onShowcaseImageError (event) {
+  const el = event?.target
+  if (!el || el.dataset?.showcaseFallback) return
+  el.dataset.showcaseFallback = '1'
+  el.src = SHOWCASE_IMAGE_FALLBACK
+}
+
+/** Listing grid cards — category-aware fallback when Supabase/CDN URL fails */
+export function onListingImageError (event) {
+  const el = event?.target
+  if (!el || el.dataset?.listingFallback) return
+  el.dataset.listingFallback = '1'
+  const category = el.dataset?.category || ''
+  el.src = categoryFallbackImage(category)
+}
+
+const CATEGORY_NAME_TO_KEY = {
+  'Musical Instruments': 'guitars',
+  'Watches & Jewelry': 'watches',
+  'Sports Cards & Memorabilia': 'cards',
+  'Trading Card Games (Pokemon, MTG, etc.)': 'cards',
+  'Coins & Currency': 'coins',
+  'Sneakers & Streetwear': 'sneakers',
+  'Art & Antiques': 'art',
+  'Photography & Film Gear': 'camera',
+  'Vintage Electronics & Games': 'vintage',
+  'Home & Estate Collectibles': 'estate',
+  'Comics & Graphic Novels': 'comics',
+}
+
+export function categoryFallbackImage (categoryName) {
+  const key = CATEGORY_NAME_TO_KEY[categoryName]
+  return (key && CATEGORY_SHOWCASE_PHOTOS[key]) || SHOWCASE_IMAGE_FALLBACK
 }
 
 /** Featured “floor” moments for scrolling reel */
@@ -36,10 +69,10 @@ export const SHOWCASE_REEL_ITEMS = [
 
 /** Hero mosaic — proof-of-life collage */
 export const HERO_MOSAIC_PHOTOS = [
-  { image: showcasePhoto('photo-1606111115765-02aebe61a70d', 520), label: 'Slabbed cards' },
-  { image: showcasePhoto('photo-1624365168968-f283d496dafa', 520), label: 'Coins' },
-  { image: showcasePhoto('photo-1523170335258-f5c6d6ecc2e9', 520), label: 'Watches' },
-  { image: showcasePhoto('photo-1542291026-7eec264c27ff', 520), label: 'Sneakers' },
-  { image: showcasePhoto('photo-1516920040974-1f47fbf54b2f', 520), label: 'Instruments' },
-  { image: showcasePhoto('photo-1526170375885-4d8ecf77b99f', 520), label: 'Cameras' },
+  { image: CATEGORY_SHOWCASE_PHOTOS.cards, label: 'Slabbed cards' },
+  { image: CATEGORY_SHOWCASE_PHOTOS.coins, label: 'Coins' },
+  { image: CATEGORY_SHOWCASE_PHOTOS.watches, label: 'Watches' },
+  { image: CATEGORY_SHOWCASE_PHOTOS.sneakers, label: 'Sneakers' },
+  { image: CATEGORY_SHOWCASE_PHOTOS.guitars, label: 'Instruments' },
+  { image: CATEGORY_SHOWCASE_PHOTOS.camera, label: 'Cameras' },
 ]

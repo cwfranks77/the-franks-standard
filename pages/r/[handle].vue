@@ -23,7 +23,7 @@ const partner = computed(() => findPartner(handle.value))
 const creatorLabel = computed(() => partner.value?.displayName || (handle.value ? `@${handle.value}` : ''))
 
 const destination = computed(() => {
-  if (!handle.value) return '/sell'
+  if (!handle.value) return '/sell/start'
   return buildAffiliatePath(handle.value, siteOrigin(), {
     partner: partner.value,
     landing: partner.value?.landing,

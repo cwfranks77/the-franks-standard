@@ -74,7 +74,7 @@ export const LIMITED_DROPS = [
     categories: ['Sports Cards & Memorabilia'],
     endsLabel: 'While listings last',
     promoLine: `COA required · Stripe escrow · ${PRICING_PUBLIC.txRangeLabel} fees`,
-    ctaPath: '/sell',
+    ctaPath: '/sell/start',
   },
   {
     slug: 'floor-drop-coin-collectors',
@@ -84,7 +84,7 @@ export const LIMITED_DROPS = [
     categories: ['Coins & Currency'],
     endsLabel: 'Ongoing niche focus',
     promoLine: 'Video inspect available on high-value lots',
-    ctaPath: '/sell',
+    ctaPath: '/sell/start',
   },
   {
     slug: 'floor-drop-sealed-tcg',

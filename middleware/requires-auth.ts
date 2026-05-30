@@ -9,6 +9,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const supabase = useSupabaseClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) {
-    return navigateTo({ path: '/auth/login', query: { redirect: to.fullPath } })
+    return navigateTo(`/auth/login?redirect=${encodeURIComponent(to.fullPath)}`)
   }
 })

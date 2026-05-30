@@ -13,7 +13,7 @@
         <div class="learn-cta-actions mt-2">
           <NuxtLink to="/learn/tools" class="btn btn-primary btn-sm">Free tools</NuxtLink>
           <NuxtLink to="/learn/videos" class="btn btn-outline btn-sm">Video library</NuxtLink>
-          <NuxtLink to="/sell" class="btn btn-outline btn-sm">Start selling</NuxtLink>
+          <NuxtLink to="/sell/start" class="btn btn-outline btn-sm">Start selling</NuxtLink>
         </div>
       </div>
     </section>

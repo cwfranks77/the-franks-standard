@@ -28,7 +28,7 @@
           </div>
         </div>
         <div class="free-access-actions">
-          <NuxtLink to="/sell" class="btn btn-primary btn-lg">Sell an Item (Free)</NuxtLink>
+          <NuxtLink to="/sell/start" class="btn btn-primary btn-lg">Sell an Item (Free)</NuxtLink>
           <NuxtLink to="/sell/dropship-setup?ai=1" class="btn btn-primary btn-lg">AI Dropship Setup</NuxtLink>
           <NuxtLink to="/ops/dropship" class="btn btn-primary btn-lg">Dropship Automation</NuxtLink>
           <NuxtLink to="/ops/sellers-phone" class="btn btn-primary btn-lg">eBay sellers (phone)</NuxtLink>
@@ -100,7 +100,7 @@
           <ul class="link-list">
             <li><NuxtLink to="/">Homepage</NuxtLink></li>
             <li><NuxtLink to="/dashboard">Dashboard</NuxtLink></li>
-            <li><NuxtLink to="/sell">Sell</NuxtLink></li>
+            <li><NuxtLink to="/sell/start">Sell</NuxtLink></li>
             <li><NuxtLink to="/browse">Browse</NuxtLink></li>
             <li><NuxtLink to="/pay">Pay and fees</NuxtLink></li>
             <li><NuxtLink to="/video">Video (Jitsi)</NuxtLink></li>
