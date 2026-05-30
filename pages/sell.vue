@@ -570,7 +570,7 @@ const sellDockTiles = [
 
 const charities = CHARITY_OPTIONS
 
-definePageMeta({ middleware: ['sell-entry', 'requires-auth'] })
+definePageMeta({ middleware: ['sell-entry', 'sell-auth'] })
 const route = useRoute()
 const isSellSubRoute = computed(() => {
   // Nested parent route.path stays /sell when child is active; use fullPath.

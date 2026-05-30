@@ -11,6 +11,7 @@ import {
 
 export function useSellerPolicyAcceptance () {
   const supabase = useSupabaseClient()
+  const user = useSupabaseUser()
   const accepted = ref(false)
   const signerName = ref('')
   const acceptedAt = ref('')
@@ -71,7 +72,9 @@ export function useSellerPolicyAcceptance () {
     }
   }
 
-  const needsAcceptance = computed(() => !loading.value && !accepted.value)
+  const needsAcceptance = computed(
+    () => !!user.value && !loading.value && !accepted.value,
+  )
 
   return {
     SELLER_POLICY_VERSION,
