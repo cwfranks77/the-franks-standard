@@ -13,8 +13,6 @@
       </li>
     </ul>
 
-    <p class="closing">{{ SELLER_DIGITAL_AGREEMENT_CLOSING }}</p>
-
     <div class="form-group">
       <label class="label" for="seller-policy-legal-name">Full legal name (electronic signature)</label>
       <input
@@ -31,8 +29,8 @@
     <label class="agree-all">
       <input v-model="agreeAll" type="checkbox" :disabled="submitting" />
       <span>
-        I have read and digitally agree to <strong>all</strong> policies listed above, including escrow, refunds,
-        account freeze, platform debt recovery, authenticity enforcement, chargebacks, and permanent ban provisions.
+        {{ SELLER_DIGITAL_AGREEMENT_CLOSING }}
+        I have read and digitally agree to <strong>all</strong> policies listed above.
       </span>
     </label>
 
@@ -95,7 +93,7 @@ async function onSubmit () {
   font-size: 1.25rem;
   margin-bottom: 12px;
 }
-.intro, .closing { font-size: 0.92rem; line-height: 1.6; color: #374151; font-weight: 600; }
+.intro { font-size: 0.92rem; line-height: 1.6; color: #374151; font-weight: 600; }
 .doc-list {
   list-style: none;
   padding: 0;

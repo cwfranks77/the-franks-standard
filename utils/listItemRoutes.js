@@ -1,13 +1,13 @@
 /** Entry points for "List an item" — choose collectible vs general before the full sell form. */
 
+import { COA_PROOF_TYPES, isAllowedCoaProofType } from '~/utils/coaProofTypes.js'
+
 export const LIST_ITEM_START_PATH = '/sell/start'
 export const LIST_ITEM_COA_PATH = '/sell/coa'
 export const SELL_FORM_PATH = '/sell'
 
 export const LISTING_KIND_GENERAL = 'general'
 export const LISTING_KIND_COLLECTIBLE = 'collectible'
-
-const ALLOWED_COA_TYPES = new Set(['upload', 'guarantee', 'franks_issued'])
 
 /** Normalize ?kind= from route query. */
 export function parseListingKind (query) {
@@ -19,7 +19,7 @@ export function parseListingKind (query) {
 
 export function parseCoaTypeFromQuery (query) {
   const coa = String(query?.coaType || query?.coa || '').toLowerCase()
-  return ALLOWED_COA_TYPES.has(coa) ? coa : ''
+  return isAllowedCoaProofType(coa) ? coa : ''
 }
 
 /** True when user chose a listing path (not the sell hub chooser). */
@@ -51,7 +51,7 @@ export function resolveAuthRedirect (query, fallback = '/dashboard') {
   return suffix ? `${raw}?${suffix}` : raw
 }
 
-/** Non-collectible → sell form, no COA step. */
+/** General retail path — non-collectible categories only; COA still enforced if category/keywords require proof. */
 export function generalListingRoute () {
   return { path: SELL_FORM_PATH, query: { kind: LISTING_KIND_GENERAL } }
 }
@@ -59,7 +59,7 @@ export function generalListingRoute () {
 /** Collectible with proof chosen on /sell/coa. */
 export function collectibleListingRoute (coaType) {
   const coa = String(coaType || '').toLowerCase()
-  if (!ALLOWED_COA_TYPES.has(coa)) return LIST_ITEM_COA_PATH
+  if (!isAllowedCoaProofType(coa)) return LIST_ITEM_COA_PATH
   return {
     path: SELL_FORM_PATH,
     query: { kind: LISTING_KIND_COLLECTIBLE, coaType: coa },
@@ -71,3 +71,5 @@ export function collectibleNeedsCoaStep (query) {
   if (parseListingKind(query) !== LISTING_KIND_COLLECTIBLE) return false
   return !parseCoaTypeFromQuery(query)
 }
+
+export { COA_PROOF_TYPES, isAllowedCoaProofType }

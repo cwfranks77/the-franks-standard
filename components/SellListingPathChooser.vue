@@ -17,7 +17,7 @@
       <button type="button" class="choice-card choice-card--collectible" @click="chooseCollectible">
         <span class="choice-icon" aria-hidden="true">🏛️</span>
         <span class="choice-title">Collectible</span>
-        <span class="choice-desc">Cards, coins, watches, art, antiques, memorabilia, and similar items that need COA or seller guarantee.</span>
+        <span class="choice-desc">Cards, coins, watches, art, antiques, memorabilia — COA upload or Franks Standard COA only.</span>
         <span class="choice-cta">Continue to COA / proof step →</span>
       </button>
     </div>

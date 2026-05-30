@@ -12,12 +12,13 @@ import {
 export function useSellerPolicyAcceptance () {
   const supabase = useSupabaseClient()
   const user = useSupabaseUser()
-  const accepted = ref(false)
-  const signerName = ref('')
-  const acceptedAt = ref('')
-  const loading = ref(true)
-  const submitting = ref(false)
-  const error = ref('')
+  /** Shared across SellerPolicyAgreement + sell/import pages (separate ref() broke unlock). */
+  const accepted = useState('seller-policy-accepted', () => false)
+  const signerName = useState('seller-policy-signer', () => '')
+  const acceptedAt = useState('seller-policy-accepted-at', () => '')
+  const loading = useState('seller-policy-loading', () => true)
+  const submitting = useState('seller-policy-submitting', () => false)
+  const error = useState('seller-policy-error', () => '')
 
   async function loadStatus () {
     loading.value = true

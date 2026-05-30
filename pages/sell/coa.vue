@@ -4,7 +4,8 @@
       <p class="eyebrow">Collectible listing</p>
       <h1>Authenticity proof (COA)</h1>
       <p class="lead">
-        Collectibles need proof before you publish. <strong>You</strong> back the item — choose how you will show authenticity, then continue to the listing form.
+        Every collectible processed on The Franks Standard is recorded with proof on file.
+        <strong>You</strong> back the item — choose how buyers will verify it, then continue to the listing form.
       </p>
 
       <div class="coa-options">
@@ -12,24 +13,22 @@
           <input v-model="coaType" type="radio" value="upload" name="coaPick" />
           <div>
             <h2>Upload a COA</h2>
-            <p>You already have a certificate from a grader or issuer.</p>
+            <p>Third-party certificate (PSA, PCGS, issuer PDF, etc.). We store the file with your listing.</p>
           </div>
         </label>
-        <label class="coa-pick" :class="{ active: coaType === 'guarantee' }">
-          <input v-model="coaType" type="radio" value="guarantee" name="coaPick" />
-          <div>
-            <h2>Seller Authenticity Guarantee</h2>
-            <p>Sign our in-platform template with your legal name — you back the item.</p>
-          </div>
-        </label>
-        <label class="coa-pick" :class="{ active: coaType === 'franks_issued' }">
+        <label class="coa-pick coa-pick--featured" :class="{ active: coaType === 'franks_issued' }">
           <input v-model="coaType" type="radio" value="franks_issued" name="coaPick" />
           <div>
-            <h2>Franks Standard COA template</h2>
-            <p>We issue a serial tied to your listing photos after you upload them on the next step.</p>
+            <h2>Franks Standard COA</h2>
+            <p>Platform serial (<code>FS-YYYY-NNNNNN</code>) issued at publish — tied to your photos, description, and listing ID in our registry.</p>
           </div>
         </label>
       </div>
+
+      <p class="registry-note">
+        Franks COA is our floor-office template and database record — not a Platform warranty that the item is genuine.
+        Sellers remain responsible for authenticity; we enforce policies when proof fails.
+      </p>
 
       <CoaSellerDisclosure variant="full" />
 
@@ -57,8 +56,8 @@ const continueTo = computed(() => {
 })
 
 useSeoMeta({
-  title: 'COA & proof for collectibles | The Franks Standard',
-  description: 'Choose COA upload, seller guarantee, or Franks Standard COA template before listing a collectible.',
+  title: 'COA proof for collectibles | The Franks Standard',
+  description: 'Upload a third-party COA or use the Franks Standard COA serial registry before listing collectibles.',
 })
 </script>
 
@@ -81,6 +80,17 @@ useSeoMeta({
   color: #111827;
   margin-bottom: 20px;
 }
+.registry-note {
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.55;
+  color: #4b5563;
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
 .coa-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; }
 .coa-pick {
   display: flex;
@@ -91,6 +101,7 @@ useSeoMeta({
   cursor: pointer;
   background: #fff;
 }
+.coa-pick--featured { border-color: rgba(201, 168, 76, 0.5); }
 .coa-pick.active { border-color: var(--gold, #c9a84c); background: rgba(201, 168, 76, 0.06); }
 .coa-pick input { margin-top: 4px; accent-color: var(--gold, #c9a84c); }
 .coa-pick h2 { font-size: 1rem; margin: 0 0 4px; color: #111827; }

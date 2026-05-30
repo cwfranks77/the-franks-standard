@@ -64,7 +64,7 @@ export function scanListingIntegrity (row = {}) {
   if (proofRequired && row.coa_type === 'none') {
     flags.push({
       id: 'collectible_no_proof',
-      label: 'Collectible listing requires COA, guarantee, or Franks issued COA',
+      label: 'Collectible listing requires uploaded COA or Franks issued COA',
       severity: 'block',
       weight: 45,
     })
