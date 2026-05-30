@@ -33,9 +33,10 @@
           View listing
         </NuxtLink>
       </div>
+      <CoaSellerDisclosure variant="full" class="mt-3" />
       <p class="text-muted small mt-3">
         Each listing is a <strong>floor office</strong> with number <code>FS-YYYY-NNNNNN</code>. The COA serial is that office number.
-        The coin or card in the photos at issue time is the only item that certificate covers — not a lookalike in another slot.
+        The item in the photos at issue time is the only item that certificate covers — not a lookalike in another slot.
       </p>
     </div>
   </div>

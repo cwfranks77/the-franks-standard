@@ -95,6 +95,9 @@ Deno.serve(async (req) => {
   await admin.from('coa_serial_sequences').upsert({ year, last_number: nextNum }, { onConflict: 'year' })
 
   const fingerprint = listingItemFingerprint(listing)
+  const coaDisclosure =
+    'The Franks Standard COA is a platform-issued document template only. It is not a guarantee or warranty by The Franks Standard LLC. The seller backs authenticity of this item.'
+
   const snapshot = {
     title: listing.title,
     description_excerpt: description.slice(0, 500),
@@ -105,6 +108,7 @@ Deno.serve(async (req) => {
     image_paths: images,
     listing_id: listingId,
     floor_slot_code: serial,
+    coa_disclosure_fine_print: coaDisclosure,
   }
 
   const { data: cert, error: certErr } = await admin

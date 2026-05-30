@@ -174,7 +174,7 @@ export function getAiReply (message: string): string {
     return '**Authenticity on The Franks Standard:**\n\n' +
       'Every listing requires one of:\n' +
       '• **COA Upload** — photo/scan of your Certificate of Authenticity\n' +
-      '• **Platform Guarantee** — you sign our in-platform authenticity guarantee with your legal name\n\n' +
+      '• **Seller Authenticity Guarantee** — Franks Standard template; you sign with your legal name and **you** back the item (not the Platform)\n\n' +
       'Buyers see the proof before money moves. If an item is proven fake:\n' +
       '• Full refund to the buyer\n• Permanent ban for the seller\n• No second chances\n\n' +
       'We work with PSA, PCGS, Beckett, and other grading services. ' +

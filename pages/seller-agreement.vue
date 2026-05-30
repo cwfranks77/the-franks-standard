@@ -24,7 +24,8 @@
       <h2>2. Authenticity and COA</h2>
       <p>
         You may only list items you have the right to sell. Each listing must include a Certificate of Authenticity (COA) or the
-        in-platform Franks Standard Guarantee as required. Misrepresentation, counterfeit items, or COA misuse may result in
+        in-platform Seller Authenticity Guarantee (Franks Standard template — you back the item, not the Platform) as required.
+        Misrepresentation, counterfeit items, or COA misuse may result in
         listing removal, COA revocation, buyer refunds, platform debt, account freeze, and permanent ban — as detailed in the
         <NuxtLink to="/marketplace-policy">Marketplace Policies</NuxtLink>.
       </p>

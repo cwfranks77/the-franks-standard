@@ -28,5 +28,5 @@
   <!-- Check shield -->
   <circle cx="100" cy="98" r="18" fill="#0f1419" stroke="url(#ring)" stroke-width="2"/>
   <path d="M92 98 L97 103 L110 90" fill="none" stroke="#6ee7b7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-  <text x="100" y="148" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="7" fill="#9ca3af" letter-spacing="0.5">SELLER PROOF ON FILE</text>
+  <text x="100" y="148" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="6.5" fill="#9ca3af" letter-spacing="0.4">SELLER BACKS THIS ITEM</text>
 </svg>

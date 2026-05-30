@@ -464,16 +464,16 @@
               <label class="coa-option" :class="{ active: form.coaType === 'guarantee' }">
                 <input type="radio" v-model="form.coaType" value="guarantee" name="coaType" />
                 <div class="coa-option-content">
-                  <h4>Sign The Franks Standard Guarantee</h4>
-                  <p>You personally vouch for this item's authenticity. Your name, reputation, and account are on the line.</p>
+                  <h4>Sign Seller Authenticity Guarantee</h4>
+                  <p>You — the seller — back this item. Franks Standard provides the template only; we do not guarantee authenticity.</p>
                 </div>
               </label>
 
               <label class="coa-option" :class="{ active: form.coaType === 'franks_issued' }">
                 <input type="radio" v-model="form.coaType" value="franks_issued" name="coaType" />
                 <div class="coa-option-content">
-                  <h4>Franks Standard issued COA</h4>
-                  <p>One listing = one floor office. Serial (<code>FS-{{ currentYear }}-000001</code>) is the office number on the COA and on the listing. Issued only after photos + description — certifies that exact item, not a lookalike.</p>
+                  <h4>Franks Standard COA template</h4>
+                  <p>One listing = one floor office. Serial (<code>FS-{{ currentYear }}-000001</code>) links photos and description at issue time. <strong>You back the item</strong> — the COA is our template, not a Platform guarantee of genuineness.</p>
                 </div>
               </label>
             </div>
@@ -481,6 +481,7 @@
             <p v-if="form.coaType === 'franks_issued'" class="text-muted small">
               Upload photos first. On publish we issue your serial and link it to this listing only.
             </p>
+            <CoaSellerDisclosure v-if="form.coaType === 'franks_issued'" variant="full" />
 
             <!-- Upload COA -->
             <div v-if="form.coaType === 'upload'" class="mt-3 coa-upload-block">
@@ -504,10 +505,11 @@
             <!-- Sign Guarantee -->
             <div v-if="form.coaType === 'guarantee'" class="guarantee-box mt-3">
               <div class="guarantee-text">
-                <p><strong>The Franks Standard Guarantee</strong></p>
+                <p><strong>{{ SELLER_GUARANTEE_TITLE }}</strong> <span class="text-muted small">{{ SELLER_GUARANTEE_SUBTITLE }}</span></p>
                 <p class="text-muted small">{{ guaranteeSealIntro }}</p>
-                <p>I, <strong>{{ form.sellerName || '[Your Name]' }}</strong>, certify that the item listed above is authentic, genuine, and accurately described based on the information and proof I provided. I understand that The Franks Standard applies listing integrity screening — not in-person laboratory authentication — and that if this item is proven counterfeit or misrepresented under our Marketplace Policies, my account may be permanently banned and the buyer may receive a refund from escrow or enforcement funds.</p>
-                <p>I am staking my name and reputation on this listing.</p>
+                <p>I, <strong>{{ form.sellerName || '[Your Name]' }}</strong>, as the seller, back and certify that the item listed above is authentic, genuine, and accurately described based on the information and proof I provided. I understand that The Franks Standard LLC does <strong>not</strong> guarantee or warrant the authenticity of this item — it provides this guarantee template, listing integrity screening (not laboratory authentication), and Marketplace Policy enforcement if this item is proven counterfeit or misrepresented. If that happens, my account may be permanently banned and the buyer may receive a refund from escrow or enforcement funds.</p>
+                <p>I am staking my name and reputation on this listing — not the Platform&apos;s.</p>
+                <CoaSellerDisclosure variant="full" />
               </div>
               <div class="form-group mt-2">
                 <label class="label">Your Full Legal Name</label>
@@ -515,7 +517,7 @@
               </div>
               <label class="guarantee-check">
                 <input type="checkbox" v-model="form.guaranteeSigned" required />
-                <span>I have read and agree to The Franks Standard Guarantee above. I understand this is legally binding.</span>
+                <span>I have read and agree to the Seller Authenticity Guarantee above. I understand I — not The Franks Standard — back this item, and this signature is legally binding.</span>
               </label>
             </div>
           </div>
@@ -545,7 +547,11 @@ import {
   listingRequiresCoa,
   textSuggestsCollectible,
 } from '~/utils/marketplaceCategories'
-import { GUARANTEE_WITH_SEAL_INTRO } from '~/utils/authenticitySeal.js'
+import {
+  GUARANTEE_WITH_SEAL_INTRO,
+  SELLER_GUARANTEE_SUBTITLE,
+  SELLER_GUARANTEE_TITLE,
+} from '~/utils/authenticitySeal.js'
 
 const guaranteeSealIntro = GUARANTEE_WITH_SEAL_INTRO
 import { CHARITY_OPTIONS, charityByKey } from '~/utils/charities.js'
@@ -756,7 +762,7 @@ function buildListingDescription (input) {
     ? 'Authenticity: COA uploaded or signed Franks Standard guarantee required — add proof in the COA section below.'
     : 'Condition: Item is described accurately with clear photos. General merchandise — no COA required for this category.'
   if (coaType === 'upload') auth = 'Authenticity: Certificate of Authenticity (COA) on file with this listing.'
-  if (coaType === 'guarantee') auth = 'Authenticity: Backed by The Franks Standard in-platform seller guarantee.'
+  if (coaType === 'guarantee') auth = 'Authenticity: Seller backs this item via signed Seller Authenticity Guarantee (Franks Standard template).'
   if (coaType === 'none' || (!needsProof && !coaType)) auth = 'Condition: Accurate description and photos; sold as described on The Franks Standard.'
   let ship = 'Shipping: Ships within 2 business days after escrow — insured and tracked when applicable.'
   if (listingMode === 'dropship') {
@@ -927,11 +933,11 @@ async function submitListing() {
   const needsCoa = listingRequiresCoa(form.category, form.title, form.description)
   if (needsCoa) {
     if (!form.coaType) {
-      alert('This listing requires a COA upload, Franks issued COA, or signed Franks Standard Guarantee. Scroll to the Certificate of Authenticity section.')
+      alert('This listing requires a COA upload, Franks COA template, or signed Seller Authenticity Guarantee. Scroll to the Certificate of Authenticity section.')
       return
     }
     if (form.coaType === 'guarantee' && !form.guaranteeSigned) {
-      alert('You must sign The Franks Standard Guarantee to list this item.')
+      alert('You must sign the Seller Authenticity Guarantee to list this item.')
       return
     }
     if (form.coaType === 'upload') {

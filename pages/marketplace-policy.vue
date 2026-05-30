@@ -60,14 +60,20 @@
       <h3>4.1 Seller obligations</h3>
       <p>
         Each listing must meet authenticity requirements on the Sell flow: upload a COA or complete the in-platform
-        Franks Standard Guarantee (legally binding representation). Listings must accurately describe the item offered,
-        including photos and condition. You may not reuse a COA issued for one listing office on a different item or listing.
+        <strong>Seller Authenticity Guarantee</strong> (legally binding <em>seller</em> representation — Franks Standard template only).
+        Listings must accurately describe the item offered, including photos and condition. You may not reuse a COA issued for
+        one listing office on a different item or listing.
       </p>
-      <h3>4.1a Franks-issued COA</h3>
+      <h3>4.1a Franks Standard COA template</h3>
       <p>
-        When the Platform issues a COA, the serial is assigned to that listing&apos;s floor office. Photos and description text
+        When the Platform issues a COA serial, it is assigned to that listing&apos;s floor office. Photos and description text
         at issue time are frozen on the certificate. Buyers may verify at <code>/verify/coa/[serial]</code>. A mismatch between
         verification and the live listing is grounds for review.
+      </p>
+      <p class="text-muted small">
+        <strong>Disclosure:</strong> A Franks Standard COA is a platform document template — not a guarantee, warranty, or expert
+        opinion by the Platform. The <strong>seller</strong> backs authenticity; the Platform may enforce these policies when an
+        item is proven counterfeit or misrepresented, but enforcement does not mean the Platform vouched for genuineness at sale.
       </p>
       <h3>4.2 Automated integrity screening</h3>
       <p>

@@ -31,7 +31,14 @@
 </template>
 
 <script setup>
-import { SEAL_ASSET, SEAL_DOES_NOT_MEAN, SEAL_MEANS, SEAL_TITLE } from '~/utils/authenticitySeal.js'
+import {
+  SEAL_ASSET,
+  SEAL_COMPACT_LABEL,
+  SEAL_DOES_NOT_MEAN,
+  SEAL_LISTING_LEAD,
+  SEAL_MEANS,
+  SEAL_TITLE,
+} from '~/utils/authenticitySeal.js'
 
 const props = defineProps({
   size: { type: String, default: 'md' },
@@ -39,9 +46,9 @@ const props = defineProps({
   showDetails: { type: Boolean, default: true },
   lead: {
     type: String,
-    default: 'This listing met our proof requirements at publish time. We stand behind our process — not unlimited personal liability.',
+    default: SEAL_LISTING_LEAD,
   },
-  compactLabel: { type: String, default: 'Listing Authenticity Standard' },
+  compactLabel: { type: String, default: SEAL_COMPACT_LABEL },
 })
 
 const imgSize = computed(() => {

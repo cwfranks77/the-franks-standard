@@ -1,48 +1,34 @@
-# Authenticity seal, screening, and liability (internal)
+# Seller-backed authenticity, COA template, and liability (internal)
 
-**Not legal advice.** Have a licensed attorney review before marketing the seal nationally.
+**Not legal advice.** Have a licensed attorney review before marketing nationally.
 
-## Product positioning (recommended)
+## Core rule
 
-| Claim | Use? |
-|-------|------|
-| "Listing met Franks Standard proof requirements" | Yes — seal |
-| "We stand behind our **process** (escrow, screening, enforcement)" | Yes |
-| "Franks Standard **certified** genuine" | Avoid — sounds like expert authentication |
-| "AI **authenticated** this item" | Avoid — increases reliance / liability |
-| "Listing **integrity screening**" | Yes — for automated checks |
+| Who backs the item? | **The seller** |
+| Who guarantees genuineness? | **Nobody at the Platform** — templates + enforcement only |
+| What is a Franks COA? | **Platform template + serial registry** tied to listing photos at issue time |
+| What is the seal? | Seller proof on file + screening passed — **not** Platform certification |
+
+## Copy to use everywhere
+
+- "The **seller** backs this item"
+- "Franks Standard **COA template**" (not "Franks certified genuine")
+- "**Seller Authenticity Guarantee**" (Franks Standard template)
+- Fine print: `COA_FINE_PRINT_FULL` / `COA_FINE_PRINT_SHORT` in `utils/authenticitySeal.js`
+- Component: `components/CoaSellerDisclosure.vue`
+
+## What the Platform still does (without vouching)
+
+- Escrow, dispute policy, forced refunds, bans, COA/listing pairing checks
+- **Listing integrity screening** — not authentication
 
 ## Does analysis increase liability?
 
-**Often yes**, if buyers reasonably believe the platform *independently verified* genuineness.
-
-**Lower risk framing:**
-
-1. Seller supplies COA or signs in-platform guarantee (seller representation).
-2. Platform runs **integrity screening** (replica language, missing proof, photo/COA pairing for Franks issued COAs).
-3. Seal = both steps passed **at listing time**.
-4. If later proven fake: **Marketplace Policy** remedies (refund, ban, debt) — not "we promised it was real forever."
-
-Do **not** market screening as PSA/PCGS-level authentication unless you hire experts and carry insurance.
+Yes if marketed as Platform authentication. No if framed as seller representation + screening + policy enforcement.
 
 ## Assets
 
-- Seal SVG: `public/franks-authenticity-seal.svg`
-- Component: `components/FranksAuthenticitySeal.vue`
-- Copy source: `utils/authenticitySeal.js`
-- Public explanation: `/protection#authenticity-seal`
-- Terms: section 4
-
-## Optional future (higher cost / liability)
-
-- Human ops review queue for high-value items (document as "administrative review of seller documents," not authentication).
-- Third-party API (Entrupy, etc.) — separate labeled program with separate ToS.
-- Insurance / bonded seller program — commercial decision.
-
-## What we already have in code
-
-- `authenticityScan` / `integrity_status` — heuristic flags, not certification.
-- `issue-coa-certificate` — ties serial to listing photos (pairing).
-- Forced refunds / bans — enforcement path when counterfeit confirmed.
-
-Keep all user-facing text aligned with **screening + seller proof**, not **platform certification**.
+- Seal SVG: `public/franks-authenticity-seal.svg` — "SELLER BACKS THIS ITEM"
+- `components/FranksAuthenticitySeal.vue`
+- `utils/authenticitySeal.js`
+- `/protection#authenticity-seal`, Terms §4, Marketplace Policy §4.1a

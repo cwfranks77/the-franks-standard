@@ -61,24 +61,28 @@
             class="listing-seal-wrap"
             size="sm"
             :show-details="false"
+            :lead="SEAL_LISTING_LEAD"
           />
 
           <div v-if="listing.coaType !== 'none'" class="listing-coa-box">
             <span class="coa-badge">{{ coaBadgeLabel }}</span>
             <p class="text-muted" style="font-size: 0.8rem; margin-top: 6px;">
               <template v-if="listing.coaType === 'franks_issued'">
-                Franks Standard issued COA
+                Franks Standard COA template (serial
                 <template v-if="listing.coaSerial">
-                  — serial <NuxtLink :to="`/verify/coa/${listing.coaSerial}`">{{ listing.coaSerial }}</NuxtLink>
+                  <NuxtLink :to="`/verify/coa/${listing.coaSerial}`">{{ listing.coaSerial }}</NuxtLink>
                 </template>
+                <template v-else>pending</template>
+                ) — <strong>the seller backs this item</strong>, not the Platform.
               </template>
               <template v-else-if="listing.coaType === 'upload'">
-                Seller provided a COA. Details may be in photos or the COA file on file with the team.
+                Seller-uploaded COA on file. The seller backs this item; the Platform does not guarantee third-party COA content.
               </template>
               <template v-else>
-                {{ listing.guaranteeName }} is named on the in-platform guarantee for this listing.
+                <strong>{{ listing.guaranteeName }}</strong> signed the Seller Authenticity Guarantee — the seller backs this item, not the Platform.
               </template>
             </p>
+            <CoaSellerDisclosure v-if="listing.coaType === 'franks_issued' || listing.coaType === 'guarantee'" />
           </div>
           <div v-else class="listing-coa-box listing-coa-box--general">
             <span class="coa-badge">General merchandise</span>
@@ -273,7 +277,7 @@ import {
   reserveMet,
   buyNowAvailable,
 } from '~/utils/auctionHelpers.js'
-import { listingShowsAuthenticitySeal, SCREENING_LABEL } from '~/utils/authenticitySeal.js'
+import { listingShowsAuthenticitySeal, SCREENING_LABEL, SEAL_LISTING_LEAD } from '~/utils/authenticitySeal.js'
 
 const showAuthenticitySeal = computed(() => listingShowsAuthenticitySeal(listing.value))
 
@@ -298,9 +302,9 @@ const showReportModal = ref(false)
 const coaBadgeLabel = computed(() => {
   if (!listing.value) return ''
   if (listing.value.coaType === 'none') return 'General merchandise'
-  if (listing.value.coaType === 'franks_issued') return 'Franks issued COA'
-  if (listing.value.coaType === 'upload') return 'COA document on file'
-  return 'Franks Standard guarantee'
+  if (listing.value.coaType === 'franks_issued') return 'Franks COA template'
+  if (listing.value.coaType === 'upload') return 'Seller COA on file'
+  return 'Seller Authenticity Guarantee'
 })
 const shareCopied = ref(false)
 let shareTimer = null
@@ -665,6 +669,7 @@ watch(
   font-size: 1.2rem;
 }
 .seller-name { font-weight: 600; }
+.listing-seal-wrap { margin-bottom: 12px; }
 .coa-compare-panel {
   margin-top: 14px;
   padding: 12px;

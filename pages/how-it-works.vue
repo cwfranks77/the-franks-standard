@@ -43,7 +43,7 @@
 <script setup>
 const steps = [
   { title: 'Create Your Account', desc: 'Sign up for free in 30 seconds. Choose whether you want to buy, sell, or both. No listing fees to get started.' },
-  { title: 'List With Authenticity Proof', desc: 'When you list an item, you must either upload a Certificate of Authenticity (COA) or digitally sign The Franks Standard Guarantee — a legally binding statement that the item is genuine.' },
+  { title: 'List With Authenticity Proof', desc: 'When you list an item, you must either upload a COA or sign the Seller Authenticity Guarantee — you back the item; Franks Standard provides the template and marketplace rules, not a Platform guarantee of genuineness.' },
   { title: 'Buyers Shop With Confidence', desc: 'Every listing on The Franks Standard displays its authenticity status. Buyers can see the COA type and know exactly what they\'re getting before they buy.' },
   { title: 'Secure Escrow Payments', desc: 'When a buyer purchases, their payment is held in secure escrow via Stripe. The money is released to the seller only after the buyer confirms the item arrived as described.' },
   { title: 'Zero Tolerance for Proven Fakes', desc: 'Proven counterfeits: listing removed, buyer refunded, seller account frozen or banned per our Marketplace Policies. COA revoked when applicable. See /marketplace-policy for the full enforcement list.' },
@@ -62,9 +62,9 @@ const faqs = reactive([
   },
   { q: 'Is it free to sign up?', a: 'Yes, creating an account is completely free for buyers and sellers.', open: false },
   { q: 'What fees does The Franks Standard charge?', a: 'Sellers pay a sale fee when an item sells: 5% on Starter, 4.5% on Pro ($14.99/mo), 4% on Store ($32.99/mo). New sellers get 3% for the first 90 days. Buyers pay no platform fee on top of the list price, but applicable sales tax is added at Stripe checkout from the buyer billing address (the total can be higher than the listed price).', open: false },
-  { q: 'What is the Franks Standard Guarantee?', a: 'A legally binding digital signature where the seller vouches for authenticity. If the item is proven fake, the buyer is refunded under our Marketplace Policies; the seller may owe platform debt, face account freeze, and permanent ban — including after repayment for serious violations.', open: false },
+  { q: 'What is the Seller Authenticity Guarantee?', a: 'A Franks Standard in-platform template where you — the seller — legally back the item. The Platform does not guarantee authenticity. If the item is proven fake, the buyer is refunded under our Marketplace Policies; the seller may owe platform debt, face account freeze, and permanent ban.', open: false },
   { q: 'Where are refund and account-freeze rules written?', a: 'In our Marketplace Policies & Enforcement at /marketplace-policy — incorporated into Terms and the Seller Agreement. Marketing pages summarize; policies govern.', open: false },
-  { q: 'What if I don\'t have a COA?', a: 'You can sign The Franks Standard Guarantee instead. You\'re personally vouching for the item. This puts your name and account on the line.', open: false },
+  { q: 'What if I don\'t have a COA?', a: 'Sign the Seller Authenticity Guarantee or use the Franks Standard COA template. You back the item; our serial links your listing to proof on file — it is not the Platform guaranteeing genuineness.', open: false },
   { q: 'Can I sell firearms?', a: 'We do not allow firearms or items that require ATF/FBI reporting. Accessories like optics, parts, triggers (non-NFA items), and gear are welcome.', open: false },
   { q: 'What categories can I sell in?', a: 'Sports cards, memorabilia, musical instruments, firearms accessories, coins, art, watches, jewelry, sneakers, vintage electronics, and more. See our full category list on the Browse page.', open: false },
   { q: 'How do I get paid?', a: 'Sellers connect their bank account via Stripe. When a buyer confirms receipt, your payment is released automatically.', open: false },
