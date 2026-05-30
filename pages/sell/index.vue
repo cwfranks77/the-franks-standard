@@ -575,8 +575,6 @@ import {
   SELLER_GUARANTEE_SUBTITLE,
   SELLER_GUARANTEE_TITLE,
 } from '~/utils/authenticitySeal.js'
-
-const guaranteeSealIntro = GUARANTEE_WITH_SEAL_INTRO
 import { CHARITY_OPTIONS, charityByKey } from '~/utils/charities.js'
 import { calcCharitySplit, CHARITY_PERCENT_PRESETS } from '~/utils/charitySplit.js'
 import { auctionEndsAtFromDays } from '~/utils/auctionHelpers.js'
@@ -593,6 +591,8 @@ import {
   parseListingKind,
   sellFormRequiresCoaProof,
 } from '~/utils/listItemRoutes.js'
+
+const guaranteeSealIntro = GUARANTEE_WITH_SEAL_INTRO
 
 const sellDockTiles = [
   { to: '/sell/import', icon: '📥', label: 'Import inventory', hint: 'eBay CSV or store' },
