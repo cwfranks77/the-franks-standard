@@ -113,7 +113,7 @@ export function buildDropshipAiPlan (intake: DropshipAiIntake): DropshipAiPlan {
       ? 'Choose auto-dispatch and add FLXPOINT/Doba API keys in step 4 (optional until you are ready).'
       : 'Choose manual fulfillment — when a buyer pays, we email you order + SKU; you place the order with your supplier.',
     'Import catalog: Seller Hub CSV on /sell/import (CSV tab) or paste supplier CSV with Title, Price, Supplier SKU.',
-    'Every listing needs COA or signed Franks Standard guarantee before publish.',
+    'Collectible listings need seller COA or signed guarantee before publish (when category requires).',
     'Connect Stripe payouts in Dashboard if not done yet.',
   ]
 

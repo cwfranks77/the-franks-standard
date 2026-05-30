@@ -78,7 +78,7 @@
       <div class="container">
         <div class="learn-cta-band">
           <h2>Ready to list with proof?</h2>
-          <p class="text-muted">10 free listings · {{ launchPct }}% fees for 90 days · COA or guarantee on every SKU</p>
+          <p class="text-muted">10 free listings · {{ launchPct }}% fees for 90 days · seller proof on collectibles</p>
           <div class="learn-cta-actions">
             <NuxtLink to="/auth/register?account=sell" class="btn btn-primary">Create free account</NuxtLink>
             <NuxtLink to="/go/postcard?ref=learn" class="btn btn-outline">Founders offer</NuxtLink>

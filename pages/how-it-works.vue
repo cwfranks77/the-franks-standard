@@ -3,7 +3,7 @@
     <div class="container">
       <div class="text-center" style="max-width: 700px; margin: 0 auto;">
         <h1>How The Franks Standard Works</h1>
-        <p class="text-muted mt-1">We built this marketplace on one principle: if you sell it here, you stand behind it.</p>
+        <p class="text-muted mt-1">We are a marketplace facilitator: sellers stand behind collectible listings; we screen, facilitate escrow, and enforce when representations fail.</p>
       </div>
 
       <div class="steps mt-4">
@@ -44,7 +44,7 @@
 const steps = [
   { title: 'Create Your Account', desc: 'Sign up for free in 30 seconds. Choose whether you want to buy, sell, or both. No listing fees to get started.' },
   { title: 'List With Authenticity Proof', desc: 'When you list an item, you must either upload a COA or sign the Seller Authenticity Guarantee — you back the item; Franks Standard provides the template and marketplace rules, not a Platform guarantee of genuineness.' },
-  { title: 'Buyers Shop With Confidence', desc: 'Every listing on The Franks Standard displays its authenticity status. Buyers can see the COA type and know exactly what they\'re getting before they buy.' },
+  { title: 'Buyers Shop With Confidence', desc: 'Listings show what proof the seller provided (COA type, guarantee, or general merchandise standards). The Platform facilitates the sale and enforces policies — it does not warrant that any item is authentic.' },
   { title: 'Secure Escrow Payments', desc: 'When a buyer purchases, their payment is held in secure escrow via Stripe. The money is released to the seller only after the buyer confirms the item arrived as described.' },
   { title: 'Zero Tolerance for Proven Fakes', desc: 'Proven counterfeits: listing removed, buyer refunded, seller account frozen or banned per our Marketplace Policies. COA revoked when applicable. See /marketplace-policy for the full enforcement list.' },
 ]

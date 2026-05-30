@@ -10,7 +10,7 @@
       <section class="block">
         <h2>What you promote</h2>
         <ul>
-          <li>Proof-first marketplace — COA or signed guarantee on every listing</li>
+          <li>Marketplace facilitator — seller proof on collectibles, screening and policy enforcement (not Platform guarantees)</li>
           <li>4–5% seller fees vs typical ~13% stacked elsewhere</li>
           <li>eBay import, AI store builder, video inspect, Stripe escrow</li>
         </ul>

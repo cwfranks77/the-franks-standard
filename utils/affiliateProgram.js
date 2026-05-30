@@ -143,10 +143,10 @@ export const AFFILIATE_FTC_DISCLOSURE =
   '#ad · Paid partnership with The Franks Standard — I earn a bonus when you sign up and sell through my link.'
 
 export const AFFILIATE_MEDIA_KIT = {
-  tagline: 'Sell where proof is required — 4–5% fees, COA on every listing, Stripe escrow.',
+  tagline: 'Sell on a proof-forward floor — 4–5% fees, seller proof on collectibles, Stripe escrow.',
   bullets: [
     '4–5% sale fees by plan (not ~13% stacked on big marketplaces)',
-    'COA or signed in-platform guarantee on every listing',
+    'Seller COA or signed guarantee on collectible listings (marketplace facilitator)',
     'eBay CSV import + AI store builder',
     'Video inspect rooms before checkout',
     'FOUNDERS10: 3 months Pro free for early sellers (limited)',

@@ -59,7 +59,7 @@
       <div class="container trust-band">
         <h2>Exclusivity + secure transactions</h2>
         <ul>
-          <li><strong>Proof required</strong> — COA upload or signed in-platform guarantee on every listing</li>
+          <li><strong>Proof required</strong> — seller COA or signed guarantee on collectible listings in these floors</li>
           <li><strong>Escrow checkout</strong> — Stripe; seller paid after buyer confirms delivery</li>
           <li><strong>Lower fees</strong> — {{ txRange }} sale fees by plan, not ~{{ competitor }} stacked on big marketplaces</li>
           <li><strong>Video inspect</strong> — high-value niches can use live inspection before payment</li>
@@ -79,7 +79,7 @@ const competitor = PRICING_PUBLIC.competitorTypical
 
 useSeoMeta({
   title: 'Niche collections & limited drops | The Franks Standard',
-  description: 'Curated collectibles niches and limited-edition floors — COA, escrow, and proof-first listings unlike generic marketplace search.',
+  description: 'Curated collectibles niches — seller proof, escrow, and marketplace facilitation (not Platform authentication of items).',
 })
 </script>
 

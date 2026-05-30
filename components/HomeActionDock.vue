@@ -3,7 +3,7 @@
     <NuxtLink to="/browse" class="action-tile action-tile--primary">
       <span class="action-tile-icon" aria-hidden="true">🛍️</span>
       <span class="action-tile-label">Browse floor</span>
-      <span class="action-tile-hint">Live listings with COA or guarantee</span>
+      <span class="action-tile-hint">Seller-backed collectibles · honest general merch</span>
     </NuxtLink>
     <NuxtLink to="/sell/start" class="action-tile action-tile--accent">
       <span class="action-tile-icon" aria-hidden="true">📤</span>

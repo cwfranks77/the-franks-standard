@@ -12,7 +12,7 @@
             <NuxtLink v-if="liveListingCount > 0" to="/browse" class="live-count-link">
               {{ liveListingCount }} listing{{ liveListingCount === 1 ? '' : 's' }} live
             </NuxtLink>
-            <span v-else>Browse by category — every item needs COA or guarantee</span>
+            <span v-else>Browse by category — seller proof on collectibles</span>
           </p>
         </div>
         <NuxtLink to="/browse" class="mkt-btn mkt-btn--primary mkt-btn--compact">See all</NuxtLink>

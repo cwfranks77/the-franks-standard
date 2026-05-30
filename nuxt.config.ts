@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto'
 import { normalizeOpsPhrase } from './utils/opsPhrase'
+import { META_DESCRIPTION, OG_DESCRIPTION } from './utils/marketplaceFacilitatorCopy.js'
 
 const rawSite = process.env.NUXT_PUBLIC_SITE_URL
 const siteUrl = (rawSite && String(rawSite).trim())
@@ -97,7 +98,7 @@ export default defineNuxtConfig({
       id: '/',
       name: 'The Franks Standard',
       short_name: 'Franks Standard',
-      description: 'Authenticity-first collectibles and gear marketplace.',
+      description: META_DESCRIPTION,
       theme_color: '#0c0619',
       background_color: '#0c0619',
       display: 'standalone',
@@ -153,19 +154,19 @@ export default defineNuxtConfig({
     pageTransition: { name: 'page', mode: 'out-in' },
     layoutTransition: { name: 'layout', mode: 'out-in' },
     head: {
-      title: 'The Franks Standard — Authenticity-Guaranteed Marketplace',
+      title: 'The Franks Standard — Marketplace Facilitator for Collectibles & Gear',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'description', content: 'The authenticity-first collectibles and gear marketplace: COA or a signed in-platform guarantee on every listing, escrow, and a zero-tolerance stance on fakes. Built for proof, not just volume.' },
-        { property: 'og:title', content: 'The Franks Standard - Authenticity-Guaranteed Marketplace' },
-        { property: 'og:description', content: 'Buy and sell with proof: every listing needs a COA or signed in-platform guarantee. The marketplace for collectors who refuse fakes.' },
+        { name: 'description', content: META_DESCRIPTION },
+        { property: 'og:title', content: 'The Franks Standard — Marketplace Facilitator' },
+        { property: 'og:description', content: OG_DESCRIPTION },
         { property: 'og:url', content: siteUrl },
         { property: 'og:type', content: 'website' },
         { property: 'og:image', content: ogImage },
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:title', content: 'The Franks Standard' },
-        { name: 'twitter:description', content: 'Authenticity-first collectibles and gear. COA required. Built for real sellers and buyers.' },
+        { name: 'twitter:description', content: META_DESCRIPTION },
         { name: 'twitter:image', content: ogImage },
         { name: 'theme-color', content: '#0c0619' },
         { name: 'mobile-web-app-capable', content: 'yes' },

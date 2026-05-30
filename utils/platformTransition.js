@@ -19,7 +19,7 @@ export const PLATFORM_SOURCES = [
     id: 'etsy',
     name: 'Etsy',
     audience: 'seller',
-    summary: 'Handmade and vintage sellers keep their brand; we add COA or signed guarantee on every public listing.',
+    summary: 'Handmade and vintage sellers keep their brand; collectible listings add seller COA or signed guarantee when required.',
     sellerSteps: [
       'Download listing CSV from Etsy Shop Manager if you use it.',
       'Register as a seller and set your store name and slug under Sell → dropship setup or your profile.',

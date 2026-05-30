@@ -141,7 +141,7 @@ export function promoCampaignCopy (niche) {
     '',
     `Why not just eBay? ${niche.ebayAngle}`,
     '',
-    'Every item: COA or signed in-platform guarantee.',
+    'Collectible listings: seller COA or signed guarantee (marketplace facilitator — not Platform authentication).',
     'Checkout: Stripe escrow — paid when buyer confirms delivery.',
     `Fees: ${PRICING_PUBLIC.txRangeLabel} by plan (${PRICING_PUBLIC.launchTxPromoPercent}% launch promo).`,
     '',

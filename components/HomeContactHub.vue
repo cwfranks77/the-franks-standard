@@ -98,7 +98,7 @@ const devServices = [
 
 const quickFacts = [
   'Founded by Charles Franks',
-  'COA or guarantee on every listing',
+  'Seller proof on collectibles — we facilitate, not guarantee',
   'Escrow until buyer confirms',
   'Permanent ban for proven fakes',
   'Lower seller fees than big-box apps',

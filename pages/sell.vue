@@ -574,7 +574,7 @@ definePageMeta({ middleware: 'requires-auth' })
 useSeoMeta({
   title: 'Sell — The Franks Standard',
   description:
-    'Sell with COA or a signed guarantee. Onboarding for stores: apply to list on the authenticity-first marketplace.',
+    'Sell on our marketplace facilitator — seller proof on collectibles. Stores apply for onboarding.',
 })
 
 const { isOwner } = useOwnerMode()
@@ -819,7 +819,7 @@ function buildListingDescription (input) {
       if (t) lines.push(`• ${t}`)
     }
   }
-  lines.push('', auth, '', ship, '', 'Buyer protection: Escrow until you confirm the item matches this listing.', 'Listed on The Franks Standard — proof-first marketplace.')
+  lines.push('', auth, '', ship, '', 'Buyer protection: Escrow until you confirm the item matches this listing.', 'Listed on The Franks Standard — marketplace facilitator; seller backs collectible proof where required.')
   return lines.join('\n')
 }
 

@@ -15,7 +15,7 @@
             Open <NuxtLink to="/sell/import">Import inventory</NuxtLink> — enter your eBay username to skim active listings, or upload a CSV export.
           </li>
           <li>Review titles, prices, and photos — import as drafts or publish.</li>
-          <li>Add COA or sign the in-platform guarantee (required for every public listing).</li>
+          <li>Add seller proof (COA or signed guarantee) when the category requires it.</li>
           <li>Connect Stripe on <NuxtLink to="/pay">Pay &amp; fees</NuxtLink> when you are ready to accept orders.</li>
         </ol>
         <NuxtLink to="/sell/import" class="btn btn-primary btn-sm">Start import</NuxtLink>

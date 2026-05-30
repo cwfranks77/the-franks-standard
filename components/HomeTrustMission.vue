@@ -9,7 +9,7 @@
           When sellers succeed with honest service, we succeed together.
         </p>
         <ul class="trust-pillars">
-          <li><strong>Security you can see</strong> — COA or signed guarantee on every listing; serial verification; integrity holds for bad actors.</li>
+          <li><strong>Security you can see</strong> — seller proof on collectibles, serial verification where issued, and integrity holds when screening flags risk.</li>
           <li><strong>Owner-accessible</strong> — Charles Franks reads Open Door feedback personally. Call <a href="tel:+18778370527">(877) 837-0527</a> or use Help chat.</li>
           <li><strong>Affordable fees</strong> — 4–5% for most sellers; founding sellers get 3 months Pro free.</li>
           <li><strong>Seller Excellence tokens</strong> — top-rated sellers earn waived or reduced fees, homepage spotlight, and appreciation badges each cycle.</li>
@@ -21,13 +21,17 @@
         </div>
       </div>
       <div class="trust-mission-card card">
-        <p class="trust-quote">“If it is here, it is real — or we enforce until the buyer is made whole.”</p>
-        <p class="text-muted small">Escrow · buyer confirms delivery · bans for fraud · forced refunds when authenticity fails.</p>
+        <p class="trust-quote">“{{ TRUST_QUOTE }}”</p>
+        <p class="text-muted small">{{ TRUST_QUOTE_FOOT }}</p>
         <NuxtLink to="/protection" class="btn btn-primary btn-sm mt-2">Protection overview</NuxtLink>
       </div>
     </div>
   </section>
 </template>
+
+<script setup>
+import { TRUST_QUOTE, TRUST_QUOTE_FOOT } from '~/utils/marketplaceFacilitatorCopy.js'
+</script>
 
 <style scoped>
 .trust-mission-grid {

@@ -5,7 +5,7 @@
         <p class="eyebrow">Trust both sides</p>
         <h1>{{ PROTECTION_HEADLINE }}</h1>
         <p class="lead text-muted">
-          The Franks Standard is proof-first — not anti-seller. Honest shops get a floor that showcases real inventory.
+          The Franks Standard is a marketplace facilitator — proof-forward on collectibles, fair to honest sellers. We do not guarantee item authenticity; we screen, facilitate escrow, and enforce when seller representations fail.
           Serious buyers get COA binding, escrow, and enforcement against proven fakes.
         </p>
       </div>
@@ -91,7 +91,7 @@ import { SCREENING_DESC, SCREENING_LABEL } from '~/utils/authenticitySeal.js'
 
 useSeoMeta({
   title: 'Buyer & seller protection | The Franks Standard',
-  description: 'Balanced trust: COA floor offices, escrow, seller fairness, and dispute policy — proof-first, not anti-seller.',
+  description: 'Marketplace facilitator: seller proof on collectibles, escrow, screening, and enforcement — not a Platform guarantee of authenticity.',
 })
 </script>
 

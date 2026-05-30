@@ -31,7 +31,7 @@ export function getAiReply (message: string): string {
   ctx.turnCount++
 
   if (!q) {
-    return 'Welcome to The Franks Standard. We put **trust and authenticity first** — every listing needs a COA or signed guarantee; counterfeits are not tolerated.\n\n' +
+    return 'Welcome to The Franks Standard — a **marketplace facilitator**. We connect buyers and sellers; we **do not** guarantee item authenticity. Collectible listings require **seller** proof (COA or signed guarantee); we screen and enforce policies when misrepresentation is proven.\n\n' +
       'I can help with:\n' +
       '• Buying, selling, and Stripe payouts\n• COA verification and authenticity reports\n• Escrow, shipping, and orders\n' +
       '• Seller Excellence rewards\n• Account and technical issues\n\n' +
@@ -172,7 +172,7 @@ export function getAiReply (message: string): string {
   if (matchAny(q, [/coa|certificate.*auth|authenti|proof|verif|genuine|legit|real or fake|is it real|certified|graded|psa|pcgs|beckett/])) {
     ctx.lastTopic = 'coa'
     return '**Authenticity on The Franks Standard:**\n\n' +
-      'Every listing requires one of:\n' +
+      'We are a marketplace facilitator — **sellers** back collectible listings. Collectible categories require one of:\n' +
       '• **COA Upload** — photo/scan of your Certificate of Authenticity\n' +
       '• **Seller Authenticity Guarantee** — Franks Standard template; you sign with your legal name and **you** back the item (not the Platform)\n\n' +
       'Buyers see the proof before money moves. If an item is proven fake:\n' +
@@ -293,7 +293,7 @@ export function getAiReply (message: string): string {
     return '**What you can buy and sell:**\n\n' +
       `${categoryListForAi()}\n\n` +
       '• 🔧 Firearms Accessories: no ATF-reportable items\n\n' +
-      'Everything requires a COA or signed guarantee. ' +
+      'Collectible categories require seller COA or signed guarantee; general merchandise uses accurate listing standards. ' +
       'See **Prohibited Items** in the footer for what\'s not allowed.\n\n' +
       'Visit **Categories** for the full breakdown.'
   }

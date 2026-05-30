@@ -40,7 +40,7 @@ function buildConfirmUrl (emailData: HookPayload['email_data']): string {
 
 function emailCopy (action: EmailActionType, confirmUrl: string): { subject: string; text: string; html: string } {
   const brand = 'The Franks Standard'
-  const footer = `\n\n— ${brand}\nAuthenticity-first collectibles & gear.\n${SITE_URL}`
+  const footer = `\n\n— ${brand}\nMarketplace facilitator for collectibles & gear.\n${SITE_URL}`
 
   if (action === 'recovery') {
     return {
@@ -72,8 +72,8 @@ function emailCopy (action: EmailActionType, confirmUrl: string): { subject: str
   }
   return {
     subject: `Confirm your ${brand} account`,
-    text: `Welcome to ${brand}. Confirm your email to buy and sell with proof (COA or signed guarantee on every listing):\n\n${confirmUrl}${footer}`,
-    html: `<p>Welcome to <strong>${brand}</strong> — the marketplace where authenticity is not optional.</p><p><a href="${confirmUrl}" style="font-weight:bold;">Confirm your email</a></p><p style="color:#64748b;font-size:13px;">Every listing needs a COA or in-platform guarantee. Questions? Reply or email info@thefranksstandard.com.</p>`,
+    text: `Welcome to ${brand}. Confirm your email to use our marketplace facilitator (seller proof on collectibles; we do not guarantee item authenticity):\n\n${confirmUrl}${footer}`,
+    html: `<p>Welcome to <strong>${brand}</strong> — a marketplace facilitator connecting buyers and sellers.</p><p><a href="${confirmUrl}" style="font-weight:bold;">Confirm your email</a></p><p style="color:#64748b;font-size:13px;">Collectible listings require seller COA or signed guarantee. The Platform screens and enforces policies — it does not warrant that items are authentic. Questions? info@thefranksstandard.com</p>`,
   }
 }
 

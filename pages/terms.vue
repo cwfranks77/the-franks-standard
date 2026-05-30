@@ -10,8 +10,9 @@
 
       <h2>1. The service</h2>
       <p>
-        The Franks Standard (&quot;Platform,&quot; &quot;we,&quot; &quot;us&quot;) is an online marketplace for buyers and sellers of items that
-        require proof of authenticity. By using the site, you agree to these Terms, our
+        The Franks Standard (&quot;Platform,&quot; &quot;we,&quot; &quot;us&quot;) is an online marketplace facilitator for buyers and sellers.
+        Collectible listings require seller-provided proof; we screen listings and enforce policies when misrepresentation is proven.
+        We do <strong>not</strong> guarantee, warrant, or represent that any listed item is authentic. By using the site, you agree to these Terms, our
         <NuxtLink to="/privacy">Privacy Policy</NuxtLink>,
         <NuxtLink to="/marketplace-policy">Marketplace Policies</NuxtLink>, and, if you sell, the
         <NuxtLink to="/seller-agreement">Seller Agreement</NuxtLink>.
@@ -19,7 +20,8 @@
 
       <h2>2. Marketplace facilitator</h2>
       <p>
-        The Platform is a <em>marketplace facilitator</em>, not the seller of third-party listed items. We are not a bank,
+        The Platform is a <em>marketplace facilitator</em>, not the seller of third-party listed items and not a guarantor of item authenticity.
+        Seller COA documents and guarantee forms are templates recording seller representations. We are not a bank,
         money transmitter, or escrow agent except as described in our payment flows and
         <NuxtLink to="/marketplace-policy">Marketplace Policies</NuxtLink>. Individual sales are contracts between buyer and
         seller; Stripe and your financial institutions have separate terms at checkout. Features roll out in phases — see

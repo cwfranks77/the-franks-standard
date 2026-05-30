@@ -149,7 +149,7 @@ const CAPTION_TEMPLATES = {
   instagram: {
     reel: `POV: buyers stop asking "is this real?" 🏛️
 
-Every listing on The Franks Standard needs a COA or signed guarantee. Escrow checkout. {{fees}} sale fees by plan.
+Collectible listings on The Franks Standard need seller COA or signed guarantee — we facilitate; we don't guarantee authenticity. Escrow checkout. {{fees}} sale fees by plan.
 
 Import from eBay → list in minutes.
 {{cta}}
@@ -170,7 +170,7 @@ Slide 3: Try the calculator — link in bio
     short: `Stop eating 13% in fees on cards you already proved were real 📉
 
 We built a marketplace where:
-✅ COA or guarantee required
+✅ Seller proof on collectibles
 ✅ Stripe escrow
 ✅ {{fees}} seller fees
 

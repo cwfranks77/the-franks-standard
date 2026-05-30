@@ -6,7 +6,7 @@
         <button type="button" class="btn btn-primary btn-sm" @click="printPage">Print / Save as PDF</button>
       </div>
       <h1>Authenticity &amp; listing checklist</h1>
-      <p class="text-muted">Staff checklist — every SKU on The Franks Standard needs COA or signed in-platform guarantee.</p>
+      <p class="text-muted">Staff checklist — collectible SKUs need seller COA or signed guarantee; general merchandise uses listing standards.</p>
 
       <section class="check-block">
         <h2>Before you photograph</h2>

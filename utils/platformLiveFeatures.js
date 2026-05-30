@@ -26,7 +26,7 @@ export const LIVE_NOW_BY_TAB = {
     { icon: '⭐', title: 'Seller reviews', desc: 'Ratings and Top Sellers leaderboard — volume matters.', to: '/top-sellers', cta: 'Top sellers' },
   ],
   security: [
-    { icon: '📜', title: 'COA or signed guarantee', desc: 'Required before any listing goes public.', to: '/how-it-works', cta: 'How proof works' },
+    { icon: '📜', title: 'Seller proof on collectibles', desc: 'Required for collectible categories — seller-backed, not Platform-guaranteed.', to: '/how-it-works', cta: 'How proof works' },
     { icon: '🏢', title: 'Floor office COA', desc: 'Franks serial tied to one listing — not a blank certificate.', to: '/verify/coa/FS-2026-000001', cta: 'Verify serial' },
     { icon: '🔒', title: 'Stripe escrow', desc: 'Funds held until buyer confirms — disputes use platform records.', to: '/pay', cta: 'Pay & escrow' },
     { icon: '🛡️', title: 'Listing authenticity scan', desc: 'Blocks off-platform pay apps and “no guarantee” wording at publish.', to: '/learn/tools/authenticity-checklist', cta: 'Checklist' },

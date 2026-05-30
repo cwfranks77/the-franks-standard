@@ -5,7 +5,7 @@
       <h1>List your shop on The Franks Standard</h1>
       <p class="partner-lead">
         Built for <strong>eBay stores and brick-and-mortar shops</strong> — import inventory in minutes,
-        keep <strong>4–5% sale fees</strong> (not ~13% stacked), and sell with COA or signed guarantees plus Stripe escrow.
+        keep <strong>4–5% sale fees</strong> (not ~13% stacked), seller proof on collectibles, and Stripe escrow — we facilitate; we do not guarantee item authenticity.
       </p>
 
       <ul class="partner-perks">
@@ -70,7 +70,7 @@ const registerHrefFixed = computed(() => {
 
 useSeoMeta({
   title: 'Store partner — import & sell | The Franks Standard',
-  description: 'eBay and shop partners: AI inventory import, low fees, escrow checkout, COA guarantees.',
+  description: 'eBay and shop partners: AI inventory import, low fees, escrow checkout, seller proof on collectibles.',
 })
 </script>
 

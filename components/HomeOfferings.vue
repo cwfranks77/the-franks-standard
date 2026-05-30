@@ -5,7 +5,7 @@
         <p class="eyebrow text-center">Everything on the floor</p>
         <h2 class="section-title text-center">What The Franks Standard offers</h2>
         <p class="section-subtitle text-center text-muted">
-          Buyers, sellers, and stores get the same proof-first toolkit — not a patchwork of third-party tabs.
+          Buyers, sellers, and stores share one floor — we facilitate transactions; sellers back collectible proof.
         </p>
       </ScrollReveal>
       <div class="offer-grid mt-4">
@@ -26,7 +26,7 @@
 const offerings = [
   { icon: '🏅', title: 'Founding sellers — 3 months Pro free', desc: 'First 10 sellers only. Sign up to sell and enter code FOUNDERS10 at registration.', to: '/join/founders10', cta: 'Code FOUNDERS10' },
   { icon: '🎖️', title: 'Military & first responders — 6 months Pro', desc: 'Veterans, police, fire, EMS, dispatch, corrections. Code HONOR26 on the honors page.', to: '/honor', cta: 'Code HONOR26' },
-  { icon: '🛡️', title: 'COA & signed guarantee', desc: 'Every public listing needs proof before it goes live — upload a COA or sign our in-platform guarantee.', to: '/how-it-works', cta: 'How it works' },
+  { icon: '🛡️', title: 'Seller proof on collectibles', desc: 'Collectible listings require seller COA or signed guarantee template — we screen and enforce; we do not guarantee authenticity.', to: '/how-it-works', cta: 'How it works' },
   { icon: '🏛️', title: 'Browse the floor', desc: 'Cards, watches, gear, art, sneakers, and more — curated categories for high-trust inventory.', to: '/browse', cta: 'Browse' },
   { icon: '📦', title: 'Sell & list', desc: 'Create listings with photos, COA flow, and seller tools. Stores onboard through For sellers.', to: '/sell', cta: 'Start listing' },
   { icon: '🔒', title: 'Escrow & Stripe checkout', desc: 'Listed price is the item subtotal; sales tax is added at checkout from the buyer billing address. Funds held until the buyer confirms.', to: '/pay', cta: 'Pay & fees' },

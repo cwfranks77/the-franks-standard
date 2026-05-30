@@ -59,14 +59,14 @@ export const LEARN_ARTICLES = /** @type {LearnArticle[]} */ ([
   {
     slug: 'coa-vs-signed-guarantee',
     title: 'COA vs signed guarantee: what buyers actually get',
-    description: 'Every listing on The Franks Standard requires proof — Certificate of Authenticity or a seller guarantee enforced on-platform.',
+    description: 'Collectible listings require seller proof — COA or signed guarantee template. The Platform facilitates and enforces; it does not guarantee authenticity.',
     category: 'trust',
     readMinutes: 5,
     published: '2026-05-01',
     tags: ['coa', 'buyers', 'authenticity'],
     related: ['authenticity-checklist-printable', 'video-inspect-before-you-buy'],
     blocks: [
-      { type: 'p', text: 'General marketplaces treat authenticity as optional. Here it is mandatory — that is the product.' },
+      { type: 'p', text: 'General marketplaces treat authenticity as optional. On collectibles here, sellers must provide proof — we facilitate the sale and enforce policies; we do not warrant that any item is genuine.' },
       { type: 'h2', text: 'Certificate of Authenticity (COA)' },
       { type: 'p', text: 'Upload a COA image or PDF tied to the item. Buyers see it on the listing before checkout. Proven counterfeits with a valid COA path can trigger refund, seller ban, and referral for legal follow-up per our policies.' },
       { type: 'h2', text: 'Signed in-platform guarantee' },
@@ -194,7 +194,7 @@ export const LEARN_ARTICLES = /** @type {LearnArticle[]} */ ([
     blocks: [
       { type: 'p', text: 'This playbook is your offline reference — share with staff at your card shop or coin counter.' },
       { type: 'h2', text: 'Chapter 1 — Why proof-first selling wins' },
-      { type: 'p', text: 'Collectibles buyers pay for certainty. COA or signed guarantee on every SKU is your floor, not a premium tier.' },
+      { type: 'p', text: 'Collectibles buyers want seller-backed proof. COA or signed guarantee on collectible SKUs is required — enforced listing rules, not a Platform authenticity warranty.' },
       { type: 'h2', text: 'Chapter 2 — Fees & plans' },
       { type: 'ul', items: [
         `Starter: ${PRICING_PUBLIC.starterTxPercent}% sale fee, $0/mo`,
@@ -318,7 +318,7 @@ export const LEARN_VIDEOS = [
   {
     id: 'coa-guarantee',
     title: 'How COA and signed guarantees protect buyers',
-    description: 'What sellers must provide on every listing.',
+    description: 'What sellers must provide on collectible listings vs general merchandise.',
     youtubeId: '',
     duration: '3:00',
     tags: ['trust'],

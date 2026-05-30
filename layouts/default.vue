@@ -2,7 +2,7 @@
   <div class="site-wrapper">
     <div class="site-ribbon" role="status" aria-label="Site highlights">
       <div class="container site-ribbon-inner">
-        <span class="ribbon-txt">COA on collectibles · honest listings on everything else</span>
+        <span class="ribbon-txt">Marketplace facilitator · seller proof on collectibles only</span>
         <span class="ribbon-dot" aria-hidden="true" />
         <span class="ribbon-txt">Escrow until buyer confirms delivery</span>
         <span class="ribbon-dot" aria-hidden="true" />
@@ -78,7 +78,7 @@
               @error="onPavilionImgError"
             />
             <p class="footer-site-name">The Franks Standard</p>
-            <p class="text-muted">The Franks Standard LLC — trust, authenticity, and affordability for collectors. Counterfeits end here.</p>
+            <p class="text-muted">The Franks Standard LLC — marketplace facilitator for collectors and gear. Sellers back collectible listings; we screen and enforce policies — we do not guarantee item authenticity.</p>
             <div v-if="socialLinks.length" class="footer-follow">
               <p class="footer-follow-label">Follow us</p>
               <div class="footer-social-row">

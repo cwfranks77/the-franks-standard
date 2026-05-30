@@ -79,7 +79,7 @@
         <h2 class="section-title">Why sellers switch here</h2>
         <ul class="unique">
           <li><strong>Lower fees:</strong> {{ txRange }} sale fees vs typical {{ competitorTypical }} elsewhere — keep more margin on the same sale price.</li>
-          <li><strong>Proof-first listings:</strong> COA or signed guarantee is required, not an optional badge.</li>
+          <li><strong>Seller proof on collectibles:</strong> COA or signed guarantee required for collectible categories — enforced listing rules, not a Platform authenticity warranty.</li>
           <li><strong>Escrow checkout:</strong> funds release after the buyer confirms the item — aligned with high-value collectibles.</li>
           <li><strong>Easy move-in:</strong> skim eBay or upload CSV at <NuxtLink to="/sell/import">Import inventory</NuxtLink>.</li>
           <li><strong>Video verification:</strong> built-in calls from listings — inspect before you commit.</li>

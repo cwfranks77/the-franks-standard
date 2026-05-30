@@ -7,7 +7,7 @@
           <span v-if="listings.length" class="browse-count-badge">{{ listings.length }} {{ listings.length === 1 ? 'listing' : 'listings' }} live</span>
         </div>
         <p class="text-muted">
-          The floor lists live inventory as sellers and shops go on board; every public item is COA- or guarantee-backed.
+          Live inventory from sellers and shops. Collectible listings show seller-provided proof; we facilitate sales and enforce policies — we do not guarantee authenticity.
           <NuxtLink to="/sellers">Apply to add your store</NuxtLink>.
           · <NuxtLink to="/collections">Niche collections &amp; limited drops</NuxtLink>
         </p>
@@ -202,7 +202,7 @@ function applyFiltersFromRoute () {
 
 const filterBanner = computed(() => {
   if (onlyLimited.value) {
-    return 'Showing limited-edition and exclusive-drop listings — COA or guarantee + Stripe escrow on every item.'
+    return 'Limited-edition and exclusive-drop listings — seller proof where required, Stripe escrow on checkout.'
   }
   if (filterCollectionSlug.value) {
     const niche = getNicheBySlug(filterCollectionSlug.value)

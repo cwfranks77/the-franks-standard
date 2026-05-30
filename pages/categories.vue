@@ -52,7 +52,7 @@ const nicheHighlights = NICHE_COLLECTIONS
 
 useSeoMeta({
   title: 'Categories - The Franks Standard',
-  description: 'Shop authentic collectibles, gear, and more. Every category on The Franks Standard is backed by COA or a signed guarantee.',
+  description: 'Browse collectibles and gear. Collectible categories require seller proof; The Franks Standard facilitates sales and does not guarantee authenticity.',
 })
 </script>
 

@@ -4,16 +4,16 @@
       <div class="hero-aurora" aria-hidden="true" />
       <div class="container hero-grid">
         <div class="hero-copy">
-          <p class="hero-pulse-ribbon">A new leash on collectibles. <span>Proof-first. Built to operate.</span></p>
+          <p class="hero-pulse-ribbon">{{ HERO_RIBBON }}</p>
           <h1 class="hero-title-epic">
-            <span class="t-line">If it is here,</span>
-            <span class="t-line t-gold-shine">it is real.</span>
-            <span class="t-line t-sub">Provenance you can see, and enforce.</span>
+            <span class="t-line">{{ HERO_TITLE_LINE_1 }}</span>
+            <span class="t-line t-gold-shine">{{ HERO_TITLE_LINE_2 }}</span>
+            <span class="t-line t-sub">{{ HERO_TITLE_SUB }}</span>
           </h1>
           <p class="hero-sub-epic">
-            Every listing ships a COA or a signed, in-platform guarantee. Escrow, buyer confirm, and a permanent ban
-            for fraud. This is the collector economy, not the endless scroll.
+            {{ HERO_LEDE }}
           </p>
+          <p class="hero-facilitator-note">{{ FACILITATOR_ONE_LINER }}</p>
           <HomeQuickNav />
           <p class="hero-help text-muted">
             Need help getting in?
@@ -83,7 +83,7 @@
         <h2 class="section-title">Bring your store to the floor</h2>
         <p class="section-subtitle text-muted">
           We are onboarding shops and pro sellers with authenticity-backed inventory—public listings and checkout roll out
-          in stages so there are no surprises. Same standards: COA or a signed in-platform guarantee on what goes public.
+          in stages so there are no surprises. Collectible listings require seller proof; we screen and enforce policies — we do not guarantee authenticity.
         </p>
         <div class="hero-actions mt-3">
           <NuxtLink to="/sellers" class="btn btn-primary btn-lg">For sellers &amp; stores</NuxtLink>
@@ -123,6 +123,15 @@
 </template>
 
 <script setup>
+import {
+  FACILITATOR_ONE_LINER,
+  HERO_LEDE,
+  HERO_RIBBON,
+  HERO_TITLE_LINE_1,
+  HERO_TITLE_LINE_2,
+  HERO_TITLE_SUB,
+} from '~/utils/marketplaceFacilitatorCopy.js'
+
 const tickerBelt = [
   'Sellers: COA upload in flow. ',
   'Sneaker grails, slabbed cards. ',
@@ -241,7 +250,15 @@ const tickerBeltDoubled = [...tickerBelt, ...tickerBelt]
   color: #111827;
   font-weight: 700;
   line-height: 1.7;
-  max-width: 560px;
+  max-width: 640px;
+  margin: 0 0 8px;
+}
+.hero-facilitator-note {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #374151;
+  line-height: 1.5;
+  max-width: 640px;
   margin: 0 0 4px;
 }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }

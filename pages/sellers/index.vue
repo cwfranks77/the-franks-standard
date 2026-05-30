@@ -42,7 +42,7 @@
       <div class="card callout">
         <h2>What we need from you</h2>
         <ul>
-          <li>COA or a signed in-platform guarantee on every public listing, per our
+          <li>Seller proof (COA or signed guarantee) on collectible listings as required, per our
             <NuxtLink to="/how-it-works">How it works</NuxtLink> and
             <NuxtLink to="/seller-agreement">Seller agreement</NuxtLink>.
           </li>
@@ -85,7 +85,7 @@ const transferBullets = INVENTORY_TRANSFER_BULLETS
 useSeoMeta({
   title: 'For sellers & stores — The Franks Standard',
   description:
-    'Apply to sell on the authenticity-first marketplace. Marketplace facilitator: COA or signed guarantee, staged rollout, clear fees.',
+    'Apply to sell on our marketplace facilitator. Seller proof on collectibles; screening and enforcement — not Platform guarantees of authenticity.',
 })
 </script>
 
