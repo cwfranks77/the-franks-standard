@@ -43,6 +43,8 @@
     "mail:test": "node scripts/test-mailbox.cjs",
     "mail:push-supabase": "node scripts/push-mailbox-secrets-to-supabase.cjs",
     "mail:sync-github": "node scripts/sync-mailbox-secrets-to-github.cjs",
+    "mail:sync-sendgrid": "node scripts/sync-sendgrid-to-github.cjs",
+    "sendgrid:apply-sender": "node scripts/apply-sendgrid-sender.cjs",
     "mail:refresh-password": "node scripts/refresh-mailbox-env-from-file.cjs",
     "mail:fix": "node scripts/apply-email-password.cjs",
     "namecheap:recover": "powershell -ExecutionPolicy Bypass -File scripts/namecheap-recover.ps1",
