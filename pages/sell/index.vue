@@ -553,6 +553,7 @@ import {
   SELLER_GUARANTEE_TITLE,
 } from '~/utils/authenticitySeal.js'
 
+const guaranteeSealIntro = GUARANTEE_WITH_SEAL_INTRO
 import { CHARITY_OPTIONS, charityByKey } from '~/utils/charities.js'
 import { calcCharitySplit, CHARITY_PERCENT_PRESETS } from '~/utils/charitySplit.js'
 import { auctionEndsAtFromDays } from '~/utils/auctionHelpers.js'
