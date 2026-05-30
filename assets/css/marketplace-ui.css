@@ -1177,3 +1177,26 @@
   gap: 10px;
   justify-content: center;
 }
+
+/* Owner / policy print mode (?print=1) */
+html.policy-print-mode .site-ribbon,
+html.policy-print-mode .site-header,
+html.policy-print-mode .site-trust,
+html.policy-print-mode .site-footer,
+html.policy-print-mode .menu-toggle {
+  display: none !important;
+}
+html.policy-print-mode .site-main {
+  padding: 0 !important;
+}
+html.policy-print-mode .container {
+  max-width: 8.5in !important;
+}
+@media print {
+  html.policy-print-mode .site-ribbon,
+  html.policy-print-mode .site-header,
+  html.policy-print-mode .site-trust,
+  html.policy-print-mode .site-footer {
+    display: none !important;
+  }
+}
