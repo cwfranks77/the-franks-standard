@@ -7,6 +7,9 @@
           <p class="text-muted">List in minutes. COA or signed guarantee is required only for collectibles, antiques, and similar categories — general merchandise uses accurate photos and description.</p>
         </div>
 
+        <SellListingPathChooser v-if="showListingPathChooser" />
+
+        <template v-else>
         <div class="sell-switch-banner card" role="status">
           <p>
             <strong>Coming from eBay or another marketplace?</strong>
@@ -535,6 +538,7 @@
           </button>
         </form>
         </template>
+        </template>
       </div>
     </div>
   </div>
@@ -553,6 +557,7 @@ import {
   SELLER_GUARANTEE_TITLE,
 } from '~/utils/authenticitySeal.js'
 
+const guaranteeSealIntro = GUARANTEE_WITH_SEAL_INTRO
 import { CHARITY_OPTIONS, charityByKey } from '~/utils/charities.js'
 import { calcCharitySplit, CHARITY_PERCENT_PRESETS } from '~/utils/charitySplit.js'
 import { auctionEndsAtFromDays } from '~/utils/auctionHelpers.js'
@@ -568,7 +573,7 @@ const sellDockTiles = [
 
 const charities = CHARITY_OPTIONS
 
-definePageMeta({ middleware: ['sell-entry', 'requires-auth'] })
+definePageMeta({ middleware: 'requires-auth' })
 
 useSeoMeta({
   title: 'Sell — The Franks Standard',
@@ -729,6 +734,14 @@ watch(requiresCoa, (needs) => {
 
 /** general | collectible — from /sell/start or /sell/coa */
 const listingKind = ref('')
+
+const showListingPathChooser = computed(() => {
+  const kind = String(route.query.kind || '').toLowerCase()
+  const mode = String(route.query.mode || '').toLowerCase()
+  if (kind === 'general' || kind === 'collectible') return false
+  if (mode === 'dropship' || mode === 'direct') return false
+  return true
+})
 
 const allowedCoaTypes = new Set(['upload', 'guarantee', 'franks_issued'])
 
