@@ -4,18 +4,7 @@
       <div class="sell-wrapper">
         <div class="sell-header text-center">
           <h1>Sell on The Franks Standard</h1>
-          <p class="text-muted">List in minutes. Uploaded COA or Franks Standard COA is required for collectibles, antiques, and similar categories — general merchandise uses accurate photos and description.</p>
-        </div>
-
-        <SellListingPathChooser v-if="showListingPathChooser" />
-
-        <template v-else>
-        <div class="sell-switch-banner card" role="status">
-          <p>
-            <strong>Coming from eBay or another marketplace?</strong>
-            Import your inventory in minutes — skim eBay or upload CSV, then publish here with escrow checkout.
-          </p>
-          <MarketplacePageDock :tiles="sellDockTiles" aria-label="Seller shortcuts" />
+          <p class="text-muted">List in minutes. COA or signed guarantee is required only for collectibles, antiques, and similar categories — general merchandise uses accurate photos and description.</p>
         </div>
 
         <div v-if="policyLoading" class="text-muted" style="padding: 24px 0;">Loading seller requirements…</div>
@@ -25,7 +14,17 @@
           @accepted="onPoliciesAccepted"
         />
 
+        <SellListingPathChooser v-else-if="showListingPathChooser" />
+
         <template v-else>
+        <div v-if="!isListingFlow" class="sell-switch-banner card" role="status">
+          <p>
+            <strong>Coming from eBay or another marketplace?</strong>
+            Import your inventory in minutes — skim eBay or upload CSV, then publish here with escrow checkout.
+          </p>
+          <MarketplacePageDock :tiles="sellDockTiles" aria-label="Seller shortcuts" />
+        </div>
+
         <div v-if="integrityHold" class="sell-freeze-banner sell-hold-banner" role="alert">
           <strong>Account paused — authenticity review</strong>
           <p>{{ integrityHoldText }}</p>
@@ -538,7 +537,6 @@
           </button>
         </form>
         </template>
-        </template>
       </div>
     </div>
   </div>
@@ -591,6 +589,7 @@ const {
 const applicationMailto = buildSellerApplicationMailto()
 const supabase = useSupabaseClient()
 const route = useRoute()
+const isListingFlow = computed(() => isActiveListingFlow(route.query))
 const submitting = ref(false)
 const accountFrozen = ref(false)
 const integrityHold = ref(false)
@@ -971,6 +970,12 @@ function handleCOA(e) {
 
 async function onPoliciesAccepted () {
   await loadPolicyStatus()
+  await nextTick()
+  if (showListingPathChooser.value) {
+    document.getElementById('list-path-heading')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    return
+  }
+  document.querySelector('.listing-type-selector')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
 async function submitListing() {

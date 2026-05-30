@@ -51,6 +51,13 @@ export default defineNuxtConfig({
   nitro: {
     // Vercel static hosting: use generic static preset. GitHub Pages keeps github-pages (.nojekyll, etc.).
     preset: process.env.VERCEL ? 'static' : 'github-pages',
+    prerender: {
+      routes: [
+        '/ops/documents',
+        '/ops/print-pack',
+        '/ops/print-coa',
+      ],
+    },
   },
 
   // Operator unlock phrase for /ops — only the SHA-256 hash ships to the browser.
@@ -87,6 +94,8 @@ export default defineNuxtConfig({
     '/ops/**': {
       headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
     },
+    '/ops/print/pack': { redirect: { to: '/ops/print-pack', statusCode: 301 } },
+    '/ops/print/coa': { redirect: { to: '/ops/print-coa', statusCode: 301 } },
   },
 
   pwa: {

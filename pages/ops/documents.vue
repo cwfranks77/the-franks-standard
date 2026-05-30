@@ -91,11 +91,11 @@ useSeoMeta({
 const printerHint = ref('')
 
 function openPrintPack () {
-  window.open('/ops/print/pack?print=1', '_blank', 'noopener')
+  window.open('/ops/print-pack?print=1', '_blank', 'noopener')
 }
 
 function openPrintCoa () {
-  window.open('/ops/print/coa?print=1', '_blank', 'noopener')
+  window.open('/ops/print-coa?print=1', '_blank', 'noopener')
 }
 
 onMounted(() => {

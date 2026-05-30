@@ -7,7 +7,7 @@
       </p>
 
       <div v-if="policyLoading" class="text-muted">Loading seller requirements…</div>
-      <SellerPolicyAgreement v-else-if="needsPolicyAcceptance" @accepted="loadPolicyStatus" />
+      <SellerPolicyAgreement v-else-if="needsPolicyAcceptance" @accepted="onPoliciesAccepted" />
       <template v-else>
       <div class="tabs">
         <button type="button" class="tab" :class="{ active: tab === 'csv' }" @click="tab = 'csv'">eBay CSV (best)</button>
@@ -177,6 +177,10 @@ const {
   loading: policyLoading,
   loadStatus: loadPolicyStatus,
 } = useSellerPolicyAcceptance()
+
+async function onPoliciesAccepted () {
+  await loadPolicyStatus()
+}
 
 onMounted(() => loadPolicyStatus())
 

@@ -71,12 +71,15 @@ Deno.serve(async (req) => {
 
   if (profileErr) return json({ error: 'update_failed', detail: profileErr.message }, 500)
 
-  await admin.from('seller_policy_acceptances').insert({
+  const { error: auditErr } = await admin.from('seller_policy_acceptances').insert({
     seller_id: user.id,
     policy_version: CURRENT_SELLER_POLICY_VERSION,
     signer_legal_name: legalName,
     documents_accepted: documents,
   })
+  if (auditErr) {
+    console.error('seller_policy_acceptances insert failed:', auditErr.message)
+  }
 
   const { data: profile } = await admin
     .from('profiles')

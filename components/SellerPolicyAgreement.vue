@@ -36,15 +36,24 @@
 
     <p v-if="error" class="error-text" role="alert">{{ error }}</p>
 
-    <button
-      type="button"
-      class="btn btn-primary btn-lg"
-      style="width: 100%;"
-      :disabled="submitting || !canSubmit"
-      @click="onSubmit"
-    >
-      {{ submitting ? 'Recording signature…' : 'Digitally sign & agree — unlock selling' }}
-    </button>
+    <div class="policy-actions">
+      <button
+        type="button"
+        class="btn btn-primary btn-lg policy-sign-btn"
+        :disabled="submitting || !canSubmit"
+        @click="onSubmit"
+      >
+        {{ submitting ? 'Recording signature…' : 'Digitally sign & agree — unlock selling' }}
+      </button>
+      <button
+        v-if="error && !submitting"
+        type="button"
+        class="btn btn-outline btn-lg policy-retry-btn"
+        @click="onSubmit"
+      >
+        Try again
+      </button>
+    </div>
   </section>
 </template>
 
@@ -72,8 +81,12 @@ const canSubmit = computed(() => {
   return agreeAll.value && legalName.value.trim().length >= 2
 })
 
+onMounted(() => {
+  if (submitting.value) submitting.value = false
+})
+
 async function onSubmit () {
-  if (!canSubmit.value) return
+  if (!canSubmit.value || submitting.value) return
   const docIds = SELLER_POLICY_DOCUMENTS.filter((d) => d.required).map((d) => d.id)
   const ok = await submitAcceptance(legalName.value.trim(), docIds)
   if (ok) emit('accepted')
@@ -127,4 +140,13 @@ async function onSubmit () {
 }
 .agree-all input { margin-top: 4px; accent-color: var(--gold); }
 .error-text { color: #b91c1c; font-size: 0.88rem; margin-bottom: 12px; }
+.policy-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.policy-sign-btn,
+.policy-retry-btn {
+  width: 100%;
+}
 </style>
