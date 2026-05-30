@@ -1,12 +1,12 @@
 <template>
   <nav class="mkt-hero-nav" aria-label="Marketplace quick navigation">
     <div class="mkt-hero-cta-row">
-      <NuxtLink to="/browse" class="mkt-btn mkt-btn--primary">
+      <NuxtLink to="/browse" class="mkt-btn mkt-btn--primary mkt-btn--lg">
         Browse marketplace
       </NuxtLink>
-      <NuxtLink to="/sell/start" class="mkt-btn mkt-btn--secondary">Sell</NuxtLink>
-      <NuxtLink to="/sell/import" class="mkt-btn mkt-btn--secondary">Import eBay</NuxtLink>
-      <NuxtLink to="/video" class="mkt-btn mkt-btn--secondary">Video inspect</NuxtLink>
+      <NuxtLink to="/sell/start" class="mkt-btn mkt-btn--secondary mkt-btn--lg">Sell</NuxtLink>
+      <NuxtLink to="/sell/import" class="mkt-btn mkt-btn--secondary mkt-btn--lg">Import eBay</NuxtLink>
+      <NuxtLink to="/video" class="mkt-btn mkt-btn--secondary mkt-btn--lg">Video inspect</NuxtLink>
     </div>
 
     <div class="mkt-role-tabs" role="tablist" aria-label="Shop or sell">
@@ -40,7 +40,15 @@
         class="mkt-dept-tile"
       >
         <span class="mkt-dept-img-wrap">
-          <img :src="d.image" :alt="''" width="64" height="48" loading="lazy" @error="onShowcaseImageError" />
+          <img
+            :src="d.image"
+            :alt="d.shortLabel"
+            width="100"
+            height="72"
+            loading="lazy"
+            :data-showcase-key="deptShowcaseKey(d)"
+            @error="onShowcaseImageError"
+          />
         </span>
         <span class="mkt-dept-label">{{ d.shortLabel }}</span>
       </NuxtLink>
@@ -51,9 +59,19 @@
         v-for="s in activeShortcuts"
         :key="s.label"
         :to="s.to"
-        class="mkt-shortcut-tile"
+        class="mkt-shortcut-tile mkt-shortcut-tile--photo"
       >
-        <img :src="s.image" :alt="''" width="40" height="32" loading="lazy" class="mkt-shortcut-img" @error="onShowcaseImageError" />
+        <span class="mkt-shortcut-photo">
+          <img
+            :src="s.image"
+            :alt="s.label"
+            width="280"
+            height="160"
+            loading="lazy"
+            :data-showcase-key="s.showcaseKey || ''"
+            @error="onShowcaseImageError"
+          />
+        </span>
         <span class="mkt-shortcut-text">
           <strong>{{ s.label }}</strong>
           <em>{{ s.hint }}</em>
@@ -74,6 +92,25 @@ import {
   departmentBrowseTo,
 } from '~/utils/homeQuickLinks.js'
 import { onShowcaseImageError } from '~/utils/marketplaceShowcaseImages.js'
+
+const DEPT_KEY = {
+  'Sports cards': 'cards',
+  Coins: 'coins',
+  Watches: 'watches',
+  Sneakers: 'sneakers',
+  Guitars: 'guitars',
+  Art: 'art',
+  Cameras: 'camera',
+  'Retro games': 'vintage',
+  'Estate finds': 'estate',
+  TCG: 'cards',
+  Comics: 'comics',
+  'All categories': 'art',
+}
+
+function deptShowcaseKey (dept) {
+  return DEPT_KEY[dept.shortLabel] || ''
+}
 
 const role = ref('buyer')
 const activeShortcuts = computed(() =>

@@ -44,6 +44,16 @@
             class="live-feature-card live-feature-link"
             :style="{ '--i': i }"
           >
+            <span class="live-feature-photo">
+              <img
+                :src="featureImage(f.title)"
+                :alt="''"
+                width="240"
+                height="120"
+                loading="lazy"
+                @error="onShowcaseImageError"
+              />
+            </span>
             <span class="live-icon" aria-hidden="true">{{ f.icon }}</span>
             <h4>{{ f.title }}</h4>
             <p>{{ f.desc }}</p>
@@ -68,6 +78,11 @@ import {
   LIVE_NOW_TABS,
   LIVE_NOW_BY_TAB,
 } from '~/utils/platformLiveFeatures.js'
+import { featureShowcaseImage, onShowcaseImageError } from '~/utils/marketplaceShowcaseImages.js'
+
+function featureImage (title) {
+  return featureShowcaseImage(title)
+}
 
 const tabs = LIVE_NOW_TABS
 const activeTab = ref('buyers')

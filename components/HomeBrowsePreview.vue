@@ -33,6 +33,7 @@
               loading="lazy"
               width="200"
               height="160"
+              :data-showcase-key="item.showcaseKey || ''"
               @error="onShowcaseImageError"
             />
           </div>

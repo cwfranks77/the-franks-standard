@@ -4,15 +4,15 @@ import { CATEGORY_SHOWCASE_PHOTOS } from '~/utils/marketplaceShowcaseImages.js'
 const P = CATEGORY_SHOWCASE_PHOTOS
 
 export const HOME_BROWSE_SAMPLES = [
-  { id: 'sample-guitar', title: 'Vintage stage rig', category: 'Musical Instruments', image: P.guitars },
-  { id: 'sample-watch', title: 'Certified chronograph', category: 'Watches & Jewelry', image: P.watches },
-  { id: 'sample-cards', title: 'Graded slab pickup', category: 'Sports Cards & Memorabilia', image: P.cards },
-  { id: 'sample-coins', title: 'Slabbed silver lot', category: 'Coins & Currency', image: P.coins },
-  { id: 'sample-sneaker', title: 'Authenticated deadstock', category: 'Sneakers & Streetwear', image: P.sneakers },
-  { id: 'sample-art', title: 'Gallery estate piece', category: 'Art & Antiques', image: P.art },
-  { id: 'sample-camera', title: 'Film body + glass', category: 'Photography & Film Gear', image: P.camera },
-  { id: 'sample-retro', title: 'Sealed retro hardware', category: 'Vintage Electronics & Games', image: P.vintage },
-  { id: 'sample-estate', title: 'Estate desk find', category: 'Home & Estate Collectibles', image: P.estate },
+  { id: 'sample-guitar', title: 'Vintage stage rig', category: 'Musical Instruments', image: P.guitars, showcaseKey: 'guitars' },
+  { id: 'sample-watch', title: 'Certified chronograph', category: 'Watches & Jewelry', image: P.watches, showcaseKey: 'watches' },
+  { id: 'sample-cards', title: 'Graded slab pickup', category: 'Sports Cards & Memorabilia', image: P.cards, showcaseKey: 'cards' },
+  { id: 'sample-coins', title: 'Slabbed silver lot', category: 'Coins & Currency', image: P.coins, showcaseKey: 'coins' },
+  { id: 'sample-sneaker', title: 'Authenticated deadstock', category: 'Sneakers & Streetwear', image: P.sneakers, showcaseKey: 'sneakers' },
+  { id: 'sample-art', title: 'Gallery estate piece', category: 'Art & Antiques', image: P.art, showcaseKey: 'art' },
+  { id: 'sample-camera', title: 'Film body + glass', category: 'Photography & Film Gear', image: P.camera, showcaseKey: 'camera' },
+  { id: 'sample-retro', title: 'Sealed retro hardware', category: 'Vintage Electronics & Games', image: P.vintage, showcaseKey: 'vintage' },
+  { id: 'sample-estate', title: 'Estate desk find', category: 'Home & Estate Collectibles', image: P.estate, showcaseKey: 'estate' },
 ]
 
 /** When a listing has no photo, pick art that matches the category. */

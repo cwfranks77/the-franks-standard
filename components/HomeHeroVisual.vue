@@ -8,6 +8,7 @@
         height="420"
         fetchpriority="high"
         class="hero-visual-hero-img"
+        data-showcase-key="cards"
         @error="onShowcaseImageError"
       />
       <span class="hero-visual-badge">COA · Escrow · Verify</span>
@@ -19,7 +20,15 @@
           :key="`${p.label}-${i}`"
           class="hero-visual-thumb"
         >
-          <img :src="p.image" :alt="p.label" width="120" height="96" loading="lazy" @error="onShowcaseImageError" />
+          <img
+            :src="p.image"
+            :alt="p.label"
+            width="120"
+            height="96"
+            loading="lazy"
+            :data-showcase-key="p.showcaseKey || ''"
+            @error="onShowcaseImageError"
+          />
           <span>{{ p.label }}</span>
         </div>
       </div>

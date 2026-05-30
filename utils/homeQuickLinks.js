@@ -27,24 +27,24 @@ export function departmentBrowseTo (dept) {
 }
 
 export const HOME_BUYER_SHORTCUTS = [
-  { label: 'Search floor', hint: 'Filters & sort', to: '/browse', image: P.cards },
-  { label: 'Collections', hint: 'Curated floors', to: '/collections', image: P.coins },
-  { label: 'Verify COA', hint: 'Scan serial', to: '/verify/coa/FS-2026-000001', image: P.watches },
-  { label: 'Video inspect', hint: 'Live rooms', to: '/video', image: P.camera },
-  { label: 'Protection', hint: 'Escrow rules', to: '/protection', image: P.estate },
-  { label: 'How to buy', hint: 'Step-by-step', to: '/how-it-works', image: P.art },
-  { label: 'Coin & auth tools', hint: 'Free guides', to: '/learn/tools', image: P.coins },
+  { label: 'Search floor', hint: 'Filters & sort', to: '/browse', image: P.cards, showcaseKey: 'cards' },
+  { label: 'Collections', hint: 'Curated floors', to: '/collections', image: P.coins, showcaseKey: 'coins' },
+  { label: 'Verify COA', hint: 'Scan serial', to: '/verify/coa/FS-2026-000001', image: P.watches, showcaseKey: 'watches' },
+  { label: 'Video inspect', hint: 'Live rooms', to: '/video', image: P.camera, showcaseKey: 'camera' },
+  { label: 'Protection', hint: 'Escrow rules', to: '/protection', image: P.estate, showcaseKey: 'estate' },
+  { label: 'How to buy', hint: 'Step-by-step', to: '/how-it-works', image: P.art, showcaseKey: 'art' },
+  { label: 'Coin & auth tools', hint: 'Free guides', to: '/learn/tools', image: P.coins, showcaseKey: 'coins' },
 ]
 
 export const HOME_SELLER_SHORTCUTS = [
-  { label: 'List item', hint: 'Collectible or general', to: '/sell/start', image: P.guitars },
-  { label: 'Import eBay', hint: 'CSV / skim', to: '/sell/import', image: P.cards },
-  { label: 'Store builder', hint: 'AI bios & SEO', to: '/store-builder', image: P.watches },
-  { label: 'Dropship', hint: 'Supplier wizard', to: '/sell/dropship-setup', image: P.sneakers },
-  { label: 'Pricing', hint: '4–5% fees', to: '/pricing', image: P.coins },
-  { label: 'Top sellers', hint: 'Volume rewards', to: '/top-sellers', image: P.art },
-  { label: 'Seller hub', hint: 'Stores & pros', to: '/sellers', image: P.estate },
-  { label: 'Dashboard', hint: 'Orders & listings', to: '/dashboard', image: P.camera },
+  { label: 'List item', hint: 'Collectible or general', to: '/sell/start', image: P.guitars, showcaseKey: 'guitars' },
+  { label: 'Import eBay', hint: 'CSV / skim', to: '/sell/import', image: P.cards, showcaseKey: 'cards' },
+  { label: 'Store builder', hint: 'AI bios & SEO', to: '/store-builder', image: P.watches, showcaseKey: 'watches' },
+  { label: 'Dropship', hint: 'Supplier wizard', to: '/sell/dropship-setup', image: P.sneakers, showcaseKey: 'sneakers' },
+  { label: 'Pricing', hint: '4–5% fees', to: '/pricing', image: P.coins, showcaseKey: 'coins' },
+  { label: 'Top sellers', hint: 'Volume rewards', to: '/top-sellers', image: P.art, showcaseKey: 'art' },
+  { label: 'Seller hub', hint: 'Stores & pros', to: '/sellers', image: P.estate, showcaseKey: 'estate' },
+  { label: 'Dashboard', hint: 'Orders & listings', to: '/dashboard', image: P.camera, showcaseKey: 'camera' },
 ]
 
 export function imageForCategory (categoryName) {

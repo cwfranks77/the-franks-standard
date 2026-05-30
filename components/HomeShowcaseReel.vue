@@ -16,7 +16,15 @@
           :to="browseFor(item)"
           class="showcase-reel-card"
         >
-          <img :src="item.image" :alt="item.title" width="280" height="200" loading="lazy" @error="onShowcaseImageError" />
+          <img
+            :src="item.image"
+            :alt="item.title"
+            width="280"
+            height="200"
+            loading="lazy"
+            :data-showcase-key="item.showcaseKey || ''"
+            @error="onShowcaseImageError"
+          />
           <span class="showcase-reel-card-meta">
             <span class="showcase-reel-tag">{{ item.tag }}</span>
             <strong>{{ item.title }}</strong>
@@ -30,7 +38,15 @@
           :to="browseFor(item)"
           class="showcase-reel-card"
         >
-          <img :src="item.image" :alt="item.title" width="280" height="200" loading="lazy" @error="onShowcaseImageError" />
+          <img
+            :src="item.image"
+            :alt="item.title"
+            width="280"
+            height="200"
+            loading="lazy"
+            :data-showcase-key="item.showcaseKey || ''"
+            @error="onShowcaseImageError"
+          />
           <span class="showcase-reel-card-meta">
             <span class="showcase-reel-tag">{{ item.tag }}</span>
             <strong>{{ item.title }}</strong>
@@ -39,10 +55,12 @@
       </div>
     </div>
 
-    <div class="container showcase-reel-cta">
-      <NuxtLink to="/browse" class="mkt-btn mkt-btn--primary">Browse the floor</NuxtLink>
-      <NuxtLink to="/sell/start" class="mkt-btn mkt-btn--secondary">List an item</NuxtLink>
-    </div>
+    <p class="container showcase-reel-foot">
+      Tap any category above, or
+      <NuxtLink to="/browse" class="showcase-reel-foot-link">browse all listings</NuxtLink>
+      ·
+      <NuxtLink to="/categories" class="showcase-reel-foot-link">see every category</NuxtLink>
+    </p>
   </section>
 </template>
 
