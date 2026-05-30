@@ -34,7 +34,7 @@ function chooseGeneral () {
 }
 
 function chooseCollectible () {
-  router.push(LIST_ITEM_COA_PATH)
+  router.push(`${LIST_ITEM_COA_PATH}/`)
 }
 </script>
 

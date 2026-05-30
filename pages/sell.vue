@@ -573,7 +573,8 @@ const charities = CHARITY_OPTIONS
 definePageMeta({ middleware: ['sell-entry', 'requires-auth'] })
 const route = useRoute()
 const isSellSubRoute = computed(() => {
-  const path = route.path.replace(/\/$/, '') || '/'
+  // Nested parent route.path stays /sell when child is active; use fullPath.
+  const path = (route.fullPath.split('?')[0] || '/').replace(/\/$/, '') || '/'
   return path !== '/sell'
 })
 
