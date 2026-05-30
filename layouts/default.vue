@@ -2,9 +2,13 @@
   <div class="site-wrapper">
     <div class="site-ribbon" role="status" aria-label="Site highlights">
       <div class="container site-ribbon-inner">
-        <span class="ribbon-txt">Marketplace facilitator · seller proof on collectibles only</span>
+        <span class="ribbon-txt">{{ RIBBON_LINE_PROOF }}</span>
         <span class="ribbon-dot" aria-hidden="true" />
-        <span class="ribbon-txt">Escrow until buyer confirms delivery</span>
+        <NuxtLink :to="AUTH_EDUCATION_HUB_PATH" class="ribbon-txt ribbon-txt--link">
+          {{ RIBBON_LINE_EDUCATION }} →
+        </NuxtLink>
+        <span class="ribbon-dot" aria-hidden="true" />
+        <span class="ribbon-txt">{{ RIBBON_LINE_ESCROW }}</span>
         <span class="ribbon-dot" aria-hidden="true" />
         <span class="ribbon-txt">4–5% seller fees · FOUNDERS10: 3 mo Pro free</span>
       </div>
@@ -56,6 +60,7 @@
     <div class="site-trust" aria-label="Why buyers and sellers use this marketplace">
       <div class="container trust-chip-row">
         <NuxtLink to="/how-it-works" class="trust-chip">Escrow · buyer confirms delivery</NuxtLink>
+        <NuxtLink to="/learn/tools" class="trust-chip">Coin &amp; authenticity tools</NuxtLink>
         <NuxtLink to="/sell/import" class="trust-chip">Import from eBay</NuxtLink>
         <NuxtLink to="/store-builder" class="trust-chip">AI Store Builder</NuxtLink>
         <NuxtLink to="/video" class="trust-chip">Video inspect</NuxtLink>
@@ -115,7 +120,7 @@
             <NuxtLink to="/honor">Honor Our Heroes (6 mo Pro)</NuxtLink>
             <NuxtLink to="/how-it-works">How It Works</NuxtLink>
             <NuxtLink to="/seller-tools">Appraisal &amp; comp tools</NuxtLink>
-            <NuxtLink to="/learn">Guides &amp; free tools</NuxtLink>
+            <NuxtLink to="/learn/tools">Coin &amp; authenticity tools</NuxtLink>
             <NuxtLink to="/collections">Collections &amp; limited drops</NuxtLink>
             <NuxtLink to="/partners/creators">Creator affiliates</NuxtLink>
             <NuxtLink to="/social">Social promotion</NuxtLink>
@@ -214,6 +219,12 @@ import { normalizeOpsPhrase } from '~/utils/opsPhrase'
 import { NAV_FEATURES_SECTIONS } from '~/utils/navFeaturesMenu.js'
 import { NAV_SETTINGS_SECTIONS } from '~/utils/navSettingsMenu.js'
 import { buildSocialLinks } from '~/utils/siteSocial.js'
+import {
+  AUTH_EDUCATION_HUB_PATH,
+  RIBBON_LINE_EDUCATION,
+  RIBBON_LINE_ESCROW,
+  RIBBON_LINE_PROOF,
+} from '~/utils/authenticityEducation.js'
 
 const navFeatures = NAV_FEATURES_SECTIONS
 
@@ -650,17 +661,24 @@ async function submitOpModal () {
 .op-hint code { color: var(--cyan); font-size: 0.8em; }
 
 .site-ribbon {
-  background: linear-gradient(90deg, rgba(255, 45, 122, 0.28), rgba(0, 224, 255, 0.16), rgba(139, 92, 255, 0.22));
-  border-bottom: 1px solid rgba(0, 224, 255, 0.2);
-  font-size: 0.84rem;
-  font-weight: 900;
+  background: #f8fafc;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.78rem;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: #ffffff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+  letter-spacing: 0.08em;
+  color: #000000;
+  text-shadow: none;
 }
 .site-ribbon-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 22px; padding: 10px 12px; }
-.ribbon-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); opacity: 0.6; }
+.ribbon-txt { color: #000000; }
+.ribbon-txt--link {
+  color: #000000;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.ribbon-txt--link:hover { color: #146eb4; }
+.ribbon-dot { width: 4px; height: 4px; border-radius: 50%; background: #374151; opacity: 0.45; }
 
 .site-trust {
   position: relative;

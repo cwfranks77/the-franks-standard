@@ -371,7 +371,7 @@ export const LEARN_TOOLS = [
   {
     slug: 'coin-study-guide',
     title: 'Coin study guide (printable)',
-    description: 'Struck vs cast, Morgan diagnostics, 10-point checklist — free buyer & dealer reference.',
+    description: 'Learn struck vs cast, Morgan diagnostics, and a 10-point checklist — free coin authentication education for buyers and sellers.',
     icon: '🪙',
   },
 ]

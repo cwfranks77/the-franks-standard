@@ -31,6 +31,8 @@
 
     <HomeTrustMission />
 
+    <HomeAuthenticityEducation />
+
     <TopSellersShowcase />
 
     <section class="founder-bar" aria-label="Founder is reachable">

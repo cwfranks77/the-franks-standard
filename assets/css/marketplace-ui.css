@@ -372,7 +372,19 @@
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: rgba(0, 224, 255, 0.55);
+  background: #374151;
+  opacity: 0.45;
+}
+.site-ribbon .ribbon-txt {
+  color: #000000;
+}
+.site-ribbon .ribbon-txt--link {
+  color: #000000;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.site-ribbon .ribbon-txt--link:hover {
+  color: #146eb4;
 }
 
 /* Page-level docks (browse, sell, pricing) */

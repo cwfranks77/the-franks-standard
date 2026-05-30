@@ -33,7 +33,7 @@ export function getAiReply (message: string): string {
   if (!q) {
     return 'Welcome to The Franks Standard — a **marketplace facilitator**. We connect buyers and sellers; we **do not** guarantee item authenticity. Collectible listings require **seller** proof (COA or signed guarantee); we screen and enforce policies when misrepresentation is proven.\n\n' +
       'I can help with:\n' +
-      '• Buying, selling, and Stripe payouts\n• COA verification and authenticity reports\n• Escrow, shipping, and orders\n' +
+      '• Buying, selling, and Stripe payouts\n• COA verification and authenticity reports\n• Free education: /learn/tools (coin study guide & more coming)\n• Escrow, shipping, and orders\n' +
       '• Seller Excellence rewards\n• Account and technical issues\n\n' +
       'Founder Open Door: /open-door · Call (877) 837-0527 · Email info@thefranksstandard.com\n\n' +
       'What can I help you with today?'

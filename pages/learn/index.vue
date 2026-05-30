@@ -5,8 +5,10 @@
         <p class="eyebrow">Learn</p>
         <h1>Guides, tools &amp; videos for collectibles sellers</h1>
         <p class="lead text-muted">
-          Free how-tos, “best of” research, fee calculators, and tutorials on escrow, COA, eBay import,
-          and seller protection — built for card shops, coin dealers, and proof-first resale.
+          Free how-tos, fee calculators, and <strong>authenticity education</strong> — including our printable
+          <NuxtLink to="/learn/tools/coin-study-guide">coin study guide</NuxtLink> for identifying struck vs cast coins and common red flags.
+          More buyer and seller literature for cards, watches, memorabilia, and other collectibles is coming.
+          These tools teach what to look for; they do not mean the Platform guarantees an item is authentic.
         </p>
         <div class="learn-cta-actions mt-2">
           <NuxtLink to="/learn/tools" class="btn btn-primary btn-sm">Free tools</NuxtLink>

@@ -33,6 +33,7 @@ export const HOME_BUYER_SHORTCUTS = [
   { label: 'Video inspect', hint: 'Live rooms', to: '/video', image: P.camera },
   { label: 'Protection', hint: 'Escrow rules', to: '/protection', image: P.estate },
   { label: 'How to buy', hint: 'Step-by-step', to: '/how-it-works', image: P.art },
+  { label: 'Coin & auth tools', hint: 'Free guides', to: '/learn/tools', image: P.coins },
 ]
 
 export const HOME_SELLER_SHORTCUTS = [

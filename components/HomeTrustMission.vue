@@ -15,8 +15,9 @@
           <li><strong>Seller Excellence tokens</strong> — top-rated sellers earn waived or reduced fees, homepage spotlight, and appreciation badges each cycle.</li>
         </ul>
         <div class="trust-mission-cta">
+          <NuxtLink to="/learn/tools" class="btn btn-primary btn-sm">Coin &amp; authenticity tools</NuxtLink>
           <NuxtLink to="/how-it-works" class="btn btn-outline btn-sm">How protection works</NuxtLink>
-          <NuxtLink to="/top-sellers" class="btn btn-primary btn-sm">Seller Excellence</NuxtLink>
+          <NuxtLink to="/top-sellers" class="btn btn-outline btn-sm">Seller Excellence</NuxtLink>
           <NuxtLink to="/open-door" class="btn btn-outline btn-sm">Open Door</NuxtLink>
         </div>
       </div>

@@ -16,6 +16,7 @@ export const LIVE_NOW_BY_TAB = {
     { icon: '📹', title: 'Video inspect rooms', desc: 'See the item live in-browser before you lock escrow.', to: '/video', cta: 'Open video' },
     { icon: '📂', title: 'Collections', desc: 'Curated floors for graded cards, coins, and limited drops.', to: '/collections', cta: 'Collections' },
     { icon: '🚩', title: 'Report concerns', desc: 'Flag authenticity issues on a listing — ops enforces per policy.', to: '/how-it-works', cta: 'Buyer playbook' },
+    { icon: '🪙', title: 'Coin authentication guide', desc: 'Free printable study guide — more collectibles education coming.', to: '/learn/tools/coin-study-guide', cta: 'Coin study guide' },
   ],
   sellers: [
     { icon: '🏪', title: 'Sell & list', desc: 'Photos, COA upload, and publish — policy signature required first.', to: '/sell', cta: 'Start selling' },
@@ -29,6 +30,7 @@ export const LIVE_NOW_BY_TAB = {
     { icon: '📜', title: 'Seller proof on collectibles', desc: 'Required for collectible categories — seller-backed, not Platform-guaranteed.', to: '/how-it-works', cta: 'How proof works' },
     { icon: '🏢', title: 'Floor office COA', desc: 'Franks serial tied to one listing — not a blank certificate.', to: '/verify/coa/FS-2026-000001', cta: 'Verify serial' },
     { icon: '🔒', title: 'Stripe escrow', desc: 'Funds held until buyer confirms — disputes use platform records.', to: '/pay', cta: 'Pay & escrow' },
+    { icon: '🪙', title: 'Authenticity education', desc: 'Coin study guide today; more collectibles literature for buyers & sellers.', to: '/learn/tools', cta: 'Free tools' },
     { icon: '🛡️', title: 'Listing authenticity scan', desc: 'Blocks off-platform pay apps and “no guarantee” wording at publish.', to: '/learn/tools/authenticity-checklist', cta: 'Checklist' },
     { icon: '⚖️', title: 'Forced refund policy', desc: 'Seller-at-fault refunds written in Marketplace Policies.', to: '/marketplace-policy', cta: 'Full policy' },
     { icon: '🧊', title: 'Account freeze enforcement', desc: 'Refuse valid refund → freeze + platform debt until repaid.', to: '/marketplace-policy', cta: 'Enforcement rules' },

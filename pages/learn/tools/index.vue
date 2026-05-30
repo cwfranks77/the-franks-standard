@@ -3,8 +3,11 @@
     <section class="learn-hero">
       <div class="container">
         <p class="eyebrow"><NuxtLink to="/learn">Learn</NuxtLink> · Tools</p>
-        <h1>Free seller tools</h1>
-        <p class="lead text-muted">Calculators and checklists — no account required. Share links in blog posts and social posts.</p>
+        <h1>Free tools &amp; authenticity education</h1>
+        <p class="lead text-muted">
+          Calculators, checklists, and coin authentication guides for buyers and sellers — no account required.
+          We are adding more collectibles literature over time. Educational only — not a Platform guarantee of genuineness.
+        </p>
       </div>
     </section>
     <section class="learn-section">
@@ -29,7 +32,7 @@ import { LEARN_TOOLS } from '~/utils/contentHub.js'
 
 useSeoMeta({
   title: 'Free marketplace tools | The Franks Standard',
-  description: 'Fee savings calculator, listing cost estimator, and printable authenticity checklist for collectibles sellers.',
+  description: 'Free coin study guide, authenticity checklist, fee calculators, and more education for collectibles buyers and sellers.',
 })
 </script>
 
