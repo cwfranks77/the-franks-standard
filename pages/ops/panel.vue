@@ -42,6 +42,7 @@
           <NuxtLink to="/dashboard" class="btn btn-outline btn-lg">My Dashboard</NuxtLink>
           <NuxtLink to="/browse" class="btn btn-dark btn-lg">Browse Floor</NuxtLink>
           <NuxtLink to="/ops/status" class="btn btn-dark btn-lg">Transaction readiness</NuxtLink>
+          <NuxtLink to="/ops/incidents" class="btn btn-primary btn-lg">Ops incidents &amp; alerts</NuxtLink>
           <NuxtLink to="/ops/site-qa" class="btn btn-primary btn-lg">Full site QA (all routes)</NuxtLink>
           <NuxtLink to="/ops/test-checkout" class="btn btn-primary btn-lg">Checkout QA</NuxtLink>
           <NuxtLink to="/ops/mail-setup" class="btn btn-outline btn-lg">Fix info@ on phone</NuxtLink>
@@ -114,6 +115,7 @@
             <li><NuxtLink to="/ops/influencers"><strong>Influencers &amp; affiliates</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/social-promo"><strong>Social promotion</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/niche-collections"><strong>Niche collections &amp; limited drops</strong></NuxtLink></li>
+            <li><NuxtLink to="/ops/incidents"><strong>Ops incidents &amp; phone alerts</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/authenticity"><strong>Authenticity &amp; counterfeit enforcement</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/refunds"><strong>Forced buyer refunds</strong></NuxtLink> — when seller won&apos;t refund</li>
             <li><NuxtLink to="/ops/sellers-phone"><strong>Find eBay sellers (phone)</strong></NuxtLink> — paste names, tap Google</li>

@@ -1,5 +1,7 @@
 # 24/7 operations monitoring
 
+For **error incidents, phone alerts (ntfy/SMS), and the ops dashboard**, see **[OPS_MONITORING.md](./OPS_MONITORING.md)**.
+
 ## Automated checks
 
 | What | When | Alert |

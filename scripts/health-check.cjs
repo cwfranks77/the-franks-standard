@@ -162,5 +162,21 @@ async function check(name, fn) {
   const failed = checks.filter((c) => !c.ok).length
   console.log('')
   console.log(failed ? 'Health: ' + (checks.length - failed) + '/' + checks.length + ' passed' : 'Health: all ' + checks.length + ' checks passed')
+
+  if (failed) {
+    const failedNames = checks.filter((c) => !c.ok).map((c) => c.name + ': ' + c.detail).join('; ')
+    try {
+      await post(sbUrl + '/functions/v1/ops-error-ingest', JSON.stringify({
+        source: 'health-check',
+        severity: 'critical',
+        message: failedNames.slice(0, 500),
+        metadata: { failed_checks: checks.filter((c) => !c.ok) },
+      }))
+      console.log('Reported health failure to ops-error-ingest')
+    } catch (e) {
+      console.log('Could not report to ops-error-ingest:', e.message)
+    }
+  }
+
   process.exit(failed ? 1 : 0)
 })().catch((e) => { console.error(e); process.exit(1) })
