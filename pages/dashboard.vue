@@ -80,12 +80,27 @@
         <p v-if="removeMessage" class="dash-remove-msg" role="status">{{ removeMessage }}</p>
       </div>
 
+      <div v-if="connectMessage" class="connect-status mt-4" :class="connectMessage.tone">
+        <p><strong>{{ connectMessage.title }}</strong> {{ connectMessage.body }}</p>
+      </div>
+
       <div v-if="showConnectBanner" class="connect-banner mt-4">
-        <p><strong>Connect payouts.</strong> Link your bank via Stripe to receive sale proceeds automatically.</p>
-        <button type="button" class="btn btn-primary btn-sm" :disabled="connectLoading" @click="startOnboarding">
-          {{ connectLoading ? 'Loading…' : 'Set up Stripe payouts' }}
-        </button>
-        <p v-if="connectError" class="small" style="color: #b91c1c; margin-top: 8px;">{{ connectError }}</p>
+        <p><strong>Connect payouts.</strong> Link your bank via Stripe to receive sale proceeds automatically. Buyers pay through escrow; funds route to you when Connect is active.</p>
+        <div class="connect-actions">
+          <button type="button" class="btn btn-primary btn-sm" :disabled="connectLoading" @click="startOnboarding">
+            {{ connectLoading ? 'Loading…' : (hasConnectAccount ? 'Finish Stripe setup' : 'Set up Stripe payouts') }}
+          </button>
+          <button
+            v-if="hasConnectAccount"
+            type="button"
+            class="btn btn-outline btn-sm"
+            :disabled="connectSyncing"
+            @click="refreshConnect"
+          >
+            {{ connectSyncing ? 'Syncing…' : 'Refresh payout status' }}
+          </button>
+        </div>
+        <p v-if="connectError" class="connect-err">{{ connectError }}</p>
       </div>
 
       <div class="dash-section mt-4">
@@ -143,7 +158,17 @@ const { loadFreezeState, freezeAlertMessage } = useAccountFreeze()
 const supabase = useSupabaseClient()
 const accountFrozen = ref(false)
 const freezeMessage = ref('')
-const { loading: connectLoading, error: connectError, startOnboarding } = useStripeConnect()
+const route = useRoute()
+const {
+  loading: connectLoading,
+  syncing: connectSyncing,
+  error: connectError,
+  status: connectStatus,
+  startOnboarding,
+  syncStatus,
+} = useStripeConnect()
+const hasConnectAccount = ref(false)
+const connectMessage = ref(null)
 const stats = reactive({ count: 0, totalSales: '0.00', pendingOrders: 0 })
 const myListings = ref([])
 const recentOrders = ref([])
@@ -317,9 +342,39 @@ onMounted(async () => {
     }
   }
 
+  hasConnectAccount.value = !!profile?.stripe_account_id
   showConnectBanner.value = !isOwner.value
     && !profile?.stripe_charges_enabled
-    && (profile?.account_type === 'seller' || myListings.value.length > 0)
+    && (profile?.account_type === 'seller' || profile?.account_type === 'both' || myListings.value.length > 0)
+
+  if (profile?.stripe_charges_enabled) {
+    connectMessage.value = {
+      tone: 'connect-ok',
+      title: 'Payouts active.',
+      body: 'Stripe Connect is enabled — sale proceeds can transfer to your linked account.',
+    }
+  } else if (route.query.connect === 'done') {
+    connectMessage.value = {
+      tone: 'connect-pending',
+      title: 'Stripe setup submitted.',
+      body: 'We are syncing your account. If payouts are not active in a minute, tap Refresh payout status.',
+    }
+    await syncStatus()
+    if (connectStatus.value?.stripe_charges_enabled) {
+      showConnectBanner.value = false
+      connectMessage.value = {
+        tone: 'connect-ok',
+        title: 'Payouts active.',
+        body: 'Your Stripe account is ready to receive funds.',
+      }
+    }
+  } else if (route.query.connect === 'refresh') {
+    connectMessage.value = {
+      tone: 'connect-pending',
+      title: 'Continue setup.',
+      body: 'Your Stripe session expired — tap Set up Stripe payouts to continue.',
+    }
+  }
 
   const { data: orders } = await supabase
     .from('orders')
@@ -351,6 +406,24 @@ onMounted(async () => {
     }
   }
 })
+
+async function refreshConnect () {
+  const data = await syncStatus()
+  if (data?.stripe_charges_enabled) {
+    showConnectBanner.value = false
+    connectMessage.value = {
+      tone: 'connect-ok',
+      title: 'Payouts active.',
+      body: 'Stripe Connect is enabled on your account.',
+    }
+  } else if (data?.synced) {
+    connectMessage.value = {
+      tone: 'connect-pending',
+      title: 'Still finishing setup.',
+      body: 'Complete any remaining steps in Stripe, then refresh again.',
+    }
+  }
+}
 </script>
 
 <style scoped>
@@ -469,5 +542,23 @@ onMounted(async () => {
   gap: 12px;
   flex-wrap: wrap;
 }
-.connect-banner p { margin: 0 0 12px; color: #1f2937; }
+.connect-banner p { margin: 0 0 12px; color: var(--stone-200); }
+.connect-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.connect-err { margin-top: 8px; font-size: 0.85rem; color: #fca5a5; }
+.connect-status {
+  padding: 14px 18px;
+  border-radius: var(--radius-lg);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.connect-status p { margin: 0; color: var(--stone-200); }
+.connect-status strong { color: var(--gold); margin-right: 6px; }
+.connect-ok {
+  border: 1px solid rgba(0, 245, 160, 0.35);
+  background: rgba(0, 245, 160, 0.08);
+}
+.connect-pending {
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  background: rgba(201, 168, 76, 0.08);
+}
 </style>

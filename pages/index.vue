@@ -29,6 +29,10 @@
 
     <HomeBrowsePreview />
 
+    <HomeTrustMission />
+
+    <TopSellersShowcase />
+
     <section class="founder-bar" aria-label="Founder is reachable">
       <div class="container founder-bar-inner">
         <div class="founder-bar-copy">

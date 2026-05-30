@@ -59,14 +59,33 @@ Deno.serve(async (req) => {
         .eq('id', user.id)
     }
 
+    const account = await stripe.accounts.retrieve(accountId)
+    const linkType = account.details_submitted && (!account.charges_enabled || !account.payouts_enabled)
+      ? 'account_update'
+      : 'account_onboarding'
+
     const link = await stripe.accountLinks.create({
       account: accountId,
       refresh_url: `${siteUrl()}/dashboard?connect=refresh`,
       return_url: `${siteUrl()}/dashboard?connect=done`,
-      type: 'account_onboarding',
+      type: linkType,
     })
 
-    return json({ url: link.url, account_id: accountId })
+    await admin
+      .from('profiles')
+      .update({
+        stripe_charges_enabled: !!account.charges_enabled,
+        stripe_payouts_enabled: !!account.payouts_enabled,
+      })
+      .eq('id', user.id)
+
+    return json({
+      url: link.url,
+      account_id: accountId,
+      link_type: linkType,
+      stripe_charges_enabled: !!account.charges_enabled,
+      stripe_payouts_enabled: !!account.payouts_enabled,
+    })
   } catch (e) {
     const message = e instanceof Error ? e.message : 'connect_failed'
     return json({ error: message }, 500)

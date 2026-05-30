@@ -31,10 +31,12 @@ export function getAiReply (message: string): string {
   ctx.turnCount++
 
   if (!q) {
-    return 'Welcome to The Franks Standard customer service. I can help with:\n\n' +
-      '• Buying and selling\n• Fees and payments\n• COA and authenticity\n• Shipping and orders\n' +
-      '• Account issues\n• Disputes and returns\n• Dropshipping\n• Technical problems\n\n' +
-      'What can I help you with today? You can also call us at (877) 837-0527.'
+    return 'Welcome to The Franks Standard. We put **trust and authenticity first** — every listing needs a COA or signed guarantee; counterfeits are not tolerated.\n\n' +
+      'I can help with:\n' +
+      '• Buying, selling, and Stripe payouts\n• COA verification and authenticity reports\n• Escrow, shipping, and orders\n' +
+      '• Seller Excellence rewards\n• Account and technical issues\n\n' +
+      'Founder Open Door: /open-door · Call (877) 837-0527 · Email info@thefranksstandard.com\n\n' +
+      'What can I help you with today?'
   }
 
   // Greeting

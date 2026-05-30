@@ -80,6 +80,7 @@ jobs:
           # Authenticated (JWT required)
           deploy create-checkout-session
           deploy stripe-connect-onboard
+          deploy stripe-connect-sync
           deploy confirm-order-receipt
           deploy mark-order-shipped
           deploy place-bid

@@ -8,7 +8,7 @@ export const EXCELLENCE_CYCLE_MONTHS = 6
 export const EXCELLENCE_PROGRAM = {
   name: 'Franks Standard Seller Excellence',
   shortName: 'Seller Excellence',
-  tagline: 'Top sellers earn featured placement and reduced platform fees.',
+  tagline: 'Top sellers earn our token of appreciation — featured placement, excellence badges, and reduced or waived platform fees.',
   cycleLabel: `Every ${EXCELLENCE_CYCLE_MONTHS} months`,
   rewards: [
     {

@@ -70,6 +70,13 @@ export default defineNuxtConfig({
       windowsInstallerUrl: process.env.NUXT_PUBLIC_WINDOWS_INSTALLER_URL || '',
       gadsId: process.env.NUXT_PUBLIC_GADS_ID || '',
       gadsConversionLabel: process.env.NUXT_PUBLIC_GADS_CONVERSION_LABEL || '',
+      socialInstagram: process.env.NUXT_PUBLIC_SOCIAL_INSTAGRAM || '',
+      socialFacebook: process.env.NUXT_PUBLIC_SOCIAL_FACEBOOK || '',
+      socialTiktok: process.env.NUXT_PUBLIC_SOCIAL_TIKTOK || '',
+      socialYoutube: process.env.NUXT_PUBLIC_SOCIAL_YOUTUBE || '',
+      socialX: process.env.NUXT_PUBLIC_SOCIAL_X || '',
+      socialLinkedin: process.env.NUXT_PUBLIC_SOCIAL_LINKEDIN || '',
+      ownerNotifyEmail: process.env.NUXT_PUBLIC_OWNER_NOTIFY_EMAIL || 'info@thefranksstandard.com',
     },
   },
 

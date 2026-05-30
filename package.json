@@ -46,6 +46,7 @@
     "mail:sync-sendgrid": "node scripts/sync-sendgrid-to-github.cjs",
     "sendgrid:apply-sender": "node scripts/apply-sendgrid-sender.cjs",
     "sendgrid:test": "node scripts/test-sendgrid-send.cjs",
+    "auth:push-hook-secret": "node scripts/push-auth-hook-secret.cjs",
     "mail:refresh-password": "node scripts/refresh-mailbox-env-from-file.cjs",
     "mail:fix": "node scripts/apply-email-password.cjs",
     "namecheap:recover": "powershell -ExecutionPolicy Bypass -File scripts/namecheap-recover.ps1",

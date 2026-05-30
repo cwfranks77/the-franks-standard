@@ -22,6 +22,11 @@
           Tactical, hunting, fishing, and outdoor gear — checkout and buyer protection on
           <NuxtLink to="/">The Franks Standard</NuxtLink>.
         </p>
+        <p v-if="sellerStats.review_count" class="store-rating">
+          <strong>{{ Number(sellerStats.rating_avg).toFixed(1) }}</strong>★ seller rating
+          · {{ sellerStats.review_count }} review{{ sellerStats.review_count === 1 ? '' : 's' }}
+          <span v-if="sellerStats.completed_sales"> · {{ sellerStats.completed_sales }} completed sales</span>
+        </p>
         <p class="store-contact text-muted small">
           Buyer questions go through the marketplace — escrow checkout and Video Call on listings. Off-platform deals are not allowed.
         </p>
@@ -93,6 +98,7 @@ const loadError = ref('')
 const store = ref(null)
 const listings = ref([])
 const searchQuery = ref('')
+const sellerStats = ref({ rating_avg: 0, review_count: 0, completed_sales: 0 })
 
 const canonicalSlug = computed(() => resolveStoreSlug(route.params.slug))
 const storeOnHold = computed(() => isBrandyStoreOnHold(canonicalSlug.value))
@@ -182,6 +188,21 @@ async function loadStore () {
     contactEmail,
   }
 
+  const { data: lb } = await supabase
+    .from('seller_leaderboard')
+    .select('rating_avg, review_count, completed_sales')
+    .eq('seller_id', profile.id)
+    .maybeSingle()
+  if (lb) {
+    sellerStats.value = {
+      rating_avg: lb.rating_avg ?? 0,
+      review_count: lb.review_count ?? 0,
+      completed_sales: lb.completed_sales ?? 0,
+    }
+  } else {
+    sellerStats.value = { rating_avg: 0, review_count: 0, completed_sales: 0 }
+  }
+
   const { data: rows, error: lErr } = await supabase
     .from('listings')
     .select('id, title, category, price, condition, image_paths, created_at')
@@ -226,6 +247,8 @@ watch(canonicalSlug, loadStore)
 .store-hero { margin-bottom: 8px; max-width: 720px; }
 .store-hero h1 { margin: 8px 0; }
 .store-tagline { margin-bottom: 12px; }
+.store-rating { margin: 0 0 10px; font-size: 0.92rem; color: var(--gold); }
+.store-rating strong { font-size: 1.1rem; }
 .store-contact { margin-bottom: 16px; }
 .store-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .search-input { max-width: 420px; }

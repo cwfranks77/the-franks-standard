@@ -116,10 +116,24 @@ async function check(name, fn) {
   await check('Edge auth-send-email hook deployed', async () => {
     const r = await post(sbUrl + '/functions/v1/auth-send-email', '{}')
     if (r.status === 404) return { ok: false, detail: 'HTTP 404 — deploy auth-send-email' }
-    if (r.status === 401 || r.status === 500 || r.status === 405) {
-      return { ok: true, detail: 'HTTP ' + r.status + ' (hook live; 401 = needs Supabase signature)' }
+    if (r.body && r.body.includes('missing_send_email_hook_secret')) {
+      return { ok: false, detail: 'hook secret missing on Edge — run auth:push-hook-secret or Deploy workflow' }
     }
+    if (r.status === 401 || r.status === 405) {
+      return { ok: true, detail: 'HTTP ' + r.status + ' (hook live)' }
+    }
+    if (r.status === 500) return { ok: false, detail: 'HTTP 500 — ' + (r.body || '').slice(0, 120) }
     return { ok: false, detail: 'HTTP ' + r.status }
+  })
+  await check('Edge stripe-connect-onboard alive', async () => {
+    const r = await post(sbUrl + '/functions/v1/stripe-connect-onboard', '{}')
+    if (r.status === 404) return { ok: false, detail: 'HTTP 404' }
+    return { ok: r.status === 401, detail: 'HTTP ' + r.status + (r.status === 401 ? ' (needs JWT)' : '') }
+  })
+  await check('Edge stripe-connect-sync alive', async () => {
+    const r = await post(sbUrl + '/functions/v1/stripe-connect-sync', '{}')
+    if (r.status === 404) return { ok: false, detail: 'HTTP 404 — deploy stripe-connect-sync' }
+    return { ok: r.status === 401, detail: 'HTTP ' + r.status + (r.status === 401 ? ' (needs JWT)' : '') }
   })
   await check('Supabase authenticity_reports table', async () => {
     const r = await get(sbUrl + '/rest/v1/authenticity_reports?select=id&limit=1', { apikey: sbKey, Authorization: 'Bearer ' + sbKey })

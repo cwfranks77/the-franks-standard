@@ -37,8 +37,14 @@
           </div>
           <NavMegaDropdown label="Features" :sections="navFeatures" @navigate="closeAllNav" />
           <NavMegaDropdown label="Settings" :sections="navSettings" @navigate="closeAllNav" />
-          <NuxtLink to="/auth/login" class="quick-tile" @click="closeAllNav">Sign in</NuxtLink>
-          <NuxtLink to="/auth/register" class="quick-tile quick-tile--gold" @click="closeAllNav">Join free</NuxtLink>
+          <template v-if="isSignedIn">
+            <NuxtLink to="/dashboard" class="quick-tile" @click="closeAllNav">Dashboard</NuxtLink>
+            <button type="button" class="quick-tile quick-tile--signout" @click="onSignOut">Sign out</button>
+          </template>
+          <template v-else>
+            <NuxtLink to="/auth/login" class="quick-tile" @click="closeAllNav">Sign in</NuxtLink>
+            <NuxtLink to="/auth/register" class="quick-tile quick-tile--gold" @click="closeAllNav">Join free</NuxtLink>
+          </template>
         </nav>
 
         <button class="menu-toggle" @click="menuOpen = !menuOpen" aria-label="Toggle menu">
@@ -72,7 +78,25 @@
               @error="onPavilionImgError"
             />
             <p class="footer-site-name">The Franks Standard</p>
-            <p class="text-muted">The Franks Standard LLC — the marketplace where authenticity is not optional.</p>
+            <p class="text-muted">The Franks Standard LLC — trust, authenticity, and affordability for collectors. Counterfeits end here.</p>
+            <div v-if="socialLinks.length" class="footer-follow">
+              <p class="footer-follow-label">Follow us</p>
+              <div class="footer-social-row">
+                <a
+                  v-for="link in socialLinks"
+                  :key="link.id"
+                  :href="link.url"
+                  class="footer-social-link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  :aria-label="`Follow on ${link.label}`"
+                >{{ link.label }}</a>
+              </div>
+            </div>
+            <p v-else class="footer-follow-hint text-muted small">
+              <NuxtLink to="/social">Social &amp; updates</NuxtLink> ·
+              <NuxtLink to="/open-door">Talk to the founder</NuxtLink>
+            </p>
           </div>
           <div class="footer-col">
             <h4>Marketplace</h4>
@@ -189,6 +213,7 @@
 import { normalizeOpsPhrase } from '~/utils/opsPhrase'
 import { NAV_FEATURES_SECTIONS } from '~/utils/navFeaturesMenu.js'
 import { NAV_SETTINGS_SECTIONS } from '~/utils/navSettingsMenu.js'
+import { buildSocialLinks } from '~/utils/siteSocial.js'
 
 const navFeatures = NAV_FEATURES_SECTIONS
 const navSettings = NAV_SETTINGS_SECTIONS
@@ -198,6 +223,14 @@ const router = useRouter()
 const config = useRuntimeConfig()
 const { grant } = useOpsSession()
 const { isOwner } = useOwnerMode()
+const { isSignedIn, signOut } = useAuthNav()
+
+const socialLinks = computed(() => buildSocialLinks(config.public))
+
+async function onSignOut () {
+  closeAllNav()
+  await signOut()
+}
 
 const menuOpen = ref(false)
 const onHome = computed(() => route.path === '/')
@@ -489,6 +522,36 @@ async function submitOpModal () {
   margin-bottom: 12px;
   display: block;
 }
+.footer-follow { margin-top: 14px; }
+.footer-follow-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--gold);
+  font-weight: 800;
+  margin: 0 0 8px;
+}
+.footer-social-row { display: flex; flex-wrap: wrap; gap: 8px 12px; }
+.footer-social-link {
+  font-size: 0.85rem;
+  color: var(--stone-200);
+  text-decoration: none;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--stone-700);
+}
+.footer-social-link:hover { color: var(--gold); border-color: rgba(201, 168, 76, 0.5); }
+.footer-follow-hint { margin-top: 12px; line-height: 1.5; }
+.footer-follow-hint a { color: var(--gold); }
+.quick-tile--signout {
+  background: transparent;
+  border: 1px solid var(--stone-600);
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+.quick-tile--signout:hover { border-color: var(--gold); color: var(--gold); }
+
 .footer-site-name {
   font-family: 'Cinzel', serif;
   font-weight: 700;
