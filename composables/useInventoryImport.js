@@ -1,4 +1,4 @@
-import { LISTING_CATEGORIES, categoryRequiresCoa } from '~/utils/marketplaceCategories'
+import { LISTING_CATEGORIES, categoryRequiresCoa, listingRequiresCoa } from '~/utils/marketplaceCategories'
 import { parseEbaySellerHtmlWithDiagnostics } from '~/utils/ebayParse.js'
 
 const DEFAULT_CATEGORY = 'Sports Cards & Memorabilia'
@@ -245,14 +245,15 @@ export function useInventoryImport () {
         const normalizedProviderName = String(dropshipProviderName || '').trim()
         const title = String(item.title).trim().slice(0, 200)
         const cat = LISTING_CATEGORIES.includes(defaultCategory) ? defaultCategory : DEFAULT_CATEGORY
-        const needsProof = categoryRequiresCoa(cat)
         const description =
             (item.description || '').trim() ||
-            (needsProof
-              ? 'Imported listing. Review photos and add COA or signed guarantee before publishing.'
-              : 'Imported listing. Review photos and description for accuracy.')
+            'Imported listing. Review photos and description for accuracy.'
+        const needsProof = listingRequiresCoa(cat, title, description)
+        const descriptionFinal = needsProof && !description.includes('COA')
+          ? `${description} Add COA or signed guarantee before publishing.`
+          : description
         const { scanOffPlatformContent } = await import('~/utils/offPlatformGuard.js')
-        const guard = scanOffPlatformContent(`${title}\n${description}`)
+        const guard = scanOffPlatformContent(`${title}\n${descriptionFinal}`)
         if (!guard.ok) {
           results.failed++
           results.errors.push(`${item.title}: off-platform content blocked — remove emails, phones, or outside payment links`)
@@ -266,7 +267,7 @@ export function useInventoryImport () {
         const payload = {
           seller_id: user.id,
           title,
-          description,
+          description: descriptionFinal,
           category: cat,
           price,
           condition: 'good',

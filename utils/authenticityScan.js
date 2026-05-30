@@ -3,7 +3,7 @@
  * Not a substitute for expert authentication; flags items for owner review and can block publish.
  */
 
-import { categoryRequiresCoa } from '~/utils/marketplaceCategories'
+import { listingRequiresCoa } from '~/utils/marketplaceCategories'
 import { coinIntegrityFlags } from '~/utils/coinIntegrity.js'
 
 const REPLICA_SIGNALS = [
@@ -59,7 +59,17 @@ export function scanListingIntegrity (row = {}) {
     }
   }
 
-  const proofRequired = row.coa_type !== 'none' && categoryRequiresCoa(row.category)
+  const proofRequired = listingRequiresCoa(row.category, row.title, row.description)
+
+  if (proofRequired && row.coa_type === 'none') {
+    flags.push({
+      id: 'collectible_no_proof',
+      label: 'Collectible listing requires COA, guarantee, or Franks issued COA',
+      severity: 'block',
+      weight: 45,
+    })
+    score += 45
+  }
 
   if (proofRequired && row.coa_type === 'upload' && !row.coa_storage_path) {
     flags.push({ id: 'coa_missing_file', label: 'Marked COA upload but no file on record', severity: 'review', weight: 30 })

@@ -23,10 +23,20 @@ const NON_COLLECTIBLE = new Set([
   'Firearms Accessories',
 ])
 
-function categoryRequiresCoa (category: unknown): boolean {
+const COLLECTIBLE_INTENT_RE =
+  /\b(collectible|collectables|antique|antiques|vintage|graded|slabbed|slab|psa|bgs|sgc|pcgs|ngc|pmg|autograph|signed by|memorabilia|rookie card|trading card|sports card|pokemon|comic book|coin|currency|numismatic|certificate of authenticity|\bcoa\b|game used|game-worn|1\/1|one of one)\b/i
+
+function listingRequiresCoa (
+  category: unknown,
+  title?: unknown,
+  description?: unknown,
+): boolean {
   const c = String(category || '').trim()
-  if (!c) return true
-  return !NON_COLLECTIBLE.has(c)
+  if (!c) return false
+  const text = `${title || ''} ${description || ''}`.trim()
+  const keywords = text.length >= 4 && COLLECTIBLE_INTENT_RE.test(text)
+  if (NON_COLLECTIBLE.has(c) || c === 'Other (describe in listing)') return keywords
+  return true
 }
 
 type Flag = { id: string; label: string; severity: string; weight: number }
@@ -81,7 +91,16 @@ export function scanListingIntegrity (row: Record<string, unknown>) {
   }
 
   const coaType = String(row.coa_type || '')
-  const proofRequired = coaType !== 'none' && categoryRequiresCoa(row.category)
+  const proofRequired = listingRequiresCoa(row.category, row.title, row.description)
+  if (proofRequired && coaType === 'none') {
+    flags.push({
+      id: 'collectible_no_proof',
+      label: 'Collectible listing requires COA, guarantee, or Franks issued COA',
+      severity: 'block',
+      weight: 45,
+    })
+    score += 45
+  }
   if (proofRequired && coaType === 'upload' && !row.coa_storage_path) {
     flags.push({ id: 'coa_missing_file', label: 'Marked COA upload but no file on record', severity: 'review', weight: 30 })
     score += 30

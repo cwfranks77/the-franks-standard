@@ -26,6 +26,19 @@
               <img :src="img" alt="" />
             </button>
           </div>
+          <div v-if="listing.coaImageUrl" class="coa-compare-panel" aria-label="Compare listing photo to COA">
+            <p class="coa-compare-title">Compare item to COA close-up</p>
+            <div class="coa-compare-grid">
+              <figure>
+                <img :src="listing.images[0]" alt="Listing cover photo" />
+                <figcaption>Listing photo 1</figcaption>
+              </figure>
+              <figure>
+                <img :src="listing.coaImageUrl" alt="Certificate of authenticity close-up" />
+                <figcaption>COA close-up</figcaption>
+              </figure>
+            </div>
+          </div>
         </div>
 
         <div class="listing-details">
@@ -414,7 +427,7 @@ async function load() {
 
   const { data, error } = await supabase
     .from('listings')
-    .select('id, title, description, category, price, condition, coa_type, coa_serial_number, floor_slot_code, coa_certificate_id, guarantee_signed, seller_legal_name, image_paths, status, integrity_status, created_at, seller_id, donate_proceeds, charity_key, charity_name, charity_percent, sale_type, starting_bid, current_bid, current_bidder_id, bid_increment, bid_count, reserve_price, auction_ends_at, buy_now_price, seller:profiles!listings_seller_id_fkey(full_name, created_at)')
+    .select('id, title, description, category, price, condition, coa_type, coa_storage_path, coa_serial_number, floor_slot_code, coa_certificate_id, guarantee_signed, seller_legal_name, image_paths, status, integrity_status, created_at, seller_id, donate_proceeds, charity_key, charity_name, charity_percent, sale_type, starting_bid, current_bid, current_bidder_id, bid_increment, bid_count, reserve_price, auction_ends_at, buy_now_price, seller:profiles!listings_seller_id_fkey(full_name, created_at)')
     .eq('id', id)
     .eq('status', 'published')
     .maybeSingle()
@@ -445,6 +458,7 @@ async function load() {
     price: Number(data.price),
     condition: data.condition,
     coaType: data.coa_type,
+    coaImageUrl: data.coa_storage_path ? publicUrlForPath(data.coa_storage_path) : null,
     coaSerial: data.coa_serial_number || '',
     floorSlot: data.floor_slot_code || data.coa_serial_number || '',
     coaCertificateId: data.coa_certificate_id || null,
@@ -641,6 +655,40 @@ watch(
   font-size: 1.2rem;
 }
 .seller-name { font-weight: 600; }
+.coa-compare-panel {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  background: rgba(201, 168, 76, 0.08);
+}
+.coa-compare-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+  margin: 0 0 10px;
+}
+.coa-compare-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.coa-compare-grid figure { margin: 0; }
+.coa-compare-grid img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--stone-700);
+}
+.coa-compare-grid figcaption {
+  font-size: 0.72rem;
+  color: var(--stone-300);
+  margin-top: 4px;
+  text-align: center;
+}
 
 @media (max-width: 768px) {
   .listing-layout { grid-template-columns: 1fr; }

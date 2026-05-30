@@ -4,7 +4,7 @@
       <div class="sell-wrapper">
         <div class="sell-header text-center">
           <h1>Sell on The Franks Standard</h1>
-          <p class="text-muted">List your authentic items. COA or signed guarantee required — that is what makes us different.</p>
+          <p class="text-muted">List in minutes. COA or signed guarantee is required only for collectibles, antiques, and similar categories — general merchandise uses accurate photos and description.</p>
         </div>
 
         <div class="sell-switch-banner card" role="status">
@@ -36,13 +36,13 @@
         <div v-if="isOwner" class="sell-owner-banner" role="status">
           <span class="sell-owner-badge">Owner mode</span>
           <p>
-            <strong>All listing fees waived.</strong> You have full seller access as the site owner. List freely — COA or signed guarantee still required (your standard).
+            <strong>All listing fees waived.</strong> You have full seller access as the site owner. COA rules follow the category you pick (collectibles only).
           </p>
         </div>
 
         <div v-else class="sell-notice" role="status">
           <p>
-            <strong>Sign in required.</strong> You are publishing to the live floor (same rules: COA or signed guarantee). Stores and high volume:
+            <strong>Sign in required.</strong> Collectible categories need COA or guarantee; general merchandise does not. Stores and high volume:
             <NuxtLink to="/sellers">Apply as a store</NuxtLink>
             or
             <a :href="applicationMailto">info@thefranksstandard.com</a>.
@@ -136,9 +136,12 @@
               <div class="form-group">
                 <label class="label">Category</label>
                 <select class="select" v-model="form.category" required>
-                  <option value="">Select Category</option>
+                  <option value="">Select category…</option>
                   <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
                 </select>
+                <p v-if="!form.category" class="text-muted small mt-1">Pick a category first. The COA step appears only for collectibles and antiques.</p>
+                <p v-else-if="requiresCoa" class="text-muted small mt-1 coa-cat-hint">This category requires proof — you will add COA or guarantee after photos.</p>
+                <p v-else class="text-muted small mt-1">General merchandise — no COA section for this category.</p>
               </div>
               <div class="form-group">
                 <label class="label">{{ isAuctionFormat ? 'Starting bid ($)' : 'Price ($)' }}</label>
@@ -416,14 +419,18 @@
             </div>
 
             <div class="dropship-notice">
-              <p><strong>Dropship policy:</strong> You are responsible for the authenticity and condition of items shipped by your supplier. COA or guarantee still required. Buyer disputes are resolved under the same Standard.</p>
+              <p><strong>Dropship policy:</strong> You are responsible for accuracy and condition. COA or guarantee applies only when the item category requires it. Buyer disputes follow the same Standard.</p>
             </div>
           </div>
 
           <!-- Photos -->
           <div class="form-section">
             <h2>Photos</h2>
-            <p class="text-muted mb-2">Upload clear photos of the item. First photo becomes the listing thumbnail.</p>
+            <p v-if="requiresCoa" class="text-muted mb-2">
+              Upload clear photos of the <strong>actual item</strong>. Photo 1 is the cover buyers compare to your COA close-up.
+              Include front, back, and any serial or grade label visible on the piece.
+            </p>
+            <p v-else class="text-muted mb-2">Upload clear, honest photos. First photo becomes the listing thumbnail.</p>
             <div class="photo-upload">
               <label class="photo-add">
                 <input type="file" accept="image/*" multiple @change="handlePhotos" hidden />
@@ -438,9 +445,12 @@
           </div>
 
           <!-- COA Section (collectibles only) -->
-          <div v-if="requiresCoa" class="form-section coa-section">
+          <div v-if="requiresCoa" id="coa-section" class="form-section coa-section">
             <h2>Certificate of Authenticity</h2>
-            <p class="text-muted mb-2">Collectible categories require proof. Choose one:</p>
+            <p v-if="coaRequiredByKeywords" class="coa-keyword-note" role="alert">
+              Your wording looks like a collectible or antique. Even under <strong>{{ form.category }}</strong>, you need COA or guarantee — or change category / wording if this is general retail.
+            </p>
+            <p class="text-muted mb-2">Required for this listing. Choose one option:</p>
 
             <div class="coa-options">
               <label class="coa-option" :class="{ active: form.coaType === 'upload' }">
@@ -473,12 +483,21 @@
             </p>
 
             <!-- Upload COA -->
-            <div v-if="form.coaType === 'upload'" class="mt-3">
-              <label class="label">Upload COA Document</label>
-              <label class="photo-add" style="width: 100%; justify-content: center;">
+            <div v-if="form.coaType === 'upload'" class="mt-3 coa-upload-block">
+              <label class="label">COA close-up (required)</label>
+              <p class="text-muted small coa-closeup-hint">
+                Upload a <strong>tight, readable close-up</strong> of the certificate — serial number, grader name, and item ID must be legible.
+                Buyers will compare this image to photo 1 in your listing.
+              </p>
+              <label class="photo-add coa-closeup-add" style="width: 100%; justify-content: center;">
                 <input type="file" accept="image/*,.pdf" @change="handleCOA" hidden />
                 <span class="photo-add-icon">📄</span>
-                <span>{{ coaFileName || 'Choose COA file' }}</span>
+                <span>{{ coaFileName || 'Upload COA close-up (photo or PDF)' }}</span>
+              </label>
+              <p v-if="photoFiles.length < 1" class="text-muted small coa-warn">Add item photos above first so buyers can compare item to COA.</p>
+              <label v-else class="coa-compare-check mt-2">
+                <input v-model="coaCompareAck" type="checkbox" />
+                <span>I confirm this COA close-up matches the same item shown in my listing photos (not a different copy or stock image).</span>
               </label>
             </div>
 
@@ -500,11 +519,11 @@
             </div>
           </div>
 
-          <div v-else class="form-section general-merch-note">
+          <div v-else-if="form.category" class="form-section general-merch-note">
             <h2>Listing standards</h2>
             <p class="text-muted mb-2">
-              <strong>{{ form.category }}</strong> is general merchandise — no COA or signed guarantee required.
-              Photos and description must be accurate; replica or counterfeit language is still blocked.
+              <strong>{{ form.category }}</strong> — no COA or signed guarantee required.
+              Use clear photos and an honest description. Counterfeit or replica language is still blocked.
             </p>
           </div>
 
@@ -519,7 +538,12 @@
 </template>
 
 <script setup>
-import { LISTING_CATEGORIES, categoryRequiresCoa } from '~/utils/marketplaceCategories'
+import {
+  LISTING_CATEGORIES,
+  categoryRequiresCoa,
+  listingRequiresCoa,
+  textSuggestsCollectible,
+} from '~/utils/marketplaceCategories'
 import { CHARITY_OPTIONS, charityByKey } from '~/utils/charities.js'
 import { calcCharitySplit, CHARITY_PERCENT_PRESETS } from '~/utils/charitySplit.js'
 import { auctionEndsAtFromDays } from '~/utils/auctionHelpers.js'
@@ -591,7 +615,7 @@ const dropshipChannels = [
 const form = reactive({
   title: '',
   description: '',
-  category: '',
+  category: 'General Merchandise',
   price: null,
   condition: '',
   coaType: '',
@@ -656,6 +680,7 @@ const photoPreviews = ref([])
 const photoFiles = ref([])
 const coaFile = ref(null)
 const coaFileName = ref('')
+const coaCompareAck = ref(false)
 
 const aiDescTone = ref('professional')
 const aiDescNotes = ref('')
@@ -663,14 +688,33 @@ const aiDescGenerating = ref(false)
 const aiDescMessage = ref('')
 const aiDescError = ref(false)
 
-const requiresCoa = computed(() => categoryRequiresCoa(form.category))
+const requiresCoa = computed(() =>
+  listingRequiresCoa(form.category, form.title, form.description),
+)
+
+const coaRequiredByKeywords = computed(() => {
+  const c = String(form.category || '').trim()
+  if (!c || categoryRequiresCoa(c)) return false
+  return textSuggestsCollectible(form.title, form.description)
+})
 
 watch(() => form.category, (cat) => {
-  if (!categoryRequiresCoa(cat)) {
+  if (!listingRequiresCoa(cat, form.title, form.description)) {
     form.coaType = ''
     form.guaranteeSigned = false
     coaFile.value = null
     coaFileName.value = ''
+    coaCompareAck.value = false
+  }
+})
+
+watch(requiresCoa, (needs) => {
+  if (!needs) {
+    form.coaType = ''
+    form.guaranteeSigned = false
+    coaFile.value = null
+    coaFileName.value = ''
+    coaCompareAck.value = false
   }
 })
 
@@ -703,7 +747,7 @@ function buildListingDescription (input) {
   }
   const hook = category.toLowerCase()
   const conditionLabel = CONDITION[condition] || condition || 'As described'
-  const needsProof = categoryRequiresCoa(category)
+  const needsProof = listingRequiresCoa(category, title, notes)
   let auth = needsProof
     ? 'Authenticity: COA uploaded or signed Franks Standard guarantee required — add proof in the COA section below.'
     : 'Condition: Item is described accurately with clear photos. General merchandise — no COA required for this category.'
@@ -864,6 +908,7 @@ function removePhoto(idx) {
 function handleCOA(e) {
   coaFile.value = e.target.files[0]
   coaFileName.value = coaFile.value?.name || ''
+  coaCompareAck.value = false
 }
 
 async function onPoliciesAccepted () {
@@ -875,19 +920,29 @@ async function submitListing() {
     alert('You must digitally sign all seller policies before publishing.')
     return
   }
-  const needsCoa = categoryRequiresCoa(form.category)
+  const needsCoa = listingRequiresCoa(form.category, form.title, form.description)
   if (needsCoa) {
     if (!form.coaType) {
-      alert('Collectible categories require a COA upload, Franks issued COA, or signed Franks Standard Guarantee.')
+      alert('This listing requires a COA upload, Franks issued COA, or signed Franks Standard Guarantee. Scroll to the Certificate of Authenticity section.')
       return
     }
     if (form.coaType === 'guarantee' && !form.guaranteeSigned) {
       alert('You must sign The Franks Standard Guarantee to list this item.')
       return
     }
-    if (form.coaType === 'upload' && !coaFile.value) {
-      alert('Please upload a COA document, or pick the in-platform guarantee instead.')
-      return
+    if (form.coaType === 'upload') {
+      if (photoFiles.value.length < 1) {
+        alert('Add at least one item photo above before uploading your COA close-up.')
+        return
+      }
+      if (!coaFile.value) {
+        alert('Upload a close-up photo or scan of your COA (serial and grade readable).')
+        return
+      }
+      if (!coaCompareAck.value) {
+        alert('Confirm that your COA close-up matches the item in your listing photos.')
+        return
+      }
     }
   }
   if (photoFiles.value.length < 1) {
@@ -1109,6 +1164,15 @@ async function submitListing() {
       if (!insErr) {
         alert('Listing saved, but Buy It Now needs migration 015_auction_buy_now.sql in Supabase. Run migrations, then edit the listing.')
       }
+    }
+
+    if (insErr && /coa_type|listings_coa_type_check/i.test(insErr.message || '')) {
+      alert(
+        'Database needs migration 028_listing_coa_none_general_merch.sql for general merchandise without COA. '
+        + 'Run Apply Supabase migrations in GitHub Actions, then try again.',
+      )
+      submitting.value = false
+      return
     }
 
     if (insErr && /collection_|is_limited_edition/i.test(insErr.message || '')) {
@@ -1359,6 +1423,35 @@ async function submitListing() {
   justify-content: center;
 }
 
+.coa-cat-hint { color: #6ee7b7; }
+.coa-nudge-banner {
+  border: 1px solid rgba(201, 168, 76, 0.45);
+  background: rgba(201, 168, 76, 0.1);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+}
+.coa-keyword-note {
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  border-radius: var(--radius);
+  background: rgba(201, 168, 76, 0.12);
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--stone-200);
+}
+.coa-closeup-hint { line-height: 1.5; margin-bottom: 10px; }
+.coa-closeup-add { min-height: 72px; }
+.coa-compare-check {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--stone-200);
+}
+.coa-compare-check input { margin-top: 4px; accent-color: var(--gold); }
+.coa-warn { color: #fcd34d; }
 .coa-section { border-color: var(--gold); border-width: 2px; }
 
 .coa-options { display: flex; flex-direction: column; gap: 12px; }

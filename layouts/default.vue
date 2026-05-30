@@ -2,7 +2,7 @@
   <div class="site-wrapper">
     <div class="site-ribbon" role="status" aria-label="Site highlights">
       <div class="container site-ribbon-inner">
-        <span class="ribbon-txt">COA or signed guarantee on every listing</span>
+        <span class="ribbon-txt">COA on collectibles · honest listings on everything else</span>
         <span class="ribbon-dot" aria-hidden="true" />
         <span class="ribbon-txt">Escrow until buyer confirms delivery</span>
         <span class="ribbon-dot" aria-hidden="true" />
