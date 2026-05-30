@@ -43,7 +43,7 @@
           <NavMegaDropdown label="Settings" :sections="navSettings" @navigate="closeAllNav" @action="onNavMenuAction" />
           <template v-if="isSignedIn">
             <NuxtLink to="/dashboard" class="quick-tile" @click="closeAllNav">Dashboard</NuxtLink>
-            <button type="button" class="quick-tile quick-tile--signout" @click="onSignOut">Sign out</button>
+            <button type="button" class="quick-tile quick-tile--signout" aria-label="Sign out of your account" @click="onSignOut">Sign out</button>
           </template>
           <template v-else>
             <NuxtLink to="/auth/login" class="quick-tile" @click="closeAllNav">Sign in</NuxtLink>
@@ -148,6 +148,10 @@
         </div>
         <div class="footer-bottom">
           <p>&copy; {{ new Date().getFullYear() }} The Franks Standard &bull; Founded by Charles Franks &bull; All rights reserved.</p>
+          <p v-if="isSignedIn" class="footer-signout">
+            Signed in as {{ displayEmail }} —
+            <button type="button" class="footer-signout-btn" @click="onSignOut">Sign out</button>
+          </p>
         </div>
       </div>
     </footer>
@@ -251,7 +255,7 @@ const router = useRouter()
 const config = useRuntimeConfig()
 const { grant } = useOpsSession()
 const { isOwner } = useOwnerMode()
-const { isSignedIn, signOut } = useAuthNav()
+const { isSignedIn, displayEmail, signOut } = useAuthNav()
 
 const socialLinks = computed(() => buildSocialLinks(config.public))
 
@@ -620,6 +624,26 @@ async function submitOpModal () {
   text-align: center;
   color: var(--stone-500);
   font-size: 0.85rem;
+}
+.footer-signout {
+  margin-top: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--stone-400);
+}
+.footer-signout-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 800;
+  color: var(--gold);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.footer-signout-btn:hover {
+  color: #fff1a8;
 }
 @media (max-width: 768px) {
   .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }

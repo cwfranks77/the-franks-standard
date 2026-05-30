@@ -22,6 +22,11 @@
           <label class="label">Password</label>
           <input class="input" type="password" v-model="password" placeholder="Your password" autocomplete="current-password" required />
         </div>
+        <label class="remember-row">
+          <input v-model="rememberMe" type="checkbox" />
+          <span>Keep me signed in on this device</span>
+        </label>
+        <p class="remember-hint text-muted">If unchecked, you stay signed in until you close the browser (no auto-login next visit).</p>
         <button type="submit" class="btn btn-primary" style="width: 100%;" :disabled="loading">
           {{ loading ? 'Signing in...' : 'Sign In' }}
         </button>
@@ -53,12 +58,21 @@
 
 <script setup>
 import { resolveAuthRedirect } from '~/utils/listItemRoutes.js'
+import {
+  clearAllAuthStorage,
+  getRememberMe,
+  migrateAuthTokenToPreferredStorage,
+  setRememberMe,
+} from '~/utils/authPersistence.js'
 
 const route = useRoute()
+const config = useRuntimeConfig()
 const supabase = useSupabaseClient()
 const existingSessionEmail = ref('')
+const rememberMe = ref(false)
 
 onMounted(async () => {
+  rememberMe.value = getRememberMe()
   await useGuestOnly()
   const { data: { session } } = await supabase.auth.getSession()
   if (session?.user?.email) {
@@ -68,6 +82,7 @@ onMounted(async () => {
 
 async function signOutForSwitch () {
   await supabase.auth.signOut()
+  clearAllAuthStorage(config.public.supabase?.url)
   existingSessionEmail.value = ''
   formError.value = ''
 }
@@ -138,6 +153,8 @@ async function handleLogin() {
   resendOk.value = ''
   loading.value = true
   try {
+    setRememberMe(rememberMe.value)
+    migrateAuthTokenToPreferredStorage(config.public.supabase?.url)
     const supabase = useSupabaseClient()
     const emailTrimmed = email.value.trim().toLowerCase()
     const { error } = await supabase.auth.signInWithPassword({
@@ -277,5 +294,27 @@ async function handleLogin() {
 .resend-row {
   color: #374151;
   font-weight: 600;
+}
+.remember-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 4px 0 6px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #111827;
+  text-align: left;
+  cursor: pointer;
+}
+.remember-row input {
+  margin-top: 3px;
+  accent-color: var(--gold);
+}
+.remember-hint {
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.45;
+  margin: 0 0 14px;
+  text-align: left;
 }
 </style>

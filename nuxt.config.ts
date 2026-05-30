@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto'
+import { createAuthStorageAdapter } from './utils/authPersistence.js'
 import { normalizeOpsPhrase } from './utils/opsPhrase'
 import { META_DESCRIPTION, OG_DESCRIPTION } from './utils/marketplaceFacilitatorCopy.js'
 
@@ -157,6 +158,14 @@ export default defineNuxtConfig({
     redirect: false,
     types: false,
     useSsrCookies: false,
+    clientOptions: {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        storage: createAuthStorageAdapter(),
+      },
+    },
   },
 
   app: {

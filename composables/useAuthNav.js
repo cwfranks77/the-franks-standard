@@ -1,8 +1,11 @@
+import { clearAllAuthStorage } from '~/utils/authPersistence.js'
+
 /** Header auth state: signed-in user + sign out. */
 export function useAuthNav () {
   const supabase = useSupabaseClient()
   const user = useSupabaseUser()
   const router = useRouter()
+  const config = useRuntimeConfig()
 
   const isSignedIn = computed(() => !!user.value?.id)
   const displayEmail = computed(() => {
@@ -13,7 +16,8 @@ export function useAuthNav () {
 
   async function signOut () {
     await supabase.auth.signOut()
-    await router.push('/')
+    clearAllAuthStorage(config.public.supabase?.url)
+    await router.push('/auth/login')
   }
 
   return { user, isSignedIn, displayEmail, signOut }
