@@ -43,6 +43,12 @@
       </div>
     </section>
 
+    <section id="authenticity-seal" class="section">
+      <div class="container seal-section">
+        <FranksAuthenticitySeal size="lg" />
+      </div>
+    </section>
+
     <section class="section section-alt">
       <div class="container guarantee-box">
         <h2>Refunds, disputes &amp; enforcement</h2>
@@ -50,6 +56,9 @@
           Binding rules live in our
           <NuxtLink to="/marketplace-policy"><strong>Marketplace Policies &amp; Enforcement</strong></NuxtLink>
           (platform operating standards). Summary:
+        </p>
+        <p class="text-muted small screening-note">
+          <strong>{{ SCREENING_LABEL }}:</strong> {{ SCREENING_DESC }}
         </p>
         <ul>
           <li>Pay through Stripe escrow on the platform — not Venmo or wire.</li>
@@ -78,6 +87,7 @@
 
 <script setup>
 import { PROTECTION_HEADLINE, BUYER_PILLARS, SELLER_PILLARS } from '~/utils/protectionMessaging.js'
+import { SCREENING_DESC, SCREENING_LABEL } from '~/utils/authenticitySeal.js'
 
 useSeoMeta({
   title: 'Buyer & seller protection | The Franks Standard',
@@ -100,6 +110,8 @@ useSeoMeta({
 .pillar-list li { display: flex; gap: 12px; margin-bottom: 16px; }
 .pi { font-size: 1.4rem; }
 .pillar-list p { margin: 4px 0 0; font-size: 0.9rem; color: #4b5563; font-weight: 600; }
+.seal-section { max-width: 44rem; }
+.screening-note { line-height: 1.55; margin-bottom: 14px; }
 .guarantee-box { max-width: 40rem; }
 .guarantee-box ul { line-height: 1.6; font-weight: 600; }
 .cta-row { display: flex; flex-wrap: wrap; gap: 12px; }

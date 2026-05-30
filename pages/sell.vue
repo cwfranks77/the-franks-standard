@@ -505,7 +505,8 @@
             <div v-if="form.coaType === 'guarantee'" class="guarantee-box mt-3">
               <div class="guarantee-text">
                 <p><strong>The Franks Standard Guarantee</strong></p>
-                <p>I, <strong>{{ form.sellerName || '[Your Name]' }}</strong>, hereby certify that the item listed above is authentic, genuine, and accurately described. I understand that if this item is proven to be counterfeit or misrepresented, my account will be permanently banned from The Franks Standard and the buyer will receive a full refund.</p>
+                <p class="text-muted small">{{ guaranteeSealIntro }}</p>
+                <p>I, <strong>{{ form.sellerName || '[Your Name]' }}</strong>, certify that the item listed above is authentic, genuine, and accurately described based on the information and proof I provided. I understand that The Franks Standard applies listing integrity screening — not in-person laboratory authentication — and that if this item is proven counterfeit or misrepresented under our Marketplace Policies, my account may be permanently banned and the buyer may receive a refund from escrow or enforcement funds.</p>
                 <p>I am staking my name and reputation on this listing.</p>
               </div>
               <div class="form-group mt-2">
@@ -544,6 +545,9 @@ import {
   listingRequiresCoa,
   textSuggestsCollectible,
 } from '~/utils/marketplaceCategories'
+import { GUARANTEE_WITH_SEAL_INTRO } from '~/utils/authenticitySeal.js'
+
+const guaranteeSealIntro = GUARANTEE_WITH_SEAL_INTRO
 import { CHARITY_OPTIONS, charityByKey } from '~/utils/charities.js'
 import { calcCharitySplit, CHARITY_PERCENT_PRESETS } from '~/utils/charitySplit.js'
 import { auctionEndsAtFromDays } from '~/utils/auctionHelpers.js'

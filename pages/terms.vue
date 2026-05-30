@@ -40,10 +40,18 @@
 
       <h2>4. Listings and authenticity</h2>
       <p>
-        Sellers must comply with authenticity requirements (COA or in-platform guarantee), accurate descriptions, and
-        <NuxtLink to="/prohibited-items">Prohibited Items</NuxtLink>. The Platform may scan listings, suspend or remove them,
-        revoke COAs, and ban sellers as described in the
-        <NuxtLink to="/marketplace-policy">Marketplace Policies</NuxtLink>.
+        Sellers must comply with authenticity requirements (COA or in-platform guarantee) for collectible categories,
+        accurate descriptions, and <NuxtLink to="/prohibited-items">Prohibited Items</NuxtLink>.
+        The <NuxtLink to="/protection#authenticity-seal">Listing Authenticity Seal</NuxtLink> means the listing met
+        platform proof and screening rules at publish time — it is <strong>not</strong> a guarantee by the Platform that
+        a third-party expert has physically authenticated the item, and it does not eliminate the risk that an item may
+        later be disputed or proven counterfeit.
+      </p>
+      <p>
+        Automated integrity screening (including language and proof checks) is a risk-reduction tool only. The Platform may
+        scan listings, suspend or remove them, revoke COAs, and ban sellers as described in the
+        <NuxtLink to="/marketplace-policy">Marketplace Policies</NuxtLink>. Remedies if an item is proven fake or
+        misrepresented are limited to those policies and applicable law — not open-ended personal liability of the founder.
       </p>
 
       <h2>5. Payments, escrow, refunds, and disputes</h2>

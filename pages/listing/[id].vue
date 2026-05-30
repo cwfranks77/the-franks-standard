@@ -56,6 +56,13 @@
             :serial="listing.coaSerial"
           />
 
+          <FranksAuthenticitySeal
+            v-if="showAuthenticitySeal"
+            class="listing-seal-wrap"
+            size="sm"
+            :show-details="false"
+          />
+
           <div v-if="listing.coaType !== 'none'" class="listing-coa-box">
             <span class="coa-badge">{{ coaBadgeLabel }}</span>
             <p class="text-muted" style="font-size: 0.8rem; margin-top: 6px;">
@@ -81,7 +88,7 @@
           </div>
 
           <p v-if="listing.integrityStatus === 'review'" class="integrity-warning" role="alert">
-            This listing is under authenticity review. Checkout is paused until cleared.
+            This listing is under {{ SCREENING_LABEL }} review. Checkout is paused until cleared. Screening is not laboratory authentication.
           </p>
 
           <div class="listing-price-row">
@@ -266,6 +273,9 @@ import {
   reserveMet,
   buyNowAvailable,
 } from '~/utils/auctionHelpers.js'
+import { listingShowsAuthenticitySeal, SCREENING_LABEL } from '~/utils/authenticitySeal.js'
+
+const showAuthenticitySeal = computed(() => listingShowsAuthenticitySeal(listing.value))
 
 const route = useRoute()
 const supabase = useSupabaseClient()
