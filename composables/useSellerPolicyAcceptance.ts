@@ -9,40 +9,6 @@ import {
   SELLER_DIGITAL_AGREEMENT_CLOSING,
 } from '~/utils/sellerPolicyBundle.js'
 
-const POLICY_INVOKE_TIMEOUT_MS = 25_000
-
-async function parseSellerPolicyFnError (fnErr: unknown, data: unknown): Promise<string> {
-  if (data && typeof data === 'object' && data !== null && 'error' in data) {
-    const d = data as { error?: string; message?: string; detail?: string }
-    return String(d.message || d.detail || d.error || 'Could not record your signature.')
-  }
-  const err = fnErr as { context?: Response; message?: string }
-  if (err?.context && typeof err.context.json === 'function') {
-    try {
-      const body = await err.context.json()
-      if (body?.message) return String(body.message)
-      if (body?.error) return String(body.error)
-      if (body?.detail) return String(body.detail)
-    } catch { /* ignore */ }
-  }
-  const msg = err?.message || ''
-  if (msg && !/non-2xx/i.test(msg)) return msg
-  return 'Could not record your signature. Check your connection and try again.'
-}
-
-function shouldFallbackToProfileUpdate (message: string): boolean {
-  return /timed out|timeout|fetch|network|failed to fetch|edge function|non-2xx|502|503|504|not found|deploy|policy_version|policies were updated|update_failed/i.test(message)
-}
-
-async function invokeWithTimeout<T> (promise: Promise<T>, ms: number): Promise<T> {
-  return Promise.race([
-    promise,
-    new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error('Recording timed out. Check your connection and tap Try again.')), ms)
-    }),
-  ])
-}
-
 export function useSellerPolicyAcceptance () {
   const supabase = useSupabaseClient()
   const user = useSupabaseUser()
@@ -176,37 +142,21 @@ export function useSellerPolicyAcceptance () {
       }
       authedSellerId.value = authUser.id
 
-      let signer = legalName
-      let acceptedAtIso = new Date().toISOString()
+      // Critical path: direct profile update under the user's JWT (never depends on Edge).
+      const primary = await recordAcceptanceOnProfile(authUser.id, legalName)
 
-      try {
-        const rpc = await invokeWithTimeout(
-          recordAcceptanceViaRpc(legalName, documentIds),
-          POLICY_INVOKE_TIMEOUT_MS,
-        )
-        signer = rpc.signer_name
-        acceptedAtIso = rpc.accepted_at
-      } catch (rpcErr) {
-        const msg = rpcErr instanceof Error ? rpcErr.message : String(rpcErr)
-        if (/Could not find the function|schema cache|PGRST202/i.test(msg)) {
-          const fallback = await recordAcceptanceOnProfile(authUser.id, legalName)
-          signer = fallback.signer_name
-          acceptedAtIso = fallback.accepted_at
-        } else if (shouldFallbackToProfileUpdate(msg)) {
-          const fallback = await recordAcceptanceOnProfile(authUser.id, legalName)
-          signer = fallback.signer_name
-          acceptedAtIso = fallback.accepted_at
-        } else {
-          throw rpcErr
-        }
-      }
+      // Best-effort audit log via RPC; failure must not block selling.
+      recordAcceptanceViaRpc(legalName, documentIds).catch(() => {})
 
       accepted.value = true
-      signerName.value = signer
-      acceptedAt.value = acceptedAtIso
+      signerName.value = primary.signer_name
+      acceptedAt.value = primary.accepted_at
       return true
     } catch (e) {
-      error.value = e instanceof Error ? e.message : String(e)
+      const msg = e instanceof Error ? e.message : String(e)
+      error.value = msg.includes('500')
+        ? `Server error saving your signature (${msg}). Try again in a minute or email info@thefranksstandard.com.`
+        : msg
       return false
     } finally {
       submitting.value = false

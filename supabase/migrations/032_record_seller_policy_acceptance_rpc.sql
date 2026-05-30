@@ -52,13 +52,18 @@ begin
     seller_policies_signer_name = clean_name
   where id = uid;
 
-  insert into public.seller_policy_acceptances (
-    seller_id,
-    policy_version,
-    signer_legal_name,
-    documents_accepted
-  )
-  values (uid, p_policy_version, clean_name, coalesce(p_documents, '[]'::jsonb));
+  begin
+    insert into public.seller_policy_acceptances (
+      seller_id,
+      policy_version,
+      signer_legal_name,
+      documents_accepted
+    )
+    values (uid, p_policy_version, clean_name, coalesce(p_documents, '[]'::jsonb));
+  exception
+    when others then
+      raise warning 'seller_policy_acceptances insert skipped: %', sqlerrm;
+  end;
 
   return jsonb_build_object(
     'ok', true,
