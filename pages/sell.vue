@@ -593,7 +593,6 @@ const {
 } = useSellerPolicyAcceptance()
 const applicationMailto = buildSellerApplicationMailto()
 const supabase = useSupabaseClient()
-const route = useRoute()
 const submitting = ref(false)
 const accountFrozen = ref(false)
 const integrityHold = ref(false)
