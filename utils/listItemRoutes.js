@@ -1,7 +1,5 @@
 /** Entry points for "List an item" — choose collectible vs general before the full sell form. */
 
-import { listingRequiresCoa } from '~/utils/marketplaceCategories'
-
 export const LIST_ITEM_START_PATH = '/sell/start'
 export const LIST_ITEM_COA_PATH = '/sell/coa'
 export const SELL_FORM_PATH = '/sell'
@@ -72,10 +70,4 @@ export function collectibleListingRoute (coaType) {
 export function collectibleNeedsCoaStep (query) {
   if (parseListingKind(query) !== LISTING_KIND_COLLECTIBLE) return false
   return !parseCoaTypeFromQuery(query)
-}
-
-/** COA proof rules — general path always skips COA. */
-export function sellFormRequiresCoaProof (kind, category, title, description) {
-  if (kind === LISTING_KIND_GENERAL) return false
-  return listingRequiresCoa(category, title, description)
 }

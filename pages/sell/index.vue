@@ -589,7 +589,6 @@ import {
   LIST_ITEM_START_PATH,
   parseCoaTypeFromQuery,
   parseListingKind,
-  sellFormRequiresCoaProof,
 } from '~/utils/listItemRoutes.js'
 
 const guaranteeSealIntro = GUARANTEE_WITH_SEAL_INTRO
@@ -732,9 +731,10 @@ const aiDescGenerating = ref(false)
 const aiDescMessage = ref('')
 const aiDescError = ref(false)
 
-const requiresCoa = computed(() =>
-  sellFormRequiresCoaProof(listingKind.value, form.category, form.title, form.description),
-)
+const requiresCoa = computed(() => {
+  if (listingKind.value === LISTING_KIND_GENERAL) return false
+  return listingRequiresCoa(form.category, form.title, form.description)
+})
 
 const coaRequiredByKeywords = computed(() => {
   const c = String(form.category || '').trim()
