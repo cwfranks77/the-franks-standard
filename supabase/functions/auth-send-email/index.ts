@@ -6,7 +6,11 @@
 import { Webhook } from 'https://esm.sh/standardwebhooks@1.0.0'
 import { sendAuthMail } from '../_shared/sendAuthMail.ts'
 
-const HOOK_SECRET = Deno.env.get('SEND_EMAIL_HOOK_SECRET') ?? ''
+/** Dashboard value is `v1,whsec_<base64>` — standardwebhooks expects the base64 part only. */
+function hookSecretRaw (): string {
+  const raw = Deno.env.get('SEND_EMAIL_HOOK_SECRET') ?? ''
+  return raw.replace(/^v1,whsec_/i, '').trim()
+}
 const SUPABASE_URL = (Deno.env.get('SUPABASE_URL') ?? '').replace(/\/+$/, '')
 const SITE_URL = (Deno.env.get('SITE_URL') ?? Deno.env.get('NUXT_PUBLIC_SITE_URL') ?? 'https://thefranksstandard.com').replace(/\/+$/, '')
 
@@ -77,7 +81,8 @@ Deno.serve(async (req) => {
   if (req.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'method_not_allowed' }), { status: 405 })
   }
-  if (!HOOK_SECRET) {
+  const hookSecret = hookSecretRaw()
+  if (!hookSecret) {
     return new Response(JSON.stringify({ error: 'missing_send_email_hook_secret' }), { status: 500 })
   }
 
@@ -85,7 +90,7 @@ Deno.serve(async (req) => {
   const headers = Object.fromEntries(req.headers)
   let data: HookPayload
   try {
-    const wh = new Webhook(HOOK_SECRET)
+    const wh = new Webhook(hookSecret)
     data = wh.verify(payload, headers) as HookPayload
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'hook_verify_failed'

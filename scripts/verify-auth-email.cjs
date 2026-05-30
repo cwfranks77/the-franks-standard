@@ -43,10 +43,12 @@ function get (url) {
   const hook = await post(HOOK_URL, '{}')
   if (hook.status === 404) {
     fail('auth-send-email deployed', 'HTTP 404 — run Deploy Supabase Edge Functions workflow')
+  } else if (hook.status === 500 && hook.body.includes('missing_send_email_hook_secret')) {
+    fail('Auth hook secret on Edge', 'SEND_EMAIL_HOOK_SECRET missing — see docs/SIGNUP-EMAIL-FIX.md')
   } else if (hook.status === 401 || hook.status === 500) {
     ok('auth-send-email deployed', `HTTP ${hook.status} (expects hook signature from Supabase Auth)`)
-    if (hook.body.includes('missing_sendgrid')) {
-      fail('SendGrid on Edge', 'SENDGRID_API_KEY missing — run Push SendGrid secrets to Supabase')
+    if (hook.body.includes('missing_sendgrid') || hook.body.includes('sendgrid')) {
+      fail('SendGrid on Edge', 'SENDGRID_API_KEY missing — run mail:sync-sendgrid + deploy workflow')
     }
   } else if (hook.status === 405) {
     ok('auth-send-email deployed', 'HTTP 405')
