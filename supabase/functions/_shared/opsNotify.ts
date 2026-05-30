@@ -156,8 +156,10 @@ export async function notifyOpsAlert (params: {
   if (ntfyTopic) {
     const title = params.kind === 'new' ? 'Franks Standard Alert' : 'Franks Standard Fixed'
     const priority = params.kind === 'new' && (params.severity === 'critical' || params.severity === 'high')
-      ? 'high'
-      : 'default'
+      ? 'max'
+      : params.kind === 'new'
+        ? 'high'
+        : 'default'
     const r = await sendNtfyAlert(message, title, priority)
     if (r.ok) sent.push('ntfy')
     else warnings.push(`ntfy: ${r.error}`)

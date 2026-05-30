@@ -76,6 +76,19 @@ supabase secrets set \
 
 **Why ntfy first:** No Twilio billing, no carrier quirks, instant push on Android and iOS.
 
+### Topic name must match exactly (case-sensitive)
+
+`TFSWebsitealerts` and `tfswebsitealerts` are **different topics**. Set `NTFY_TOPIC` in Supabase to the **exact** string you subscribed to in the app.
+
+### Alerts slow or delayed?
+
+| Platform | What helps |
+|----------|------------|
+| **Android** | ntfy → **Instant delivery in doze mode** ON; system battery → **Unrestricted** for ntfy |
+| **iPhone** | Native app push can lag minutes; use [ntfy.sh/app](https://ntfy.sh/app) PWA (Add to Home Screen) for faster web push |
+| **Critical ops alerts** | Edge functions send **max** priority for critical/high; redeploy functions after code changes |
+| **Need instant** | Add Twilio SMS (`OPS_ALERT_PHONE`) — texts usually arrive in seconds |
+
 ## Mobile alerts — Twilio SMS setup
 
 1. [Twilio console](https://www.twilio.com/console) → copy Account SID + Auth Token.

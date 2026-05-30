@@ -3,12 +3,28 @@
   <div v-else class="sell-page">
     <div class="container">
       <div class="sell-wrapper">
-        <div class="sell-header text-center">
-          <h1>Sell on The Franks Standard</h1>
-          <p class="text-muted">List in minutes. COA or signed guarantee is required only for collectibles, antiques, and similar categories — general merchandise uses accurate photos and description.</p>
+        <div v-if="signedInEmail" class="sell-account-bar" role="status">
+          Signed in as <strong>{{ signedInEmail }}</strong>.
+          <button type="button" class="link-btn" @click="switchSellAccount">Use a different account</button>
         </div>
 
-        <div class="sell-switch-banner card" role="status">
+        <div class="sell-header text-center">
+          <template v-if="isListingFlow">
+            <h1>List your item</h1>
+            <p v-if="listingKind === 'general'" class="text-muted">
+              General merchandise — no COA step. Complete seller policies if prompted, then fill out the form below.
+            </p>
+            <p v-else class="text-muted">
+              Collectible listing — COA or seller guarantee applies. Complete policies if prompted, then add your item.
+            </p>
+          </template>
+          <template v-else>
+            <h1>Sell on The Franks Standard</h1>
+            <p class="text-muted">List in minutes. COA or signed guarantee is required only for collectibles, antiques, and similar categories — general merchandise uses accurate photos and description.</p>
+          </template>
+        </div>
+
+        <div v-if="!isListingFlow" class="sell-switch-banner card" role="status">
           <p>
             <strong>Coming from eBay or another marketplace?</strong>
             Import your inventory in minutes — skim eBay or upload CSV, then publish here with escrow checkout.
@@ -579,6 +595,28 @@ const isSellSubRoute = computed(() => {
 })
 
 
+
+import {
+  collectibleNeedsCoaStep,
+  isActiveListingFlow,
+  LIST_ITEM_COA_PATH,
+} from '~/utils/listItemRoutes.js'
+
+const isListingFlow = computed(() => isActiveListingFlow(route.query))
+
+const signedInEmail = ref('')
+
+async function switchSellAccount () {
+  const redirect = encodeURIComponent(route.fullPath)
+  await supabase.auth.signOut()
+  await navigateTo(`/auth/login?switch=1&redirect=${redirect}`)
+}
+
+function enforceListingPathGuard () {
+  if (collectibleNeedsCoaStep(route.query)) {
+    navigateTo(`${LIST_ITEM_COA_PATH}/`)
+  }
+}
 useSeoMeta({
   title: 'Sell — The Franks Standard',
   description:
@@ -705,9 +743,10 @@ const aiDescGenerating = ref(false)
 const aiDescMessage = ref('')
 const aiDescError = ref(false)
 
-const requiresCoa = computed(() =>
-  listingRequiresCoa(form.category, form.title, form.description),
-)
+const requiresCoa = computed(() => {
+  if (listingKind.value === 'general') return false
+  return listingRequiresCoa(form.category, form.title, form.description)
+})
 
 const coaRequiredByKeywords = computed(() => {
   const c = String(form.category || '').trim()
@@ -762,6 +801,8 @@ function applyListingKindFromQuery () {
     })
   }
 }
+
+watch(() => route.query, () => { enforceListingPathGuard() }, { deep: true })
 
 watch(
   () => [route.query.kind, route.query.coaType, route.query.coa],
@@ -878,6 +919,9 @@ async function generateAiDescription () {
 }
 
 onMounted(async () => {
+  enforceListingPathGuard()
+  const { data: { user: mountUser } } = await supabase.auth.getUser()
+  if (mountUser?.email) signedInEmail.value = mountUser.email
   await loadPolicyStatus()
   const { data: { user } } = await supabase.auth.getUser()
   if (user) {
@@ -1679,5 +1723,18 @@ async function submitListing() {
   padding: 4px 12px; border-radius: 999px;
   font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
   background: rgba(201, 168, 76, 0.18); color: var(--gold); border: 1px solid rgba(201, 168, 76, 0.4);
+}
+.sell-account-bar {
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+.sell-account-bar .link-btn {
+  margin-left: 8px;
+  font-weight: 800;
 }
 </style>

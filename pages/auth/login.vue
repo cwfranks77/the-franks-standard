@@ -5,6 +5,11 @@
       <h1>Sign In</h1>
       <p class="text-muted">Welcome back to The Franks Standard</p>
 
+      <p v-if="existingSessionEmail" class="auth-session-note" role="status">
+        Currently signed in as <strong>{{ existingSessionEmail }}</strong>.
+        <button type="button" class="link-btn" @click="signOutForSwitch">Sign out to use a different account</button>
+      </p>
+
       <p v-if="formError" class="form-err" role="alert">{{ formError }}</p>
       <p v-if="resendOk" class="form-ok" role="status">{{ resendOk }}</p>
 
@@ -50,10 +55,22 @@
 import { resolveAuthRedirect } from '~/utils/listItemRoutes.js'
 
 const route = useRoute()
+const supabase = useSupabaseClient()
+const existingSessionEmail = ref('')
 
-onMounted(() => {
-  useGuestOnly()
+onMounted(async () => {
+  await useGuestOnly()
+  const { data: { session } } = await supabase.auth.getSession()
+  if (session?.user?.email) {
+    existingSessionEmail.value = session.user.email
+  }
 })
+
+async function signOutForSwitch () {
+  await supabase.auth.signOut()
+  existingSessionEmail.value = ''
+  formError.value = ''
+}
 
 function onAuthLogoError (e) {
   const el = e?.target
@@ -190,6 +207,21 @@ async function handleLogin() {
   margin-top: 8px;
   text-align: left;
   line-height: 1.45;
+}
+.auth-session-note {
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.5;
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  text-align: left;
+}
+.auth-session-note .link-btn {
+  display: block;
+  margin-top: 6px;
 }
 .resend-row {
   margin-top: 14px;
