@@ -105,6 +105,12 @@ async function check(name, fn) {
     const r = await get(sbUrl + '/rest/v1/seller_dropship_settings?select=seller_id&limit=1', { apikey: sbKey, Authorization: 'Bearer ' + sbKey })
     return { ok: r.status === 200, detail: 'HTTP ' + r.status }
   })
+  await check('Edge accept-seller-policies alive', async () => {
+    const r = await post(sbUrl + '/functions/v1/accept-seller-policies', '{}')
+    if (r.status === 404) return { ok: false, detail: 'HTTP 404 — deploy accept-seller-policies' }
+    if (r.status === 401) return { ok: true, detail: 'HTTP 401 (needs JWT)' }
+    return { ok: false, detail: 'HTTP ' + r.status + ' ' + (r.body || '').slice(0, 80) }
+  })
   await check('Edge create-checkout-session alive', async () => {
     const r = await post(sbUrl + '/functions/v1/create-checkout-session', '{}')
     return { ok: r.status !== 404, detail: 'HTTP ' + r.status }

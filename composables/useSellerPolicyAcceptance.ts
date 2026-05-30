@@ -31,7 +31,7 @@ async function parseSellerPolicyFnError (fnErr: unknown, data: unknown): Promise
 }
 
 function shouldFallbackToProfileUpdate (message: string): boolean {
-  return /timed out|timeout|fetch|network|failed to fetch|edge function|non-2xx|502|503|504|not found|deploy/i.test(message)
+  return /timed out|timeout|fetch|network|failed to fetch|edge function|non-2xx|502|503|504|not found|deploy|policy_version|policies were updated|update_failed/i.test(message)
 }
 
 async function invokeWithTimeout<T> (promise: Promise<T>, ms: number): Promise<T> {

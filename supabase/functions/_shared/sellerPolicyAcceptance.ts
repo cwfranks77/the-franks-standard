@@ -1,7 +1,7 @@
 import { SupabaseClient } from 'npm:@supabase/supabase-js@2'
 
 /** Must match utils/sellerPolicyBundle.js SELLER_POLICY_VERSION */
-export const CURRENT_SELLER_POLICY_VERSION = '2026-05-20'
+export const CURRENT_SELLER_POLICY_VERSION = '2026-05-29'
 
 export type SellerPolicyProfile = {
   seller_policies_accepted_at: string | null
