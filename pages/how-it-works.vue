@@ -4,6 +4,7 @@
       <div class="text-center" style="max-width: 700px; margin: 0 auto;">
         <h1>How The Franks Standard Works</h1>
         <p class="text-muted mt-1">We are a marketplace facilitator: sellers stand behind collectible listings; we screen, facilitate escrow, and enforce when representations fail.</p>
+        <p class="collectible-proof-note mt-2">{{ COLLECTIBLE_PROOF_REGISTRY }}</p>
       </div>
 
       <div class="steps mt-4">
@@ -62,9 +63,9 @@ const faqs = reactive([
   },
   { q: 'Is it free to sign up?', a: 'Yes, creating an account is completely free for buyers and sellers.', open: false },
   { q: 'What fees does The Franks Standard charge?', a: 'Sellers pay a sale fee when an item sells: 5% on Starter, 4.5% on Pro ($14.99/mo), 4% on Store ($32.99/mo). New sellers get 3% for the first 90 days. Buyers pay no platform fee on top of the list price, but applicable sales tax is added at Stripe checkout from the buyer billing address (the total can be higher than the listed price).', open: false },
-  { q: 'What is the Seller Authenticity Guarantee?', a: 'A Franks Standard in-platform template where you — the seller — legally back the item. The Platform does not guarantee authenticity. If the item is proven fake, the buyer is refunded under our Marketplace Policies; the seller may owe platform debt, face account freeze, and permanent ban.', open: false },
+  { q: 'What is a Franks Standard COA?', a: 'A platform-issued serial (FS-YYYY-NNNNNN) tied to your listing photos and description at publish, stored in our coa_certificates registry. You — the seller — back the item; it is not a Platform warranty that the item is genuine. Buyers can verify at /verify/coa.', open: false },
   { q: 'Where are refund and account-freeze rules written?', a: 'In our Marketplace Policies & Enforcement at /marketplace-policy — incorporated into Terms and the Seller Agreement. Marketing pages summarize; policies govern.', open: false },
-  { q: 'What if I don\'t have a COA?', a: 'Sign the Seller Authenticity Guarantee or use the Franks Standard COA template. You back the item; our serial links your listing to proof on file — it is not the Platform guaranteeing genuineness.', open: false },
+  { q: 'What if I don\'t have a third-party COA?', a: 'Use the Franks Standard COA template when you list a collectible. We issue a serial at publish and record it with your listing. You still back authenticity; there is no signature-only bypass.', open: false },
   { q: 'Can I sell firearms?', a: 'We do not allow firearms or items that require ATF/FBI reporting. Accessories like optics, parts, triggers (non-NFA items), and gear are welcome.', open: false },
   { q: 'What categories can I sell in?', a: 'Sports cards, memorabilia, musical instruments, firearms accessories, coins, art, watches, jewelry, sneakers, vintage electronics, and more. See our full category list on the Browse page.', open: false },
   { q: 'How do I get paid?', a: 'Sellers connect their bank account via Stripe. When a buyer confirms receipt, your payment is released automatically.', open: false },
@@ -74,6 +75,17 @@ const faqs = reactive([
 <style scoped>
 .hiw-page { padding: 60px 0; }
 .hiw-page h1 { font-size: 2.2rem; }
+.collectible-proof-note {
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.6;
+  color: #374151;
+  padding: 14px 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  text-align: left;
+}
 
 .steps { max-width: 700px; margin: 0 auto; display: flex; flex-direction: column; gap: 0; }
 .step {

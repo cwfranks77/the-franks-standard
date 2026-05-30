@@ -9,6 +9,10 @@ export const SITE_URL = 'https://thefranksstandard.com'
 
 export const PROTECTION_HEADLINE = 'Trust both sides — not trust no one'
 
+/** Seller-facing rule — every collectible is recorded on-platform (no signature-only bypass). */
+export const COLLECTIBLE_PROOF_REGISTRY =
+  'Every collectible listed on The Franks Standard must have proof on file: either a third-party COA upload (PSA, PCGS, issuer, etc.) or a Franks Standard COA serial (FS-YYYY-NNNNNN) issued at publish and stored in our registry. There is no signature-only or written-guarantee bypass — each item is tied to a listing, photos, and verify at /verify/coa.'
+
 export const BUYER_PILLARS = [
   { icon: '🏢', title: 'Floor office COA', desc: 'Each Franks COA is tied to one listing slot (FS-YYYY-NNNNNN) and the photos/description at issue — not a blank form.' },
   { icon: '🔍', title: 'Verify before you buy', desc: 'Scan serial at /verify/coa — registry must match the listing you are viewing.' },
@@ -17,7 +21,7 @@ export const BUYER_PILLARS = [
 ]
 
 export const SELLER_PILLARS = [
-  { icon: '✅', title: 'Your proof, your reputation', desc: 'COA or signed guarantee showcases authentic inventory — you are not lumped in with anonymous scammers.' },
+  { icon: '✅', title: 'Your proof, your reputation', desc: 'Uploaded COA or Franks serial on file showcases authentic inventory — you are not lumped in with anonymous scammers.' },
   { icon: '💵', title: 'Escrow protects you too', desc: 'Funds release after delivery confirmation and tracking — reduces "item not received" scams.' },
   { icon: '📦', title: 'Ship what you listed', desc: 'Match the listing and COA office — disputes go both ways if a buyer claims falsely.' },
   { icon: '📉', title: 'Lower fees, real buyers', desc: `${PRICING_PUBLIC.txRangeLabel} sale fees by plan — buyers come for proof, not endless haggling over "is it real?"` },

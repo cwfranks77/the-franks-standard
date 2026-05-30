@@ -43,6 +43,20 @@
       </div>
     </section>
 
+    <section class="section section-alt">
+      <div class="container registry-callout">
+        <h2>Every collectible on our floor</h2>
+        <p>{{ COLLECTIBLE_PROOF_REGISTRY }}</p>
+        <p class="registry-links text-muted small">
+          <NuxtLink to="/verify/coa">Verify a Franks COA serial</NuxtLink>
+          ·
+          <NuxtLink to="/sell/coa">Choose proof when you list</NuxtLink>
+          ·
+          <NuxtLink to="/how-it-works">How listing works</NuxtLink>
+        </p>
+      </div>
+    </section>
+
     <section id="authenticity-seal" class="section">
       <div class="container seal-section">
         <FranksAuthenticitySeal size="lg" />
@@ -114,5 +128,14 @@ useSeoMeta({
 .screening-note { line-height: 1.55; margin-bottom: 14px; }
 .guarantee-box { max-width: 40rem; }
 .guarantee-box ul { line-height: 1.6; font-weight: 600; }
+.registry-callout { max-width: 44rem; }
+.registry-callout h2 {
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 1.25rem;
+  margin-bottom: 12px;
+}
+.registry-callout p { line-height: 1.65; font-weight: 600; color: #374151; margin: 0 0 12px; }
+.registry-links { margin: 0; }
+.registry-links a { color: var(--gold); font-weight: 700; }
 .cta-row { display: flex; flex-wrap: wrap; gap: 12px; }
 </style>
