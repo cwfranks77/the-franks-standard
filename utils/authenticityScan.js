@@ -3,6 +3,7 @@
  * Not a substitute for expert authentication; flags items for owner review and can block publish.
  */
 
+import { categoryRequiresCoa } from '~/utils/marketplaceCategories'
 import { coinIntegrityFlags } from '~/utils/coinIntegrity.js'
 
 const REPLICA_SIGNALS = [
@@ -58,17 +59,19 @@ export function scanListingIntegrity (row = {}) {
     }
   }
 
-  if (row.coa_type === 'upload' && !row.coa_storage_path) {
+  const proofRequired = row.coa_type !== 'none' && categoryRequiresCoa(row.category)
+
+  if (proofRequired && row.coa_type === 'upload' && !row.coa_storage_path) {
     flags.push({ id: 'coa_missing_file', label: 'Marked COA upload but no file on record', severity: 'review', weight: 30 })
     score += 30
   }
 
-  if (row.coa_type === 'guarantee' && !row.guarantee_signed) {
+  if (proofRequired && row.coa_type === 'guarantee' && !row.guarantee_signed) {
     flags.push({ id: 'guarantee_unsigned', label: 'Guarantee selected but not signed', severity: 'block', weight: 50 })
     score += 50
   }
 
-  if (GRADE_CLAIM.test(text) && row.coa_type === 'guarantee' && !row.coa_storage_path) {
+  if (proofRequired && GRADE_CLAIM.test(text) && row.coa_type === 'guarantee' && !row.coa_storage_path) {
     const exists = flags.some((f) => f.id === 'slab_no_upload')
     if (!exists) {
       flags.push({ id: 'cert_number_no_coa', label: 'Cert number in title but no third-party COA uploaded', severity: 'review', weight: 22 })

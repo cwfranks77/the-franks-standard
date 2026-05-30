@@ -192,7 +192,7 @@
                   <input class="input" v-model="collectionMeta.collectionLabel" placeholder="e.g. Floor Drop #001" />
                 </div>
               </div>
-              <p class="text-muted small">Featured on <NuxtLink to="/collections">/collections</NuxtLink> and limited-edition browse. Proof + escrow still required.</p>
+              <p class="text-muted small">Featured on <NuxtLink to="/collections">/collections</NuxtLink> and limited-edition browse. Collectible categories need COA or guarantee; general merchandise needs accurate photos and description.</p>
             </div>
 
             <div class="form-group">
@@ -437,10 +437,10 @@
             </div>
           </div>
 
-          <!-- COA Section -->
-          <div class="form-section coa-section">
+          <!-- COA Section (collectibles only) -->
+          <div v-if="requiresCoa" class="form-section coa-section">
             <h2>Certificate of Authenticity</h2>
-            <p class="text-muted mb-2">This is what sets The Franks Standard apart. Choose one:</p>
+            <p class="text-muted mb-2">Collectible categories require proof. Choose one:</p>
 
             <div class="coa-options">
               <label class="coa-option" :class="{ active: form.coaType === 'upload' }">
@@ -500,6 +500,14 @@
             </div>
           </div>
 
+          <div v-else class="form-section general-merch-note">
+            <h2>Listing standards</h2>
+            <p class="text-muted mb-2">
+              <strong>{{ form.category }}</strong> is general merchandise — no COA or signed guarantee required.
+              Photos and description must be accurate; replica or counterfeit language is still blocked.
+            </p>
+          </div>
+
           <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;" :disabled="submitting">
             {{ submitting ? 'Publishing…' : 'Publish to marketplace' }}
           </button>
@@ -511,7 +519,7 @@
 </template>
 
 <script setup>
-import { LISTING_CATEGORIES } from '~/utils/marketplaceCategories'
+import { LISTING_CATEGORIES, categoryRequiresCoa } from '~/utils/marketplaceCategories'
 import { CHARITY_OPTIONS, charityByKey } from '~/utils/charities.js'
 import { calcCharitySplit, CHARITY_PERCENT_PRESETS } from '~/utils/charitySplit.js'
 import { auctionEndsAtFromDays } from '~/utils/auctionHelpers.js'
@@ -655,6 +663,17 @@ const aiDescGenerating = ref(false)
 const aiDescMessage = ref('')
 const aiDescError = ref(false)
 
+const requiresCoa = computed(() => categoryRequiresCoa(form.category))
+
+watch(() => form.category, (cat) => {
+  if (!categoryRequiresCoa(cat)) {
+    form.coaType = ''
+    form.guaranteeSigned = false
+    coaFile.value = null
+    coaFileName.value = ''
+  }
+})
+
 const canGenerateAiDescription = computed(() => {
   return !!form.title.trim() && !!form.category
 })
@@ -684,9 +703,13 @@ function buildListingDescription (input) {
   }
   const hook = category.toLowerCase()
   const conditionLabel = CONDITION[condition] || condition || 'As described'
-  let auth = 'Authenticity: COA uploaded or signed Franks Standard guarantee required — add proof in the COA section below.'
+  const needsProof = categoryRequiresCoa(category)
+  let auth = needsProof
+    ? 'Authenticity: COA uploaded or signed Franks Standard guarantee required — add proof in the COA section below.'
+    : 'Condition: Item is described accurately with clear photos. General merchandise — no COA required for this category.'
   if (coaType === 'upload') auth = 'Authenticity: Certificate of Authenticity (COA) on file with this listing.'
   if (coaType === 'guarantee') auth = 'Authenticity: Backed by The Franks Standard in-platform seller guarantee.'
+  if (coaType === 'none' || (!needsProof && !coaType)) auth = 'Condition: Accurate description and photos; sold as described on The Franks Standard.'
   let ship = 'Shipping: Ships within 2 business days after escrow — insured and tracked when applicable.'
   if (listingMode === 'dropship') {
     ship = 'Shipping: Dropship — supplier ships direct to buyer.'
@@ -852,17 +875,20 @@ async function submitListing() {
     alert('You must digitally sign all seller policies before publishing.')
     return
   }
-  if (!form.coaType) {
-    alert('You must provide a Certificate of Authenticity or sign The Franks Standard Guarantee.')
-    return
-  }
-  if (form.coaType === 'guarantee' && !form.guaranteeSigned) {
-    alert('You must sign The Franks Standard Guarantee to list this item.')
-    return
-  }
-  if (form.coaType === 'upload' && !coaFile.value) {
-    alert('Please upload a COA document, or pick the in-platform guarantee instead.')
-    return
+  const needsCoa = categoryRequiresCoa(form.category)
+  if (needsCoa) {
+    if (!form.coaType) {
+      alert('Collectible categories require a COA upload, Franks issued COA, or signed Franks Standard Guarantee.')
+      return
+    }
+    if (form.coaType === 'guarantee' && !form.guaranteeSigned) {
+      alert('You must sign The Franks Standard Guarantee to list this item.')
+      return
+    }
+    if (form.coaType === 'upload' && !coaFile.value) {
+      alert('Please upload a COA document, or pick the in-platform guarantee instead.')
+      return
+    }
   }
   if (photoFiles.value.length < 1) {
     alert('Add at least one item photo (first image is the cover).')
@@ -903,18 +929,19 @@ async function submitListing() {
     alert(formatOffPlatformBlockMessage(guard))
     return
   }
-  if (form.coaType === 'franks_issued' && !photoFiles.value.length) {
+  if (needsCoa && form.coaType === 'franks_issued' && !photoFiles.value.length) {
     alert('Upload at least one item photo before publishing with a Franks issued COA.')
     return
   }
+  const effectiveCoaType = needsCoa ? form.coaType : 'none'
   const integrityPreview = scanListingIntegrity({
     title: form.title,
     description: form.description,
     category: form.category,
     price: Number(form.price),
-    coa_type: form.coaType,
-    coa_storage_path: form.coaType === 'upload' && coaFile.value ? 'pending' : null,
-    guarantee_signed: form.guaranteeSigned,
+    coa_type: effectiveCoaType,
+    coa_storage_path: effectiveCoaType === 'upload' && coaFile.value ? 'pending' : null,
+    guarantee_signed: effectiveCoaType === 'guarantee' ? form.guaranteeSigned : false,
   })
   if (!integrityPreview.ok) {
     const lines = integrityPreview.flags.map((f) => `• ${f.label}`).join('\n')
@@ -955,9 +982,9 @@ async function submitListing() {
       category: form.category,
       price: Number(form.price),
       condition: form.condition,
-      coa_type: form.coaType,
-      guarantee_signed: !!form.guaranteeSigned,
-      seller_legal_name: form.coaType === 'guarantee' ? form.sellerName.trim() : null,
+      coa_type: effectiveCoaType,
+      guarantee_signed: effectiveCoaType === 'guarantee' ? !!form.guaranteeSigned : false,
+      seller_legal_name: effectiveCoaType === 'guarantee' ? form.sellerName.trim() : null,
       coa_storage_path: null,
       image_paths: [],
       status: 'published',
@@ -1122,7 +1149,7 @@ async function submitListing() {
     }
 
     let coaPath = null
-    if (form.coaType === 'upload' && coaFile.value) {
+    if (effectiveCoaType === 'upload' && coaFile.value) {
       const cf = coaFile.value
       const cext = (cf.name.split('.').pop() || 'pdf').replace(/[^a-z0-9]/gi, '') || 'pdf'
       coaPath = `${base}/coa/coa.${cext}`
@@ -1144,7 +1171,7 @@ async function submitListing() {
       throw new Error(updErr.message)
     }
 
-    if (form.coaType === 'franks_issued') {
+    if (effectiveCoaType === 'franks_issued') {
       const { data: { session } } = await supabase.auth.getSession()
       const base = String(useRuntimeConfig().public.supabaseUrl || '').replace(/\/+$/, '')
       const issueRes = await fetch(`${base}/functions/v1/issue-coa-certificate`, {

@@ -3,7 +3,7 @@
     <div class="container narrow">
       <h1>AI inventory transfer</h1>
       <p class="lead text-muted">
-        <strong>Move your catalog from eBay or CSV</strong> — titles, prices, and image URLs map in; you review each row, add COA or signed guarantee, then publish. Off-platform contact or payment links in descriptions are blocked automatically.
+        <strong>Move your catalog from eBay or CSV</strong> — titles, prices, and image URLs map in. Collectible categories need COA or signed guarantee; general merchandise does not. Off-platform contact or payment links are blocked automatically.
       </p>
 
       <div v-if="policyLoading" class="text-muted">Loading seller requirements…</div>
@@ -102,18 +102,29 @@
 
         <div class="import-options">
           <h3>Import options</h3>
+          <div class="form-group">
+            <label class="label">Default category for imported rows</label>
+            <select v-model="importCategory" class="select">
+              <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+            </select>
+            <p class="text-muted small">
+              {{ importNeedsCoa ? 'Collectible category — signed guarantee or COA required when publishing.' : 'General merchandise — no COA required.' }}
+            </p>
+          </div>
           <label class="check-row">
             <input v-model="publishNow" type="checkbox" />
             Publish immediately (otherwise save as drafts)
           </label>
-          <label class="check-row">
-            <input v-model="useGuarantee" type="checkbox" />
-            Use Franks Standard signed guarantee (required for public listings)
-          </label>
-          <div v-if="useGuarantee" class="form-group">
-            <label class="label">Legal name (for guarantee)</label>
-            <input v-model="sellerLegalName" class="input" placeholder="Your full legal name" />
-          </div>
+          <template v-if="importNeedsCoa">
+            <label class="check-row">
+              <input v-model="useGuarantee" type="checkbox" />
+              Use Franks Standard signed guarantee
+            </label>
+            <div v-if="useGuarantee" class="form-group">
+              <label class="label">Legal name (for guarantee)</label>
+              <input v-model="sellerLegalName" class="input" placeholder="Your full legal name" />
+            </div>
+          </template>
         </div>
 
         <button
@@ -153,7 +164,13 @@
 </template>
 
 <script setup>
+import { LISTING_CATEGORIES, categoryRequiresCoa } from '~/utils/marketplaceCategories'
+
 definePageMeta({ middleware: 'requires-auth' })
+
+const categories = LISTING_CATEGORIES
+const importCategory = ref('General Merchandise')
+const importNeedsCoa = computed(() => categoryRequiresCoa(importCategory.value))
 
 const {
   needsAcceptance: needsPolicyAcceptance,
@@ -258,17 +275,19 @@ function selectAll (on) {
 
 async function runImport () {
   importResult.value = null
-  if (useGuarantee.value && !sellerLegalName.value.trim()) {
+  const needsCoa = categoryRequiresCoa(importCategory.value)
+  if (needsCoa && useGuarantee.value && !sellerLegalName.value.trim()) {
     alert('Enter your legal name for the signed guarantee, or turn off guarantee (you will need COA before publishing).')
     return
   }
   try {
-    const coaType = useGuarantee.value ? 'guarantee' : 'upload'
+    const coaType = needsCoa ? (useGuarantee.value ? 'guarantee' : 'upload') : 'none'
     importResult.value = await importSelected({
       publish: publishNow.value,
       coaType,
-      guaranteeSigned: useGuarantee.value,
+      guaranteeSigned: needsCoa && useGuarantee.value,
       sellerLegalName: sellerLegalName.value.trim(),
+      defaultCategory: importCategory.value,
       importSource: tab.value === 'ebay' ? 'ebay' : (isDropshipCsv.value ? 'doba_csv' : 'csv'),
       listingMode: tab.value === 'csv' && isDropshipCsv.value ? 'dropship' : 'direct',
       dropshipProviderKey: tab.value === 'csv' && isDropshipCsv.value ? 'doba' : '',

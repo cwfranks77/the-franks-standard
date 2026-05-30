@@ -2,6 +2,33 @@
 
 import { coinIntegrityFlags } from './coinIntegrity.ts'
 
+const NON_COLLECTIBLE = new Set([
+  'Consumer Electronics',
+  'Tools & Workshop Equipment',
+  'Appliances & Home Improvement',
+  'Furniture & Home Decor',
+  'Garden, Patio & Outdoor Living',
+  'Sporting Goods & Outdoors',
+  'Automotive Parts & Accessories',
+  'Pet Supplies',
+  'Beauty & Personal Care',
+  'Health & Wellness',
+  'Baby, Kids & Family',
+  'Food & Gourmet (shelf-stable)',
+  'Office & School Supplies',
+  'Craft, Hobby & Maker Supplies',
+  'Apparel & Clothing',
+  'General Merchandise',
+  'General Store',
+  'Firearms Accessories',
+])
+
+function categoryRequiresCoa (category: unknown): boolean {
+  const c = String(category || '').trim()
+  if (!c) return true
+  return !NON_COLLECTIBLE.has(c)
+}
+
 type Flag = { id: string; label: string; severity: string; weight: number }
 
 const REPLICA_SIGNALS = [
@@ -54,11 +81,12 @@ export function scanListingIntegrity (row: Record<string, unknown>) {
   }
 
   const coaType = String(row.coa_type || '')
-  if (coaType === 'upload' && !row.coa_storage_path) {
+  const proofRequired = coaType !== 'none' && categoryRequiresCoa(row.category)
+  if (proofRequired && coaType === 'upload' && !row.coa_storage_path) {
     flags.push({ id: 'coa_missing_file', label: 'Marked COA upload but no file on record', severity: 'review', weight: 30 })
     score += 30
   }
-  if (coaType === 'guarantee' && !row.guarantee_signed) {
+  if (proofRequired && coaType === 'guarantee' && !row.guarantee_signed) {
     flags.push({ id: 'guarantee_unsigned', label: 'Guarantee selected but not signed', severity: 'block', weight: 50 })
     score += 50
   }

@@ -1,4 +1,4 @@
-import { LISTING_CATEGORIES } from '~/utils/marketplaceCategories'
+import { LISTING_CATEGORIES, categoryRequiresCoa } from '~/utils/marketplaceCategories'
 import { parseEbaySellerHtmlWithDiagnostics } from '~/utils/ebayParse.js'
 
 const DEFAULT_CATEGORY = 'Sports Cards & Memorabilia'
@@ -244,9 +244,13 @@ export function useInventoryImport () {
         const normalizedProviderKey = String(dropshipProviderKey || '').trim()
         const normalizedProviderName = String(dropshipProviderName || '').trim()
         const title = String(item.title).trim().slice(0, 200)
+        const cat = LISTING_CATEGORIES.includes(defaultCategory) ? defaultCategory : DEFAULT_CATEGORY
+        const needsProof = categoryRequiresCoa(cat)
         const description =
             (item.description || '').trim() ||
-            `Imported listing. Review photos and add COA or signed guarantee before publishing.`
+            (needsProof
+              ? 'Imported listing. Review photos and add COA or signed guarantee before publishing.'
+              : 'Imported listing. Review photos and description for accuracy.')
         const { scanOffPlatformContent } = await import('~/utils/offPlatformGuard.js')
         const guard = scanOffPlatformContent(`${title}\n${description}`)
         if (!guard.ok) {
@@ -255,18 +259,20 @@ export function useInventoryImport () {
           continue
         }
 
+        const resolvedCoaType = needsProof
+          ? coaType
+          : 'none'
+
         const payload = {
           seller_id: user.id,
           title,
           description,
-          category: LISTING_CATEGORIES.includes(defaultCategory)
-            ? defaultCategory
-            : DEFAULT_CATEGORY,
+          category: cat,
           price,
           condition: 'good',
-          coa_type: coaType,
-          guarantee_signed: coaType === 'guarantee' ? !!guaranteeSigned : false,
-          seller_legal_name: coaType === 'guarantee' ? (sellerLegalName || null) : null,
+          coa_type: resolvedCoaType,
+          guarantee_signed: resolvedCoaType === 'guarantee' ? !!guaranteeSigned : false,
+          seller_legal_name: resolvedCoaType === 'guarantee' ? (sellerLegalName || null) : null,
           coa_storage_path: null,
           image_paths: imagePaths,
           status: publish ? 'published' : 'draft',

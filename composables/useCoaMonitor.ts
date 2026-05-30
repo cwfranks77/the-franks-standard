@@ -25,11 +25,21 @@ export function useCoaMonitor () {
       }
 
       const issues: any[] = []
+      const { categoryRequiresCoa } = await import('~/utils/marketplaceCategories')
+
       for (const row of data) {
+        if (row.coa_type === 'none' || !categoryRequiresCoa(row.category)) {
+          continue
+        }
+
         const problems: string[] = []
 
-        if (!row.coa_type || (row.coa_type !== 'upload' && row.coa_type !== 'guarantee')) {
-          problems.push('No COA type selected')
+        if (!row.coa_type || row.coa_type === 'none') {
+          problems.push('Collectible category missing COA or guarantee')
+        } else if (row.coa_type === 'franks_issued') {
+          // Issued at publish — no file path required here
+        } else if (row.coa_type !== 'upload' && row.coa_type !== 'guarantee') {
+          problems.push('Invalid COA type')
         }
 
         if (row.coa_type === 'upload' && !row.coa_storage_path) {

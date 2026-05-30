@@ -43,7 +43,7 @@
             :serial="listing.coaSerial"
           />
 
-          <div class="listing-coa-box">
+          <div v-if="listing.coaType !== 'none'" class="listing-coa-box">
             <span class="coa-badge">{{ coaBadgeLabel }}</span>
             <p class="text-muted" style="font-size: 0.8rem; margin-top: 6px;">
               <template v-if="listing.coaType === 'franks_issued'">
@@ -58,6 +58,12 @@
               <template v-else>
                 {{ listing.guaranteeName }} is named on the in-platform guarantee for this listing.
               </template>
+            </p>
+          </div>
+          <div v-else class="listing-coa-box listing-coa-box--general">
+            <span class="coa-badge">General merchandise</span>
+            <p class="text-muted" style="font-size: 0.8rem; margin-top: 6px;">
+              Sold as described — accurate photos and condition notes. COA not required for this category.
             </p>
           </div>
 
@@ -268,6 +274,7 @@ const showReportModal = ref(false)
 
 const coaBadgeLabel = computed(() => {
   if (!listing.value) return ''
+  if (listing.value.coaType === 'none') return 'General merchandise'
   if (listing.value.coaType === 'franks_issued') return 'Franks issued COA'
   if (listing.value.coaType === 'upload') return 'COA document on file'
   return 'Franks Standard guarantee'

@@ -40,6 +40,34 @@ export const LISTING_CATEGORIES = [
 
 export type ListingCategory = (typeof LISTING_CATEGORIES)[number]
 
+/** General retail — accurate listing required; COA / signed guarantee not required. */
+export const NON_COLLECTIBLE_CATEGORIES: readonly ListingCategory[] = [
+  'Consumer Electronics',
+  'Tools & Workshop Equipment',
+  'Appliances & Home Improvement',
+  'Furniture & Home Decor',
+  'Garden, Patio & Outdoor Living',
+  'Sporting Goods & Outdoors',
+  'Automotive Parts & Accessories',
+  'Pet Supplies',
+  'Beauty & Personal Care',
+  'Health & Wellness',
+  'Baby, Kids & Family',
+  'Food & Gourmet (shelf-stable)',
+  'Office & School Supplies',
+  'Craft, Hobby & Maker Supplies',
+  'Apparel & Clothing',
+  'General Merchandise',
+  'General Store',
+  'Firearms Accessories',
+] as const
+
+export function categoryRequiresCoa (category: string | null | undefined): boolean {
+  const c = String(category || '').trim()
+  if (!c) return true
+  return !(NON_COLLECTIBLE_CATEGORIES as readonly string[]).includes(c)
+}
+
 export const CATEGORY_CATALOG: { icon: string; name: ListingCategory; desc: string }[] = [
   { icon: '🏆', name: 'Sports Cards & Memorabilia', desc: 'Graded cards, signed jerseys, game-used gear' },
   { icon: '🃏', name: 'Trading Card Games (Pokemon, MTG, etc.)', desc: 'Sealed product, graded singles, tournament staples' },
