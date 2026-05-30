@@ -7,6 +7,6 @@ Write-Host ""
 Write-Host "HP printers on this PC:"
 Get-Printer -ErrorAction SilentlyContinue | Where-Object { $_.Name -match 'HP|hewlett' } | Format-Table Name, PrinterStatus, PortName -AutoSize
 if (-not (Get-Printer -ErrorAction SilentlyContinue | Where-Object { $_.Name -match 'HP|hewlett' })) {
-  Write-Host "(No HP printer name found — check Settings > Printers or use any installed printer in the browser dialog.)"
+  Write-Host '(No HP printer name found — check Windows Printers settings or pick any printer in the browser dialog.)'
 }
 Start-Process $url
