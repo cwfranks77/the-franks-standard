@@ -1,5 +1,6 @@
 <template>
-  <div class="sell-page">
+  <NuxtPage v-if="isSellSubRoute" />
+  <div v-else class="sell-page">
     <div class="container">
       <div class="sell-wrapper">
         <div class="sell-header text-center">
@@ -570,6 +571,12 @@ const sellDockTiles = [
 const charities = CHARITY_OPTIONS
 
 definePageMeta({ middleware: ['sell-entry', 'requires-auth'] })
+const route = useRoute()
+const isSellSubRoute = computed(() => {
+  const path = route.path.replace(/\/$/, '') || '/'
+  return path !== '/sell'
+})
+
 
 useSeoMeta({
   title: 'Sell — The Franks Standard',
