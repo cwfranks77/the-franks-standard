@@ -6,7 +6,8 @@ import {
 
 /** Bare /sell (no kind/mode) → chooser at /sell/start before hub or policy gate. */
 export default defineNuxtRouteMiddleware((to) => {
-  if (to.path !== SELL_FORM_PATH) return
+  const path = to.path.replace(/\/$/, '') || '/'
+  if (path !== SELL_FORM_PATH) return
   if (isActiveListingFlow(to.query)) return
   return navigateTo(LIST_ITEM_START_PATH)
 })
