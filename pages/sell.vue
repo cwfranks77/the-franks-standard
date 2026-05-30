@@ -12,7 +12,7 @@
           <template v-if="isListingFlow">
             <h1>List your item</h1>
             <p v-if="listingKind === 'general'" class="text-muted">
-              General merchandise — no COA step. Complete seller policies if prompted, then fill out the form below.
+              General merchandise only (retail categories). Collectibles and antiques are not allowed on this path — use the Collectible option.
             </p>
             <p v-else class="text-muted">
               Collectible listing — COA or seller guarantee applies. Complete policies if prompted, then add your item.
@@ -154,7 +154,7 @@
                 <label class="label">Category</label>
                 <select class="select" v-model="form.category" required>
                   <option value="">Select category…</option>
-                  <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+                  <option v-for="cat in sellCategories" :key="cat" :value="cat">{{ cat }}</option>
                 </select>
                 <p v-if="!form.category" class="text-muted small mt-1">Pick a category first. The COA step appears only for collectibles and antiques.</p>
                 <p v-else-if="requiresCoa" class="text-muted small mt-1 coa-cat-hint">This category requires proof — you will add COA or guarantee after photos.</p>
@@ -539,7 +539,7 @@
             </div>
           </div>
 
-          <div v-else-if="form.category" class="form-section general-merch-note">
+          <div v-else-if="form.category && !requiresCoa" class="form-section general-merch-note">
             <h2>Listing standards</h2>
             <p class="text-muted mb-2">
               <strong>{{ form.category }}</strong> — no COA or signed guarantee required.
@@ -560,6 +560,7 @@
 <script setup>
 import {
   LISTING_CATEGORIES,
+  NON_COLLECTIBLE_CATEGORIES,
   categoryRequiresCoa,
   listingRequiresCoa,
   textSuggestsCollectible,
@@ -640,7 +641,12 @@ const integrityHoldText = ref('')
 const listingMode = ref('direct')
 const modeNotice = ref('')
 
-const categories = LISTING_CATEGORIES
+const sellCategories = computed(() => {
+  if (listingKind.value === 'general') {
+    return [...NON_COLLECTIBLE_CATEGORIES]
+  }
+  return [...LISTING_CATEGORIES]
+})
 const currentYear = new Date().getFullYear()
 
 const dropshipProviders = DROPSHIP_PROVIDER_CATALOG.filter((p) => p.key !== 'custom')
@@ -743,10 +749,9 @@ const aiDescGenerating = ref(false)
 const aiDescMessage = ref('')
 const aiDescError = ref(false)
 
-const requiresCoa = computed(() => {
-  if (listingKind.value === 'general') return false
-  return listingRequiresCoa(form.category, form.title, form.description)
-})
+const requiresCoa = computed(() =>
+  listingRequiresCoa(form.category, form.title, form.description),
+)
 
 const coaRequiredByKeywords = computed(() => {
   const c = String(form.category || '').trim()
@@ -755,6 +760,13 @@ const coaRequiredByKeywords = computed(() => {
 })
 
 watch(() => form.category, (cat) => {
+  if (listingKind.value === 'general') {
+    if (categoryRequiresCoa(cat) || textSuggestsCollectible(form.title, form.description)) {
+      alert('Collectibles and antiques cannot be listed without COA. Use the Collectible path and complete authenticity proof first.')
+      navigateTo(`${LIST_ITEM_COA_PATH}/`)
+      return
+    }
+  }
   if (!listingRequiresCoa(cat, form.title, form.description) && listingKind.value !== 'collectible') {
     form.coaType = ''
     form.guaranteeSigned = false
@@ -1017,6 +1029,11 @@ async function submitListing() {
     alert('You must digitally sign all seller policies before publishing.')
     return
   }
+  if (listingKind.value === 'collectible' && !allowedCoaTypes.has(form.coaType)) {
+    alert('Collectible listings require COA or seller guarantee. Complete the authenticity proof step first.')
+    await navigateTo(`${LIST_ITEM_COA_PATH}/`)
+    return
+  }
   const needsCoa = listingRequiresCoa(form.category, form.title, form.description)
   if (needsCoa) {
     if (!form.coaType) {
@@ -1086,6 +1103,10 @@ async function submitListing() {
     return
   }
   const effectiveCoaType = needsCoa ? form.coaType : 'none'
+  if (needsCoa && !allowedCoaTypes.has(effectiveCoaType)) {
+    alert('COA or signed seller guarantee is required for this category.')
+    return
+  }
   const integrityPreview = scanListingIntegrity({
     title: form.title,
     description: form.description,

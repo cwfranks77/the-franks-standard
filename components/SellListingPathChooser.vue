@@ -3,14 +3,14 @@
     <p class="eyebrow">List an item</p>
     <h2 id="list-path-heading">What are you selling?</h2>
     <p class="lead">
-      Pick the path that matches your item. Collectibles need authenticity proof first; general merchandise goes straight to the listing form.
+      Pick the path that matches your item. Collectibles and antiques always require COA or seller guarantee — no exceptions. General merchandise is only for retail categories (electronics, tools, apparel, etc.).
     </p>
 
     <div class="choice-grid">
       <button type="button" class="choice-card choice-card--general" @click="chooseGeneral">
         <span class="choice-icon" aria-hidden="true">📦</span>
         <span class="choice-title">Non-collectible</span>
-        <span class="choice-desc">Sporting goods, electronics, tools, apparel, and other general merchandise.</span>
+        <span class="choice-desc">Retail only: electronics, tools, apparel, appliances — not cards, coins, art, antiques, or memorabilia.</span>
         <span class="choice-cta">Continue to list an item →</span>
       </button>
 
