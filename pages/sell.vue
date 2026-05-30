@@ -7,6 +7,9 @@
           <p class="text-muted">List in minutes. COA or signed guarantee is required only for collectibles, antiques, and similar categories — general merchandise uses accurate photos and description.</p>
         </div>
 
+        <SellListingPathChooser v-if="showListingPathChooser" />
+
+        <template v-else>
         <div class="sell-switch-banner card" role="status">
           <p>
             <strong>Coming from eBay or another marketplace?</strong>
@@ -535,6 +538,7 @@
           </button>
         </form>
         </template>
+        </template>
       </div>
     </div>
   </div>
@@ -561,10 +565,10 @@ import { DROPSHIP_PROVIDER_CATALOG, useSellerDropship } from '~/composables/useS
 import { COLLECTION_SLUG_OPTIONS } from '~/utils/nicheCollections.js'
 
 const sellDockTiles = [
-  { to: '/sell/import', icon: '📥', label: 'Import inventory', hint: 'eBay CSV or store', variant: 'primary' },
-  { to: '/sellers/switch', icon: '↔️', label: 'Switching guide', hint: 'From eBay or elsewhere', variant: 'accent' },
+  { to: '/sell/import', icon: '📥', label: 'Import inventory', hint: 'eBay CSV or store' },
+  { to: '/sellers/switch', icon: '↔️', label: 'Switching guide', hint: 'From eBay or elsewhere' },
   { to: '/seller-tools', icon: '📊', label: 'Appraisal tools', hint: 'Comps & pricing help' },
-  { to: '/join/founders10', icon: '🎁', label: 'FOUNDERS10', hint: '3 mo Pro free', variant: 'dark' },
+  { to: '/join/founders10', icon: '🎁', label: 'FOUNDERS10', hint: '3 mo Pro free' },
 ]
 
 const charities = CHARITY_OPTIONS
@@ -730,6 +734,14 @@ watch(requiresCoa, (needs) => {
 
 /** general | collectible — from /sell/start or /sell/coa */
 const listingKind = ref('')
+
+const showListingPathChooser = computed(() => {
+  const kind = String(route.query.kind || '').toLowerCase()
+  const mode = String(route.query.mode || '').toLowerCase()
+  if (kind === 'general' || kind === 'collectible') return false
+  if (mode === 'dropship' || mode === 'direct') return false
+  return true
+})
 
 const allowedCoaTypes = new Set(['upload', 'guarantee', 'franks_issued'])
 
@@ -1053,7 +1065,7 @@ async function submitListing() {
   try {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      await navigateTo({ path: '/auth/login', query: { redirect: '/sell' } })
+      await navigateTo({ path: '/auth/login', query: { redirect: '/sell/start' } })
       return
     }
     const { data: profile } = await supabase
@@ -1341,6 +1353,26 @@ async function submitListing() {
   border: 1px solid rgba(201, 168, 76, 0.35);
 }
 .sell-switch-banner p { margin: 0; flex: 1 1 240px; }
+.sell-switch-banner :deep(.action-tile) {
+  background: #ffffff;
+  border: 2px solid #d7dde6;
+  box-shadow: none;
+}
+.sell-switch-banner :deep(.action-tile:hover) {
+  border-color: #f7ca00;
+  background: #fff8d9;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+.sell-switch-banner :deep(.action-tile--primary),
+.sell-switch-banner :deep(.action-tile--accent),
+.sell-switch-banner :deep(.action-tile--dark) {
+  background: #ffffff;
+  border: 2px solid #d7dde6;
+  color: #1f2937;
+}
+.sell-switch-banner :deep(.action-tile--dark .action-tile-hint) {
+  color: #64748b;
+}
 
 .form-section {
   margin-bottom: 32px;
@@ -1585,8 +1617,8 @@ async function submitListing() {
   margin: 0 0 20px;
   padding: 16px 18px;
   border-radius: var(--radius-lg);
-  border: 1px solid #9fd9ff;
-  background: #effbff;
+  border: 1px solid #f7ca00;
+  background: #fff8d9;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -1602,7 +1634,7 @@ async function submitListing() {
 .dropship-section { border-color: var(--cyan); border-width: 2px; }
 .dropship-notice {
   margin-top: 12px; padding: 12px 14px;
-  background: #effbff; border: 1px solid #9fd9ff;
+  background: #fff8d9; border: 1px solid #f7ca00;
   border-radius: var(--radius); font-size: 0.85rem; color: #1f2937; line-height: 1.6;
 }
 .dropship-provider-card {

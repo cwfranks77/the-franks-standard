@@ -45,7 +45,7 @@
       <div class="home-browse-links">
         <NuxtLink to="/browse" class="home-browse-link-chip">All listings</NuxtLink>
         <NuxtLink to="/categories" class="home-browse-link-chip">Categories</NuxtLink>
-        <NuxtLink to="/sell" class="home-browse-link-chip">Start selling</NuxtLink>
+        <NuxtLink to="/sell/start" class="home-browse-link-chip">Start selling</NuxtLink>
         <NuxtLink to="/sell/import" class="home-browse-link-chip">Import eBay</NuxtLink>
         <NuxtLink to="/collections" class="home-browse-link-chip">Collections</NuxtLink>
         <NuxtLink to="/top-sellers" class="home-browse-link-chip">Top sellers</NuxtLink>

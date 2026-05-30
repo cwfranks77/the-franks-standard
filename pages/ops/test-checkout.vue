@@ -45,7 +45,7 @@
           <NuxtLink v-for="p in criticalPages" :key="p.path" :to="p.path" class="btn btn-outline btn-sm" target="_blank">
             {{ p.label }}
           </NuxtLink>
-          <NuxtLink to="/sell" class="btn btn-outline btn-sm" target="_blank">Sell (charity dropdown)</NuxtLink>
+          <NuxtLink to="/sell/start" class="btn btn-outline btn-sm" target="_blank">List item chooser</NuxtLink>
         </div>
       </section>
 

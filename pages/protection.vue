@@ -78,7 +78,7 @@
     <section class="section">
       <div class="container cta-row">
         <NuxtLink to="/browse" class="btn btn-primary">Browse with confidence</NuxtLink>
-        <NuxtLink to="/sell" class="btn btn-outline">Sell with proof</NuxtLink>
+        <NuxtLink to="/sell/start" class="btn btn-outline">Sell with proof</NuxtLink>
         <NuxtLink to="/collections" class="btn btn-outline">Collections</NuxtLink>
       </div>
     </section>

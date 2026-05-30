@@ -118,7 +118,7 @@
         </p>
         <p class="floor-nav-line floor-nav-tools">
           <NuxtLink to="/browse">Browse</NuxtLink><span class="floor-sep"> · </span>
-          <NuxtLink to="/sell">Sell</NuxtLink><span class="floor-sep"> · </span>
+          <NuxtLink to="/sell/start">Sell</NuxtLink><span class="floor-sep"> · </span>
           <NuxtLink to="/sell/import">Import eBay</NuxtLink><span class="floor-sep"> · </span>
           <NuxtLink to="/video">Video</NuxtLink><span class="floor-sep"> · </span>
           <NuxtLink to="/protection">Protection</NuxtLink><span class="floor-sep"> · </span>

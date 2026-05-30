@@ -57,7 +57,7 @@
 
       <div class="actions">
         <a class="btn btn-primary btn-lg" :href="applicationMailto">Apply to sell (email)</a>
-        <NuxtLink to="/sell" class="btn btn-outline btn-lg">Prepare a single listing draft</NuxtLink>
+        <NuxtLink to="/sell/start" class="btn btn-outline btn-lg">Prepare a single listing draft</NuxtLink>
         <NuxtLink to="/contact" class="btn btn-dark btn-lg">Contact</NuxtLink>
       </div>
 

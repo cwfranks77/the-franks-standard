@@ -38,7 +38,7 @@
         </NuxtLink>
       </div>
 
-      <p class="text-center mt-4 text-muted">Listing something special? <NuxtLink to="/sell">Start a listing</NuxtLink></p>
+      <p class="text-center mt-4 text-muted">Listing something special? <NuxtLink to="/sell/start">Start a listing</NuxtLink></p>
     </div>
   </div>
 </template>

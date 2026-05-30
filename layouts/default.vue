@@ -207,7 +207,7 @@
     </Teleport>
     <AiSupportDrawer />
 
-    <NuxtLink v-if="isOwner" to="/sell" class="owner-sell-fab" title="Create a listing (free)">
+    <NuxtLink v-if="isOwner" to="/sell/start" class="owner-sell-fab" title="Create a listing (free)">
       <span class="fab-plus">+</span>
       <span class="fab-label">Sell</span>
     </NuxtLink>

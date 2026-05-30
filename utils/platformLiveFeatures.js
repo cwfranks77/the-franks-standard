@@ -19,7 +19,7 @@ export const LIVE_NOW_BY_TAB = {
     { icon: '🪙', title: 'Coin authentication guide', desc: 'Free printable study guide — more collectibles education coming.', to: '/learn/tools/coin-study-guide', cta: 'Coin study guide' },
   ],
   sellers: [
-    { icon: '🏪', title: 'Sell & list', desc: 'Photos, COA upload, and publish — policy signature required first.', to: '/sell', cta: 'Start selling' },
+    { icon: '🏪', title: 'Sell & list', desc: 'Choose collectible or general, then publish — policy signature required first.', to: '/sell/start', cta: 'List an item' },
     { icon: '📥', title: 'eBay import', desc: 'Seller Hub CSV or skim flow at /sell/import.', to: '/sell/import', cta: 'Import inventory' },
     { icon: '🤖', title: 'AI store builder', desc: 'Bios, SEO, and listing templates in minutes.', to: '/store-builder', cta: 'Store builder' },
     { icon: '📦', title: 'Dropship setup', desc: 'Wizard for supplier, fulfillment, and optional automation.', to: '/sell/dropship-setup', cta: 'Dropship wizard' },

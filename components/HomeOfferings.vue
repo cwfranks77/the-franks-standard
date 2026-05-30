@@ -28,7 +28,7 @@ const offerings = [
   { icon: '🎖️', title: 'Military & first responders — 6 months Pro', desc: 'Veterans, police, fire, EMS, dispatch, corrections. Code HONOR26 on the honors page.', to: '/honor', cta: 'Code HONOR26' },
   { icon: '🛡️', title: 'Seller proof on collectibles', desc: 'Collectible listings require seller COA or signed guarantee template — we screen and enforce; we do not guarantee authenticity.', to: '/how-it-works', cta: 'How it works' },
   { icon: '🏛️', title: 'Browse the floor', desc: 'Cards, watches, gear, art, sneakers, and more — curated categories for high-trust inventory.', to: '/browse', cta: 'Browse' },
-  { icon: '📦', title: 'Sell & list', desc: 'Create listings with photos, COA flow, and seller tools. Stores onboard through For sellers.', to: '/sell', cta: 'Start listing' },
+  { icon: '📦', title: 'Sell & list', desc: 'Create listings with photos, COA flow, and seller tools. Stores onboard through For sellers.', to: '/sell/start', cta: 'Start listing' },
   { icon: '🔒', title: 'Escrow & Stripe checkout', desc: 'Listed price is the item subtotal; sales tax is added at checkout from the buyer billing address. Funds held until the buyer confirms.', to: '/pay', cta: 'Pay & fees' },
   { icon: '📹', title: 'Video meet', desc: 'Face-to-face rooms in the browser — inspect items with buyers or sellers without another app.', to: '/video', cta: 'Open video' },
   { icon: '🤖', title: 'AI Help & support', desc: 'Instant answers on fees, COA, and tech from the Help button. Escalate to humans when you need to.', to: '/support', cta: 'Support' },

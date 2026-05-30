@@ -89,7 +89,7 @@
         </p>
         <div class="hero-actions mt-3">
           <NuxtLink to="/sellers" class="btn btn-primary btn-lg">For sellers &amp; stores</NuxtLink>
-          <NuxtLink to="/sell" class="btn btn-outline btn-lg">Send a listing draft</NuxtLink>
+          <NuxtLink to="/sell/start" class="btn btn-outline btn-lg">Send a listing draft</NuxtLink>
         </div>
       </div>
     </section>
