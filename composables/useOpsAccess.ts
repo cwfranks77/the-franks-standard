@@ -43,6 +43,8 @@ export const useOpsAccess = () => {
     const isValid = typedHash === expectedHash
 
     if (isValid && typeof window !== 'undefined') {
+      const { grant } = useOpsSession()
+      grant()
       sessionStorage.setItem('ops_access_granted', 'true')
     }
 

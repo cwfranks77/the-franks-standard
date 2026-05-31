@@ -23,7 +23,9 @@ const opsAccessKeyHash = opsKeyPlain
 // is not separately set. Without this, the GitHub Actions workflow's
 // `${{ secrets.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH }}` (which resolves to "")
 // would silently wipe out the hash we just computed from the plaintext.
-process.env.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH = opsAccessKeyHash
+if (opsAccessKeyHash) {
+  process.env.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH = opsAccessKeyHash
+}
 console.log('[ops] opsAccessKeyHash length:', opsAccessKeyHash.length)
 
 // Stripe Payment Link defaults — CI passes empty secrets when unset; write back so Nuxt

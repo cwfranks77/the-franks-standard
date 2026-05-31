@@ -219,7 +219,6 @@
 </template>
 
 <script setup>
-import { normalizeOpsPhrase } from '~/utils/opsPhrase'
 import { NAV_FEATURES_SECTIONS } from '~/utils/navFeaturesMenu.js'
 import { NAV_SETTINGS_SECTIONS } from '~/utils/navSettingsMenu.js'
 import { buildSocialLinks } from '~/utils/siteSocial.js'
@@ -253,7 +252,6 @@ const navSettings = computed(() => {
 const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
-const { grant } = useOpsSession()
 const { isOwner } = useOwnerMode()
 const { isSignedIn, displayEmail, signOut } = useAuthNav()
 
@@ -272,13 +270,15 @@ const menuOpen = ref(false)
 const onHome = computed(() => route.path === '/')
 
 const opModalOpen = ref(false)
-const opPhrase = ref('')
-const opError = ref('')
-const opSubmitting = ref(false)
+const {
+  phrase: opPhrase,
+  error: opError,
+  submitting: opSubmitting,
+  keyConfigured,
+  submit: submitOpsPhrase,
+} = useOpsUnlock()
 let opKnockClicks = 0
 let opKnockTimer = null
-
-const keyConfigured = computed(() => String(config.public?.opsAccessKeyHash || '').length > 0)
 const isDev = computed(() => import.meta.dev)
 
 function onPavilionImgError (e) {
@@ -341,30 +341,11 @@ function closeOpModal () {
   opError.value = ''
 }
 
-async function sha256Hex (input) {
-  const bytes = new TextEncoder().encode(input)
-  const digest = await crypto.subtle.digest('SHA-256', bytes)
-  return Array.from(new Uint8Array(digest))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('')
-}
-
 async function submitOpModal () {
-  opError.value = ''
-  const expectedHash = String(config.public?.opsAccessKeyHash || '').toLowerCase()
-  if (!expectedHash) { return }
-  opSubmitting.value = true
-  try {
-    const typedHash = await sha256Hex(normalizeOpsPhrase(opPhrase.value))
-    if (typedHash === expectedHash) {
-      grant()
-      closeOpModal()
-      router.push('/ops/panel')
-    } else {
-      opError.value = 'That does not match your build key. Check .env and redeploy, or the GitHub secret.'
-    }
-  } finally {
-    opSubmitting.value = false
+  const ok = await submitOpsPhrase()
+  if (ok) {
+    closeOpModal()
+    await router.push('/ops/panel')
   }
 }
 </script>
