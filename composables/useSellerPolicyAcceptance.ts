@@ -142,11 +142,15 @@ export function useSellerPolicyAcceptance () {
       }
       authedSellerId.value = authUser.id
 
-      // Critical path: direct profile update under the user's JWT (never depends on Edge).
-      const primary = await recordAcceptanceOnProfile(authUser.id, legalName)
-
-      // Best-effort audit log via RPC; failure must not block selling.
-      recordAcceptanceViaRpc(legalName, documentIds).catch(() => {})
+      // Critical path: security-definer RPC (same as production DB function migration 032).
+      let primary: { accepted_at: string; signer_name: string }
+      try {
+        primary = await recordAcceptanceViaRpc(legalName, documentIds)
+      } catch (rpcErr) {
+        // Fallback if RPC unavailable (old DB) — direct profile update under JWT.
+        primary = await recordAcceptanceOnProfile(authUser.id, legalName)
+        recordAcceptanceViaRpc(legalName, documentIds).catch(() => {})
+      }
 
       accepted.value = true
       signerName.value = primary.signer_name
