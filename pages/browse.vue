@@ -300,6 +300,11 @@ const filteredListings = computed(() => {
   flex-wrap: wrap;
 }
 .search-input { flex: 2; min-width: 200px; }
+.search-input::placeholder {
+  color: #000000;
+  font-weight: 700;
+  opacity: 1;
+}
 .filter-select { flex: 1; min-width: 160px; }
 
 .listing-card { text-decoration: none; color: inherit; }
