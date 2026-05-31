@@ -1,12 +1,12 @@
 /**
  * Category photography for homepage showcase tiles.
- * Uses Unsplash CDN (free to hotlink). SVGs kept as offline/error fallback only.
+ * Primary: same-origin JPEGs in /public/img/showcase/ (see scripts/fetch-showcase-photos.cjs).
+ * SVGs are the last-resort fallback when a local file is missing.
  */
 
-const unsplash = (photoId, w = 800, h = 520) =>
-  `https://images.unsplash.com/photo-${photoId}?auto=format&fit=crop&w=${w}&h=${h}&q=80`
+const showcaseLocal = (name) => `/img/showcase/${name}.jpg`
 
-/** Bundled SVG fallbacks when CDN is blocked or slow */
+/** Bundled SVG fallbacks when a local JPEG is missing */
 export const CATEGORY_SHOWCASE_SVG = {
   cards: '/img/reel-cards.svg',
   coins: '/img/reel-coins.svg',
@@ -20,22 +20,22 @@ export const CATEGORY_SHOWCASE_SVG = {
   comics: '/img/reel-cards.svg',
 }
 
-/** Real photography — category-appropriate */
+/** Real photography — served from this site (not third-party CDN) */
 export const CATEGORY_SHOWCASE_PHOTOS = {
-  cards: unsplash('1579952363873-27f960bca3bb'),
-  coins: unsplash('1610375353800-c6ae7e8c3d60'),
-  watches: unsplash('1523275335684-37898b6baf30'),
-  sneakers: unsplash('1542291026-7eec264c27ff'),
-  guitars: unsplash('1516924962500-2b4b54b6feb6'),
-  art: unsplash('1578301978018-4d0a2b657ca7'),
-  camera: unsplash('1516035069371-29a1b244cc32'),
-  vintage: unsplash('1550745165-9bc0b252726f'),
-  estate: unsplash('1582719478250-c89cae4dc85b'),
-  comics: unsplash('1612036781343-3365e05e6e42'),
+  cards: showcaseLocal('cards'),
+  coins: showcaseLocal('coins'),
+  watches: showcaseLocal('watches'),
+  sneakers: showcaseLocal('sneakers'),
+  guitars: showcaseLocal('guitars'),
+  art: showcaseLocal('art'),
+  camera: showcaseLocal('camera'),
+  vintage: showcaseLocal('vintage'),
+  estate: showcaseLocal('estate'),
+  comics: showcaseLocal('comics'),
 }
 
 /** Neutral fallback if a tile image fails at runtime */
-export const SHOWCASE_IMAGE_FALLBACK = unsplash('1610701596007-094a7e0f1f2c', 800, 520)
+export const SHOWCASE_IMAGE_FALLBACK = showcaseLocal('estate')
 
 export function onShowcaseImageError (event) {
   const el = event?.target
