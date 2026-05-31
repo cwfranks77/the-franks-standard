@@ -8,6 +8,7 @@ import {
 export default defineNuxtPlugin({
   name: 'auth-persistence',
   enforce: 'pre',
+  order: -99,
   setup () {
     if (localStorage.getItem(REMEMBER_ME_KEY) !== '1') {
       localStorage.setItem(REMEMBER_ME_KEY, '0')
