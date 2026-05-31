@@ -237,6 +237,17 @@ function ensureNoindexIfFlagged (html) {
   return html.replace(/<\/head>/i, '<meta name="robots" content="noindex,nofollow">\n</head>')
 }
 
+const CACHE_CONTROL_META = [
+  '<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">',
+  '<meta http-equiv="Pragma" content="no-cache">',
+  '<meta http-equiv="Expires" content="0">',
+].join('\n')
+
+function ensureHtmlNoCacheMeta (html) {
+  if (/http-equiv=["']Cache-Control["']/i.test(html)) return html
+  return html.replace(/<\/head>/i, `${CACHE_CONTROL_META}\n</head>`)
+}
+
 function patchFile (file) {
   let s = fs.readFileSync(file, 'utf8')
   const route = routeForFile(file)
@@ -244,6 +255,7 @@ function patchFile (file) {
 
   // Always (re)set the per-page canonical URL.
   s = ensureCanonical(s, canonical)
+  s = ensureHtmlNoCacheMeta(s)
   // Only noindex when an explicit NUXT_NOINDEX=1 build flag is set (e.g. a preview build).
   s = ensureNoindexIfFlagged(s)
 

@@ -9,15 +9,22 @@ const path = require('node:path')
 const ROOT = path.join(__dirname, '..', '.output', 'public')
 const INDEX = path.join(ROOT, 'index.html')
 const SPA_REDIRECT = `<script id="gh-pages-spa-redirect">(function(){var p=location.pathname+location.search+location.hash;if(p!=='/'&&p!=='/index.html'){sessionStorage.setItem('ghSpaRedirect',p)}})();</script>`
+const CHUNK_RECOVERY_INLINE = `<script id="fss-chunk-recovery-inline">(function(){var k='fss-chunk-reload-v1';function go(){if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1');var u=new URL(location.href);u.searchParams.set('_cb',String(Date.now()));location.replace(u.toString())}var s=document.querySelector('script[type=module][src*="/_nuxt/"]');if(s){s.addEventListener('error',go,{once:true})}})();</script>`
 
 /** Dirs that must not exist without index.html — GH Pages stops at the folder and never serves 404.html. */
 const SPA_BLOCKING_DIRS = ['store', 'ops/print']
 
 function injectRedirect (html) {
-  if (html.includes('gh-pages-spa-redirect')) return html
-  const idx = html.indexOf('<div id="__nuxt">')
-  if (idx === -1) return html.replace(/<\/head>/i, `${SPA_REDIRECT}\n</head>`)
-  return html.slice(0, idx) + SPA_REDIRECT + html.slice(idx)
+  let out = html
+  if (!out.includes('gh-pages-spa-redirect')) {
+    const idx = out.indexOf('<div id="__nuxt">')
+    if (idx === -1) out = out.replace(/<\/head>/i, `${SPA_REDIRECT}\n</head>`)
+    else out = out.slice(0, idx) + SPA_REDIRECT + out.slice(idx)
+  }
+  if (!out.includes('fss-chunk-recovery-inline')) {
+    out = out.replace(/<\/head>/i, `${CHUNK_RECOVERY_INLINE}\n</head>`)
+  }
+  return out
 }
 
 function fixSpaBlockingDir (relativeDir) {

@@ -93,6 +93,15 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/supabase', '@vite-pwa/nuxt'],
 
   routeRules: {
+    '/': {
+      headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
+    },
+    '/**': {
+      headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
+    },
+    '/_nuxt/**': {
+      headers: { 'Cache-Control': 'public, max-age=31536000, immutable' },
+    },
     '/ops/**': {
       headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
     },
@@ -124,23 +133,29 @@ export default defineNuxtConfig({
       ],
     },
     workbox: {
-      // Do not precache HTML — stale index.html pins users to old JS chunk hashes after deploy.
-      globPatterns: ['**/*.{js,css,png,svg,ico,json,woff2,webmanifest,jpg,jpeg,webp}'],
-      globIgnores: ['**/node_modules/**'],
+      // Do not precache HTML or hashed /_nuxt bundles — stale shells pin users to 404 chunks after deploy.
+      globPatterns: ['**/*.{png,svg,ico,json,woff2,webmanifest,jpg,jpeg,webp}'],
+      globIgnores: ['**/node_modules/**', '**/_nuxt/**', '**/*.html'],
       skipWaiting: true,
       clientsClaim: true,
       cleanupOutdatedCaches: true,
       runtimeCaching: [
         {
-          // HTML navigations: always try the network first so a fresh
-          // build is picked up immediately. Fall back to cache only if
-          // the user is offline.
           urlPattern: ({ request }) => request.mode === 'navigate',
           handler: 'NetworkFirst',
           options: {
             cacheName: 'fss-html',
             networkTimeoutSeconds: 4,
-            expiration: { maxEntries: 24, maxAgeSeconds: 24 * 60 * 60 },
+            expiration: { maxEntries: 8, maxAgeSeconds: 60 * 60 },
+          },
+        },
+        {
+          urlPattern: ({ url }) => url.pathname.startsWith('/_nuxt/'),
+          handler: 'NetworkFirst',
+          options: {
+            cacheName: 'fss-nuxt-chunks',
+            networkTimeoutSeconds: 3,
+            expiration: { maxEntries: 96, maxAgeSeconds: 7 * 24 * 60 * 60 },
           },
         },
       ],
@@ -192,6 +207,9 @@ export default defineNuxtConfig({
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
         { name: 'apple-mobile-web-app-title', content: 'Franks Standard' },
+        { 'http-equiv': 'Cache-Control', content: 'no-cache, no-store, must-revalidate' },
+        { 'http-equiv': 'Pragma', content: 'no-cache' },
+        { 'http-equiv': 'Expires', content: '0' },
       ],
       link: [
         { rel: 'icon', type: 'image/png', href: '/franks-pavilion.png' },

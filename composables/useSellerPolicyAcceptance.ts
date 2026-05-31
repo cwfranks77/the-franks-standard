@@ -147,7 +147,10 @@ export function useSellerPolicyAcceptance () {
       try {
         primary = await recordAcceptanceViaRpc(legalName, documentIds)
       } catch (rpcErr) {
-        // Fallback if RPC unavailable (old DB) — direct profile update under JWT.
+        const rpcMsg = rpcErr instanceof Error ? rpcErr.message : String(rpcErr)
+        const rpcMissing = /Could not find the function|PGRST202|42883|function.*does not exist/i.test(rpcMsg)
+        if (!rpcMissing) throw rpcErr
+        // Fallback only when RPC is not deployed — direct profile update under JWT.
         primary = await recordAcceptanceOnProfile(authUser.id, legalName)
         recordAcceptanceViaRpc(legalName, documentIds).catch(() => {})
       }
