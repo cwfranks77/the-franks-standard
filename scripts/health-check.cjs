@@ -166,6 +166,10 @@ function requireSupabaseKey () {
     const r = await post(sbUrl + '/functions/v1/import-ebay-csv', '{}')
     return { ok: r.status !== 404, detail: 'HTTP ' + r.status }
   })
+  await check('Edge distributor-sync alive', async () => {
+    const r = await get(sbUrl + '/functions/v1/distributor-sync')
+    return { ok: r.status !== 404, detail: 'HTTP ' + r.status }
+  })
   await check('Edge verify-coa-serial alive', async () => {
     const r = await get(sbUrl + '/functions/v1/verify-coa-serial')
     return { ok: r.status !== 404, detail: 'HTTP ' + r.status }

@@ -96,6 +96,7 @@ export const STATIC_SITE_ROUTES = [
   { path: '/ops/print-coa', label: 'COA print template', group: 'ops', ops: true },
   { path: '/ops/marketing', label: 'Marketing ops', group: 'ops', ops: true },
   { path: '/ops/dropship', label: 'Dropship ops', group: 'ops', ops: true },
+  { path: '/ops/distributors', label: 'Distributor sync', group: 'ops', ops: true },
   { path: '/ops/ebay-import', label: 'Ops eBay import', group: 'ops', ops: true },
   { path: '/ops/leads', label: 'Seller leads', group: 'ops', ops: true },
   { path: '/ops/ads', label: 'Social ads ops', group: 'ops', ops: true },
