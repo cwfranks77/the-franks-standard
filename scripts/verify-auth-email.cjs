@@ -8,12 +8,14 @@ const https = require('https')
 const PROJECT_REF = 'rochesyrxiyrxhzmkuwk'
 const HOOK_URL = `https://${PROJECT_REF}.supabase.co/functions/v1/auth-send-email`
 const SITE_VERIFY = 'https://thefranksstandard.com/auth/verify'
+const TEST_KEY = (process.env.AUTH_EMAIL_TEST_KEY || '').trim()
+const TEST_TO = (process.env.AUTH_EMAIL_TEST_TO || '').trim()
 
-function post (url, body) {
+function post (url, body, headers = {}) {
   return new Promise((resolve, reject) => {
     const req = https.request(url, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json', ...headers },
     }, (res) => {
       let d = ''
       res.on('data', (c) => { d += c })
@@ -66,6 +68,19 @@ function get (url) {
   const register = await get('https://thefranksstandard.com/auth/register/')
   if (register.status === 200) ok('Live /auth/register', 'HTTP 200')
   else fail('Live /auth/register', 'HTTP ' + register.status)
+
+  if (TEST_KEY && TEST_TO) {
+    const test = await post(HOOK_URL, JSON.stringify({ to: TEST_TO }), {
+      'x-auth-email-test-key': TEST_KEY,
+    })
+    if (test.status === 200 && test.body.includes('"ok":true')) {
+      ok('Auth email provider send', `HTTP 200 ${test.body}`)
+    } else {
+      fail('Auth email provider send', `HTTP ${test.status} ${test.body.slice(0, 240)}`)
+    }
+  } else {
+    console.log('SKIP Auth email provider send - set AUTH_EMAIL_TEST_KEY and AUTH_EMAIL_TEST_TO to send a controlled test email')
+  }
 
   console.log('')
   console.log('Supabase dashboard checklist (manual):')

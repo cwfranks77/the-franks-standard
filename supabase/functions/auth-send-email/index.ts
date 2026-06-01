@@ -1,7 +1,8 @@
 /**
  * Supabase Auth "Send Email" hook — sends signup / recovery / magic-link mail via SendGrid.
  * Enable: Dashboard → Authentication → Auth Hooks → Send email → this function URL.
- * Secrets (Supabase Edge): SENDGRID_API_KEY, SEND_EMAIL_HOOK_SECRET (auto when hook enabled).
+ * Secrets (Supabase Edge): SENDGRID_API_KEY, SEND_EMAIL_HOOK_SECRET.
+ * Optional diagnostics: AUTH_EMAIL_TEST_KEY lets ops send a controlled test email.
  */
 import { Webhook } from 'https://esm.sh/standardwebhooks@1.0.0'
 import { sendAuthMail } from '../_shared/sendAuthMail.ts'
@@ -13,6 +14,7 @@ function hookSecretRaw (): string {
 }
 const SUPABASE_URL = (Deno.env.get('SUPABASE_URL') ?? '').replace(/\/+$/, '')
 const SITE_URL = (Deno.env.get('SITE_URL') ?? Deno.env.get('NUXT_PUBLIC_SITE_URL') ?? 'https://thefranksstandard.com').replace(/\/+$/, '')
+const AUTH_EMAIL_TEST_KEY = Deno.env.get('AUTH_EMAIL_TEST_KEY') ?? ''
 
 type EmailActionType = 'signup' | 'recovery' | 'magiclink' | 'email_change' | 'invite'
 
@@ -81,6 +83,45 @@ Deno.serve(async (req) => {
   if (req.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'method_not_allowed' }), { status: 405 })
   }
+
+  const testKey = req.headers.get('x-auth-email-test-key') ?? ''
+  if (testKey) {
+    if (!AUTH_EMAIL_TEST_KEY || testKey !== AUTH_EMAIL_TEST_KEY) {
+      return new Response(JSON.stringify({ error: 'forbidden' }), {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    const body = await req.json().catch(() => ({})) as { to?: string }
+    const to = String(body.to ?? '').trim()
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) {
+      return new Response(JSON.stringify({ error: 'valid_test_recipient_required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    const sent = await sendAuthMail({
+      to,
+      subject: 'The Franks Standard auth email test',
+      text: `This is a controlled test of The Franks Standard signup email path.\n\nIf you received this, the auth email sender can deliver mail.\n\n${SITE_URL}`,
+      html: `<p>This is a controlled test of <strong>The Franks Standard</strong> signup email path.</p><p>If you received this, the auth email sender can deliver mail.</p><p><a href="${SITE_URL}">${SITE_URL}</a></p>`,
+    })
+
+    if (!sent.ok) {
+      return new Response(JSON.stringify({ ok: false, error: sent.error }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    return new Response(JSON.stringify({ ok: true, via: sent.via }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
   const hookSecret = hookSecretRaw()
   if (!hookSecret) {
     return new Response(JSON.stringify({ error: 'missing_send_email_hook_secret' }), { status: 500 })

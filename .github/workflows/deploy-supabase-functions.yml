@@ -20,6 +20,7 @@ jobs:
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
           SENDGRID_FROM_EMAIL: ${{ secrets.SENDGRID_FROM_EMAIL }}
           SENDGRID_FROM_NAME: ${{ secrets.SENDGRID_FROM_NAME }}
+          AUTH_EMAIL_TEST_KEY: ${{ secrets.AUTH_EMAIL_TEST_KEY }}
         run: |
           if [ -z "$SUPABASE_ACCESS_TOKEN" ]; then
             echo "Missing SUPABASE_ACCESS_TOKEN"
@@ -35,6 +36,12 @@ jobs:
               "SITE_URL=https://thefranksstandard.com" \
               --project-ref rochesyrxiyrxhzmkuwk
             echo "SendGrid secrets updated on Supabase Edge."
+          fi
+          if [ -n "$AUTH_EMAIL_TEST_KEY" ]; then
+            npx supabase@latest secrets set \
+              "AUTH_EMAIL_TEST_KEY=${AUTH_EMAIL_TEST_KEY}" \
+              --project-ref rochesyrxiyrxhzmkuwk
+            echo "Auth email diagnostic test key updated on Supabase Edge."
           fi
 
       - name: Set Auth Send Email hook secret on Edge
