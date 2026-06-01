@@ -67,15 +67,19 @@
               <NuxtLink :to="`/listing/${l.id}`">{{ l.title }}</NuxtLink>
               <span class="text-muted small">${{ Number(l.price).toLocaleString() }} — {{ l.status }}</span>
             </div>
-            <button
-              v-if="l.status === 'published'"
-              type="button"
-              class="btn btn-outline btn-sm dash-remove-btn"
-              :disabled="removingId === l.id"
-              @click="removeListing(l.id)"
-            >
-              {{ removingId === l.id ? 'Removing…' : 'Remove' }}
-            </button>
+            <div class="dash-listing-actions">
+              <NuxtLink :to="`/listing/${l.id}/edit`" class="btn btn-primary btn-sm">Edit / Manage</NuxtLink>
+              <NuxtLink v-if="l.status === 'published'" :to="`/listing/${l.id}`" class="btn btn-outline btn-sm">View live</NuxtLink>
+              <button
+                v-if="l.status === 'published'"
+                type="button"
+                class="btn btn-outline btn-sm dash-remove-btn"
+                :disabled="removingId === l.id"
+                @click="removeListing(l.id)"
+              >
+                {{ removingId === l.id ? 'Archiving…' : 'Remove from marketplace' }}
+              </button>
+            </div>
           </li>
         </ul>
         <p v-if="removeMessage" class="dash-remove-msg" role="status">{{ removeMessage }}</p>
@@ -473,6 +477,7 @@ async function refreshConnect () {
   flex-wrap: wrap;
 }
 .dash-listing-main { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.dash-listing-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .dash-remove-btn { flex-shrink: 0; }
 .dash-remove-msg { margin-top: 10px; font-size: 0.88rem; color: var(--gold); }
 .dash-listings li {
