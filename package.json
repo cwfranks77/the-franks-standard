@@ -42,6 +42,7 @@
     "stripe:reconcile": "node scripts/reconcile-stripe-orders.cjs",
     "health": "node scripts/health-check.cjs",
     "auth:check-link": "node scripts/check-auth-confirm-link.cjs",
+    "tax:la:test": "node scripts/test-louisiana-tax.cjs",
     "ops:notify:test": "node scripts/ops-notify-test.cjs",
     "auth:verify": "node scripts/verify-auth-email.cjs",
     "mail:test": "node scripts/test-mailbox.cjs",

@@ -189,6 +189,10 @@ function requireSupabaseKey () {
     if (r.status === 404) return { ok: false, detail: 'HTTP 404 — deploy stripe-margin-split' }
     return { ok: r.status === 401, detail: 'HTTP ' + r.status + (r.status === 401 ? ' (needs JWT)' : '') }
   })
+  await check('Edge louisiana-tax-estimate alive', async () => {
+    const r = await get(sbUrl + '/functions/v1/louisiana-tax-estimate')
+    return { ok: r.status !== 404, detail: 'HTTP ' + r.status }
+  })
   await check('Supabase authenticity_reports table', async () => {
     const skip = requireSupabaseKey()
     if (skip) return skip

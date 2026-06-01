@@ -80,6 +80,7 @@ jobs:
           deploy inventory-source-webhook --no-verify-jwt
           deploy reconcile-orders --no-verify-jwt
           deploy tax-inspect-session --no-verify-jwt
+          deploy louisiana-tax-estimate --no-verify-jwt
           deploy ops-force-refund --no-verify-jwt
           deploy ops-integrity-action --no-verify-jwt
           deploy ops-error-ingest --no-verify-jwt
