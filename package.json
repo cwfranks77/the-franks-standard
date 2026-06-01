@@ -57,6 +57,7 @@
     "ebay:easy": "powershell -ExecutionPolicy Bypass -File scripts/ebay-easy.ps1",
     "ebay:setup": "powershell -ExecutionPolicy Bypass -File scripts/setup-ebay-api.ps1",
     "ebay:secrets": "powershell -ExecutionPolicy Bypass -File scripts/push-ebay-api-secrets.ps1",
+    "twilio:fix-ivr": "node scripts/fix-twilio-customer-service-ivr.cjs",
     "migrate:ebay-csv": "npm run build:ebay-migration && node dist/migration/ebay-csv-migration-service.js"
   },
   "dependencies": {
