@@ -2,6 +2,7 @@ import Stripe from 'npm:stripe@14'
 import { json, stripeClient } from '../_shared/stripe.ts'
 import { markOrderRefunded } from '../_shared/forceRefund.ts'
 import { adminClient, markOrderPaid, paidTotalsFromSession } from '../_shared/markOrderPaid.ts'
+import { queueDropshipOrder } from '../_shared/queueDropshipOrder.ts'
 
 const WEBHOOK_SECRET = Deno.env.get('STRIPE_WEBHOOK_SECRET') ?? ''
 
@@ -68,6 +69,77 @@ async function handleCheckoutCompleted (session: {
   if (!result.ok) {
     throw new Error(result.error ?? 'markOrderPaid failed')
   }
+
+  await sendOrderToDistributor({
+    orderId,
+    sessionId: session.id,
+    customerEmail: session.customer_details?.email ?? null,
+    shippingAddress: addr ? {
+      line1: addr.line1,
+      line2: addr.line2,
+      city: addr.city,
+      state: addr.state,
+      postal_code: addr.postal_code,
+      country: addr.country,
+    } : null,
+    productSku: session.metadata?.targetProductId ?? session.metadata?.listing_id ?? session.metadata?.order_id ?? null,
+    distributorId: session.metadata?.supplierIdentifier ?? session.metadata?.distributor_id ?? null,
+    buyerName: session.customer_details?.name ?? null,
+  })
+}
+
+async function sendOrderToDistributor(order: {
+  orderId: string
+  sessionId: string
+  customerEmail?: string | null
+  buyerName?: string | null
+  shippingAddress?: {
+    line1?: string | null
+    line2?: string | null
+    city?: string | null
+    state?: string | null
+    postal_code?: string | null
+    country?: string | null
+  } | null
+  productSku?: string | null
+  distributorId?: string | null
+}) {
+  console.log(`[AUTOMATION]: Payment received from ${order.customerEmail ?? 'unknown customer'}`)
+
+  let status = 'queued'
+  let errorMessage: string | null = null
+  let queueResult: unknown = null
+
+  try {
+    queueResult = await queueDropshipOrder(admin, {
+      orderId: order.orderId,
+      buyerEmail: order.customerEmail ?? null,
+      buyerName: order.buyerName ?? null,
+      shippingAddress: order.shippingAddress ?? null,
+    })
+    if ((queueResult as { skipped?: boolean })?.skipped) status = 'skipped'
+    console.log(`[AUTOMATION]: Order ${order.productSku ?? order.orderId} sent to warehouse queue for shipping.`)
+  } catch (e) {
+    status = 'failed'
+    errorMessage = e instanceof Error ? e.message : String(e)
+    console.error('[AUTOMATION ERROR]: Distributor fulfillment failed:', errorMessage)
+  }
+
+  await admin.from('order_fulfillment_events').insert({
+    order_id: order.orderId,
+    stripe_session_id: order.sessionId,
+    customer_email: order.customerEmail ?? null,
+    product_sku: order.productSku ?? null,
+    distributor_id: order.distributorId ?? null,
+    status,
+    payload: {
+      shipping_address: order.shippingAddress,
+      queue_result: queueResult,
+    },
+    error_message: errorMessage,
+  })
+
+  if (errorMessage) throw new Error(errorMessage)
 }
 
 async function handleChargeRefunded (charge: {
