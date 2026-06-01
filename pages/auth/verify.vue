@@ -101,6 +101,13 @@ onMounted(async () => {
     } else if (!pendingCode) {
       promoResult = await redeemPendingIfAny()
     }
+    if (otpType === 'recovery') {
+      message.value = 'Email verified. Redirecting to reset your password...'
+      phase.value = 'done'
+      await router.replace('/auth/reset')
+      return
+    }
+
     if (promoResult?.ok) {
       message.value = promoResult.honors_member
         ? 'Email confirmed — thank you for your service. Honors Pro is active. Redirecting...'

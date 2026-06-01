@@ -51,7 +51,7 @@
           <h3>Created listings</h3>
           <ul class="link-list">
             <li v-for="listing in result.listings" :key="listing.id">
-              <NuxtLink :to="`/listing/${listing.id}`">{{ listing.title }}</NuxtLink>
+              <NuxtLink :to="`/listing/${listing.id}/edit`">{{ listing.title }}</NuxtLink>
               <span class="small text-muted"> - {{ listing.category }} - ${{ listing.price }}</span>
             </li>
           </ul>

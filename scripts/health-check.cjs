@@ -154,6 +154,22 @@ function requireSupabaseKey () {
     if (r.status === 500) return { ok: false, detail: 'HTTP 500 — ' + (r.body || '').slice(0, 120) }
     return { ok: false, detail: 'HTTP ' + r.status }
   })
+  await check('Edge ops-error-ingest alive', async () => {
+    const r = await post(sbUrl + '/functions/v1/ops-error-ingest', '{}')
+    return { ok: r.status !== 404, detail: 'HTTP ' + r.status }
+  })
+  await check('Edge ops-incident-action alive', async () => {
+    const r = await post(sbUrl + '/functions/v1/ops-incident-action', '{}')
+    return { ok: r.status !== 404, detail: 'HTTP ' + r.status }
+  })
+  await check('Edge import-ebay-csv alive', async () => {
+    const r = await post(sbUrl + '/functions/v1/import-ebay-csv', '{}')
+    return { ok: r.status !== 404, detail: 'HTTP ' + r.status }
+  })
+  await check('Edge verify-coa-serial alive', async () => {
+    const r = await get(sbUrl + '/functions/v1/verify-coa-serial')
+    return { ok: r.status !== 404, detail: 'HTTP ' + r.status }
+  })
   await check('Edge stripe-connect-onboard alive', async () => {
     const r = await post(sbUrl + '/functions/v1/stripe-connect-onboard', '{}')
     if (r.status === 404) return { ok: false, detail: 'HTTP 404' }

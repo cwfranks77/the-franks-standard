@@ -105,7 +105,9 @@
 </template>
 
 <script setup>
-import { LISTING_CATEGORIES } from '~/utils/marketplaceCategories'
+import { scanListingIntegrity } from '~/utils/authenticityScan.js'
+import { LISTING_CATEGORIES, listingRequiresCoa } from '~/utils/marketplaceCategories'
+import { scanOffPlatformContent } from '~/utils/offPlatformGuard.js'
 
 definePageMeta({ layout: 'default', middleware: 'requires-auth' })
 useSeoMeta({ title: 'Edit listing - The Franks Standard', robots: 'noindex, nofollow' })
@@ -129,6 +131,11 @@ const form = reactive({
   price: 0,
   condition: 'good',
   status: 'draft',
+  coaType: 'none',
+  coaStoragePath: '',
+  coaCertificateId: '',
+  imagePaths: [],
+  integrityStatus: 'clear',
 })
 
 function setMessage (text, isError = false) {
@@ -157,7 +164,7 @@ async function loadListing () {
 
   const { data, error } = await supabase
     .from('listings')
-    .select('id, seller_id, title, description, category, price, condition, status')
+    .select('id, seller_id, title, description, category, price, condition, status, coa_type, coa_storage_path, coa_certificate_id, image_paths, integrity_status')
     .eq('id', listingId.value)
     .maybeSingle()
 
@@ -178,6 +185,11 @@ async function loadListing () {
   form.price = Number(data.price || 0)
   form.condition = data.condition || 'good'
   form.status = data.status || 'draft'
+  form.coaType = data.coa_type || 'none'
+  form.coaStoragePath = data.coa_storage_path || ''
+  form.coaCertificateId = data.coa_certificate_id || ''
+  form.imagePaths = Array.isArray(data.image_paths) ? data.image_paths : []
+  form.integrityStatus = data.integrity_status || 'clear'
   loading.value = false
 }
 
@@ -224,6 +236,39 @@ async function updateStatus (status) {
   setMessage(status === 'published' ? 'Listing published.' : 'Listing removed from the marketplace.')
 }
 
+function validatePublishSafety () {
+  if (!form.imagePaths.length) {
+    return 'Add at least one listing photo before publishing.'
+  }
+  const offPlatform = scanOffPlatformContent(`${form.title}\n${form.description}`)
+  if (!offPlatform.ok) {
+    return 'Remove personal emails, phone numbers, social handles, or off-platform payment links before publishing.'
+  }
+  const needsProof = listingRequiresCoa(form.category, form.title, form.description)
+  if (needsProof) {
+    if (form.coaType === 'upload' && !form.coaStoragePath) {
+      return 'Upload a COA/proof file before publishing this collectible listing.'
+    }
+    if (form.coaType === 'franks_issued' && !form.coaCertificateId) {
+      return 'Issue or attach the Franks COA certificate before publishing.'
+    }
+    if (form.coaType !== 'upload' && form.coaType !== 'franks_issued') {
+      return 'Collectible listings require uploaded COA/proof or a Franks-issued COA before publishing.'
+    }
+  }
+  const scan = scanListingIntegrity({
+    title: form.title,
+    description: form.description,
+    category: form.category,
+    coa_type: form.coaType,
+    coa_storage_path: form.coaStoragePath,
+  })
+  if (!scan.ok) {
+    return `Listing integrity scan blocked publish: ${scan.flags.map((f) => f.label).join(', ')}`
+  }
+  return ''
+}
+
 async function archiveListing () {
   await updateStatus('archived')
 }
@@ -232,6 +277,11 @@ async function publishListing () {
   const validation = validateForm()
   if (validation) {
     setMessage(validation, true)
+    return
+  }
+  const safety = validatePublishSafety()
+  if (safety) {
+    setMessage(safety, true)
     return
   }
   await saveListing()

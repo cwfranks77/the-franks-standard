@@ -80,11 +80,10 @@
     </section>
 
     <section class="section-muted">
-      <h2>Social updates</h2>
+      <h2>When you contact us</h2>
       <p class="text-muted">
-        Posts to Telegram, X, and Facebook use API keys in a local <code>.env</code>. From the site folder run
-        <code>npm run post:social</code> after adding tokens (never commit secrets). Reusing the same bot and app
-        credentials as other projects is fine if the channel fits your audience.
+        For order issues, include your order ID, listing title, photos, and a short description of what happened.
+        For account or sign-in issues, include the email address on the account and the device/browser you used.
       </p>
     </section>
   </div>

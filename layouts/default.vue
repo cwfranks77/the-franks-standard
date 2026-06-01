@@ -240,12 +240,26 @@ const navSettings = computed(() => {
   if (isSignedIn.value) {
     const account = sections.find((s) => s.id === 'account')
     if (account) {
+      account.items = account.items.filter((item) => !['/auth/login', '/auth/register'].includes(item.to))
       account.items.push({
         label: 'Sign out',
         desc: 'End your session on this device',
         action: 'signout',
       })
     }
+  }
+  if (isOwner.value) {
+    sections.unshift({
+      id: 'owner',
+      label: 'Owner',
+      accent: 'gold',
+      items: [
+        { label: 'Operator console', to: '/ops/panel', desc: 'Main owner toolkit' },
+        { label: 'Site UI controls', to: '/ops/site-controls', desc: 'Theme, density, homepage sections' },
+        { label: 'Ops incidents', to: '/ops/incidents', desc: 'Alerts and error reports' },
+        { label: 'Transaction readiness', to: '/ops/status', desc: 'Deployment and checkout status' },
+      ],
+    })
   }
   return sections
 })

@@ -5,6 +5,9 @@
       Thank you. Stripe has processed your payment. Your order is in escrow until you confirm the item arrived as described.
     </p>
     <p v-if="sessionId" class="small text-muted">Reference: {{ sessionId }}</p>
+    <p v-if="sessionId && !orderId" class="small text-muted">
+      Sign in on this device to view the full order record. Your Stripe reference above can be used with support.
+    </p>
     <SellerReviewForm
       v-if="orderId && sellerId"
       :order-id="orderId"
@@ -20,7 +23,7 @@
 </template>
 
 <script setup>
-definePageMeta({ layout: 'default', middleware: 'requires-auth' })
+definePageMeta({ layout: 'default' })
 useSeoMeta({ title: 'Order confirmed - The Franks Standard', robots: 'noindex' })
 
 const route = useRoute()

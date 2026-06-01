@@ -62,6 +62,7 @@ for (const file of vueFiles) {
 
 const dynamicPatterns = [
   /^\/listing\/[^/]+$/,
+  /^\/listing\/[^/]+\/edit$/,
   /^\/order\/[^/]+$/,
   /^\/order\/success$/,
   /^\/video\/r\/[^/]+$/,
