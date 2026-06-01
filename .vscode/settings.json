@@ -1,0 +1,14 @@
+{
+  "files.exclude": {
+    "**/Application Data/**": true,
+    "**/AppData/**": true
+  },
+  "search.exclude": {
+    "**/Application Data/**": true,
+    "**/AppData/**": true
+  },
+  "files.watcherExclude": {
+    "**/Application Data/**": true,
+    "**/AppData/**": true
+  }
+}

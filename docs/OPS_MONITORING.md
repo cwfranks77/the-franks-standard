@@ -18,6 +18,7 @@ Set via Dashboard → Project Settings → Edge Functions → Secrets, or:
 
 ```bash
 supabase secrets set \
+  OPS_ACCESS_KEY_HASH=<same hash as NUXT_PUBLIC_OPS_ACCESS_KEY_HASH> \
   OPS_NOTIFY_ENABLED=true \
   NTFY_TOPIC=franks-ops-your-random-string \
   OPS_ALERT_EMAIL=you@example.com \
@@ -28,6 +29,7 @@ supabase secrets set \
 
 | Variable | Required | Description |
 |----------|----------|-------------|
+| `OPS_ACCESS_KEY_HASH` | Yes for owner actions | Same SHA-256 hash as `NUXT_PUBLIC_OPS_ACCESS_KEY_HASH`; lets Edge Functions verify the owner phrase |
 | `OPS_NOTIFY_ENABLED` | Yes for alerts | Must be `true` or all notifications are skipped (logged, no crash) |
 
 ### Mobile — pick one (or both)
@@ -66,8 +68,9 @@ supabase secrets set \
 3. In the ntfy app: **Subscribe to topic** → enter that exact name.
 4. Set Supabase secrets:
    ```bash
-   supabase secrets set OPS_NOTIFY_ENABLED=true NTFY_TOPIC=franks-ops-x7k2m9 --project-ref rochesyrxiyrxhzmkuwk
+   supabase secrets set OPS_ACCESS_KEY_HASH=<hash> OPS_NOTIFY_ENABLED=true NTFY_TOPIC=franks-ops-x7k2m9 --project-ref rochesyrxiyrxhzmkuwk
    ```
+   Or set GitHub Actions secrets and run workflow **Push ops monitoring secrets to Supabase**.
 5. Deploy functions (see below) and run test:
    ```bash
    OPS_ACCESS_KEY="your ops phrase" npm run ops:notify:test

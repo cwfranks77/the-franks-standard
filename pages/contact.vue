@@ -2,8 +2,8 @@
   <div class="page narrow">
     <h1>Contact</h1>
     <p class="text-muted lead">
-      Questions from buyers and sellers, press, and partnerships. Use the form below — it reaches the team even while
-      if <strong>info@</strong> webmail fails, reset the mailbox password in Namecheap (see ops <NuxtLink to="/ops/mail-setup">mail setup</NuxtLink> after owner unlock).
+      Questions from buyers and sellers, press, and partnerships. Use the form below, call the support line,
+      or email <strong>info@thefranksstandard.com</strong>. Include an order or listing ID if you have one.
     </p>
 
     <div v-if="formSuccess" class="card success-card" role="status">
@@ -13,8 +13,7 @@
 
     <form v-else class="card contact-form" @submit.prevent="submitForm">
       <p class="form-note text-muted small">
-        Prefer email later? <strong>info@thefranksstandard.com</strong> will work again after mailbox reset.
-        Right now this form + phone + Help chat are the fastest paths.
+        The form routes through the platform so your message is not lost. For urgent order issues, call the support line.
       </p>
       <div class="form-group">
         <label class="label">Your name</label>
@@ -70,7 +69,7 @@
 <script setup>
 useSeoMeta({
   title: 'Contact — The Franks Standard',
-  description: 'Contact The Franks Standard: form, phone, and Help chat. info@ inbox being restored.',
+  description: 'Contact The Franks Standard: form, phone, email, and Help chat for buyers, sellers, press, and partnerships.',
 })
 
 const supabase = useSupabaseClient()

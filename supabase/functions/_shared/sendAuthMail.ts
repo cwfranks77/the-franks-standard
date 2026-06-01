@@ -41,7 +41,9 @@ async function sendViaMailboxSmtp (
       connection: {
         hostname: SMTP_HOST,
         port: SMTP_PORT,
-        tls: true,
+        // PrivateEmail/Namecheap uses STARTTLS on 587 and implicit TLS on 465.
+        // Denomailer expects tls=false for STARTTLS.
+        tls: SMTP_PORT === 465,
         auth: {
           username: SMTP_USER,
           password: SMTP_PASS,

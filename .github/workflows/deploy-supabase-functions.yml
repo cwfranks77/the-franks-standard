@@ -3,7 +3,7 @@ name: Deploy Supabase Edge Functions
 on:
   workflow_dispatch:
   push:
-    branches: [master]
+    branches: [main, master]
     paths:
       - 'supabase/functions/**'
       - '.github/workflows/deploy-supabase-functions.yml'
@@ -20,6 +20,7 @@ jobs:
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
           SENDGRID_FROM_EMAIL: ${{ secrets.SENDGRID_FROM_EMAIL }}
           SENDGRID_FROM_NAME: ${{ secrets.SENDGRID_FROM_NAME }}
+          AUTH_EMAIL_TEST_KEY: ${{ secrets.AUTH_EMAIL_TEST_KEY }}
         run: |
           if [ -z "$SUPABASE_ACCESS_TOKEN" ]; then
             echo "Missing SUPABASE_ACCESS_TOKEN"
@@ -35,6 +36,12 @@ jobs:
               "SITE_URL=https://thefranksstandard.com" \
               --project-ref rochesyrxiyrxhzmkuwk
             echo "SendGrid secrets updated on Supabase Edge."
+          fi
+          if [ -n "$AUTH_EMAIL_TEST_KEY" ]; then
+            npx supabase@latest secrets set \
+              "AUTH_EMAIL_TEST_KEY=${AUTH_EMAIL_TEST_KEY}" \
+              --project-ref rochesyrxiyrxhzmkuwk
+            echo "Auth email diagnostic test key updated on Supabase Edge."
           fi
 
       - name: Set Auth Send Email hook secret on Edge
@@ -73,10 +80,12 @@ jobs:
           deploy inventory-source-webhook --no-verify-jwt
           deploy reconcile-orders --no-verify-jwt
           deploy tax-inspect-session --no-verify-jwt
+          deploy louisiana-tax-estimate --no-verify-jwt
           deploy ops-force-refund --no-verify-jwt
           deploy ops-integrity-action --no-verify-jwt
           deploy ops-error-ingest --no-verify-jwt
           deploy ops-incident-action --no-verify-jwt
+          deploy distributor-sync --no-verify-jwt
           deploy verify-coa-serial --no-verify-jwt
           deploy auth-send-email --no-verify-jwt
           # Authenticated (JWT required)
@@ -89,3 +98,6 @@ jobs:
           deploy create-platform-checkout-session
           deploy accept-seller-policies
           deploy issue-coa-certificate
+          deploy import-ebay-csv
+          deploy log-admin-lead
+          deploy stripe-margin-split

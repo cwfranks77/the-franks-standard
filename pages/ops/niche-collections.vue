@@ -65,7 +65,7 @@ import {
   SITE_URL,
 } from '~/utils/nicheCollections.js'
 
-definePageMeta({ middleware: 'owner-only' })
+definePageMeta({ middleware: 'ops-auth' })
 
 const copyState = reactive({})
 

@@ -1,0 +1,122 @@
+// ============================================================================
+// STEP 1: INITIALIZE DEPENDENCIES AND CONFIGURATION DEPLOYMENT
+// ============================================================================
+
+import express, { type Request, type Response } from 'express'
+import multer from 'multer'
+import { parse } from 'csv-parse/sync'
+
+const app = express()
+const upload = multer({ storage: multer.memoryStorage() })
+const PORT = process.env.PORT || 3000
+
+interface FranksProductPayload {
+  title: string
+  description: string
+  sku: string
+  price: number
+  stock: number
+  category: 'Watches' | 'Retro Games' | 'Cards' | 'Photo Gear' | 'General Collectibles'
+  condition: 'New' | 'Used' | 'Refurbished' | 'Unspecified'
+  imageUrl: string
+  requiresCOA: boolean
+  platformProvenance: string
+}
+
+// ============================================================================
+// STEP 2: FIELD NORMALIZATION AND CATEGORY MAPPING LOGIC
+// ============================================================================
+
+function cleanPrice(rawPrice: string): number {
+  if (!rawPrice) return 0
+  return parseFloat(rawPrice.replace(/[^0-9.]/g, '')) || 0
+}
+
+function normalizeCategory(ebayCat: string): FranksProductPayload['category'] {
+  const check = (ebayCat || '').toLowerCase()
+  if (check.includes('watch') || check.includes('jewelry')) return 'Watches'
+  if (check.includes('game') || check.includes('console') || check.includes('nintendo')) return 'Retro Games'
+  if (check.includes('card') || check.includes('pokemon') || check.includes('sports')) return 'Cards'
+  if (check.includes('camera') || check.includes('photo') || check.includes('lens')) return 'Photo Gear'
+  return 'General Collectibles'
+}
+
+function normalizeCondition(ebayCond: string): FranksProductPayload['condition'] {
+  const check = (ebayCond || '').toLowerCase()
+  if (check.includes('new') || check.includes('nib')) return 'New'
+  if (check.includes('refurbished') || check.includes('renewed')) return 'Refurbished'
+  if (check.includes('used') || check.includes('pre-owned') || check.includes('worn')) return 'Used'
+  return 'Unspecified'
+}
+
+// ============================================================================
+// STEP 3: DATA PARSING AND INGESTION CONVERSION PIPELINE
+// ============================================================================
+
+function parseEbayCSV(fileBuffer: Buffer): FranksProductPayload[] {
+  const rawData = fileBuffer.toString('utf-8')
+
+  const records = parse(rawData, {
+    columns: true,
+    skip_empty_lines: true,
+    trim: true,
+  })
+
+  return records.map((row: any) => {
+    const title = row['Title'] || row['Item title'] || 'Migrated eBay Listing'
+    const rawPrice = row['Start price'] || row['Price'] || row['Buy It Now price'] || '0'
+    const quantity = parseInt(row['Quantity'] || row['Available quantity'] || '1', 10)
+    const sku = row['Custom label'] || row['SKU'] || `EBAY-MIGRATE-${row['Item number'] || Math.random().toString(36).substring(2, 7)}`
+    const condition = row['Condition'] || 'Used'
+    const category = row['Category name'] || ''
+    const imgUrl = row['PicURL'] || row['Image URL'] || ''
+    const assignedCategory = normalizeCategory(category)
+
+    return {
+      title: title.trim(),
+      description: row['Description'] || `${title.trim()} - Safely migrated from eBay. Guarantee-backed authentic collector piece.`,
+      sku: sku.trim(),
+      price: cleanPrice(rawPrice),
+      stock: isNaN(quantity) ? 1 : quantity,
+      category: assignedCategory,
+      condition: normalizeCondition(condition),
+      imageUrl: imgUrl.trim(),
+      // Automatically flag high-value target categories for the required proof verification loop.
+      requiresCOA: ['Watches', 'Cards'].includes(assignedCategory),
+      platformProvenance: 'eBay Marketplace Migration File',
+    }
+  })
+}
+
+// ============================================================================
+// STEP 4: HTTP ROUTE HANDLING AND BACKEND EXECUTION RUNTIME
+// ============================================================================
+
+app.post('/api/migrate/ebay-csv', upload.single('file'), async (req: Request, res: Response): Promise<any> => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, error: 'No CSV file payload detected.' })
+    }
+
+    const migratedInventory = parseEbayCSV(req.file.buffer)
+
+    // AI Agent hook placeholder: Insert db batch upload operation here
+    // (e.g. await db.products.createMany({ data: migratedInventory })).
+
+    console.log(`Successfully ingested and converted ${migratedInventory.length} listings to the structural schema.`)
+
+    return res.status(200).json({
+      success: true,
+      message: 'Migration processing complete.',
+      totalItemsProcessed: migratedInventory.length,
+      data: migratedInventory,
+    })
+  } catch (err: any) {
+    console.error('Migration runtime failure encountered:', err)
+    return res.status(500).json({ success: false, error: err.message || 'Internal pipeline processing error.' })
+  }
+})
+
+app.listen(PORT, () => {
+  console.log(`All-In-One Migration Service successfully listening on port ${PORT}`)
+})

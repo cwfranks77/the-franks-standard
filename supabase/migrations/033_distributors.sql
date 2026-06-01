@@ -1,0 +1,19 @@
+-- Distributor/supplier registry for API, CSV/SFTP, and payout routing.
+-- Service-role managed by default; enable explicit RLS policies later if a
+-- browser-facing admin UI needs direct table access.
+
+create table if not exists public.distributors (
+  id uuid primary key default gen_random_uuid(),
+  name varchar(100) not null,
+  contact_email varchar(255),
+  api_endpoint varchar(255),
+  ftp_server varchar(255),
+  payout_account_id varchar(100),
+  is_active boolean not null default true,
+  created_at timestamptz not null default timezone('utc'::text, now())
+);
+
+create index if not exists idx_distributors_active
+  on public.distributors (is_active);
+
+alter table public.distributors enable row level security;

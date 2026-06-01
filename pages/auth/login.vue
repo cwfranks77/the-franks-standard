@@ -41,6 +41,15 @@
         >
           {{ resendLoading ? 'Sending…' : 'Resend confirmation email' }}
         </button>
+        <span class="auth-sep">·</span>
+        <button
+          type="button"
+          class="link-btn"
+          :disabled="resetLoading || !email.trim()"
+          @click="sendPasswordReset"
+        >
+          {{ resetLoading ? 'Sending…' : 'Forgot password?' }}
+        </button>
       </p>
 
       <p class="auth-help text-muted">
@@ -113,6 +122,7 @@ const loading = ref(false)
 const formError = ref('')
 const resendLoading = ref(false)
 const resendOk = ref('')
+const resetLoading = ref(false)
 
 async function resendConfirmation () {
   formError.value = ''
@@ -145,6 +155,29 @@ async function resendConfirmation () {
     }
   } finally {
     resendLoading.value = false
+  }
+}
+
+async function sendPasswordReset () {
+  formError.value = ''
+  resendOk.value = ''
+  const addr = email.value.trim()
+  if (!addr) {
+    formError.value = 'Enter your email above first.'
+    return
+  }
+  resetLoading.value = true
+  try {
+    const site = authSiteUrl()
+    const { error } = await supabase.auth.resetPasswordForEmail(addr, {
+      redirectTo: `${site}/auth/verify`,
+    })
+    if (error) throw error
+    resendOk.value = 'If that email has an account, we sent a password reset link. Check spam.'
+  } catch (err) {
+    formError.value = err?.message || 'Could not send reset email. Try again in a minute.'
+  } finally {
+    resetLoading.value = false
   }
 }
 
@@ -243,6 +276,11 @@ async function handleLogin() {
 .resend-row {
   margin-top: 14px;
   font-size: 0.88rem;
+}
+.auth-sep {
+  display: inline-block;
+  margin: 0 8px;
+  color: #6b7280;
 }
 .link-btn {
   background: none;

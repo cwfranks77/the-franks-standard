@@ -37,6 +37,18 @@ Hook endpoint must be the **Edge Function URL**, not a Supabase dashboard link:
 
 Run: `npm run auth:verify`
 
+To verify actual provider delivery without creating a new account, set a temporary diagnostic key:
+
+```bash
+# GitHub Actions secret; workflow pushes it to Supabase Edge secrets.
+AUTH_EMAIL_TEST_KEY=<long random value>
+
+# Local only; recipient for one controlled test message.
+AUTH_EMAIL_TEST_TO=your-test-inbox@example.com
+```
+
+Then run `npm run auth:verify`. The script will call `auth-send-email` with the diagnostic key and report whether SendGrid/SMTP accepted the message. Remove or rotate `AUTH_EMAIL_TEST_KEY` after testing.
+
 ### What the agent cannot do
 
 - Log into your Supabase or SendGrid account

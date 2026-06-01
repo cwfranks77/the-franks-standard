@@ -170,7 +170,8 @@
           </p>
 
           <p v-if="isOwnListing" class="checkout-notice-banner checkout-own-listing" role="status">
-            <strong>This is your listing.</strong> Buyers use Buy now after signing in with another account. Share this page link to sell.
+            <strong>This is your listing.</strong> Buyers use Buy now after signing in with another account.
+            <NuxtLink :to="`/listing/${listing.id}/edit`">Edit or remove this listing</NuxtLink>.
           </p>
 
           <p v-if="checkoutError" class="checkout-error" role="alert">{{ checkoutError }}</p>

@@ -46,7 +46,6 @@ export function useSellerPolicyAcceptance () {
     loading.value = true
     error.value = ''
     submitting.value = false
-    const wasAccepted = accepted.value
     try {
       const { data: { user: authUser } } = await supabase.auth.getUser()
       if (!authUser) {
@@ -62,11 +61,10 @@ export function useSellerPolicyAcceptance () {
         .maybeSingle()
       if (qErr) {
         error.value = qErr.message
-        if (!wasAccepted) accepted.value = false
+        accepted.value = false
         return
       }
       applyProfileAcceptance(data)
-      if (wasAccepted && !accepted.value) accepted.value = true
     } finally {
       loading.value = false
     }

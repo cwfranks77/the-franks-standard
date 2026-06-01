@@ -27,6 +27,21 @@ const supabase = useSupabaseClient()
 const phase = ref('loading')
 const message = ref('')
 
+async function verifyTokenHashWithFallback (tokenHash, typeRaw) {
+  const normalized = typeof typeRaw === 'string' && typeRaw ? typeRaw : 'signup'
+  const candidates = [normalized]
+  if (normalized === 'signup') candidates.push('email')
+  if (normalized === 'email') candidates.push('signup')
+
+  let lastError = null
+  for (const type of [...new Set(candidates)]) {
+    const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type })
+    if (!error) return
+    lastError = error
+  }
+  throw lastError || new Error('This confirmation link is invalid or has expired.')
+}
+
 function onAuthLogoError (e) {
   const el = e?.target
   if (el && !el.dataset?.logoFallback) {
@@ -37,6 +52,13 @@ function onAuthLogoError (e) {
 
 onMounted(async () => {
   try {
+    const authError = typeof route.query.error_description === 'string'
+      ? route.query.error_description
+      : (typeof route.query.error === 'string' ? route.query.error : '')
+    if (authError) {
+      throw new Error(authError)
+    }
+
     const code = typeof route.query.code === 'string' ? route.query.code : ''
     const tokenHash = typeof route.query.token_hash === 'string' ? route.query.token_hash : ''
     const typeRaw = typeof route.query.type === 'string' ? route.query.type : 'signup'
@@ -47,8 +69,7 @@ onMounted(async () => {
       const { error } = await supabase.auth.exchangeCodeForSession(code)
       if (error) throw error
     } else if (tokenHash) {
-      const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: otpType })
-      if (error) throw error
+      await verifyTokenHashWithFallback(tokenHash, otpType)
     } else if (typeof window !== 'undefined' && window.location.hash && window.location.hash.includes('access_token')) {
       const params = new URLSearchParams(window.location.hash.slice(1))
       const access_token = params.get('access_token')
@@ -80,6 +101,13 @@ onMounted(async () => {
     } else if (!pendingCode) {
       promoResult = await redeemPendingIfAny()
     }
+    if (otpType === 'recovery') {
+      message.value = 'Email verified. Redirecting to reset your password...'
+      phase.value = 'done'
+      await router.replace('/auth/reset')
+      return
+    }
+
     if (promoResult?.ok) {
       message.value = promoResult.honors_member
         ? 'Email confirmed — thank you for your service. Honors Pro is active. Redirecting...'
