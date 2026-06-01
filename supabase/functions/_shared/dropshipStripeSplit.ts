@@ -42,7 +42,7 @@ async function sellerConnectId (admin: SupabaseClient, sellerId: string): Promis
   return data.stripe_account_id
 }
 
-async function chargeIdForPaymentIntent (stripe: Stripe, paymentIntentId: string): Promise<string | null> {
+export async function chargeIdForPaymentIntent (stripe: Stripe, paymentIntentId: string): Promise<string | null> {
   try {
     const pi = await stripe.paymentIntents.retrieve(paymentIntentId)
     const latest = pi.latest_charge

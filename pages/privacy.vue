@@ -2,7 +2,7 @@
   <div class="page">
     <div class="container legal">
       <h1>Privacy Policy</h1>
-      <p class="updated">Last updated: April 26, 2026.</p>
+      <p class="updated">Last updated: May 20, 2026.</p>
 
       <h2>1. What we collect</h2>
       <p>
@@ -26,7 +26,8 @@
       <h2>4. Your choices</h2>
       <p>
         You can access or update some information in your account settings. You may request deletion of your account subject
-        to our need to retain certain records for law or disputes.
+        to our need to retain certain records for law, disputes, or enforcement under our
+        <NuxtLink to="/marketplace-policy">Marketplace Policies</NuxtLink>.
       </p>
 
       <h2>5. Contact</h2>

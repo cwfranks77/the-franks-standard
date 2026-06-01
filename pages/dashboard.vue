@@ -19,11 +19,19 @@
         <span class="owner-fee-text">All fees waived — list freely, sell without charges</span>
       </div>
 
+      <div v-if="accountFrozen" class="freeze-banner">
+        <strong>Account frozen</strong>
+        <p>{{ freezeMessage }}</p>
+        <p class="text-muted small">Repay the balance to info@thefranksstandard.com. After payment, your account may still be permanently closed per policy.</p>
+      </div>
+
       <div class="quick-actions">
         <NuxtLink v-if="!isOwner" to="/pay" class="btn btn-primary btn-sm">Pay fees (Stripe)</NuxtLink>
         <NuxtLink v-else to="/ops/panel" class="btn btn-primary btn-sm">Owner toolkit</NuxtLink>
-        <NuxtLink to="/sell" class="btn btn-primary btn-sm">+ New Listing</NuxtLink>
+        <NuxtLink to="/sell/start" class="btn btn-primary btn-sm">+ New Listing</NuxtLink>
+        <NuxtLink to="/sell/import" class="btn btn-outline btn-sm">Import from eBay / CSV</NuxtLink>
         <NuxtLink to="/video" class="btn btn-outline btn-sm">Start a video call</NuxtLink>
+        <button type="button" class="btn btn-outline btn-sm" @click="onSignOut">Sign out</button>
       </div>
 
       <SitePromoOffers class="mt-4" :compact="true" :show-heading="false" />
@@ -46,12 +54,12 @@
       <div class="dash-section mt-4">
         <div class="dash-section-header">
           <h2>My Listings</h2>
-          <NuxtLink to="/sell" class="btn btn-primary btn-sm">+ New Listing</NuxtLink>
+          <NuxtLink to="/sell/start" class="btn btn-primary btn-sm">+ New Listing</NuxtLink>
         </div>
         <div v-if="!myListings.length" class="empty-state text-center" style="padding: 40px;">
           <p style="font-size: 2rem;">🏛️</p>
           <p class="text-muted mt-1">You haven't listed anything yet.</p>
-          <NuxtLink to="/sell" class="btn btn-outline btn-sm mt-2">Create Your First Listing</NuxtLink>
+          <NuxtLink to="/sell/start" class="btn btn-outline btn-sm mt-2">Create Your First Listing</NuxtLink>
         </div>
         <ul v-else class="dash-listings">
           <li v-for="l in myListings" :key="l.id" class="dash-listing-row">
@@ -73,12 +81,27 @@
         <p v-if="removeMessage" class="dash-remove-msg" role="status">{{ removeMessage }}</p>
       </div>
 
+      <div v-if="connectMessage" class="connect-status mt-4" :class="connectMessage.tone">
+        <p><strong>{{ connectMessage.title }}</strong> {{ connectMessage.body }}</p>
+      </div>
+
       <div v-if="showConnectBanner" class="connect-banner mt-4">
-        <p><strong>Connect payouts.</strong> Link your bank via Stripe to receive sale proceeds automatically.</p>
-        <button type="button" class="btn btn-primary btn-sm" :disabled="connectLoading" @click="startOnboarding">
-          {{ connectLoading ? 'Loading…' : 'Set up Stripe payouts' }}
-        </button>
-        <p v-if="connectError" class="small" style="color: #b91c1c; margin-top: 8px;">{{ connectError }}</p>
+        <p><strong>Connect payouts.</strong> Link your bank via Stripe to receive sale proceeds automatically. Buyers pay through escrow; funds route to you when Connect is active.</p>
+        <div class="connect-actions">
+          <button type="button" class="btn btn-primary btn-sm" :disabled="connectLoading" @click="startOnboarding">
+            {{ connectLoading ? 'Loading…' : (hasConnectAccount ? 'Finish Stripe setup' : 'Set up Stripe payouts') }}
+          </button>
+          <button
+            v-if="hasConnectAccount"
+            type="button"
+            class="btn btn-outline btn-sm"
+            :disabled="connectSyncing"
+            @click="refreshConnect"
+          >
+            {{ connectSyncing ? 'Syncing…' : 'Refresh payout status' }}
+          </button>
+        </div>
+        <p v-if="connectError" class="connect-err">{{ connectError }}</p>
       </div>
 
       <div class="dash-section mt-4">
@@ -132,8 +155,26 @@ definePageMeta({ layout: 'default', middleware: 'requires-auth' })
 useSeoMeta({ title: 'Dashboard - The Franks Standard' })
 
 const { isOwner } = useOwnerMode()
+const { signOut } = useAuthNav()
+
+async function onSignOut () {
+  await signOut()
+}
+const { loadFreezeState, freezeAlertMessage } = useAccountFreeze()
 const supabase = useSupabaseClient()
-const { loading: connectLoading, error: connectError, startOnboarding } = useStripeConnect()
+const accountFrozen = ref(false)
+const freezeMessage = ref('')
+const route = useRoute()
+const {
+  loading: connectLoading,
+  syncing: connectSyncing,
+  error: connectError,
+  status: connectStatus,
+  startOnboarding,
+  syncStatus,
+} = useStripeConnect()
+const hasConnectAccount = ref(false)
+const connectMessage = ref(null)
 const stats = reactive({ count: 0, totalSales: '0.00', pendingOrders: 0 })
 const myListings = ref([])
 const recentOrders = ref([])
@@ -170,6 +211,10 @@ function formatFoundingDate (iso) {
 
 async function removeListing (id) {
   if (!id || removingId.value) return
+  if (accountFrozen.value) {
+    removeMessage.value = freezeMessage.value
+    return
+  }
   removingId.value = id
   removeMessage.value = ''
   const { error } = await supabase
@@ -267,6 +312,12 @@ onMounted(async () => {
   await loadSellerDropship()
   await loadDropshipFulfill(user.id)
 
+  const freeze = await loadFreezeState(user.id)
+  if (freeze.frozen) {
+    accountFrozen.value = true
+    freezeMessage.value = freezeAlertMessage(freeze.profile)
+  }
+
   const { data, error } = await supabase
     .from('listings')
     .select('id, title, price, status, created_at')
@@ -297,9 +348,39 @@ onMounted(async () => {
     }
   }
 
+  hasConnectAccount.value = !!profile?.stripe_account_id
   showConnectBanner.value = !isOwner.value
     && !profile?.stripe_charges_enabled
-    && (profile?.account_type === 'seller' || myListings.value.length > 0)
+    && (profile?.account_type === 'seller' || profile?.account_type === 'both' || myListings.value.length > 0)
+
+  if (profile?.stripe_charges_enabled) {
+    connectMessage.value = {
+      tone: 'connect-ok',
+      title: 'Payouts active.',
+      body: 'Stripe Connect is enabled — sale proceeds can transfer to your linked account.',
+    }
+  } else if (route.query.connect === 'done') {
+    connectMessage.value = {
+      tone: 'connect-pending',
+      title: 'Stripe setup submitted.',
+      body: 'We are syncing your account. If payouts are not active in a minute, tap Refresh payout status.',
+    }
+    await syncStatus()
+    if (connectStatus.value?.stripe_charges_enabled) {
+      showConnectBanner.value = false
+      connectMessage.value = {
+        tone: 'connect-ok',
+        title: 'Payouts active.',
+        body: 'Your Stripe account is ready to receive funds.',
+      }
+    }
+  } else if (route.query.connect === 'refresh') {
+    connectMessage.value = {
+      tone: 'connect-pending',
+      title: 'Continue setup.',
+      body: 'Your Stripe session expired — tap Set up Stripe payouts to continue.',
+    }
+  }
 
   const { data: orders } = await supabase
     .from('orders')
@@ -331,6 +412,24 @@ onMounted(async () => {
     }
   }
 })
+
+async function refreshConnect () {
+  const data = await syncStatus()
+  if (data?.stripe_charges_enabled) {
+    showConnectBanner.value = false
+    connectMessage.value = {
+      tone: 'connect-ok',
+      title: 'Payouts active.',
+      body: 'Stripe Connect is enabled on your account.',
+    }
+  } else if (data?.synced) {
+    connectMessage.value = {
+      tone: 'connect-pending',
+      title: 'Still finishing setup.',
+      body: 'Complete any remaining steps in Stripe, then refresh again.',
+    }
+  }
+}
 </script>
 
 <style scoped>
@@ -403,6 +502,16 @@ onMounted(async () => {
   background: rgba(201, 168, 76, 0.18); color: var(--gold); border: 1px solid rgba(201, 168, 76, 0.4);
 }
 .owner-fee-text { font-size: 0.88rem; color: var(--trust-green); font-weight: 600; }
+.freeze-banner {
+  margin-top: 1rem;
+  padding: 16px 20px;
+  background: rgba(139, 38, 53, 0.15);
+  border: 1px solid #8b2635;
+  border-radius: var(--radius-lg);
+}
+.freeze-banner strong { color: #e8a0a8; display: block; margin-bottom: 6px; }
+.freeze-banner p { margin: 0; font-size: 0.9rem; line-height: 1.5; color: #f0d0d4; }
+
 .founding-banner {
   display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
   margin-top: 14px; padding: 14px 18px;
@@ -439,5 +548,23 @@ onMounted(async () => {
   gap: 12px;
   flex-wrap: wrap;
 }
-.connect-banner p { margin: 0 0 12px; color: #1f2937; }
+.connect-banner p { margin: 0 0 12px; color: var(--stone-200); }
+.connect-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.connect-err { margin-top: 8px; font-size: 0.85rem; color: #fca5a5; }
+.connect-status {
+  padding: 14px 18px;
+  border-radius: var(--radius-lg);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.connect-status p { margin: 0; color: var(--stone-200); }
+.connect-status strong { color: var(--gold); margin-right: 6px; }
+.connect-ok {
+  border: 1px solid rgba(0, 245, 160, 0.35);
+  background: rgba(0, 245, 160, 0.08);
+}
+.connect-pending {
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  background: rgba(201, 168, 76, 0.08);
+}
 </style>

@@ -1,4 +1,5 @@
 import { categoryListForAi } from '~/utils/marketplaceCategories'
+import { formatOffPlatformBlockMessage, scanOffPlatformContent, OFF_PLATFORM_POLICY_SUMMARY } from '~/utils/offPlatformGuard.js'
 
 /**
  * AI Customer Service Assistant for The Franks Standard.
@@ -30,10 +31,12 @@ export function getAiReply (message: string): string {
   ctx.turnCount++
 
   if (!q) {
-    return 'Welcome to The Franks Standard customer service. I can help with:\n\n' +
-      '• Buying and selling\n• Fees and payments\n• COA and authenticity\n• Shipping and orders\n' +
-      '• Account issues\n• Disputes and returns\n• Dropshipping\n• Technical problems\n\n' +
-      'What can I help you with today? You can also call us at (877) 837-0527.'
+    return 'Welcome to The Franks Standard — a **marketplace facilitator**. We connect buyers and sellers; we **do not** guarantee item authenticity. Collectible listings require **seller** proof (COA or signed guarantee); we screen and enforce policies when misrepresentation is proven.\n\n' +
+      'I can help with:\n' +
+      '• Buying, selling, and Stripe payouts\n• COA verification and authenticity reports\n• Free education: /learn/tools (coin study guide & more coming)\n• Escrow, shipping, and orders\n' +
+      '• Seller Excellence rewards\n• Account and technical issues\n\n' +
+      'Founder Open Door: /open-door · Call (877) 837-0527 · Email info@thefranksstandard.com\n\n' +
+      'What can I help you with today?'
   }
 
   // Greeting
@@ -47,6 +50,20 @@ export function getAiReply (message: string): string {
   if (/^(thanks|thank you|thx|ty|appreciate|cheers|cool thanks)/i.test(q)) {
     return 'You\'re welcome! Is there anything else I can help you with? ' +
       'If you need to speak with a person, call (877) 837-0527 or email info@thefranksstandard.com.'
+  }
+
+  // Off-platform payment / contact (policy + detect pasted violations)
+  const offPlatformScan = scanOffPlatformContent(message)
+  if (!offPlatformScan.ok || matchAny(q, [/venmo|zelle|cash app|pay outside|off platform|avoid fees|skip fees|paypal me|wire me|text me at|email me at|deal off ebay|contact.*outside/])) {
+    ctx.lastTopic = 'off-platform'
+    const block = !offPlatformScan.ok ? `\n\n${formatOffPlatformBlockMessage(offPlatformScan)}` : ''
+    return '**All sales and buyer contact stay on The Franks Standard.**\n\n' +
+      OFF_PLATFORM_POLICY_SUMMARY + '\n\n' +
+      '• **Buy:** Use **Buy now** / winning bid checkout (Stripe escrow)\n' +
+      '• **Ask questions:** **Message seller** or **Video Call** on the listing\n' +
+      '• **Never** pay sellers via Venmo, Zelle, PayPal outside checkout, or wire — that bypasses protection and is not allowed\n\n' +
+      'Sellers: remove personal emails/phones from listing text — our publish checker blocks them.' +
+      block
   }
 
   // Phone / call / speak to human
@@ -92,7 +109,7 @@ export function getAiReply (message: string): string {
     ctx.lastTopic = 'storebuilder'
     return '**AI Store Builder:**\n\n' +
       'Our AI Store Builder helps you get set up in minutes:\n\n' +
-      '1. Go to **AI Store Builder** in the Explore menu\n' +
+      '1. Go to **AI Store Builder** in the Features or Settings menu\n' +
       '2. Tell us your store name, what you sell, and your style (direct or dropship)\n' +
       '3. Click "Build my store with AI"\n' +
       '4. Get your store bio, listing descriptions, pricing strategy, and launch checklist\n\n' +
@@ -107,7 +124,7 @@ export function getAiReply (message: string): string {
       '• **3% transaction fee** for first 90 days (then 4–5% by plan: Starter 5%, Pro 4.5%, Store 4%)\n' +
       '• **Free AI Store Builder** to design your shop\n' +
       '• **Referral bonus** — invite a seller, both get 1 month Pro free\n\n' +
-      'Go to **Launch Offer** in the Explore menu for full details, or create your free account to get started.'
+      'Go to **Launch Offer** in the Features or Settings menu for full details, or create your free account to get started.'
   }
 
   // Fees / pricing / cost
@@ -155,9 +172,9 @@ export function getAiReply (message: string): string {
   if (matchAny(q, [/coa|certificate.*auth|authenti|proof|verif|genuine|legit|real or fake|is it real|certified|graded|psa|pcgs|beckett/])) {
     ctx.lastTopic = 'coa'
     return '**Authenticity on The Franks Standard:**\n\n' +
-      'Every listing requires one of:\n' +
+      'We are a marketplace facilitator — **sellers** back collectible listings. Collectible categories require one of:\n' +
       '• **COA Upload** — photo/scan of your Certificate of Authenticity\n' +
-      '• **Platform Guarantee** — you sign our in-platform authenticity guarantee with your legal name\n\n' +
+      '• **Seller Authenticity Guarantee** — Franks Standard template; you sign with your legal name and **you** back the item (not the Platform)\n\n' +
       'Buyers see the proof before money moves. If an item is proven fake:\n' +
       '• Full refund to the buyer\n• Permanent ban for the seller\n• No second chances\n\n' +
       'We work with PSA, PCGS, Beckett, and other grading services. ' +
@@ -276,7 +293,7 @@ export function getAiReply (message: string): string {
     return '**What you can buy and sell:**\n\n' +
       `${categoryListForAi()}\n\n` +
       '• 🔧 Firearms Accessories: no ATF-reportable items\n\n' +
-      'Everything requires a COA or signed guarantee. ' +
+      'Collectible categories require seller COA or signed guarantee; general merchandise uses accurate listing standards. ' +
       'See **Prohibited Items** in the footer for what\'s not allowed.\n\n' +
       'Visit **Categories** for the full breakdown.'
   }
@@ -316,7 +333,7 @@ export function getAiReply (message: string): string {
       '| Fakes policy | Permanent ban | Strike system |\n' +
       '| Video calls | Built in | Not available |\n' +
       '| Focus | Collectors & authenticity | Everything |\n\n' +
-      'Visit **Compare** in the Explore menu for the full side-by-side breakdown.'
+      'Visit **Compare** in the Features or Settings menu for the full side-by-side breakdown.'
   }
 
   // Operator / ops / owner / hidden panel

@@ -23,7 +23,15 @@ function resolveRasterLogoPath () {
   }
   return null
 }
-const SITE = 'https://thefranksstandard.com'
+const {
+  SITE,
+  TELEGRAM_POST,
+  FACEBOOK_POST,
+  INSTAGRAM_CAPTION,
+  xTweetShort,
+} = require('../utils/socialBrandCopy.cjs')
+const { getCampaign } = require('../utils/adCampaignCopy.cjs')
+
 const LINK_REGISTER = `${SITE}/auth/register`
 const LINK_SELL = `${SITE}/sell`
 const LINK_BROWSE = `${SITE}/browse`
@@ -87,68 +95,15 @@ ${SITE}`
 
 const FOUNDERS_X = `First 10 sellers on The Franks Standard get 3 months Pro free. Limited spots — claim yours: ${LINK_FOUNDERS} Code: FOUNDERS10 #TheFranksStandard`
 
-const TELEGRAM_TEXT = `The Franks Standard is live - the authenticity-first marketplace for collectibles, gear, and high-trust inventory.
+const TELEGRAM_TEXT = TELEGRAM_POST
 
-What the platform offers:
-- COA or signed in-platform authenticity guarantee on every listing
-- Escrow flow: buyer confirms before final release
-- Seller onboarding with store-focused tools
-- AI Store Builder for faster listing setup
-- Integrated video rooms for live buyer/seller meetings
-- Buyer/seller support paths (chat, phone, email)
-- Sale fees 4–5% by plan (3% for new sellers' first 90 days) — well below typical 13%+ marketplaces
-- Pro $14.99/mo · Store $32.99/mo — see pricing page
-- Installable app/PWA experience for mobile-first access
+const FACEBOOK_TEXT = FACEBOOK_POST
 
-Direct links:
-Join free: ${LINK_REGISTER}
-Start selling: ${LINK_SELL}
-Browse now: ${LINK_BROWSE}
-For stores: ${LINK_SELLERS}
-Pricing: ${LINK_PRICING}
-Video rooms: ${LINK_VIDEO}
-Support: ${LINK_SUPPORT}
-Download app: ${LINK_DOWNLOAD}
-
-Main site: ${SITE}`
-
-const FACEBOOK_TEXT = `The Franks Standard is live: a proof-first marketplace built for serious buyers and sellers.
-
-Every listing requires a COA or signed in-platform authenticity guarantee, and the checkout flow is designed around buyer confidence with escrow-style confirmation.
-
-Platform highlights:
-- Collectibles and high-trust inventory marketplace
-- Seller onboarding and store-first tools
-- AI Store Builder to accelerate setup
-- Built-in video rooms for real-time buyer/seller sessions
-- Transparent pricing: 4–5% sale fees by plan, 3% launch promo, Pro $14.99/mo
-- Zero-tolerance stance on fakes
-
-Direct links:
-Join: ${LINK_REGISTER}
-Sell: ${LINK_SELL}
-Browse: ${LINK_BROWSE}
-For stores: ${LINK_SELLERS}
-Support: ${LINK_SUPPORT}
-Download app: ${LINK_DOWNLOAD}
-
-Main site: ${SITE}`
-
-const X_TWEET = `The Franks Standard is live: COA/signed guarantee listings, escrow-style buyer confirmation, AI Store Builder, video rooms, seller onboarding, and installable app. Join now: ${LINK_REGISTER}
-#TheFranksStandard #collectibles`
+const X_TWEET = xTweetShort(process.env.GITHUB_RUN_ID || '')
 
 const INSTAGRAM_IMAGE = `${SITE}/franks-pavilion.png`
 
-const INSTAGRAM_TEXT = `ZERO tolerance for fakes on The Franks Standard.
-
-Every listing needs a COA or signed in-platform guarantee before it goes live. Counterfeit = permanent ban.
-
-4–5% sale fees by plan vs typical 13%+ elsewhere. AI Store Builder. Real support: (877) 837-0527.
-
-Browse: ${LINK_BROWSE}
-Sell: ${LINK_SELL}
-
-#TheFranksStandard #Collectibles #COARequired #AuthenticOnly #Marketplace`
+const INSTAGRAM_TEXT = INSTAGRAM_CAPTION
 
 const postResults = {
   telegram: 'skipped',
@@ -336,9 +291,10 @@ async function postX (tweet = X_TWEET) {
 }
 
 const argv = process.argv.slice(2)
-const CAMPAIGN_FLAGS = new Set(['--founders', '--honor'])
+const CAMPAIGN_FLAGS = new Set(['--founders', '--honor', '--security'])
 const founders = argv.includes('--founders')
 const honor = argv.includes('--honor')
+const security = argv.includes('--security')
 const channels = argv.filter((a) => a.startsWith('--') && !CAMPAIGN_FLAGS.has(a))
 const all = channels.length === 0
 
@@ -409,6 +365,18 @@ async function runCampaign ({ label, telegramText, facebookText, xText, instagra
       facebookText: HONOR_FACEBOOK,
       xText: honorXTweet(),
       instagramText: `Honoring veterans & first responders: 6 months Pro free when you sell on The Franks Standard. Code HONOR26\n${LINK_HONOR}\n#ThankYouForYourService #TheFranksStandard`,
+    })
+    return
+  }
+  if (security) {
+    const sec = getCampaign('security')
+    assertCampaignBrandCopy(`${sec.telegram}\n${sec.facebook}\n${sec.x}`)
+    await runCampaign({
+      label: 'security',
+      telegramText: sec.telegram,
+      facebookText: sec.facebook,
+      xText: sec.x,
+      instagramText: sec.instagram,
     })
     return
   }

@@ -6,10 +6,11 @@ on:
       campaign:
         description: Which post to publish
         required: true
-        default: default
+        default: security
         type: choice
         options:
           - default
+          - security
           - founders
           - honor
   schedule:
@@ -60,6 +61,7 @@ jobs:
           case "$CAMPAIGN" in
             founders) echo "flag=--founders" >> "$GITHUB_OUTPUT" ;;
             honor) echo "flag=--honor" >> "$GITHUB_OUTPUT" ;;
+            security) echo "flag=--security" >> "$GITHUB_OUTPUT" ;;
             *) echo "flag=" >> "$GITHUB_OUTPUT" ;;
           esac
           echo "Using campaign: $CAMPAIGN (flag: $(cat $GITHUB_OUTPUT | grep flag=))"

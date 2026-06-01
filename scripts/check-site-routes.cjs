@@ -19,7 +19,7 @@ function walk (dir, acc = []) {
 
 function routeFromPage (rel) {
   let r = rel.replace(/\\/g, '/').replace(/^pages\//, '').replace(/\.vue$/, '')
-  if (r.endsWith('/index')) r = r.slice(0, -6)
+  if (r === 'index' || r.endsWith('/index')) r = r.replace(/\/?index$/, '')
   if (!r) return '/'
   r = r.replace(/\[([^\]]+)\]/g, ':$1')
   return '/' + r
@@ -43,17 +43,18 @@ function walkAll (dir) {
 }
 walkAll(root)
 
-const pathRe = /(?:to|:href)=["'`]([^"'`]+)["'`]|(?:to|:href)=["'{]\s*(?:path:\s*)?['"]([^'"]+)['"]/g
+const pathRe = /(?:to|:href)=["'`]([^"'`]+)["'`]|(?:to|:href)=["'{]\s*(?:path:\s*)?['"]([^'"]+)['"]|(?:to|href):\s*['"]([^'"]+)['"]/g
 const found = new Map()
 
 for (const file of vueFiles) {
   const text = fs.readFileSync(file, 'utf8')
   let m
   while ((m = pathRe.exec(text)) !== null) {
-    const raw = (m[1] || m[2] || '').trim()
+    const raw = (m[1] || m[2] || m[3] || '').trim()
     if (!raw || raw.startsWith('http') || raw.startsWith('mailto:') || raw.startsWith('tel:') || raw === '#') continue
     const base = raw.split('?')[0].split('#')[0]
-    if (base.includes('${') || base.includes('{{')) continue
+    if (base.includes('${') || base.includes('{{') || base.includes('||')) continue
+    if (!base.startsWith('/')) continue
     if (!found.has(base)) found.set(base, [])
     found.get(base).push(path.relative(root, file))
   }
@@ -62,13 +63,27 @@ for (const file of vueFiles) {
 const dynamicPatterns = [
   /^\/listing\/[^/]+$/,
   /^\/order\/[^/]+$/,
+  /^\/order\/success$/,
   /^\/video\/r\/[^/]+$/,
+  /^\/verify\/coa\/[^/]+$/,
+  /^\/store\/[^/]+$/,
+  /^\/r\/[^/]+$/,
+  /^\/go\/[^/]+$/,
+  /^\/learn\/[^/]+$/,
+  /^\/collections\/[^/]+$/,
+  /^\/dashboard$/,
+  /\.html$/,
 ]
 
 function ok (p) {
   const norm = p.replace(/\/$/, '') || '/'
   if (staticRoutes.has(norm)) return true
   return dynamicPatterns.some((re) => re.test(p))
+}
+
+const htmlNuxtLinks = []
+for (const [p, files] of found) {
+  if (/\.html$/i.test(p)) htmlNuxtLinks.push({ p, files })
 }
 
 const bad = []
@@ -81,6 +96,13 @@ for (const [p] of found) {
 
 console.log('Static routes:', staticRoutes.size)
 console.log('Internal paths found:', found.size)
+if (htmlNuxtLinks.length) {
+  console.error('NuxtLink/href to .html (use a Vue route or <a href> for static files):')
+  for (const { p, files } of htmlNuxtLinks) {
+    console.error(' ', p, '←', files.slice(0, 2).join(', '))
+  }
+  process.exit(1)
+}
 if (bad.length) {
   console.error('Possibly missing routes:')
   for (const p of bad.sort()) {

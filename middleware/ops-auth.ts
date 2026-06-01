@@ -1,5 +1,5 @@
 export default defineNuxtRouteMiddleware(() => {
-  if (import.meta.server) {
+  if (import.meta.server || import.meta.prerender) {
     return
   }
   const { isAuthed } = useOpsSession()

@@ -5,8 +5,8 @@
         <p class="eyebrow">Our story</p>
         <h1>About The Franks Standard</h1>
         <p class="text-muted lead">
-          A marketplace for collectibles, gear, and high-trust items where <strong>authenticity is the product</strong>.
-          We exist because broad list-anything platforms reward volume over truth, and collectors deserve better.
+          A <strong>marketplace facilitator</strong> for collectibles, gear, and high-trust resale.
+          We connect buyers and sellers — we do not sell listed items or guarantee that any item is authentic.
         </p>
       </ScrollReveal>
 
@@ -15,8 +15,8 @@
           <article class="about-card">
             <h2>Our standard</h2>
             <p class="text-muted">
-              Every public listing is backed by a COA or a signed in-platform authenticity guarantee.
-              Escrow, buyer confirmation, and a permanent ban for proven fakes.
+              Collectible listings require seller-provided proof (uploaded COA or Franks Standard COA serial).
+              We screen listings, hold funds in escrow, and enforce policies when misrepresentation is proven — that is not a Platform warranty of genuineness.
             </p>
           </article>
         </ScrollReveal>
@@ -66,11 +66,11 @@
 <script setup>
 useSeoMeta({
   title: 'About - The Franks Standard',
-  description: 'Authenticity-first marketplace founded by Charles Franks.',
+  description: 'Marketplace facilitator for collectibles and gear — founded by Charles Franks. Seller proof and policy enforcement, not Platform authentication.',
 })
 const offers = [
   { label: 'Browse', to: '/browse' },
-  { label: 'Sell', to: '/sell' },
+  { label: 'Sell', to: '/sell/start' },
   { label: 'For sellers', to: '/sellers' },
   { label: 'Pricing', to: '/pricing' },
   { label: 'Video meet', to: '/video' },

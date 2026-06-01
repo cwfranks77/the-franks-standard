@@ -70,6 +70,7 @@ Deno.serve(async (req) => {
     const program = String(promo.program || 'general')
     const isHonors = program === 'honors'
     const isFounding = program === 'founding' || promo.code === 'FOUNDERS10'
+    const isOutreach = program === 'outreach'
 
     if (isHonors) {
       const category = normalizeCategory(body.service_category)
@@ -138,20 +139,23 @@ Deno.serve(async (req) => {
       }, 409)
     }
 
-    const months = Number(promo.benefit_months) || 3
+    const months = isOutreach ? 0 : (Number(promo.benefit_months) || 3)
     const { data: existingProfile } = await admin
       .from('profiles')
       .select('pro_free_until')
       .eq('id', user.id)
       .maybeSingle()
 
-    const base = new Date()
-    if (existingProfile?.pro_free_until) {
-      const existingUntil = new Date(existingProfile.pro_free_until)
-      if (existingUntil > base) base.setTime(existingUntil.getTime())
+    let proFreeUntil: Date | null = null
+    if (!isOutreach && months > 0) {
+      const base = new Date()
+      if (existingProfile?.pro_free_until) {
+        const existingUntil = new Date(existingProfile.pro_free_until)
+        if (existingUntil > base) base.setTime(existingUntil.getTime())
+      }
+      proFreeUntil = new Date(base)
+      proFreeUntil.setMonth(proFreeUntil.getMonth() + months)
     }
-    const proFreeUntil = new Date(base)
-    proFreeUntil.setMonth(proFreeUntil.getMonth() + months)
 
     const serviceCategory = isHonors
       ? (normalizeCategory(body.service_category)
@@ -180,9 +184,11 @@ Deno.serve(async (req) => {
     const accountType = String(user.user_metadata?.account_type ?? '').trim()
     const isSeller = ['sell', 'seller', 'both'].includes(accountType)
     const profilePatch: Record<string, unknown> = {
-      seller_tier: 'pro',
-      pro_free_until: proFreeUntil.toISOString(),
       promo_code_used: promo.code,
+    }
+    if (!isOutreach) {
+      profilePatch.seller_tier = 'pro'
+      if (proFreeUntil) profilePatch.pro_free_until = proFreeUntil.toISOString()
     }
     if (isFounding) profilePatch.founding_seller = true
     if (isHonors) {
@@ -210,11 +216,15 @@ Deno.serve(async (req) => {
       label: promo.label,
       program,
       months,
-      pro_free_until: proFreeUntil.toISOString(),
+      outreach_only: isOutreach,
+      message: isOutreach
+        ? 'Partner code recorded. Our team will confirm your store partner benefits after you list.'
+        : undefined,
+      pro_free_until: proFreeUntil?.toISOString() ?? null,
       founding_seller: isFounding,
       honors_member: isHonors,
       service_category: serviceCategory,
-      seller_tier: 'pro',
+      seller_tier: isOutreach ? undefined : 'pro',
       remaining: Math.max(0, claimed.max_uses - claimed.uses_count),
       max_uses: claimed.max_uses,
     })

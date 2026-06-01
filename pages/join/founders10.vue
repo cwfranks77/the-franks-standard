@@ -38,7 +38,7 @@
         >
           Create seller account
         </NuxtLink>
-        <NuxtLink to="/sell" class="btn btn-outline btn-lg">
+        <NuxtLink to="/sell/start" class="btn btn-outline btn-lg">
           Learn about selling
         </NuxtLink>
       </div>
@@ -53,8 +53,10 @@
 </template>
 
 <script setup>
-import { FOUNDING_PROMO_CODE, foundingPromoRegisterPath } from '~/utils/foundingPromo.js'
+import { FOUNDING_PROMO_CODE } from '~/utils/foundingPromo.js'
+import { pickAttributionQueryKeys } from '~/utils/outreachTracking.js'
 
+const route = useRoute()
 const { fetchAvailability } = usePromoCode()
 const availability = ref(null)
 const loading = ref(true)
@@ -66,7 +68,13 @@ onMounted(async () => {
 
 const remaining = computed(() => availability.value?.remaining ?? null)
 const soldOut = computed(() => availability.value?.sold_out === true)
-const registerHref = foundingPromoRegisterPath()
+const registerHref = computed(() => {
+  const params = new URLSearchParams({ account: 'sell', promo: FOUNDING_PROMO_CODE })
+  const tracked = pickAttributionQueryKeys(route.query)
+  for (const [k, v] of Object.entries(tracked)) params.set(k, v)
+  if (!params.has('ref')) params.set('ref', 'founders10')
+  return `/auth/register?${params.toString()}`
+})
 
 useSeoMeta({
   title: 'Founding sellers — 3 months Pro free | The Franks Standard',

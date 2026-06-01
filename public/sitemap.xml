@@ -3,8 +3,22 @@
   <url><loc>https://thefranksstandard.com/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
   <url><loc>https://thefranksstandard.com/browse</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
   <url><loc>https://thefranksstandard.com/sell</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://thefranksstandard.com/sell/import</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://thefranksstandard.com/protection</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://thefranksstandard.com/marketplace-policy</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://thefranksstandard.com/seller-agreement</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://thefranksstandard.com/download</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://thefranksstandard.com/categories</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://thefranksstandard.com/collections</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://thefranksstandard.com/collections/graded-sports-cards</loc><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://thefranksstandard.com/learn</loc><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://thefranksstandard.com/learn/import-ebay-to-franks-standard</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://thefranksstandard.com/learn/niche-collections-vs-ebay</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://thefranksstandard.com/learn/seller-playbook</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://thefranksstandard.com/learn/tools/fee-calculator</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://thefranksstandard.com/learn/tools/coin-study-guide</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://thefranksstandard.com/learn/tools/authenticity-checklist</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://thefranksstandard.com/learn/coin-counterfeit-detection-guide</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
   <url><loc>https://thefranksstandard.com/pricing</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://thefranksstandard.com/sellers</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://thefranksstandard.com/store-builder</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
@@ -14,6 +28,9 @@
   <url><loc>https://thefranksstandard.com/contact</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://thefranksstandard.com/support</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://thefranksstandard.com/compare</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://thefranksstandard.com/partners</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://thefranksstandard.com/partners/creators</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://thefranksstandard.com/social</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://thefranksstandard.com/open-door</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
   <url><loc>https://thefranksstandard.com/pay</loc><changefreq>monthly</changefreq><priority>0.55</priority></url>
   <url><loc>https://thefranksstandard.com/roadmap</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
@@ -22,4 +39,7 @@
   <url><loc>https://thefranksstandard.com/auth/login</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://thefranksstandard.com/terms</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
   <url><loc>https://thefranksstandard.com/privacy</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://thefranksstandard.com/prohibited-items</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://thefranksstandard.com/social</loc><changefreq>weekly</changefreq><priority>0.55</priority></url>
+  <url><loc>https://thefranksstandard.com/social/community</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
 </urlset>

@@ -2,11 +2,15 @@
   <div class="site-wrapper">
     <div class="site-ribbon" role="status" aria-label="Site highlights">
       <div class="container site-ribbon-inner">
-        <span class="ribbon-txt">COA or signed guarantee on every listing</span>
+        <span class="ribbon-txt">{{ RIBBON_LINE_PROOF }}</span>
         <span class="ribbon-dot" aria-hidden="true" />
-        <span class="ribbon-txt">Escrow &amp; buyer confirmation</span>
+        <NuxtLink :to="AUTH_EDUCATION_HUB_PATH" class="ribbon-txt ribbon-txt--link">
+          {{ RIBBON_LINE_EDUCATION }} →
+        </NuxtLink>
         <span class="ribbon-dot" aria-hidden="true" />
-        <span class="ribbon-txt">Zero tolerance for fakes</span>
+        <span class="ribbon-txt">{{ RIBBON_LINE_ESCROW }}</span>
+        <span class="ribbon-dot" aria-hidden="true" />
+        <span class="ribbon-txt">4–5% seller fees · FOUNDERS10: 3 mo Pro free</span>
       </div>
     </div>
     <header class="site-header">
@@ -30,52 +34,21 @@
         </div>
 
         <nav class="header-nav" :class="{ open: menuOpen }">
-          <NuxtLink to="/video" class="nav-link" @click="closeAllNav">Video</NuxtLink>
-          <NuxtLink to="/browse" class="nav-link" @click="closeAllNav">Browse</NuxtLink>
-          <NuxtLink to="/sellers" class="nav-link" @click="closeAllNav">For sellers</NuxtLink>
-          <NuxtLink to="/pricing" class="nav-link nav-highlight" @click="closeAllNav">Pricing</NuxtLink>
-          <NuxtLink to="/support" class="nav-link" @click="closeAllNav">Support</NuxtLink>
-          <NuxtLink to="/open-door" class="nav-link" @click="closeAllNav">Open Door</NuxtLink>
-          <NuxtLink to="/contact" class="nav-link" @click="closeAllNav">Contact</NuxtLink>
-          <div
-            class="nav-more"
-            :class="{ open: moreOpen }"
-            @mouseenter="onNavMoreEnter"
-            @mouseleave="onNavMoreLeave"
-          >
-            <button
-              type="button"
-              class="nav-more-btn"
-              :aria-expanded="moreOpen"
-              @click.stop="toggleExplore"
-            >
-              Explore
-              <span class="chev" aria-hidden="true" />
-            </button>
-            <div v-show="moreOpen" class="nav-more-panel" @click.stop>
-              <NuxtLink to="/categories" class="nav-drop-link" @click="closeAllNav">Categories A to Z</NuxtLink>
-              <NuxtLink to="/how-it-works" class="nav-drop-link" @click="closeAllNav">How it works</NuxtLink>
-              <NuxtLink to="/pricing" class="nav-drop-link" @click="closeAllNav">Pricing</NuxtLink>
-              <NuxtLink to="/launch-offer" class="nav-drop-link" @click="closeAllNav">Launch offer (new sellers)</NuxtLink>
-              <NuxtLink to="/join/founders10" class="nav-drop-link" @click="closeAllNav">Founding sellers (FOUNDERS10)</NuxtLink>
-              <NuxtLink to="/honor" class="nav-drop-link" @click="closeAllNav">Honor our heroes (HONOR26)</NuxtLink>
-              <NuxtLink to="/store-builder" class="nav-drop-link" @click="closeAllNav">AI Store Builder</NuxtLink>
-              <NuxtLink to="/about" class="nav-drop-link" @click="closeAllNav">Our story and mission</NuxtLink>
-              <NuxtLink to="/support" class="nav-drop-link" @click="closeAllNav">Support and tech</NuxtLink>
-              <NuxtLink to="/contact" class="nav-drop-link" @click="closeAllNav">Get in touch</NuxtLink>
-              <NuxtLink to="/compare" class="nav-drop-link" @click="closeAllNav">How we compare</NuxtLink>
-              <NuxtLink to="/terms" class="nav-drop-link" @click="closeAllNav">Terms</NuxtLink>
-              <NuxtLink to="/privacy" class="nav-drop-link" @click="closeAllNav">Privacy</NuxtLink>
-              <NuxtLink to="/prohibited-items" class="nav-drop-link" @click="closeAllNav">Prohibited items</NuxtLink>
-              <NuxtLink to="/pay" class="nav-drop-link" @click="closeAllNav">Pay &amp; fees (Stripe)</NuxtLink>
-              <NuxtLink to="/download" class="nav-drop-link" @click="closeAllNav">Download app</NuxtLink>
-              <NuxtLink to="/roadmap" class="nav-drop-link" @click="closeAllNav">Launch Roadmap</NuxtLink>
-            </div>
+          <div class="header-quick-dock">
+            <NuxtLink to="/browse" class="quick-tile" @click="closeAllNav">Browse</NuxtLink>
+            <NuxtLink to="/sell/start" class="quick-tile quick-tile--gold" @click="closeAllNav">Sell</NuxtLink>
+            <a href="tel:+18778370527" class="quick-tile" @click="closeAllNav">Call</a>
           </div>
-          <NuxtLink to="/sell" class="nav-link" @click="closeAllNav">Sell</NuxtLink>
-          <NuxtLink to="/download" class="nav-link nav-highlight" @click="closeAllNav">Download app</NuxtLink>
-          <NuxtLink to="/auth/login" class="btn btn-outline btn-sm" @click="closeAllNav">Sign In</NuxtLink>
-          <NuxtLink to="/auth/register" class="btn btn-primary btn-sm" @click="closeAllNav">Join Free</NuxtLink>
+          <NavMegaDropdown label="Features" :sections="navFeatures" @navigate="closeAllNav" />
+          <NavMegaDropdown label="Settings" :sections="navSettings" @navigate="closeAllNav" @action="onNavMenuAction" />
+          <template v-if="isSignedIn">
+            <NuxtLink to="/dashboard" class="quick-tile" @click="closeAllNav">Dashboard</NuxtLink>
+            <button type="button" class="quick-tile quick-tile--signout" aria-label="Sign out of your account" @click="onSignOut">Sign out</button>
+          </template>
+          <template v-else>
+            <NuxtLink to="/auth/login" class="quick-tile" @click="closeAllNav">Sign in</NuxtLink>
+            <NuxtLink to="/auth/register" class="quick-tile quick-tile--gold" @click="closeAllNav">Join free</NuxtLink>
+          </template>
         </nav>
 
         <button class="menu-toggle" @click="menuOpen = !menuOpen" aria-label="Toggle menu">
@@ -85,11 +58,13 @@
     </header>
 
     <div class="site-trust" aria-label="Why buyers and sellers use this marketplace">
-      <div class="container site-trust-inner">
-        <NuxtLink to="/pay" class="trust-pill">Stripe checkout + tax at billing address</NuxtLink>
-        <NuxtLink to="/sell" class="trust-pill">Seller &amp; buyer tools</NuxtLink>
-        <NuxtLink to="/video" class="trust-pill">Video meet built in</NuxtLink>
-        <NuxtLink to="/support" class="trust-pill">Help with mic, email, or live Video</NuxtLink>
+      <div class="container trust-chip-row">
+        <NuxtLink to="/how-it-works" class="trust-chip">Escrow · buyer confirms delivery</NuxtLink>
+        <NuxtLink to="/learn/tools" class="trust-chip">Coin &amp; authenticity tools</NuxtLink>
+        <NuxtLink to="/sell/import" class="trust-chip">Import from eBay</NuxtLink>
+        <NuxtLink to="/store-builder" class="trust-chip">AI Store Builder</NuxtLink>
+        <NuxtLink to="/video" class="trust-chip">Video inspect</NuxtLink>
+        <NuxtLink to="/join/founders10" class="trust-chip">FOUNDERS10 · 3 mo Pro</NuxtLink>
       </div>
     </div>
 
@@ -108,12 +83,30 @@
               @error="onPavilionImgError"
             />
             <p class="footer-site-name">The Franks Standard</p>
-            <p class="text-muted">The Franks Standard LLC — the marketplace where authenticity is not optional.</p>
+            <p class="text-muted">The Franks Standard LLC — marketplace facilitator for collectors and gear. Sellers back collectible listings; we screen and enforce policies — we do not guarantee item authenticity.</p>
+            <div v-if="socialLinks.length" class="footer-follow">
+              <p class="footer-follow-label">Follow us</p>
+              <div class="footer-social-row">
+                <a
+                  v-for="link in socialLinks"
+                  :key="link.id"
+                  :href="link.url"
+                  class="footer-social-link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  :aria-label="`Follow on ${link.label}`"
+                >{{ link.label }}</a>
+              </div>
+            </div>
+            <p v-else class="footer-follow-hint text-muted small">
+              <NuxtLink to="/social">Social &amp; updates</NuxtLink> ·
+              <NuxtLink to="/open-door">Talk to the founder</NuxtLink>
+            </p>
           </div>
           <div class="footer-col">
             <h4>Marketplace</h4>
             <NuxtLink to="/browse">Browse All</NuxtLink>
-            <NuxtLink to="/sell">Sell an Item</NuxtLink>
+            <NuxtLink to="/sell/start">Sell an Item</NuxtLink>
             <NuxtLink to="/categories">Categories</NuxtLink>
             <NuxtLink to="/pricing">Pricing</NuxtLink>
             <NuxtLink to="/video">Video Calls</NuxtLink>
@@ -126,11 +119,19 @@
             <NuxtLink to="/join/founders10">Founding Sellers (3 mo Pro)</NuxtLink>
             <NuxtLink to="/honor">Honor Our Heroes (6 mo Pro)</NuxtLink>
             <NuxtLink to="/how-it-works">How It Works</NuxtLink>
+            <NuxtLink to="/seller-tools">Appraisal &amp; comp tools</NuxtLink>
+            <NuxtLink to="/learn/tools">Coin &amp; authenticity tools</NuxtLink>
+            <NuxtLink to="/collections">Collections &amp; limited drops</NuxtLink>
+            <NuxtLink to="/partners/creators">Creator affiliates</NuxtLink>
+            <NuxtLink to="/social">Social promotion</NuxtLink>
+            <NuxtLink to="/top-sellers">Top sellers program</NuxtLink>
             <NuxtLink to="/support">Support</NuxtLink>
           </div>
           <div class="footer-col">
             <h4>Legal</h4>
             <NuxtLink to="/terms">Terms of Service</NuxtLink>
+            <NuxtLink to="/marketplace-policy">Marketplace Policies</NuxtLink>
+            <NuxtLink to="/protection">Protection overview</NuxtLink>
             <NuxtLink to="/privacy">Privacy Policy</NuxtLink>
             <NuxtLink to="/prohibited-items">Prohibited Items</NuxtLink>
             <NuxtLink to="/seller-agreement">Seller Agreement</NuxtLink>
@@ -147,6 +148,10 @@
         </div>
         <div class="footer-bottom">
           <p>&copy; {{ new Date().getFullYear() }} The Franks Standard &bull; Founded by Charles Franks &bull; All rights reserved.</p>
+          <p v-if="isSignedIn" class="footer-signout">
+            Signed in as {{ displayEmail }} —
+            <button type="button" class="footer-signout-btn" @click="onSignOut">Sign out</button>
+          </p>
         </div>
       </div>
     </footer>
@@ -206,7 +211,7 @@
     </Teleport>
     <AiSupportDrawer />
 
-    <NuxtLink v-if="isOwner" to="/sell" class="owner-sell-fab" title="Create a listing (free)">
+    <NuxtLink v-if="isOwner" to="/sell/start" class="owner-sell-fab" title="Create a listing (free)">
       <span class="fab-plus">+</span>
       <span class="fab-label">Sell</span>
     </NuxtLink>
@@ -214,35 +219,66 @@
 </template>
 
 <script setup>
-import { normalizeOpsPhrase } from '~/utils/opsPhrase'
+import { NAV_FEATURES_SECTIONS } from '~/utils/navFeaturesMenu.js'
+import { NAV_SETTINGS_SECTIONS } from '~/utils/navSettingsMenu.js'
+import { buildSocialLinks } from '~/utils/siteSocial.js'
+import {
+  AUTH_EDUCATION_HUB_PATH,
+  RIBBON_LINE_EDUCATION,
+  RIBBON_LINE_ESCROW,
+  RIBBON_LINE_PROOF,
+} from '~/utils/authenticityEducation.js'
+
+const navFeatures = NAV_FEATURES_SECTIONS
+
+const navSettings = computed(() => {
+  const sections = NAV_SETTINGS_SECTIONS.map((section) => ({
+    ...section,
+    items: [...section.items],
+  }))
+  if (isSignedIn.value) {
+    const account = sections.find((s) => s.id === 'account')
+    if (account) {
+      account.items.push({
+        label: 'Sign out',
+        desc: 'End your session on this device',
+        action: 'signout',
+      })
+    }
+  }
+  return sections
+})
 
 const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
-const { grant } = useOpsSession()
 const { isOwner } = useOwnerMode()
+const { isSignedIn, displayEmail, signOut } = useAuthNav()
+
+const socialLinks = computed(() => buildSocialLinks(config.public))
+
+async function onSignOut () {
+  closeAllNav()
+  await signOut()
+}
+
+function onNavMenuAction (action) {
+  if (action === 'signout') onSignOut()
+}
 
 const menuOpen = ref(false)
-const moreOpen = ref(false)
 const onHome = computed(() => route.path === '/')
 
-let exploreHoverOk = true
-onMounted(() => {
-  if (!import.meta.client) { return }
-  const mq = window.matchMedia('(min-width: 769px)')
-  const sync = () => { exploreHoverOk = mq.matches }
-  sync()
-  mq.addEventListener('change', sync)
-})
-
 const opModalOpen = ref(false)
-const opPhrase = ref('')
-const opError = ref('')
-const opSubmitting = ref(false)
+const {
+  phrase: opPhrase,
+  error: opError,
+  submitting: opSubmitting,
+  keyConfigured,
+  submit: submitOpsPhrase,
+} = useOpsUnlock()
 let opKnockClicks = 0
 let opKnockTimer = null
-
-const keyConfigured = computed(() => String(config.public?.opsAccessKeyHash || '').length > 0)
 const isDev = computed(() => import.meta.dev)
 
 function onPavilionImgError (e) {
@@ -272,17 +308,6 @@ watch(
 
 function closeAllNav () {
   menuOpen.value = false
-  moreOpen.value = false
-}
-
-function onNavMoreEnter () {
-  if (import.meta.client && exploreHoverOk) { moreOpen.value = true }
-}
-function onNavMoreLeave () {
-  if (import.meta.client && exploreHoverOk) { moreOpen.value = false }
-}
-function toggleExplore () {
-  moreOpen.value = !moreOpen.value
 }
 
 /**
@@ -316,30 +341,11 @@ function closeOpModal () {
   opError.value = ''
 }
 
-async function sha256Hex (input) {
-  const bytes = new TextEncoder().encode(input)
-  const digest = await crypto.subtle.digest('SHA-256', bytes)
-  return Array.from(new Uint8Array(digest))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('')
-}
-
 async function submitOpModal () {
-  opError.value = ''
-  const expectedHash = String(config.public?.opsAccessKeyHash || '').toLowerCase()
-  if (!expectedHash) { return }
-  opSubmitting.value = true
-  try {
-    const typedHash = await sha256Hex(normalizeOpsPhrase(opPhrase.value))
-    if (typedHash === expectedHash) {
-      grant()
-      closeOpModal()
-      router.push('/ops/panel')
-    } else {
-      opError.value = 'That does not match your build key. Check .env and redeploy, or the GitHub secret.'
-    }
-  } finally {
-    opSubmitting.value = false
+  const ok = await submitOpsPhrase()
+  if (ok) {
+    closeOpModal()
+    await router.push('/ops/panel')
   }
 }
 </script>
@@ -348,17 +354,19 @@ async function submitOpModal () {
 .site-header {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 200;
   background: linear-gradient(180deg, rgba(10, 5, 24, 0.97) 0%, rgba(18, 10, 40, 0.92) 100%);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(0, 224, 255, 0.12);
   box-shadow: 0 4px 32px rgba(255, 45, 122, 0.08);
+  overflow: visible;
 }
 .header-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: 70px;
+  overflow: visible;
 }
 .header-left { flex: 0 0 auto; }
 .header-brand {
@@ -390,6 +398,7 @@ async function submitOpModal () {
   gap: 18px;
   flex-wrap: wrap;
   justify-content: flex-end;
+  overflow: visible;
 }
 .nav-link {
   color: var(--stone-300);
@@ -496,12 +505,15 @@ async function submitOpModal () {
   }
   .header-nav.open { display: flex; }
   .nav-more { width: 100%; }
-  .nav-more-panel {
+  .nav-mega-panel {
     position: static;
     margin-top: 8px;
     width: 100%;
+    grid-template-columns: 1fr;
     box-shadow: none;
   }
+  .header-quick-dock { width: 100%; justify-content: stretch; }
+  .quick-tile { flex: 1; justify-content: center; }
 }
 
 .site-main { min-height: calc(100vh - 70px - 300px); }
@@ -527,6 +539,36 @@ async function submitOpModal () {
   margin-bottom: 12px;
   display: block;
 }
+.footer-follow { margin-top: 14px; }
+.footer-follow-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--gold);
+  font-weight: 800;
+  margin: 0 0 8px;
+}
+.footer-social-row { display: flex; flex-wrap: wrap; gap: 8px 12px; }
+.footer-social-link {
+  font-size: 0.85rem;
+  color: var(--stone-200);
+  text-decoration: none;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--stone-700);
+}
+.footer-social-link:hover { color: var(--gold); border-color: rgba(201, 168, 76, 0.5); }
+.footer-follow-hint { margin-top: 12px; line-height: 1.5; }
+.footer-follow-hint a { color: var(--gold); }
+.quick-tile--signout {
+  background: transparent;
+  border: 1px solid var(--stone-600);
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+.quick-tile--signout:hover { border-color: var(--gold); color: var(--gold); }
+
 .footer-site-name {
   font-family: 'Cinzel', serif;
   font-weight: 700;
@@ -563,6 +605,26 @@ async function submitOpModal () {
   text-align: center;
   color: var(--stone-500);
   font-size: 0.85rem;
+}
+.footer-signout {
+  margin-top: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--stone-400);
+}
+.footer-signout-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 800;
+  color: var(--gold);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.footer-signout-btn:hover {
+  color: #fff1a8;
 }
 @media (max-width: 768px) {
   .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
@@ -604,17 +666,24 @@ async function submitOpModal () {
 .op-hint code { color: var(--cyan); font-size: 0.8em; }
 
 .site-ribbon {
-  background: linear-gradient(90deg, rgba(255, 45, 122, 0.28), rgba(0, 224, 255, 0.16), rgba(139, 92, 255, 0.22));
-  border-bottom: 1px solid rgba(0, 224, 255, 0.2);
-  font-size: 0.84rem;
-  font-weight: 900;
+  background: #f8fafc;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.78rem;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: #ffffff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+  letter-spacing: 0.08em;
+  color: #000000;
+  text-shadow: none;
 }
 .site-ribbon-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 22px; padding: 10px 12px; }
-.ribbon-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); opacity: 0.6; }
+.ribbon-txt { color: #000000; }
+.ribbon-txt--link {
+  color: #000000;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.ribbon-txt--link:hover { color: #146eb4; }
+.ribbon-dot { width: 4px; height: 4px; border-radius: 50%; background: #374151; opacity: 0.45; }
 
 .site-trust {
   position: relative;
@@ -641,6 +710,8 @@ async function submitOpModal () {
 }
 
 .nav-link.nav-highlight { color: var(--gold-light); }
+.nav-link.nav-phone { color: var(--trust-green); white-space: nowrap; }
+.nav-link.nav-phone:hover { color: var(--gold-light); }
 
 .header-owner-pill {
   display: inline-flex; align-items: center;

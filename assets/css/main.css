@@ -170,6 +170,12 @@ img { max-width: 100%; height: auto; }
   border-color: #146eb4;
   box-shadow: 0 0 0 3px rgba(20, 110, 180, 0.15);
 }
+.input::placeholder,
+.textarea::placeholder {
+  color: #000000;
+  font-weight: 700;
+  opacity: 1;
+}
 .textarea { resize: vertical; min-height: 100px; }
 
 .label {
@@ -193,7 +199,8 @@ img { max-width: 100%; height: auto; }
 }
 .auth-card .input::placeholder,
 .auth-card .textarea::placeholder {
-  color: #6e6588;
+  color: #000000;
+  font-weight: 700;
   opacity: 1;
 }
 .auth-card .select option {
@@ -915,7 +922,8 @@ label {
 }
 .site-main :is(.auth-card, .card, .form-section, .promo-panel) .input::placeholder,
 .site-main :is(.auth-card, .card, .form-section, .promo-panel) .textarea::placeholder {
-  color: #6b7280 !important;
+  color: #000000 !important;
+  font-weight: 700 !important;
   opacity: 1 !important;
 }
 .site-main .form-section :is(h2, h3, h4) {

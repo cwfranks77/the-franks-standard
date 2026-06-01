@@ -40,6 +40,67 @@ export const LISTING_CATEGORIES = [
 
 export type ListingCategory = (typeof LISTING_CATEGORIES)[number]
 
+/** General retail — accurate listing required; COA / signed guarantee not required. */
+export const NON_COLLECTIBLE_CATEGORIES: readonly ListingCategory[] = [
+  'Consumer Electronics',
+  'Tools & Workshop Equipment',
+  'Appliances & Home Improvement',
+  'Furniture & Home Decor',
+  'Garden, Patio & Outdoor Living',
+  'Sporting Goods & Outdoors',
+  'Automotive Parts & Accessories',
+  'Pet Supplies',
+  'Beauty & Personal Care',
+  'Health & Wellness',
+  'Baby, Kids & Family',
+  'Food & Gourmet (shelf-stable)',
+  'Office & School Supplies',
+  'Craft, Hobby & Maker Supplies',
+  'Apparel & Clothing',
+  'General Merchandise',
+  'General Store',
+  'Firearms Accessories',
+] as const
+
+/** Words in title/description that mean “this is a collectible” even if category is general merch. */
+export const COLLECTIBLE_INTENT_RE =
+  /\b(collectible|collectables|antique|antiques|vintage|graded|slabbed|slab|psa|bgs|sgc|pcgs|ngc|pmg|autograph|signed by|memorabilia|rookie card|trading card|sports card|pokemon|charizard|mtg|magic the gathering|comic book|key issue|first edition|coin|currency|numismatic|bullion|morgan dollar|silver eagle|estate find|provenance|certificate of authenticity|\bcoa\b|authenticity cert|game used|game-worn|1\/1|one of one|limited edition print|original pressing|sealed wax|factory sealed hobby)\b/i
+
+export function textSuggestsCollectible (
+  title?: string | null,
+  description?: string | null,
+): boolean {
+  const text = `${title || ''} ${description || ''}`.trim()
+  if (text.length < 4) return false
+  return COLLECTIBLE_INTENT_RE.test(text)
+}
+
+/** Category alone (import flows, quick checks). */
+export function categoryRequiresCoa (category: string | null | undefined): boolean {
+  const c = String(category || '').trim()
+  if (!c) return false
+  if ((NON_COLLECTIBLE_CATEGORIES as readonly string[]).includes(c)) return false
+  if (c === 'Other (describe in listing)') return false
+  return true
+}
+
+/** Full sell-flow rule: category + title/description keywords. */
+export function listingRequiresCoa (
+  category: string | null | undefined,
+  title?: string | null,
+  description?: string | null,
+): boolean {
+  const c = String(category || '').trim()
+  if (!c) return false
+  if ((NON_COLLECTIBLE_CATEGORIES as readonly string[]).includes(c)) {
+    return textSuggestsCollectible(title, description)
+  }
+  if (c === 'Other (describe in listing)') {
+    return textSuggestsCollectible(title, description)
+  }
+  return true
+}
+
 export const CATEGORY_CATALOG: { icon: string; name: ListingCategory; desc: string }[] = [
   { icon: '🏆', name: 'Sports Cards & Memorabilia', desc: 'Graded cards, signed jerseys, game-used gear' },
   { icon: '🃏', name: 'Trading Card Games (Pokemon, MTG, etc.)', desc: 'Sealed product, graded singles, tournament staples' },

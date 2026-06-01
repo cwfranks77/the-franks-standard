@@ -135,8 +135,8 @@ export function buildStoreResult (s: StoreBuilderInput): StoreBuildResult {
 
   return {
     storeName: name,
-    tagline: taglines[catKey] || `Authenticated ${cat.toLowerCase()} from a trusted seller on The Franks Standard.`,
-    bio: `Welcome to ${name}${locationLine ? ` (${locationLine})` : ''}. We specialize in ${s.description.trim() || cat.toLowerCase()} — ${voice}. Every item includes a Certificate of Authenticity or our signed in-platform guarantee.${audience} ${isDropship ? 'We work with verified suppliers for direct-to-door shipping.' : ''} Typical price range: ${priceRange}. Browse with confidence on The Franks Standard.`,
+    tagline: taglines[catKey] || `${cat} from a seller on The Franks Standard — seller-backed proof on collectibles.`,
+    bio: `Welcome to ${name}${locationLine ? ` (${locationLine})` : ''}. We specialize in ${s.description.trim() || cat.toLowerCase()} — ${voice}. Collectible listings include seller-provided COA or our signed guarantee template (seller backs the item; The Franks Standard facilitates the marketplace).${audience} ${isDropship ? 'We work with verified suppliers for direct-to-door shipping.' : ''} Typical price range: ${priceRange}.`,
     sampleTitles: SAMPLE_TITLES[s.category] || defaultTitles,
     descriptionTemplate: `[Item Name] — [Condition: New/Like New/Excellent/Good]
 
@@ -180,7 +180,7 @@ export function buildStoreSeoPack (s: StoreBuilderInput, store: StoreBuildResult
     60,
   )
   const metaDescription = truncate(
-    `Shop ${s.name.trim()} on The Franks Standard — ${primaryKw}. ${store.tagline} COA or signed guarantee on listings.${location ? ` Based in ${location}.` : ''}`,
+    `Shop ${s.name.trim()} on The Franks Standard — ${primaryKw}. ${store.tagline} Seller proof on collectibles.${location ? ` Based in ${location}.` : ''}`,
     160,
   )
 

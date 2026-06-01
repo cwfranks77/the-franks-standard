@@ -4,49 +4,36 @@
       <div class="hero-aurora" aria-hidden="true" />
       <div class="container hero-grid">
         <div class="hero-copy">
-          <p class="hero-pulse-ribbon">Proof-first marketplace. <span>Live floor energy.</span></p>
+          <p class="hero-pulse-ribbon">{{ HERO_RIBBON }}</p>
           <h1 class="hero-title-epic">
-            <span class="t-line">If it is here,</span>
-            <span class="t-line t-gold-shine">it is real.</span>
-            <span class="t-line t-sub">Provenance you can see, and enforce.</span>
+            <span class="t-line">{{ HERO_TITLE_LINE_1 }}</span>
+            <span class="t-line t-gold-shine">{{ HERO_TITLE_LINE_2 }}</span>
+            <span class="t-line t-sub">{{ HERO_TITLE_SUB }}</span>
           </h1>
           <p class="hero-sub-epic">
-            Every listing ships a COA or a signed, in-platform guarantee. Escrow, buyer confirm, and a permanent ban
-            for fraud. This is the collector economy, not the endless scroll.
+            {{ HERO_LEDE }}
           </p>
-          <div class="hero-actions">
-            <NuxtLink to="/browse" class="btn btn-primary btn-lg">Browse marketplace</NuxtLink>
-            <NuxtLink to="/auth/register" class="btn btn-outline btn-lg">Start free — 10 listings on us</NuxtLink>
-            <NuxtLink to="/pricing" class="btn btn-dark btn-lg">See pricing (from 4% on sales)</NuxtLink>
-          </div>
+          <p class="hero-facilitator-note">{{ FACILITATOR_ONE_LINER }}</p>
+          <HomeQuickNav />
           <p class="hero-help text-muted">
             Need help getting in?
             <a href="tel:+18778370527">(877) 837-0527</a> ·
             <a href="mailto:info@thefranksstandard.com">info@thefranksstandard.com</a>
           </p>
-          <div class="hero-avatars" aria-label="Product examples">
-            <img
-              v-for="(a, i) in heroMosaic"
-              :key="i"
-              :src="a"
-              alt=""
-              width="72"
-              height="72"
-              class="mosaic-img"
-              @error="onHeroMosaicError"
-            />
-          </div>
-          <div class="hero-badges">
-            <NuxtLink to="/how-it-works" class="coa-badge coa-badge-bright coa-badge-link">
-              COA or platform guarantee on every public listing
-            </NuxtLink>
-            <NuxtLink to="/prohibited-items" class="coa-badge soft coa-badge-link">
-              Zero room for fakes
-            </NuxtLink>
-          </div>
         </div>
+        <HomeHeroVisual />
       </div>
     </section>
+
+    <HomeShowcaseReel />
+
+    <HomeBrowsePreview />
+
+    <HomeTrustMission />
+
+    <HomeAuthenticityEducation />
+
+    <TopSellersShowcase />
 
     <section class="founder-bar" aria-label="Founder is reachable">
       <div class="container founder-bar-inner">
@@ -58,15 +45,15 @@
           </p>
         </div>
         <div class="founder-bar-actions">
-          <a href="tel:+18778370527" class="btn btn-outline btn-sm">Call (877) 837-0527</a>
-          <NuxtLink to="/open-door" class="btn btn-primary btn-sm">Open Door Policy &rarr;</NuxtLink>
+          <a href="tel:+18778370527" class="mkt-btn mkt-btn--ghost mkt-btn--compact">Call (877) 837-0527</a>
+          <NuxtLink to="/open-door" class="mkt-btn mkt-btn--secondary mkt-btn--compact">Open Door</NuxtLink>
         </div>
       </div>
     </section>
 
-    <HomeBrowsePreview />
+    <HomeFloorHub />
 
-    <SitePromoOffers />
+    <HomeLiveNow />
 
     <section class="activity-ticker" aria-label="What the Standard stands for">
       <div class="container">
@@ -76,112 +63,7 @@
       </div>
     </section>
 
-    <section class="section sig-section">
-      <div class="container">
-        <h2 class="section-title text-center">Signature moves you will not find bolted onto a bazaar app</h2>
-        <p class="section-subtitle text-center text-muted">
-          Proof, meetups, and help without shipping you to a generic help center maze.
-        </p>
-        <div class="grid grid-4 mt-4 sig-grid">
-          <article v-for="s in signatures" :key="s.title" class="sig-card">
-            <p class="sig-tag">{{ s.tag }}</p>
-            <h3>{{ s.title }}</h3>
-            <p class="sig-desc">{{ s.desc }}</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="stats">
-      <div class="container stats-row">
-        <div class="stat" v-for="s in stats" :key="s.t">
-          <p class="stat-n">{{ s.n }}</p>
-          <p class="stat-t">{{ s.t }}</p>
-        </div>
-      </div>
-    </section>
-
     <TrustCounter />
-
-    <HomeOfferings />
-
-    <section class="section">
-      <div class="container">
-        <h2 class="section-title text-center">The three pillars of The Standard</h2>
-        <p class="section-subtitle text-center text-muted">Proof first. Pay second. Ban forever for fraud — no passes.</p>
-        <div class="grid grid-3 mt-4">
-          <div class="pillar-card" v-for="(p, i) in pillars" :key="p.t">
-            <div class="pillar-top">
-              <span class="pillar-num">{{ i + 1 }}</span>
-            </div>
-            <h3>{{ p.t }}</h3>
-            <p>{{ p.d }}</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section only-here">
-      <div class="container">
-        <h2 class="section-title">What you get here, not in a bazaar or big-box</h2>
-        <p class="section-subtitle text-muted">Built for the collector economy — not the endless SKU line.</p>
-        <div class="grid grid-2 mt-4 bento">
-          <article class="bento-card" v-for="f in exclusives" :key="f.title">
-            <div class="bento-icon" v-html="f.icon" />
-            <div>
-              <h3>{{ f.title }}</h3>
-              <p>{{ f.body }}</p>
-            </div>
-          </article>
-        </div>
-        <NuxtLink to="/compare" class="inline-link">See how we compare to other marketplaces</NuxtLink>
-      </div>
-    </section>
-
-    <section class="section section-categories">
-      <div class="container">
-        <h2 class="section-title text-center">Curated for serious inventory</h2>
-        <p class="section-subtitle text-center text-muted">If it belongs on a stage, a slab, a wall, or a rack — and it is real</p>
-        <div class="grid grid-4 mt-4">
-          <NuxtLink
-            v-for="cat in categories"
-            :key="cat.name"
-            :to="{ path: '/browse', query: { category: cat.name } }"
-            class="category-card"
-          >
-            <div class="category-emoji">{{ cat.icon }}</div>
-            <h4>{{ cat.name }}</h4>
-            <p>{{ cat.desc }}</p>
-          </NuxtLink>
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="container">
-        <h2 class="section-title text-center">Other marketplaces vs. the Standard</h2>
-        <p class="section-subtitle text-center text-muted">They are built for size. We are built for what cannot be faked on purpose.</p>
-        <div class="comparison mt-4">
-          <div class="comp-col comp-bad">
-            <h3>What breaks outside</h3>
-            <ul>
-              <li>Open listings, optional paperwork, endless gray-market noise</li>
-              <li>Fees and policies tuned for retail turns, not provenance</li>
-              <li>Disputes that can drag while bad actors re-list elsewhere</li>
-            </ul>
-          </div>
-          <div class="comp-col comp-good">
-            <h3>How The Franks Standard answers</h3>
-            <ul>
-              <li>Auth gate before a listing is public — COA or a signed in-platform guarantee</li>
-              <li>Escrow and buyer confirmation to match how collectibles are actually traded</li>
-              <li>Permanent ban on proven fakes, not a “strike” system</li>
-            </ul>
-            <NuxtLink to="/compare" class="btn btn-outline btn-sm comp-cta">Open the full comparison</NuxtLink>
-          </div>
-        </div>
-      </div>
-    </section>
 
     <section class="section proof-strip">
       <div class="container proof-inner">
@@ -203,11 +85,11 @@
         <h2 class="section-title">Bring your store to the floor</h2>
         <p class="section-subtitle text-muted">
           We are onboarding shops and pro sellers with authenticity-backed inventory—public listings and checkout roll out
-          in stages so there are no surprises. Same standards: COA or a signed in-platform guarantee on what goes public.
+          in stages so there are no surprises. Collectible listings require seller proof; we screen and enforce policies — we do not guarantee authenticity.
         </p>
         <div class="hero-actions mt-3">
           <NuxtLink to="/sellers" class="btn btn-primary btn-lg">For sellers &amp; stores</NuxtLink>
-          <NuxtLink to="/sell" class="btn btn-outline btn-lg">Send a listing draft</NuxtLink>
+          <NuxtLink to="/sell/start" class="btn btn-outline btn-lg">Send a listing draft</NuxtLink>
         </div>
       </div>
     </section>
@@ -243,19 +125,14 @@
 </template>
 
 <script setup>
-import { CATEGORY_CATALOG } from '~/utils/marketplaceCategories'
-import { HOME_BROWSE_SAMPLES } from '~/utils/homeBrowseSamples.js'
-
-function onHeroMosaicError (e) {
-  const el = e?.target
-  if (!el || el.dataset?.fallbackHeroMosaic) { return }
-  el.dataset.fallbackHeroMosaic = '1'
-  el.src =
-    'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
-  el.classList.add('mosaic-fallback')
-}
-
-const heroMosaic = HOME_BROWSE_SAMPLES.slice(0, 6).map((s) => s.image)
+import {
+  FACILITATOR_ONE_LINER,
+  HERO_LEDE,
+  HERO_RIBBON,
+  HERO_TITLE_LINE_1,
+  HERO_TITLE_LINE_2,
+  HERO_TITLE_SUB,
+} from '~/utils/marketplaceFacilitatorCopy.js'
 
 const tickerBelt = [
   'Sellers: COA upload in flow. ',
@@ -266,72 +143,12 @@ const tickerBelt = [
   'See how we differ from other marketplaces. ',
 ]
 const tickerBeltDoubled = [...tickerBelt, ...tickerBelt]
-
-const stats = [
-  { n: '1', t: 'Proof before publish — no exceptions' },
-  { n: '100%', t: 'Listings with COA or a signed platform guarantee' },
-  { n: '0', t: 'Chances to come back as a known fraud' },
-]
-
-const pillars = [
-  { t: 'List with evidence', d: 'Upload a COA or sign The Franks Standard authenticity backing so the buyer can review before the sale closes.' },
-  { t: 'Pay with hold', d: 'Escrow and buyer confirmation are built in — your funds stay protected until the item matches the story.' },
-  { t: 'Lose the account if you fake it', d: 'Counterfeit is not a “dispute” — it is a removal, a refund, and a permanent bar from the community.' },
-]
-
-const signatures = [
-  {
-    tag: 'Witness room',
-    title: 'Video meet on the same floor as escrow',
-    desc: 'Open a Jitsi room from Video in the header, share one link, and keep the deal inside the Standard’s story — no random app hopping.',
-  },
-  {
-    tag: 'Policy desk',
-    title: 'Help that knows your playbook',
-    desc: 'The Help assistant is tuned for fees, COA, disputes, and tech paths. Escalate to humans via Support and email when it is not enough.',
-  },
-  {
-    tag: 'Proof vault',
-    title: 'No public listing without COA or a signed guarantee',
-    desc: 'Authentication is the listing, not an add-on PDF. Buyers see proof before money moves; fraud is a permanent ban, not a strike.',
-  },
-  {
-    tag: 'Seller shield',
-    title: 'Reputation that is hard to fake',
-    desc: 'You are on a named standard for high-trust inventory — collectibles, gear, and pieces that deserve paperwork, not a SKU flood.',
-  },
-]
-
-const exclusives = [
-  {
-    title: 'Auth is the listing, not a sticker',
-    body: 'Big marketplaces optimize for volume and optional paperwork. Here, proof is a gate before publish — not buried fine print.',
-    icon: '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#c9a84c" stroke-width="1.4"><path d="M4 7h16v10H4zM8 7V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M8 12h8M8 16h4"/></svg>',
-  },
-  {
-    title: 'We punish the right people',
-    body: 'Proven fakes end the seller relationship. Buyers are protected first — not parked in an endless dispute queue.',
-    icon: '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#2ecc71" stroke-width="1.4"><path d="M7 12l3 3 7-7"/><circle cx="12" cy="12" r="9.5"/></svg>',
-  },
-  {
-    title: 'Built for inventory that deserves paperwork',
-    body: 'Cards, watches, art, instruments, grails — categories where a photo and a hunch are not a substitute for evidence.',
-    icon: '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#c9a84c" stroke-width="1.4"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg>',
-  },
-  {
-    title: 'Support and tech in plain sight',
-    body: 'Customer and technical help live on Support; the Help button covers common cases. No generic maze — just the Standard’s lanes.',
-    icon: '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#2ecc71" stroke-width="1.4"><path d="M12 3l2.2 4.4L19 8.3l-3.4 3.2L16.2 19 12 16.6 7.8 19l.6-7.5L5 8.3l4.8-.9z"/></svg>',
-  },
-]
-
-const categories = CATEGORY_CATALOG
 </script>
 
 <style scoped>
 .hero-epic {
   position: relative;
-  padding: 64px 0 48px;
+  padding: 40px 0 28px;
   overflow: hidden;
 }
 .hero-aurora {
@@ -366,25 +183,32 @@ const categories = CATEGORY_CATALOG
 .hero-grid {
   position: relative;
   display: grid;
-  grid-template-columns: 1.08fr 0.92fr;
-  gap: 40px;
+  grid-template-columns: 1fr;
+  max-width: 1120px;
+  gap: 28px;
   align-items: center;
+}
+@media (min-width: 960px) {
+  .hero-grid {
+    grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
+    gap: 32px;
+  }
 }
 .hero-pulse-ribbon {
   display: inline-block;
   font-size: 0.72rem;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  color: var(--magenta, #ff2d7a);
+  color: #000000;
   margin-bottom: 14px;
-  background: linear-gradient(90deg, rgba(255, 45, 122, 0.15), rgba(0, 224, 255, 0.12));
+  background: rgba(255, 255, 255, 0.92);
   padding: 8px 16px;
   border-radius: 999px;
-  border: 1px solid rgba(0, 224, 255, 0.35);
-  box-shadow: 0 0 0 1px rgba(255, 45, 122, 0.12), 0 0 18px rgba(0, 224, 255, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
-.hero-pulse-ribbon span { color: var(--cyan, #00e0ff); }
+.hero-pulse-ribbon span { color: #000000; font-weight: 800; }
 .hero-title-epic {
   font-family: 'Syne', 'Inter', sans-serif;
   font-size: clamp(2rem, 4.2vw, 3.15rem);
@@ -393,6 +217,11 @@ const categories = CATEGORY_CATALOG
   display: flex;
   flex-direction: column;
   gap: 0.1em;
+  color: #000000;
+}
+.t-line:not(.t-gold-shine):not(.t-sub) {
+  color: #000000;
+  -webkit-text-fill-color: #000000;
 }
 .t-gold-shine {
   background: linear-gradient(110deg, var(--gold) 0%, #fff1a8 30%, var(--gold) 55%, var(--magenta) 100%);
@@ -423,7 +252,15 @@ const categories = CATEGORY_CATALOG
   color: #111827;
   font-weight: 700;
   line-height: 1.7;
-  max-width: 560px;
+  max-width: 640px;
+  margin: 0 0 8px;
+}
+.hero-facilitator-note {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #374151;
+  line-height: 1.5;
+  max-width: 640px;
   margin: 0 0 4px;
 }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
@@ -446,7 +283,7 @@ const categories = CATEGORY_CATALOG
   margin: 20px 0 10px;
 }
 .mosaic-img {
-  width: 48px; height: 48px; border-radius: 50%;
+  width: 40px; height: 40px; border-radius: 50%;
   object-fit: cover;
   border: 2px solid var(--gold);
   box-shadow: 0 0 0 1px rgba(0, 224, 255, 0.22), 0 8px 20px rgba(255, 45, 122, 0.18);
@@ -551,12 +388,10 @@ const categories = CATEGORY_CATALOG
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  flex: 0 0 auto;
+  flex-shrink: 0;
 }
 @media (max-width: 640px) {
   .founder-bar-inner { flex-direction: column; align-items: flex-start; }
-  .founder-bar-actions { width: 100%; }
-  .founder-bar-actions .btn { flex: 1 1 auto; text-align: center; }
 }
 
 .activity-ticker {
@@ -690,8 +525,16 @@ const categories = CATEGORY_CATALOG
   font-family: 'Cinzel', serif;
 }
 .category-card p { color: #1f2937; font-size: 0.85rem; font-weight: 700; line-height: 1.5; }
-.section-categories .section-title { color: #111827 !important; }
-.section-categories .section-subtitle { color: #374151 !important; font-weight: 700 !important; }
+.section-categories {
+  padding: 48px 0;
+  background: #fff;
+}
+.section-categories .section-title { color: #111827 !important; font-size: 1.35rem; }
+.section-categories .section-subtitle { color: #374151 !important; font-weight: 600 !important; font-size: 0.9rem; }
+.section-categories .category-shelf {
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 8px;
+}
 .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 .comp-col { padding: 28px; border-radius: var(--radius-lg); }
 .comp-bad { background: rgba(231, 76, 60, 0.05); border: 1px solid rgba(231, 76, 60, 0.18); }

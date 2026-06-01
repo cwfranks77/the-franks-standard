@@ -4,18 +4,27 @@ export function useOpsSession () {
   const isAuthed = useState('ops-authed', () => false)
 
   if (import.meta.client) {
-    isAuthed.value = sessionStorage.getItem(STORAGE_KEY) === '1'
+    let authed = localStorage.getItem(STORAGE_KEY) === '1'
+    // Migrate legacy sessionStorage unlock so existing tabs keep access.
+    if (!authed && sessionStorage.getItem(STORAGE_KEY) === '1') {
+      localStorage.setItem(STORAGE_KEY, '1')
+      sessionStorage.removeItem(STORAGE_KEY)
+      authed = true
+    }
+    isAuthed.value = authed
   }
 
   function grant () {
     if (import.meta.client) {
-      sessionStorage.setItem(STORAGE_KEY, '1')
+      localStorage.setItem(STORAGE_KEY, '1')
+      sessionStorage.removeItem(STORAGE_KEY)
       isAuthed.value = true
     }
   }
 
   function revoke () {
     if (import.meta.client) {
+      localStorage.removeItem(STORAGE_KEY)
       sessionStorage.removeItem(STORAGE_KEY)
       isAuthed.value = false
     }

@@ -1,0 +1,258 @@
+-- Full dropship automation layer for The Franks Standard
+-- Safe to run multiple times (idempotent patterns used where possible).
+
+-- 1) Listings: persist dropship automation metadata
+alter table public.listings
+  add column if not exists listing_mode text not null default 'direct'
+    check (listing_mode in ('direct', 'dropship')),
+  add column if not exists dropship_provider_key text,
+  add column if not exists dropship_provider_name text,
+  add column if not exists dropship_sales_channel_key text,
+  add column if not exists dropship_supplier_name text,
+  add column if not exists dropship_supplier_email text,
+  add column if not exists dropship_supplier_sku text,
+  add column if not exists dropship_ship_time text,
+  add column if not exists dropship_ships_from text;
+
+create index if not exists listings_listing_mode_idx
+  on public.listings (listing_mode);
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'listings_doba_requires_supplier_sku'
+  ) then
+    alter table public.listings
+      add constraint listings_doba_requires_supplier_sku
+      check (
+        listing_mode <> 'dropship'
+        or dropship_provider_key <> 'doba'
+        or nullif(trim(coalesce(dropship_supplier_sku, '')), '') is not null
+      );
+  end if;
+end $$;
+
+-- 2) Orders table (if not already created by an earlier schema file)
+create table if not exists public.orders (
+  id uuid primary key default gen_random_uuid(),
+  listing_id uuid not null references public.listings(id) on delete restrict,
+  buyer_id uuid not null references public.profiles(id) on delete restrict,
+  seller_id uuid not null references public.profiles(id) on delete restrict,
+  amount numeric(12,2) not null check (amount > 0),
+  status text not null default 'pending'
+    check (status in ('pending', 'paid', 'submitted_to_supplier', 'shipped', 'delivered', 'cancelled', 'refunded')),
+  buyer_name text,
+  buyer_email text,
+  shipping_name text,
+  shipping_line1 text,
+  shipping_line2 text,
+  shipping_city text,
+  shipping_state text,
+  shipping_postal_code text,
+  shipping_country text,
+  tracking_number text,
+  tracking_carrier text,
+  supplier_reference text,
+  supplier_status text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists orders_listing_id_idx on public.orders (listing_id);
+create index if not exists orders_buyer_id_idx on public.orders (buyer_id);
+create index if not exists orders_seller_id_idx on public.orders (seller_id);
+create index if not exists orders_status_idx on public.orders (status);
+
+alter table public.orders enable row level security;
+
+drop policy if exists "Orders visible to buyer or seller" on public.orders;
+create policy "Orders visible to buyer or seller"
+  on public.orders
+  for select
+  using (auth.uid() = buyer_id or auth.uid() = seller_id);
+
+drop policy if exists "Buyer can create own orders" on public.orders;
+create policy "Buyer can create own orders"
+  on public.orders
+  for insert
+  with check (auth.uid() = buyer_id);
+
+drop policy if exists "Seller can update own orders" on public.orders;
+create policy "Seller can update own orders"
+  on public.orders
+  for update
+  using (auth.uid() = seller_id);
+
+-- 3) Automation queue for supplier submission
+create table if not exists public.dropship_orders (
+  id uuid primary key default gen_random_uuid(),
+  order_id uuid not null references public.orders(id) on delete cascade,
+  listing_id uuid not null references public.listings(id) on delete cascade,
+  seller_id uuid not null references public.profiles(id) on delete cascade,
+  provider_key text not null,
+  sales_channel_key text not null default 'the-franks-standard',
+  supplier_name text,
+  supplier_email text,
+  supplier_payload jsonb not null default '{}'::jsonb,
+  provider_order_id text,
+  provider_status text not null default 'queued'
+    check (provider_status in ('queued', 'submitted', 'acknowledged', 'shipped', 'delivered', 'error', 'cancelled')),
+  sync_attempts integer not null default 0,
+  last_error text,
+  next_retry_at timestamptz,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (order_id)
+);
+
+create index if not exists dropship_orders_provider_status_idx
+  on public.dropship_orders (provider_status, next_retry_at, created_at);
+create index if not exists dropship_orders_provider_order_id_idx
+  on public.dropship_orders (provider_order_id);
+create index if not exists dropship_orders_seller_id_idx
+  on public.dropship_orders (seller_id);
+
+alter table public.dropship_orders enable row level security;
+
+drop policy if exists "Seller sees own dropship orders" on public.dropship_orders;
+create policy "Seller sees own dropship orders"
+  on public.dropship_orders
+  for select
+  using (auth.uid() = seller_id);
+
+drop policy if exists "Seller inserts own dropship orders" on public.dropship_orders;
+create policy "Seller inserts own dropship orders"
+  on public.dropship_orders
+  for insert
+  with check (auth.uid() = seller_id);
+
+drop policy if exists "Seller updates own dropship orders" on public.dropship_orders;
+create policy "Seller updates own dropship orders"
+  on public.dropship_orders
+  for update
+  using (auth.uid() = seller_id);
+
+-- 4) Event/audit feed
+create table if not exists public.dropship_events (
+  id bigserial primary key,
+  dropship_order_id uuid references public.dropship_orders(id) on delete cascade,
+  order_id uuid references public.orders(id) on delete cascade,
+  event_type text not null,
+  event_payload jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists dropship_events_order_id_idx on public.dropship_events (order_id, created_at desc);
+create index if not exists dropship_events_dropship_order_id_idx on public.dropship_events (dropship_order_id, created_at desc);
+
+alter table public.dropship_events enable row level security;
+
+drop policy if exists "Dropship events visible to order participants" on public.dropship_events;
+create policy "Dropship events visible to order participants"
+  on public.dropship_events
+  for select
+  using (
+    exists (
+      select 1
+      from public.orders o
+      where o.id = dropship_events.order_id
+        and (o.buyer_id = auth.uid() or o.seller_id = auth.uid())
+    )
+  );
+
+-- 5) Auto timestamp updates
+create or replace function public.set_updated_at()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$;
+
+drop trigger if exists trg_orders_set_updated_at on public.orders;
+create trigger trg_orders_set_updated_at
+  before update on public.orders
+  for each row execute function public.set_updated_at();
+
+drop trigger if exists trg_dropship_orders_set_updated_at on public.dropship_orders;
+create trigger trg_dropship_orders_set_updated_at
+  before update on public.dropship_orders
+  for each row execute function public.set_updated_at();
+
+-- 6) When a paid dropship order is created, queue it automatically
+create or replace function public.queue_dropship_order_after_insert()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  l public.listings%rowtype;
+begin
+  select * into l from public.listings where id = new.listing_id;
+
+  if l.id is null then
+    return new;
+  end if;
+
+  if l.listing_mode = 'dropship' then
+    insert into public.dropship_orders (
+      order_id,
+      listing_id,
+      seller_id,
+      provider_key,
+      sales_channel_key,
+      supplier_name,
+      supplier_email,
+      supplier_payload
+    )
+    values (
+      new.id,
+      new.listing_id,
+      new.seller_id,
+      coalesce(l.dropship_provider_key, 'custom'),
+      coalesce(l.dropship_sales_channel_key, 'the-franks-standard'),
+      l.dropship_supplier_name,
+      l.dropship_supplier_email,
+      jsonb_build_object(
+        'order_id', new.id,
+        'listing_id', new.listing_id,
+        'listing_title', l.title,
+        'supplier_name', l.dropship_supplier_name,
+        'supplier_email', l.dropship_supplier_email,
+        'supplier_sku', l.dropship_supplier_sku,
+        'line_items', jsonb_build_array(
+          jsonb_build_object(
+            'sku', l.dropship_supplier_sku,
+            'quantity', 1
+          )
+        ),
+        'shipping', jsonb_build_object(
+          'name', new.shipping_name,
+          'line1', new.shipping_line1,
+          'line2', new.shipping_line2,
+          'city', new.shipping_city,
+          'state', new.shipping_state,
+          'postal_code', new.shipping_postal_code,
+          'country', new.shipping_country
+        )
+      )
+    )
+    on conflict (order_id) do nothing;
+
+    insert into public.dropship_events (order_id, event_type, event_payload)
+    values (new.id, 'queued', jsonb_build_object('provider', coalesce(l.dropship_provider_key, 'custom')));
+  end if;
+
+  return new;
+end;
+$$;
+
+drop trigger if exists trg_orders_queue_dropship on public.orders;
+create trigger trg_orders_queue_dropship
+  after insert on public.orders
+  for each row execute function public.queue_dropship_order_after_insert();

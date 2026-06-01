@@ -1,19 +1,21 @@
 <template>
-  <section class="home-browse section home-browse-alive" aria-labelledby="home-browse-title">
+  <section class="home-browse section" aria-labelledby="home-browse-title">
     <div class="container">
       <header class="home-browse-head">
-        <div>
+        <div class="home-browse-head-text">
           <p class="home-browse-live">
             <span class="live-dot" aria-hidden="true" />
-            Live floor preview
+            Live floor
           </p>
-          <h2 id="home-browse-title" class="section-title">On the floor right now</h2>
+          <h2 id="home-browse-title" class="section-title">Trending on the floor</h2>
           <p class="section-subtitle text-muted">
-            Tap a category to browse that niche — every public listing is COA- or guarantee-backed.
-            <NuxtLink v-if="liveListingCount > 0" to="/browse" class="live-count-link">{{ liveListingCount }} live listing{{ liveListingCount === 1 ? '' : 's' }} on the floor now →</NuxtLink>
+            <NuxtLink v-if="liveListingCount > 0" to="/browse" class="live-count-link">
+              {{ liveListingCount }} listing{{ liveListingCount === 1 ? '' : 's' }} live
+            </NuxtLink>
+            <span v-else>Browse by category — seller proof on collectibles</span>
           </p>
         </div>
-        <NuxtLink to="/browse" class="btn btn-primary btn-lg home-browse-cta">Browse marketplace</NuxtLink>
+        <NuxtLink to="/browse" class="mkt-btn mkt-btn--primary mkt-btn--compact">See all</NuxtLink>
       </header>
 
       <div class="home-browse-grid">
@@ -29,21 +31,26 @@
               :src="item.image"
               :alt="item.title"
               loading="lazy"
-              width="320"
-              height="320"
+              width="200"
+              height="160"
+              :data-showcase-key="item.showcaseKey || ''"
+              @error="onShowcaseImageError"
             />
           </div>
           <div class="home-browse-meta">
             <p class="home-browse-cat">{{ item.category }}</p>
             <h3>{{ item.title }}</h3>
-            <p class="home-browse-sample-hint">Browse this category →</p>
           </div>
         </NuxtLink>
       </div>
 
-      <div class="home-browse-foot">
-        <NuxtLink to="/browse" class="btn btn-dark btn-lg">Browse all listings →</NuxtLink>
-        <NuxtLink to="/sell" class="btn btn-outline btn-lg">List your item</NuxtLink>
+      <div class="home-browse-links">
+        <NuxtLink to="/browse" class="home-browse-link-chip">All listings</NuxtLink>
+        <NuxtLink to="/categories" class="home-browse-link-chip">Categories</NuxtLink>
+        <NuxtLink to="/sell/start" class="home-browse-link-chip">Start selling</NuxtLink>
+        <NuxtLink to="/sell/import" class="home-browse-link-chip">Import eBay</NuxtLink>
+        <NuxtLink to="/collections" class="home-browse-link-chip">Collections</NuxtLink>
+        <NuxtLink to="/top-sellers" class="home-browse-link-chip">Top sellers</NuxtLink>
       </div>
     </div>
   </section>
@@ -55,24 +62,19 @@ import {
   shuffleItems,
   browseLinkForCategory,
 } from '~/utils/homeBrowseSamples.js'
+import { onShowcaseImageError } from '~/utils/marketplaceShowcaseImages.js'
 
 const supabase = useSupabaseClient()
 
-function buildSampleItems (count = 8) {
-  return shuffleItems(HOME_BROWSE_SAMPLES).slice(0, count).map(mapSample)
+function buildSampleItems (count = 10) {
+  return shuffleItems(HOME_BROWSE_SAMPLES).slice(0, count).map((row) => ({
+    ...row,
+    to: browseLinkForCategory(row.category),
+  }))
 }
 
 const displayItems = ref(buildSampleItems())
 const liveListingCount = ref(0)
-
-function mapSample (row) {
-  return {
-    ...row,
-    to: browseLinkForCategory(row.category),
-    isSample: true,
-    fallbackImage: row.image,
-  }
-}
 
 async function loadLiveCount () {
   try {
@@ -94,99 +96,92 @@ onMounted(() => {
 
 <style scoped>
 .home-browse {
-  background: linear-gradient(180deg, rgba(0, 224, 255, 0.05) 0%, transparent 55%);
-  padding-top: 48px;
-  padding-bottom: 56px;
-  position: relative;
-}
-.home-browse-alive::before {
-  content: '';
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.45), rgba(0, 224, 255, 0.35), transparent);
-  pointer-events: none;
+  background: #f8fafc;
+  padding: 40px 0 48px;
+  border-top: 1px solid #e2e8f0;
 }
 .home-browse-head {
   display: flex;
-  flex-wrap: wrap;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 16px 24px;
-  margin-bottom: 28px;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.home-browse-head .section-title {
+  margin-bottom: 4px;
+  text-align: left;
+  font-size: 1.35rem;
+}
+.home-browse-head-text { flex: 1; min-width: 0; }
+.home-browse-head .section-subtitle {
+  text-align: left;
+  margin: 0;
+  font-size: 0.88rem;
 }
 .home-browse-live {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  margin: 0 0 8px;
-  font-size: 0.72rem;
+  gap: 6px;
+  margin: 0 0 4px;
+  font-size: 0.68rem;
   font-weight: 800;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--trust-green, #00f5a0);
+  color: #059669;
 }
 .live-dot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: var(--trust-green, #00f5a0);
-  box-shadow: 0 0 0 0 rgba(0, 245, 160, 0.55);
+  background: #10b981;
   animation: live-pulse 2s ease-out infinite;
 }
 @keyframes live-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(0, 245, 160, 0.55); }
-  70% { box-shadow: 0 0 0 10px rgba(0, 245, 160, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(0, 245, 160, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+  70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
 }
-.home-browse-head .section-title { margin-bottom: 8px; text-align: left; }
-.home-browse-head .section-subtitle { text-align: left; max-width: 560px; margin: 0; }
-.sample-note { display: block; margin-top: 6px; font-size: 0.88rem; font-style: italic; }
 .live-count-link {
-  display: block;
-  margin-top: 8px;
   font-weight: 700;
   color: #146eb4;
   text-decoration: none;
 }
 .live-count-link:hover { text-decoration: underline; }
-.home-browse-cta { flex-shrink: 0; }
+
 .home-browse-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
 }
-@media (max-width: 1024px) {
-  .home-browse-grid { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 1100px) {
+  .home-browse-grid { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 800px) {
+  .home-browse-grid { grid-template-columns: repeat(3, 1fr); }
 }
 @media (max-width: 520px) {
-  .home-browse-grid { grid-template-columns: 1fr; }
+  .home-browse-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
 }
+
 .home-browse-card {
   text-decoration: none;
   color: inherit;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 1px solid rgba(0, 224, 255, 0.22);
   background: #fff;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
-  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
-  animation: card-rise 0.55s ease both;
-  animation-delay: calc(var(--card-i, 0) * 55ms);
-}
-@keyframes card-rise {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: box-shadow 0.15s, border-color 0.15s;
 }
 .home-browse-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(201, 168, 76, 0.65);
-  box-shadow: 0 16px 40px rgba(201, 168, 76, 0.14), 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-color: #c9a84c;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
 }
 .home-browse-img-wrap {
-  position: relative;
-  aspect-ratio: 1;
-  background: linear-gradient(145deg, #111827 0%, #1f2937 100%);
+  aspect-ratio: 4 / 3;
+  background: #0f172a;
   overflow: hidden;
 }
 .home-browse-img-wrap img {
@@ -194,78 +189,57 @@ onMounted(() => {
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.35s ease;
 }
-.home-browse-card:hover .home-browse-img-wrap img {
-  transform: scale(1.04);
+.home-browse-meta {
+  padding: 8px 10px 10px;
 }
-.home-browse-coa-tag,
-.home-browse-sample-tag,
-.home-browse-auction-tag {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 4px 8px;
-  border-radius: 6px;
-}
-.home-browse-coa-tag {
-  background: rgba(0, 0, 0, 0.72);
-  color: var(--gold, #c9a84c);
-}
-.home-browse-sample-tag {
-  background: rgba(255, 255, 255, 0.92);
-  color: #374151;
-}
-.home-browse-auction-tag {
-  background: rgba(234, 88, 12, 0.92);
-  color: #fff;
-}
-.home-browse-meta { padding: 12px 14px 16px; }
 .home-browse-cat {
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #6b7280;
-  margin: 0 0 4px;
+  margin: 0 0 2px;
+  font-size: 0.62rem;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .home-browse-meta h3 {
-  font-size: 0.95rem;
+  margin: 0;
+  font-size: 0.78rem;
   font-weight: 700;
-  margin: 0 0 6px;
   color: #111827;
-  line-height: 1.35;
+  line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.home-browse-price {
-  margin: 0;
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: var(--gold, #c9a84c);
-}
-.home-browse-sample-hint {
-  margin: 0;
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: #146eb4;
-}
-.home-browse-foot {
+
+.home-browse-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  justify-content: center;
-  margin-top: 32px;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #e2e8f0;
 }
+.home-browse-link-chip {
+  padding: 6px 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1e40af;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 6px;
+  text-decoration: none;
+}
+.home-browse-link-chip:hover {
+  background: #dbeafe;
+  border-color: #93c5fd;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .home-browse-card { animation: none; }
   .live-dot { animation: none; }
-  .home-browse-card:hover .home-browse-img-wrap img { transform: none; }
 }
 </style>

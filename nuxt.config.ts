@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto'
 import { normalizeOpsPhrase } from './utils/opsPhrase'
+import { META_DESCRIPTION, OG_DESCRIPTION } from './utils/marketplaceFacilitatorCopy.js'
 
 const rawSite = process.env.NUXT_PUBLIC_SITE_URL
 const siteUrl = (rawSite && String(rawSite).trim())
@@ -22,7 +23,9 @@ const opsAccessKeyHash = opsKeyPlain
 // is not separately set. Without this, the GitHub Actions workflow's
 // `${{ secrets.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH }}` (which resolves to "")
 // would silently wipe out the hash we just computed from the plaintext.
-process.env.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH = opsAccessKeyHash
+if (opsAccessKeyHash) {
+  process.env.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH = opsAccessKeyHash
+}
 console.log('[ops] opsAccessKeyHash length:', opsAccessKeyHash.length)
 
 // Stripe Payment Link defaults — CI passes empty secrets when unset; write back so Nuxt
@@ -46,10 +49,26 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
   // Off by default: the floating Nuxt DevTools bubble looks like a stray "moving blue outline" on the page in dev.
   devtools: { enabled: false },
+  hooks: {
+    'app:resolve'(app) {
+      app.plugins = app.plugins.filter((p) => {
+        const src = String(p.src || '').replace(/\\/g, '/')
+        return !(src.includes('@nuxtjs/supabase') && src.includes('supabase.client'))
+      })
+    },
+  },
   ssr: false,
   nitro: {
     // Vercel static hosting: use generic static preset. GitHub Pages keeps github-pages (.nojekyll, etc.).
     preset: process.env.VERCEL ? 'static' : 'github-pages',
+    prerender: {
+      routes: [
+        '/ops/documents',
+        '/ops/print-pack',
+        '/ops/print-coa',
+        '/verify/coa',
+      ],
+    },
   },
 
   // Operator unlock phrase for /ops — only the SHA-256 hash ships to the browser.
@@ -64,23 +83,53 @@ export default defineNuxtConfig({
       stripeCheckoutEnabled: process.env.NUXT_PUBLIC_STRIPE_CHECKOUT_ENABLED ?? 'true',
       stripeTaxCheckoutEnabled: process.env.NUXT_PUBLIC_STRIPE_TAX_CHECKOUT_ENABLED ?? 'true',
       customerServicePhone: process.env.NUXT_PUBLIC_CUSTOMER_SERVICE_PHONE || '(877) 837-0527',
+      /** Brandy's Sporting Goods storefront paused until supplier account is funded */
+      brandyStoreOnHold: process.env.NUXT_PUBLIC_BRANDY_STORE_ON_HOLD ?? 'true',
       androidApkUrl: process.env.NUXT_PUBLIC_ANDROID_APK_URL || '',
       windowsInstallerUrl: process.env.NUXT_PUBLIC_WINDOWS_INSTALLER_URL || '',
+      gadsId: process.env.NUXT_PUBLIC_GADS_ID || '',
+      gadsConversionLabel: process.env.NUXT_PUBLIC_GADS_CONVERSION_LABEL || '',
+      socialInstagram: process.env.NUXT_PUBLIC_SOCIAL_INSTAGRAM || '',
+      socialFacebook: process.env.NUXT_PUBLIC_SOCIAL_FACEBOOK || '',
+      socialTiktok: process.env.NUXT_PUBLIC_SOCIAL_TIKTOK || '',
+      socialYoutube: process.env.NUXT_PUBLIC_SOCIAL_YOUTUBE || '',
+      socialX: process.env.NUXT_PUBLIC_SOCIAL_X || '',
+      socialLinkedin: process.env.NUXT_PUBLIC_SOCIAL_LINKEDIN || '',
+      ownerNotifyEmail: process.env.NUXT_PUBLIC_OWNER_NOTIFY_EMAIL || 'info@thefranksstandard.com',
     },
   },
 
   modules: ['@nuxtjs/supabase', '@vite-pwa/nuxt'],
 
+  routeRules: {
+    '/': {
+      headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
+    },
+    '/**': {
+      headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
+    },
+    '/_nuxt/**': {
+      headers: { 'Cache-Control': 'public, max-age=31536000, immutable' },
+    },
+    '/ops/**': {
+      headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
+    },
+    '/ops/print/pack': { redirect: { to: '/ops/print-pack', statusCode: 301 } },
+    '/ops/print/coa': { redirect: { to: '/ops/print-coa', statusCode: 301 } },
+  },
+
   pwa: {
     registerType: 'autoUpdate',
-    injectRegister: 'auto',
+    // Service worker caused flip-flop between fixed and broken cached JS after deploys.
+    injectRegister: false,
+    selfDestroying: true,
     registerWebManifestInRouteRules: true,
     includeAssets: ['franks-pavilion.png', 'logo.svg', 'icons/icon-192.png', 'icons/icon-512.png'],
     manifest: {
       id: '/',
       name: 'The Franks Standard',
       short_name: 'Franks Standard',
-      description: 'Authenticity-first collectibles and gear marketplace.',
+      description: META_DESCRIPTION,
       theme_color: '#0c0619',
       background_color: '#0c0619',
       display: 'standalone',
@@ -95,23 +144,29 @@ export default defineNuxtConfig({
       ],
     },
     workbox: {
-      // Do not precache HTML — stale index.html pins users to old JS chunk hashes after deploy.
-      globPatterns: ['**/*.{js,css,png,svg,ico,json,woff2,webmanifest,jpg,jpeg,webp}'],
-      globIgnores: ['**/node_modules/**'],
+      // Do not precache HTML or hashed /_nuxt bundles — stale shells pin users to 404 chunks after deploy.
+      globPatterns: ['**/*.{png,svg,ico,json,woff2,webmanifest,jpg,jpeg,webp}'],
+      globIgnores: ['**/node_modules/**', '**/_nuxt/**', '**/*.html'],
       skipWaiting: true,
       clientsClaim: true,
       cleanupOutdatedCaches: true,
       runtimeCaching: [
         {
-          // HTML navigations: always try the network first so a fresh
-          // build is picked up immediately. Fall back to cache only if
-          // the user is offline.
           urlPattern: ({ request }) => request.mode === 'navigate',
           handler: 'NetworkFirst',
           options: {
             cacheName: 'fss-html',
             networkTimeoutSeconds: 4,
-            expiration: { maxEntries: 24, maxAgeSeconds: 24 * 60 * 60 },
+            expiration: { maxEntries: 8, maxAgeSeconds: 60 * 60 },
+          },
+        },
+        {
+          urlPattern: ({ url }) => url.pathname.startsWith('/_nuxt/'),
+          handler: 'NetworkFirst',
+          options: {
+            cacheName: 'fss-nuxt-chunks',
+            networkTimeoutSeconds: 3,
+            expiration: { maxEntries: 96, maxAgeSeconds: 7 * 24 * 60 * 60 },
           },
         },
       ],
@@ -130,39 +185,47 @@ export default defineNuxtConfig({
     redirect: false,
     types: false,
     useSsrCookies: false,
+    clientOptions: {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        // storage: set in plugins/00-supabase-auth-storage.client.js (not serializable here)
+      },
+    },
   },
 
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
     layoutTransition: { name: 'layout', mode: 'out-in' },
     head: {
-      title: 'The Franks Standard — Authenticity-Guaranteed Marketplace',
+      title: 'The Franks Standard — Marketplace Facilitator for Collectibles & Gear',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'description', content: 'The authenticity-first collectibles and gear marketplace: COA or a signed in-platform guarantee on every listing, escrow, and a zero-tolerance stance on fakes. Built for proof, not just volume.' },
-        { property: 'og:title', content: 'The Franks Standard - Authenticity-Guaranteed Marketplace' },
-        { property: 'og:description', content: 'Buy and sell with proof: every listing needs a COA or signed in-platform guarantee. The marketplace for collectors who refuse fakes.' },
+        { name: 'description', content: META_DESCRIPTION },
+        { property: 'og:title', content: 'The Franks Standard — Marketplace Facilitator' },
+        { property: 'og:description', content: OG_DESCRIPTION },
         { property: 'og:url', content: siteUrl },
         { property: 'og:type', content: 'website' },
         { property: 'og:image', content: ogImage },
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:title', content: 'The Franks Standard' },
-        { name: 'twitter:description', content: 'Authenticity-first collectibles and gear. COA required. Built for real sellers and buyers.' },
+        { name: 'twitter:description', content: META_DESCRIPTION },
         { name: 'twitter:image', content: ogImage },
         { name: 'theme-color', content: '#0c0619' },
         { name: 'mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
         { name: 'apple-mobile-web-app-title', content: 'Franks Standard' },
+        { 'http-equiv': 'Cache-Control', content: 'no-cache, no-store, must-revalidate' },
+        { 'http-equiv': 'Pragma', content: 'no-cache' },
+        { 'http-equiv': 'Expires', content: '0' },
       ],
       link: [
         { rel: 'icon', type: 'image/png', href: '/franks-pavilion.png' },
         { rel: 'apple-touch-icon', href: '/franks-pavilion.png' },
         { rel: 'manifest', href: '/manifest.webmanifest' },
-        // NOTE: per-page canonical URLs are injected by scripts/inject-spa-fallback.cjs
-        // at build time so each route advertises itself (not the homepage) as canonical.
-        { rel: 'preconnect', href: 'https://images.unsplash.com' },
         { rel: 'preconnect', href: 'https://meet.jit.si' },
         { rel: 'preconnect', href: 'https://js.stripe.com' },
         { rel: 'preconnect', href: 'https://checkout.stripe.com' },
@@ -173,5 +236,5 @@ export default defineNuxtConfig({
     },
   },
 
-  css: ['~/assets/css/main.css'],
+  css: ['~/assets/css/main.css', '~/assets/css/marketplace-ui.css', '~/assets/css/learn-hub.css'],
 })

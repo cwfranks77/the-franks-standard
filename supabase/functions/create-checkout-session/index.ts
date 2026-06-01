@@ -1,5 +1,8 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
-import { calcDropshipSplit, calcFees, corsHeaders, json, siteUrl, stripeClient } from '../_shared/stripe.ts'
+import { assertAccountNotFrozen } from '../_shared/sellerAccountFreeze.ts'
+import { assertSellerNotOnIntegrityHold } from '../_shared/sellerIntegrityHold.ts'
+import { assertSellerPoliciesAccepted } from '../_shared/sellerPolicyAcceptance.ts'
+import { calcCharitySplit, calcDropshipSplit, calcFees, corsHeaders, json, siteUrl, stripeClient } from '../_shared/stripe.ts'
 import { marketplaceListingTaxOptions, stripeTaxEnabled, TAX_CODE_TANGIBLE } from '../_shared/stripeTax.ts'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
@@ -36,9 +39,14 @@ Deno.serve(async (req) => {
 
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, { auth: { persistSession: false } })
 
+    const buyerFreeze = await assertAccountNotFrozen(admin, user.id)
+    if (!buyerFreeze.ok) {
+      return json({ error: buyerFreeze.error, message: buyerFreeze.message }, 403)
+    }
+
     const { data: listing, error: listingError } = await admin
       .from('listings')
-      .select('id, title, price, status, seller_id, listing_mode, dropship_wholesale_cost, donate_proceeds, charity_key, charity_name, sale_type, starting_bid, current_bid, current_bidder_id, reserve_price, auction_ends_at')
+      .select('id, title, price, status, seller_id, integrity_status, listing_mode, dropship_wholesale_cost, donate_proceeds, charity_key, charity_name, charity_percent, sale_type, starting_bid, current_bid, current_bidder_id, reserve_price, auction_ends_at, buy_now_price, bid_count')
       .eq('id', listingId)
       .eq('status', 'published')
       .maybeSingle()
@@ -47,21 +55,59 @@ Deno.serve(async (req) => {
       return json({ error: 'listing_not_found' }, 404)
     }
 
+    const integrity = String((listing as { integrity_status?: string }).integrity_status ?? 'clear')
+    if (integrity === 'suspended' || integrity === 'counterfeit_confirmed' || integrity === 'review') {
+      return json({ error: 'listing_not_available', message: 'This listing is under authenticity review or has been removed.' }, 403)
+    }
+
     const { data: sellerProfile } = await admin
       .from('profiles')
-      .select('stripe_account_id, stripe_charges_enabled, seller_tier')
+      .select('stripe_account_id, stripe_charges_enabled, seller_tier, award_fee_bps, award_fee_until, seller_banned_at, account_frozen_at, seller_debt_status, seller_debt_paid_at')
       .eq('id', listing.seller_id)
       .maybeSingle()
+
+    if (sellerProfile?.seller_banned_at) {
+      return json({ error: 'seller_suspended', message: 'This seller is not permitted to sell on The Franks Standard.' }, 403)
+    }
+
+    const sellerFreeze = await assertAccountNotFrozen(admin, listing.seller_id)
+    if (!sellerFreeze.ok) {
+      return json({ error: 'seller_account_frozen', message: 'This seller account is frozen and cannot complete sales.' }, 403)
+    }
+
+    const sellerHold = await assertSellerNotOnIntegrityHold(admin, listing.seller_id)
+    if (!sellerHold.ok) {
+      return json({ error: sellerHold.error, message: sellerHold.message }, 403)
+    }
+
+    const sellerPolicies = await assertSellerPoliciesAccepted(admin, listing.seller_id)
+    if (!sellerPolicies.ok) {
+      return json({ error: sellerPolicies.error, message: sellerPolicies.message }, 403)
+    }
 
     if (listing.seller_id === user.id) {
       return json({ error: 'cannot_buy_own_listing' }, 400)
     }
 
     const isAuction = listing.sale_type === 'auction'
-    if (isAuction) {
-      if (!listing.auction_ends_at || new Date(listing.auction_ends_at) > new Date()) {
-        return json({ error: 'auction_still_open' }, 400)
+    const auctionStillOpen = !!(
+      isAuction &&
+      listing.auction_ends_at &&
+      new Date(listing.auction_ends_at) > new Date()
+    )
+    const buyNow = listing.buy_now_price != null ? Number(listing.buy_now_price) : null
+    const hasBuyNow = buyNow != null && Number.isFinite(buyNow) && buyNow > 0
+    const bidCount = listing.bid_count ?? 0
+    const buyNowCheckout = auctionStillOpen && hasBuyNow && bidCount === 0
+
+    if (isAuction && auctionStillOpen && !buyNowCheckout) {
+      if (hasBuyNow && bidCount > 0) {
+        return json({ error: 'buy_now_unavailable' }, 400)
       }
+      return json({ error: 'auction_still_open' }, 400)
+    }
+
+    if (isAuction && !auctionStillOpen) {
       if (!listing.current_bidder_id || listing.current_bidder_id !== user.id) {
         return json({ error: 'not_auction_winner' }, 403)
       }
@@ -72,9 +118,11 @@ Deno.serve(async (req) => {
       }
     }
 
-    const amount = isAuction
-      ? Number(listing.current_bid)
-      : Number(listing.price)
+    const amount = buyNowCheckout
+      ? buyNow!
+      : isAuction
+        ? Number(listing.current_bid)
+        : Number(listing.price)
     if (!Number.isFinite(amount) || amount <= 0) {
       return json({ error: 'invalid_listing_price' }, 400)
     }
@@ -111,7 +159,10 @@ Deno.serve(async (req) => {
       }
     }
 
-    const isCharitySale = !!(listing.donate_proceeds && listing.charity_key)
+    const charityPct = listing.donate_proceeds && listing.charity_key
+      ? Math.min(100, Math.max(1, Number(listing.charity_percent ?? 100)))
+      : 0
+    const hasCharityDonation = charityPct > 0
     const isDropship = String(listing.listing_mode || '').toLowerCase() === 'dropship'
     const wholesaleCost = isDropship ? Number(listing.dropship_wholesale_cost) || 0 : 0
 
@@ -123,10 +174,13 @@ Deno.serve(async (req) => {
     let orderSellerPayout: number
     let orderSupplierCost = 0
     let orderSellerMargin: number | null = null
+    let orderCharityAmount: number | null = null
 
-    if (isCharitySale) {
-      orderPlatformFee = 0
-      orderSellerPayout = 0
+    if (hasCharityDonation) {
+      const split = calcCharitySplit(amount, charityPct, sellerProfile?.seller_tier)
+      orderPlatformFee = split.platformFee
+      orderSellerPayout = split.sellerPayout
+      orderCharityAmount = split.charityAmount
     } else if (isDropship) {
       const split = calcDropshipSplit(amount, wholesaleCost, sellerProfile?.seller_tier)
       if (split.sellerMargin <= 0) {
@@ -137,12 +191,15 @@ Deno.serve(async (req) => {
       orderSellerMargin = split.sellerMargin
       orderSellerPayout = split.sellerMargin
     } else {
-      const { platformFee, sellerPayout } = calcFees(amount, sellerProfile?.seller_tier)
+      const { platformFee, sellerPayout } = calcFees(
+        amount,
+        sellerProfile?.seller_tier,
+        sellerProfile?.award_fee_bps,
+        sellerProfile?.award_fee_until,
+      )
       orderPlatformFee = platformFee
       orderSellerPayout = sellerPayout
     }
-
-    const orderCharityAmount = isCharitySale ? amount : null
 
     const { data: order, error: orderError } = await admin
       .from('orders')
@@ -161,10 +218,11 @@ Deno.serve(async (req) => {
         escrow_status: 'none',
         connect_checkout: false,
         buyer_email: user.email ?? null,
-        donate_to_charity: isCharitySale,
-        charity_key: isCharitySale ? listing.charity_key : null,
-        charity_name: isCharitySale ? listing.charity_name : null,
+        donate_to_charity: hasCharityDonation,
+        charity_key: hasCharityDonation ? listing.charity_key : null,
+        charity_name: hasCharityDonation ? listing.charity_name : null,
         charity_amount: orderCharityAmount,
+        charity_percent: hasCharityDonation ? charityPct : null,
       })
       .select('id')
       .single()
@@ -173,12 +231,20 @@ Deno.serve(async (req) => {
       return json({ error: 'order_create_failed', detail: orderError?.message }, 500)
     }
 
+    if (buyNowCheckout) {
+      await admin
+        .from('listings')
+        .update({ auction_ends_at: new Date().toISOString() })
+        .eq('id', listing.id)
+    }
+
     const amountCents = Math.round(amount * 100)
     const platformFeeCents = Math.round(orderPlatformFee * 100)
 
     const base = siteUrl()
     // Dropship: full payment on platform (escrow) then split via transfers on ship + confirm.
-    const useConnect = !isCharitySale && !isDropship
+    // Charity splits (full or partial) are settled on-platform so charity + seller shares are correct.
+    const useConnect = !hasCharityDonation && !isDropship
       && !!(sellerProfile?.stripe_account_id && sellerProfile?.stripe_charges_enabled)
 
     const sessionParams: Parameters<typeof stripe.checkout.sessions.create>[0] = {
@@ -192,13 +258,14 @@ Deno.serve(async (req) => {
           unit_amount: amountCents,
           ...(stripeTaxEnabled() ? { tax_behavior: 'exclusive' as const } : {}),
           product_data: {
-            name: isCharitySale
-              ? `${String(listing.title).slice(0, 80)} — charity sale`
+            name: hasCharityDonation
+              ? `${String(listing.title).slice(0, 72)} — ${charityPct}% to ${String(listing.charity_name ?? 'charity').slice(0, 24)}`
               : String(listing.title).slice(0, 120),
             ...(stripeTaxEnabled() ? { tax_code: TAX_CODE_TANGIBLE } : {}),
             metadata: {
               listing_id: listing.id,
-              charity: isCharitySale ? String(listing.charity_key) : '',
+              charity: hasCharityDonation ? String(listing.charity_key) : '',
+              charity_percent: hasCharityDonation ? String(charityPct) : '',
             },
           },
         },
@@ -209,9 +276,10 @@ Deno.serve(async (req) => {
         buyer_id: user.id,
         seller_id: listing.seller_id,
         listing_mode: isDropship ? 'dropship' : 'direct',
-        donate_to_charity: isCharitySale ? 'true' : 'false',
-        charity_key: isCharitySale ? String(listing.charity_key) : '',
-        charity_name: isCharitySale ? String(listing.charity_name ?? '') : '',
+        donate_to_charity: hasCharityDonation ? 'true' : 'false',
+        charity_key: hasCharityDonation ? String(listing.charity_key) : '',
+        charity_name: hasCharityDonation ? String(listing.charity_name ?? '') : '',
+        charity_percent: hasCharityDonation ? String(charityPct) : '',
       },
       success_url: `${base}/order/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${base}/listing/${listing.id}?checkout=cancelled`,
@@ -253,8 +321,10 @@ Deno.serve(async (req) => {
       order_id: order.id,
       session_id: session.id,
       connect_payout: connectCheckout,
-      charity_sale: isCharitySale,
-      charity_name: isCharitySale ? listing.charity_name : null,
+      charity_sale: hasCharityDonation,
+      charity_percent: hasCharityDonation ? charityPct : null,
+      charity_name: hasCharityDonation ? listing.charity_name : null,
+      charity_amount: orderCharityAmount,
       dropship_split: isDropship ? {
         platform_fee: orderPlatformFee,
         supplier_cost: orderSupplierCost,

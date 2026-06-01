@@ -1,4 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
+import { assertAccountNotFrozen } from '../_shared/sellerAccountFreeze.ts'
+import { assertSellerNotOnIntegrityHold } from '../_shared/sellerIntegrityHold.ts'
 import { corsHeaders, json } from '../_shared/stripe.ts'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
@@ -53,6 +55,11 @@ Deno.serve(async (req) => {
 
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, { auth: { persistSession: false } })
 
+    const buyerFreeze = await assertAccountNotFrozen(admin, user.id)
+    if (!buyerFreeze.ok) {
+      return json({ error: buyerFreeze.error, message: buyerFreeze.message }, 403)
+    }
+
     const { data: listing, error: listingError } = await admin
       .from('listings')
       .select('id, seller_id, sale_type, status, starting_bid, current_bid, bid_increment, auction_ends_at, bid_count')
@@ -69,6 +76,17 @@ Deno.serve(async (req) => {
     if (listing.seller_id === user.id) {
       return json({ error: 'cannot_bid_own_listing' }, 400)
     }
+
+    const sellerFreeze = await assertAccountNotFrozen(admin, listing.seller_id)
+    if (!sellerFreeze.ok) {
+      return json({ error: 'seller_account_frozen', message: 'This seller cannot receive bids.' }, 403)
+    }
+
+    const sellerHold = await assertSellerNotOnIntegrityHold(admin, listing.seller_id)
+    if (!sellerHold.ok) {
+      return json({ error: sellerHold.error, message: sellerHold.message }, 403)
+    }
+
     if (!listing.auction_ends_at || new Date(listing.auction_ends_at) <= new Date()) {
       return json({ error: 'auction_ended' }, 400)
     }

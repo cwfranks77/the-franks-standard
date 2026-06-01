@@ -12,6 +12,9 @@
 </template>
 
 <script setup>
+import { syncSignupAttributionToProfile } from '~/utils/syncSignupAttribution.js'
+import { LIST_ITEM_START_PATH } from '~/utils/listItemRoutes.js'
+
 useHead({
   title: 'Confirm email - The Franks Standard',
   meta: [{ name: 'robots', content: 'noindex, nofollow' }],
@@ -63,15 +66,18 @@ onMounted(async () => {
     const { data: { user } } = await supabase.auth.getUser()
     const accountType = user && user.user_metadata ? user.user_metadata.account_type : undefined
 
+    await syncSignupAttributionToProfile(supabase, user)
+
     const { redeemPendingIfAny, redeemCode } = usePromoCode()
     const pendingMeta = user?.user_metadata?.pending_promo
     let promoResult = null
     const serviceCat = user?.user_metadata?.service_category
       || user?.user_metadata?.honor_category
     const redeemExtra = serviceCat ? { service_category: String(serviceCat) } : {}
-    if (pendingMeta) {
-      promoResult = await redeemCode(String(pendingMeta), redeemExtra)
-    } else {
+    const pendingCode = pendingMeta ? String(pendingMeta).trim().toUpperCase() : ''
+    if (pendingCode && pendingCode !== 'STORE90' && pendingCode !== 'CREATOR') {
+      promoResult = await redeemCode(pendingCode, redeemExtra)
+    } else if (!pendingCode) {
       promoResult = await redeemPendingIfAny()
     }
     if (promoResult?.ok) {
@@ -85,7 +91,7 @@ onMounted(async () => {
     }
 
     phase.value = 'done'
-    if (accountType === 'sell' || accountType === 'seller') await router.replace('/sell')
+    if (accountType === 'sell' || accountType === 'seller') await router.replace(LIST_ITEM_START_PATH)
     else await router.replace('/dashboard')
   } catch (err) {
     phase.value = 'error'

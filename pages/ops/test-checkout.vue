@@ -45,7 +45,7 @@
           <NuxtLink v-for="p in criticalPages" :key="p.path" :to="p.path" class="btn btn-outline btn-sm" target="_blank">
             {{ p.label }}
           </NuxtLink>
-          <NuxtLink to="/sell" class="btn btn-outline btn-sm" target="_blank">Sell (charity dropdown)</NuxtLink>
+          <NuxtLink to="/sell/start" class="btn btn-outline btn-sm" target="_blank">List item chooser</NuxtLink>
         </div>
       </section>
 
@@ -95,7 +95,7 @@
         </p>
         <p v-if="statsError" class="small text-muted">{{ statsError }}</p>
         <p v-else-if="published === 0" class="warn">
-          No published listings yet. Publish one at <NuxtLink to="/sell">Sell</NuxtLink>, then test from an incognito window with another email.
+          No published listings yet. Publish one via <NuxtLink to="/sell/start">List an item</NuxtLink> (general merch skips COA), then test from an incognito window with another email.
         </p>
         <ul v-else class="listing-test-list">
           <li v-for="row in sampleListings" :key="row.id">

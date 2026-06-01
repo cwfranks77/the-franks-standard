@@ -24,7 +24,7 @@
           <li><strong>6 months of Pro Seller free</strong> — unlimited listings, featured placement, AI Store Builder</li>
           <li><strong>Honors badge</strong> on your seller profile — we recognize your service category</li>
           <li><strong>Priority support</strong> — dedicated help line at (877) 837-0527</li>
-          <li><strong>Same trust standards</strong> — COA-backed authenticity for every listing</li>
+          <li><strong>Same listing standards</strong> — seller proof on collectibles; Platform facilitation and enforcement</li>
         </ul>
         <p class="honor-code text-center">
           Use promo code <code>{{ HONOR_PROMO_CODE }}</code> when you register or on the Pay &amp; fees page.

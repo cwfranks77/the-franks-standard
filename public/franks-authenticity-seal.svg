@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Franks Standard Listing Authenticity Seal">
+  <defs>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e8d5a3"/>
+      <stop offset="45%" stop-color="#c9a84c"/>
+      <stop offset="100%" stop-color="#8b6914"/>
+    </linearGradient>
+    <linearGradient id="ring" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#047857"/>
+      <stop offset="100%" stop-color="#00f5a0"/>
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="96" fill="#0f1419" stroke="url(#gold)" stroke-width="4"/>
+  <circle cx="100" cy="100" r="82" fill="none" stroke="url(#ring)" stroke-width="2" opacity="0.85"/>
+  <path id="topArc" d="M 34 100 A 66 66 0 0 1 166 100" fill="none"/>
+  <text font-family="Georgia, 'Times New Roman', serif" font-size="11.5" font-weight="700" fill="url(#gold)" letter-spacing="2.2">
+    <textPath href="#topArc" startOffset="50%" text-anchor="middle">FRANKS STANDARD</textPath>
+  </text>
+  <path id="bottomArc" d="M 166 100 A 66 66 0 0 1 34 100" fill="none"/>
+  <text font-family="Georgia, 'Times New Roman', serif" font-size="9" font-weight="700" fill="#d1d5db" letter-spacing="1.6">
+    <textPath href="#bottomArc" startOffset="50%" text-anchor="middle">LISTING AUTHENTICITY STANDARD</textPath>
+  </text>
+  <!-- Pavilion mark -->
+  <path d="M100 52 L128 78 L128 118 L72 118 L72 78 Z" fill="none" stroke="url(#gold)" stroke-width="2.2" stroke-linejoin="round"/>
+  <path d="M100 58 L82 74 L82 112 L118 112 L118 74 Z" fill="rgba(201,168,76,0.12)" stroke="url(#gold)" stroke-width="1.2"/>
+  <rect x="94" y="112" width="12" height="14" fill="url(#gold)" opacity="0.9"/>
+  <path d="M88 126 H112 V132 H88 Z" fill="url(#gold)"/>
+  <!-- Check shield -->
+  <circle cx="100" cy="98" r="18" fill="#0f1419" stroke="url(#ring)" stroke-width="2"/>
+  <path d="M92 98 L97 103 L110 90" fill="none" stroke="#6ee7b7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="100" y="148" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="6.5" fill="#9ca3af" letter-spacing="0.4">SELLER BACKS THIS ITEM</text>
+</svg>

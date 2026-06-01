@@ -5,6 +5,11 @@
       <h1>Sign In</h1>
       <p class="text-muted">Welcome back to The Franks Standard</p>
 
+      <p v-if="existingSessionEmail" class="auth-session-note" role="status">
+        Currently signed in as <strong>{{ existingSessionEmail }}</strong>.
+        <button type="button" class="link-btn" @click="signOutForSwitch">Sign out to use a different account</button>
+      </p>
+
       <p v-if="formError" class="form-err" role="alert">{{ formError }}</p>
       <p v-if="resendOk" class="form-ok" role="status">{{ resendOk }}</p>
 
@@ -17,6 +22,11 @@
           <label class="label">Password</label>
           <input class="input" type="password" v-model="password" placeholder="Your password" autocomplete="current-password" required />
         </div>
+        <label class="remember-row">
+          <input v-model="rememberMe" type="checkbox" />
+          <span>Keep me signed in on this device</span>
+        </label>
+        <p class="remember-hint text-muted">If unchecked, you stay signed in until you close the browser (no auto-login next visit).</p>
         <button type="submit" class="btn btn-primary" style="width: 100%;" :disabled="loading">
           {{ loading ? 'Signing in...' : 'Sign In' }}
         </button>
@@ -47,11 +57,35 @@
 </template>
 
 <script setup>
-const route = useRoute()
+import { resolveAuthRedirect } from '~/utils/listItemRoutes.js'
+import {
+  clearAllAuthStorage,
+  getRememberMe,
+  migrateAuthTokenToPreferredStorage,
+  setRememberMe,
+} from '~/utils/authPersistence.js'
 
-onMounted(() => {
-  useGuestOnly()
+const route = useRoute()
+const config = useRuntimeConfig()
+const supabase = useSupabaseClient()
+const existingSessionEmail = ref('')
+const rememberMe = ref(false)
+
+onMounted(async () => {
+  rememberMe.value = getRememberMe()
+  await useGuestOnly()
+  const { data: { session } } = await supabase.auth.getSession()
+  if (session?.user?.email) {
+    existingSessionEmail.value = session.user.email
+  }
 })
+
+async function signOutForSwitch () {
+  await supabase.auth.signOut()
+  clearAllAuthStorage(config.public.supabase?.url)
+  existingSessionEmail.value = ''
+  formError.value = ''
+}
 
 function onAuthLogoError (e) {
   const el = e?.target
@@ -119,6 +153,8 @@ async function handleLogin() {
   resendOk.value = ''
   loading.value = true
   try {
+    setRememberMe(rememberMe.value)
+    migrateAuthTokenToPreferredStorage(config.public.supabase?.url)
     const supabase = useSupabaseClient()
     const emailTrimmed = email.value.trim().toLowerCase()
     const { error } = await supabase.auth.signInWithPassword({
@@ -128,8 +164,7 @@ async function handleLogin() {
     if (error) {
       throw error
     }
-    const raw = route.query.redirect
-    const next = typeof raw === 'string' && raw.startsWith('/') ? raw : '/dashboard'
+    const next = resolveAuthRedirect(route.query)
     await navigateTo(next)
   } catch (err) {
     const msg = err?.message || ''
@@ -190,6 +225,21 @@ async function handleLogin() {
   text-align: left;
   line-height: 1.45;
 }
+.auth-session-note {
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.5;
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  text-align: left;
+}
+.auth-session-note .link-btn {
+  display: block;
+  margin-top: 6px;
+}
 .resend-row {
   margin-top: 14px;
   font-size: 0.88rem;
@@ -244,5 +294,27 @@ async function handleLogin() {
 .resend-row {
   color: #374151;
   font-weight: 600;
+}
+.remember-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 4px 0 6px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #111827;
+  text-align: left;
+  cursor: pointer;
+}
+.remember-row input {
+  margin-top: 3px;
+  accent-color: var(--gold);
+}
+.remember-hint {
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.45;
+  margin: 0 0 14px;
+  text-align: left;
 }
 </style>

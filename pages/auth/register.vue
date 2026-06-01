@@ -8,8 +8,9 @@
           We sent a confirmation link to <strong>{{ email }}</strong>. Open it on this device to finish setting up your account.
         </p>
         <p class="text-muted fine">
-          Gmail: search for mail from <strong>Supabase</strong> or <strong>noreply</strong> in Spam and All Mail.
-          Still nothing after 10 minutes? Supabase must send through custom SMTP (or add your email to the org team) — see note below.
+          Check spam and All Mail. Confirmation mail comes from <strong>info@thefranksstandard.com</strong>.
+          Still nothing after 10 minutes?
+          <a href="mailto:info@thefranksstandard.com?subject=Signup%20confirmation%20help">Email support</a> or call <a href="tel:+18778370527">(877) 837-0527</a>.
         </p>
         <p v-if="emailHint" class="form-err email-hint" role="status">{{ emailHint }}</p>
         <NuxtLink to="/auth/login" class="btn btn-primary mt-2" style="width: 100%;">Go to sign in</NuxtLink>
@@ -65,8 +66,13 @@
 
         <label class="terms-check">
           <input type="checkbox" v-model="agreeTerms" required />
-          <span>I agree to the <NuxtLink to="/terms">Terms of Service</NuxtLink> and <NuxtLink to="/privacy">Privacy Policy</NuxtLink></span>
+          <span>I agree to the <NuxtLink to="/terms">Terms of Service</NuxtLink>, <NuxtLink to="/marketplace-policy">Marketplace Policies</NuxtLink>, and <NuxtLink to="/privacy">Privacy Policy</NuxtLink></span>
         </label>
+
+        <p v-if="accountType === 'sell' || accountType === 'both'" class="seller-policy-note text-muted small">
+          Sellers: after sign-in you must complete a <strong>digital signature</strong> (full legal name) for all seller policies on
+          <NuxtLink to="/sell/start">Sell</NuxtLink> before your first listing, import, or dropship publish.
+        </p>
 
         <button type="submit" class="btn btn-primary mt-2" style="width: 100%;" :disabled="loading">
           {{ loading ? 'Creating Account...' : 'Create Free Account' }}
@@ -95,12 +101,16 @@ import {
   getPendingHonorCategory,
   savePendingHonorCategory,
 } from '~/utils/honorPromo.js'
+import { syncSignupAttributionToProfile } from '~/utils/syncSignupAttribution.js'
 
 const route = useRoute()
 const { savePendingPromo, fetchAvailability, redeemCode } = usePromoCode()
+const { captureFromRoute, getSignupMetadataFields } = useOutreachAttribution()
+
+import { LIST_ITEM_START_PATH } from '~/utils/listItemRoutes.js'
 
 function postRegisterPath (type) {
-  if (type === 'sell' || type === 'seller') return '/sell'
+  if (type === 'sell' || type === 'seller') return LIST_ITEM_START_PATH
   if (type === 'both') return '/dashboard'
   return '/dashboard'
 }
@@ -111,11 +121,12 @@ const honorBanner = ref(false)
 const spotsRemaining = ref(null)
 const serviceCategory = ref('')
 const promoPlaceholder = computed(() =>
-  honorBanner.value ? HONOR_PROMO_CODE : 'FOUNDERS10 or HONOR26'
+  honorBanner.value ? HONOR_PROMO_CODE : 'FOUNDERS10, HONOR26, or CREATOR'
 )
 
 onMounted(async () => {
   useGuestOnly()
+  captureFromRoute(route)
   const qPromo = String(route.query.promo || '').trim().toUpperCase()
   const qAccount = String(route.query.account || '').trim().toLowerCase()
   const qHonor = String(route.query.honor || getPendingHonorCategory() || '').trim().toLowerCase()
@@ -184,6 +195,7 @@ async function handleRegister() {
           pending_promo: promoCode.value ? promoCode.value.trim().toUpperCase() : null,
           service_category: serviceCategory.value || null,
           honor_category: serviceCategory.value || null,
+          ...getSignupMetadataFields(),
         },
       },
     })
@@ -197,15 +209,22 @@ async function handleRegister() {
       const identities = data.user.identities?.length ?? 0
       if (!confirmed && identities === 0) {
         emailHint.value =
-          'Supabase may not have sent mail yet. On the free default sender, only org team emails receive mail — set up SMTP in Supabase (Authentication → SMTP) or add your Gmail to the Supabase org team.'
+          'If you do not receive mail within 10 minutes, check spam or contact info@thefranksstandard.com or (877) 837-0527.'
       }
       return
     }
-    if (data.session && promoCode.value) {
-      const extra = honorBanner.value && serviceCategory.value
-        ? { service_category: serviceCategory.value }
-        : {}
-      await redeemCode(promoCode.value, extra).catch(() => {})
+    if (data.session) {
+      const { data: { user: sessionUser } } = await supabase.auth.getUser()
+      await syncSignupAttributionToProfile(supabase, sessionUser)
+      if (promoCode.value) {
+        const code = promoCode.value.trim().toUpperCase()
+        const extra = honorBanner.value && serviceCategory.value
+          ? { service_category: serviceCategory.value }
+          : {}
+        if (code !== 'STORE90' && code !== 'CREATOR') {
+          await redeemCode(code, extra).catch(() => {})
+        }
+      }
     }
     await navigateTo(postRegisterPath(accountType.value))
   } catch (err) {

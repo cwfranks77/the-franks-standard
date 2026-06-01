@@ -7,10 +7,14 @@
           <span v-if="listings.length" class="browse-count-badge">{{ listings.length }} {{ listings.length === 1 ? 'listing' : 'listings' }} live</span>
         </div>
         <p class="text-muted">
-          The floor lists live inventory as sellers and shops go on board; every public item is COA- or guarantee-backed.
+          Live inventory from sellers and shops. Collectible listings show seller-provided proof; we facilitate sales and enforce policies — we do not guarantee authenticity.
           <NuxtLink to="/sellers">Apply to add your store</NuxtLink>.
+          · <NuxtLink to="/collections">Niche collections &amp; limited drops</NuxtLink>
         </p>
+        <p v-if="filterBanner" class="filter-banner">{{ filterBanner }}</p>
       </div>
+
+      <MarketplacePageDock :tiles="browseDockTiles" aria-label="Browse shortcuts" />
 
       <!-- Filters -->
       <p v-if="loadError" class="text-muted" style="max-width: 640px;">
@@ -53,10 +57,21 @@
           class="listing-card card"
         >
           <div class="listing-image">
-            <img :src="item.image" :alt="item.title" />
-            <span class="coa-badge listing-coa">COA Verified</span>
-            <span v-if="item.saleType === 'auction'" class="auction-badge listing-coa">Auction</span>
-            <span v-if="item.donateProceeds" class="charity-badge listing-coa">Charity</span>
+            <img
+              :src="item.image"
+              :alt="item.title"
+              :data-category="item.category"
+              loading="lazy"
+              @error="onListingImageError"
+            />
+            <span class="coa-badge listing-coa">{{ item.coaSerial ? `COA ${item.coaSerial}` : 'COA Verified' }}</span>
+            <span v-if="item.saleType === 'auction'" class="auction-badge listing-coa">
+              {{ item.buyNowPrice ? 'Auction + BIN' : 'Auction' }}
+            </span>
+            <span v-if="item.donateProceeds" class="charity-badge listing-coa">
+              {{ item.charityPercent >= 100 ? 'Charity' : `${item.charityPercent}% charity` }}
+            </span>
+            <span v-if="item.limitedLabel" class="limited-badge listing-coa">{{ item.limitedLabel }}</span>
           </div>
           <div class="card-body">
             <p class="listing-category text-muted">{{ item.category }}</p>
@@ -65,6 +80,7 @@
               <span class="listing-price">
                 <template v-if="item.saleType === 'auction'">
                   {{ item.currentBid != null ? `$${item.currentBid.toLocaleString()} bid` : `$${item.price.toLocaleString()} start` }}
+                  <span v-if="item.buyNowPrice && !item.currentBid" class="text-muted small"> · BIN ${{ item.buyNowPrice.toLocaleString() }}</span>
                 </template>
                 <template v-else>${{ item.price.toLocaleString() }}</template>
               </span>
@@ -79,7 +95,7 @@
         <p style="font-size: 3rem;">🏛️</p>
         <h3 class="mt-2">No Listings Yet</h3>
         <p class="text-muted mt-1">The marketplace is just getting started. Be the first to list an item!</p>
-        <NuxtLink to="/sell" class="btn btn-primary mt-3">List Your First Item</NuxtLink>
+        <NuxtLink to="/sell/start" class="btn btn-primary mt-3">List Your First Item</NuxtLink>
       </div>
     </div>
   </div>
@@ -87,68 +103,130 @@
 
 <script setup>
 import { LISTING_CATEGORIES } from '~/utils/marketplaceCategories'
+import {
+  isLimitedEditionListing,
+  limitedBadgeLabel,
+  getNicheBySlug,
+  getLimitedDropBySlug,
+} from '~/utils/nicheCollections.js'
+import { onListingImageError } from '~/utils/marketplaceShowcaseImages.js'
 
 const { publicUrlForPath } = useListingImageUrl()
 const supabase = useSupabaseClient()
+
+const browseDockTiles = [
+  { to: '/sell/start', icon: '📤', label: 'Sell an item', hint: 'Collectible or general', variant: 'primary' },
+  { to: '/collections', icon: '✨', label: 'Collections', hint: 'Limited drops & niches', variant: 'accent' },
+  { to: '/sell/import', icon: '📥', label: 'Import from eBay', hint: 'CSV or store link' },
+  { to: '/join/founders10', icon: '🎁', label: 'FOUNDERS10', hint: '3 mo Pro free', variant: 'dark' },
+]
 
 const searchQuery = ref('')
 const selectedCategory = ref('')
 const selectedCondition = ref('')
 const sortBy = ref('newest')
 const loadError = ref('')
+const onlyLimited = ref(false)
+const filterCollectionSlug = ref('')
 
 const categories = LISTING_CATEGORIES
 
 const listings = ref([])
 
+const LISTING_SELECT_WITH_COLLECTIONS =
+  'id, title, description, category, price, condition, coa_type, coa_serial_number, image_paths, created_at, donate_proceeds, charity_name, charity_percent, sale_type, current_bid, starting_bid, auction_ends_at, buy_now_price, bid_count, is_limited_edition, collection_slug, collection_label, integrity_status, seller:profiles!listings_seller_id_fkey(full_name)'
+
+const LISTING_SELECT_BASE =
+  'id, title, category, price, condition, coa_type, image_paths, created_at, donate_proceeds, charity_name, charity_percent, sale_type, current_bid, starting_bid, auction_ends_at, buy_now_price, bid_count, seller:profiles!listings_seller_id_fkey(full_name)'
+
 async function loadListings() {
   loadError.value = ''
-  const { data, error } = await supabase
+  let select = LISTING_SELECT_WITH_COLLECTIONS
+  let { data, error } = await supabase
     .from('listings')
-    .select('id, title, category, price, condition, coa_type, image_paths, created_at, donate_proceeds, charity_name, sale_type, current_bid, starting_bid, auction_ends_at, seller:profiles!listings_seller_id_fkey(full_name)')
-
+    .select(select)
     .eq('status', 'published')
     .order('created_at', { ascending: false })
+
+  if (error && /collection_|is_limited_edition/i.test(error.message || '')) {
+    select = LISTING_SELECT_BASE
+    ;({ data, error } = await supabase
+      .from('listings')
+      .select(select)
+      .eq('status', 'published')
+      .order('created_at', { ascending: false }))
+  }
 
   if (error) {
     loadError.value = error.message
     return
   }
-  listings.value = (data || []).map((r) => ({
+  const rows = (data || []).filter((r) => {
+    const st = r.integrity_status || 'clear'
+    return st === 'clear'
+  })
+  listings.value = rows.map((r) => ({
     id: r.id,
     title: r.title,
+    description: r.description || '',
     category: r.category,
+    collectionSlug: r.collection_slug || '',
+    isLimitedEdition: !!r.is_limited_edition,
     price: Number(r.price),
     condition: r.condition || '',
     coaType: r.coa_type,
+    coaSerial: r.coa_serial_number || '',
     createdAt: r.created_at,
     image: publicUrlForPath(r.image_paths?.[0]),
     seller: (r.seller && r.seller.full_name) ? r.seller.full_name : 'Seller',
     donateProceeds: !!r.donate_proceeds,
     charityName: r.charity_name || '',
+    charityPercent: r.donate_proceeds
+      ? Math.min(100, Math.max(1, Number(r.charity_percent ?? 100)))
+      : 0,
     saleType: r.sale_type || 'fixed',
     currentBid: r.current_bid != null ? Number(r.current_bid) : null,
     startingBid: r.starting_bid != null ? Number(r.starting_bid) : null,
     auctionEndsAt: r.auction_ends_at,
+    buyNowPrice: r.buy_now_price != null ? Number(r.buy_now_price) : null,
+    bidCount: r.bid_count ?? 0,
+    limitedLabel: limitedBadgeLabel(r),
+    isLimited: isLimitedEditionListing(r),
   }))
 }
 
 const route = useRoute()
 
-function applyCategoryFromRoute () {
+function applyFiltersFromRoute () {
   const q = route.query.category
   if (q && typeof q === 'string') {
     selectedCategory.value = decodeURIComponent(q)
   }
+  onlyLimited.value = route.query.limited === '1' || route.query.limited === 'true'
+  const coll = route.query.collection
+  filterCollectionSlug.value = typeof coll === 'string' ? coll : ''
 }
 
+const filterBanner = computed(() => {
+  if (onlyLimited.value) {
+    return 'Limited-edition and exclusive-drop listings — seller proof where required, Stripe escrow on checkout.'
+  }
+  if (filterCollectionSlug.value) {
+    const niche = getNicheBySlug(filterCollectionSlug.value)
+    const drop = getLimitedDropBySlug(filterCollectionSlug.value)
+    if (niche) return `Collection: ${niche.name} — ${niche.tagline}`
+    if (drop) return `Floor drop: ${drop.label}`
+  }
+  return ''
+})
+
 onMounted(() => {
-  applyCategoryFromRoute()
+  applyFiltersFromRoute()
   loadListings()
 })
 
-watch(() => route.query.category, () => {
-  applyCategoryFromRoute()
+watch(() => [route.query.category, route.query.limited, route.query.collection], () => {
+  applyFiltersFromRoute()
 })
 
 const filteredListings = computed(() => {
@@ -164,6 +242,21 @@ const filteredListings = computed(() => {
   }
   if (selectedCondition.value) {
     results = results.filter((i) => i.condition === selectedCondition.value)
+  }
+  if (onlyLimited.value) {
+    results = results.filter((i) => i.isLimited)
+  }
+  if (filterCollectionSlug.value) {
+    const drop = getLimitedDropBySlug(filterCollectionSlug.value)
+    const niche = getNicheBySlug(filterCollectionSlug.value)
+    results = results.filter((i) => {
+      if (i.collectionSlug === filterCollectionSlug.value) return true
+      if (niche) return i.category === niche.category
+      if (drop?.categories?.includes(i.category)) {
+        return onlyLimited.value ? i.isLimited : true
+      }
+      return false
+    })
   }
   if (sortBy.value === 'newest') {
     results = [...results].sort(
@@ -184,6 +277,22 @@ const filteredListings = computed(() => {
 .browse-page { padding: 40px 0; }
 .browse-header { margin-bottom: 24px; }
 .browse-header h1 { font-size: 2rem; }
+.filter-banner {
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: rgba(251, 191, 36, 0.15);
+  border: 1px solid rgba(180, 83, 9, 0.35);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  max-width: 640px;
+}
+.limited-badge {
+  top: auto;
+  bottom: 8px;
+  left: 8px;
+  background: #92400e;
+}
 
 .filter-bar {
   display: flex;
@@ -191,6 +300,11 @@ const filteredListings = computed(() => {
   flex-wrap: wrap;
 }
 .search-input { flex: 2; min-width: 200px; }
+.search-input::placeholder {
+  color: #000000;
+  font-weight: 700;
+  opacity: 1;
+}
 .filter-select { flex: 1; min-width: 160px; }
 
 .listing-card { text-decoration: none; color: inherit; }

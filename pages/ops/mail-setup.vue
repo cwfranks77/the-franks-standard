@@ -16,7 +16,7 @@
         <a class="btn btn-primary" href="https://privateemail.com" target="_blank" rel="noopener">Open webmail</a>
         <ul class="checklist">
           <li>Username: <button type="button" class="copy-inline" @click="copy(user)">{{ user }}</button></li>
-          <li>Password: your new Namecheap mailbox password</li>
+          <li>Password: same as in <code>MAILBOX-PASSWORD.txt</code> (run <code>npm run mail:set-now</code> on your PC if webmail fails)</li>
         </ul>
       </section>
 

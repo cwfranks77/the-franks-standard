@@ -2,63 +2,67 @@
   <div class="page narrow">
     <h1>Contact</h1>
     <p class="text-muted lead">
-      Questions from buyers and sellers, press, and partnerships: reach the team at the address below. Stores and volume
-      sellers: start at <NuxtLink to="/sellers">For sellers</NuxtLink> (same email). For step-by-step help and tech
-      issues, go to
-      <NuxtLink to="/support">Support &amp; tech</NuxtLink>
-      or use the <strong>Help</strong> button on any page.
+      Questions from buyers and sellers, press, and partnerships. Use the form below — it reaches the team even while
+      if <strong>info@</strong> webmail fails, reset the mailbox password in Namecheap (see ops <NuxtLink to="/ops/mail-setup">mail setup</NuxtLink> after owner unlock).
     </p>
-    <div class="card contact-card">
+
+    <div v-if="formSuccess" class="card success-card" role="status">
+      <p><strong>Message received.</strong> We will reply to the email you entered. For urgent issues, call
+        <a href="tel:+18778370527">(877) 837-0527</a> or use the <strong>Help</strong> chat on any page.</p>
+    </div>
+
+    <form v-else class="card contact-form" @submit.prevent="submitForm">
+      <p class="form-note text-muted small">
+        Prefer email later? <strong>info@thefranksstandard.com</strong> will work again after mailbox reset.
+        Right now this form + phone + Help chat are the fastest paths.
+      </p>
+      <div class="form-group">
+        <label class="label">Your name</label>
+        <input v-model="form.name" class="input" type="text" autocomplete="name" />
+      </div>
+      <div class="form-group">
+        <label class="label">Your email (required)</label>
+        <input v-model="form.email" class="input" type="email" required autocomplete="email" />
+      </div>
+      <div class="form-group">
+        <label class="label">Subject</label>
+        <input v-model="form.subject" class="input" type="text" placeholder="Order question, seller apply, press…" />
+      </div>
+      <div class="form-group">
+        <label class="label">Message (required)</label>
+        <textarea v-model="form.message" class="input" rows="5" required placeholder="Include order ID if you have one." />
+      </div>
+      <input v-model="form.website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+      <p v-if="formError" class="form-error">{{ formError }}</p>
+      <button type="submit" class="btn btn-primary btn-lg" style="width:100%" :disabled="sending">
+        {{ sending ? 'Sending…' : 'Send message' }}
+      </button>
+    </form>
+
+    <div class="card contact-card mt-3">
       <div class="contact-method">
-        <p class="label">📞 Phone (AI-Powered)</p>
+        <p class="label">Phone</p>
         <p class="phone-big">
           <a href="tel:+18778370527">(877) 837-0527</a>
         </p>
-        <p class="text-muted small">
-          AI customer service for orders, returns, billing, and general questions.
-          Complex issues are escalated to a human agent.
-        </p>
       </div>
       <hr class="contact-divider" />
       <div class="contact-method">
-        <p class="label">✉️ Email</p>
-        <p class="email">
-          <a href="mailto:info@thefranksstandard.com">info@thefranksstandard.com</a>
-        </p>
-        <p class="text-muted small">
-          For order issues, include your order ID and photos. Reply from the same thread so we can match your case.
-        </p>
-        <div class="alias-wrap">
-          <p class="label alias-label">Department inboxes (all route to info@)</p>
-          <p class="alias-line">
-            <a href="mailto:support@thefranksstandard.com">support@thefranksstandard.com</a> ·
-            <a href="mailto:sales@thefranksstandard.com">sales@thefranksstandard.com</a> ·
-            <a href="mailto:press@thefranksstandard.com">press@thefranksstandard.com</a> ·
-            <a href="mailto:partnerships@thefranksstandard.com">partnerships@thefranksstandard.com</a>
-          </p>
-        </div>
+        <p class="label">Help chat</p>
+        <p class="text-muted small">Click <strong>Help</strong> (bottom-right) on any page.</p>
       </div>
       <hr class="contact-divider" />
       <div class="contact-method">
-        <p class="label">💬 AI Chat</p>
+        <p class="label">Stores and volume sellers</p>
         <p class="text-muted small">
-          Click the <strong>Help</strong> button in the bottom-right corner of any page for instant AI-powered answers.
+          <NuxtLink to="/sellers">For sellers</NuxtLink> ·
+          <NuxtLink to="/support">Support &amp; tech</NuxtLink>
         </p>
       </div>
-      <hr class="contact-divider" />
-      <div class="contact-method">
-        <p class="label">📹 Video Call</p>
-        <p class="text-muted small">
-          Use <NuxtLink to="/video">Video</NuxtLink> for face-to-face conversations — no app required.
-        </p>
-      </div>
-      <p class="text-muted mt-3 small">
-        Public site: <strong>thefranksstandard.com</strong>
-      </p>
     </div>
+
     <p class="text-muted mt-3">
-      Ready to sell with proof?
-      <NuxtLink to="/auth/register">Create a free account</NuxtLink>.
+      <NuxtLink to="/auth/register">Create a free account</NuxtLink>
     </p>
   </div>
 </template>
@@ -66,26 +70,57 @@
 <script setup>
 useSeoMeta({
   title: 'Contact — The Franks Standard',
-  description: 'Contact The Franks Standard: info@thefranksstandard.com for buyers, sellers, and press.',
+  description: 'Contact The Franks Standard: form, phone, and Help chat. info@ inbox being restored.',
 })
+
+const supabase = useSupabaseClient()
+const form = reactive({
+  name: '',
+  email: '',
+  subject: 'Contact form',
+  message: '',
+  website: '',
+})
+const sending = ref(false)
+const formError = ref('')
+const formSuccess = ref(false)
+
+async function submitForm () {
+  formError.value = ''
+  sending.value = true
+  try {
+    const { data, error } = await supabase.functions.invoke('submit-contact', {
+      body: {
+        name: form.name,
+        email: form.email,
+        subject: form.subject,
+        message: form.message,
+        website: form.website,
+      },
+    })
+    if (error) throw new Error(error.message || 'Send failed')
+    if (data?.error) throw new Error(data.error)
+    formSuccess.value = true
+  } catch (e) {
+    formError.value = e.message || 'Could not send. Try phone (877) 837-0527 or Help chat.'
+  } finally {
+    sending.value = false
+  }
+}
 </script>
 
 <style scoped>
 .page { padding: 48px 16px 100px; max-width: 640px; margin: 0 auto; }
 .lead { font-size: 1.05rem; line-height: 1.6; margin-bottom: 24px; font-weight: 700; color: #111827; }
-.page .text-muted { color: #1f2937 !important; font-weight: 700; }
 .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em; color: #374151; margin-bottom: 6px; font-weight: 800; }
-.email a { font-size: 1.1rem; font-weight: 600; }
 .phone-big a { font-size: 1.4rem; font-weight: 800; color: var(--trust-green); font-family: 'Cinzel', serif; text-decoration: none; }
-.phone-big a:hover { color: var(--gold); }
-.contact-card { padding: 28px; margin-top: 8px; }
-.contact-method { padding: 4px 0; }
+.contact-card, .contact-form, .success-card { padding: 28px; margin-top: 8px; }
 .contact-divider { border: none; border-top: 1px solid var(--stone-800); margin: 16px 0; }
-.small { font-size: 0.9rem; line-height: 1.5; }
-.alias-wrap { margin-top: 12px; }
-.alias-label { color: #374151; margin-bottom: 4px; font-weight: 800; }
-.alias-line { font-size: 0.9rem; line-height: 1.6; color: #1f2937; font-weight: 600; }
-.alias-line a { color: #146eb4; font-weight: 700; }
-.alias-line a:hover { color: #0f5f9c; }
+.form-group { margin-bottom: 1rem; }
+.form-note { margin-bottom: 1rem; line-height: 1.5; }
+.form-error { color: #f87171; margin-bottom: 0.75rem; }
+.success-card { border-color: var(--trust-green); }
+.hp { position: absolute; left: -9999px; opacity: 0; height: 0; width: 0; }
 .mt-3 { margin-top: 1rem; }
+.small { font-size: 0.9rem; }
 </style>

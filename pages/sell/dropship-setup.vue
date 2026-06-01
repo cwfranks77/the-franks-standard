@@ -5,9 +5,83 @@
         <header class="setup-header text-center">
           <h1>Set up your dropship business</h1>
           <p class="text-muted">
-            You choose your supplier — we walk you through it. The Franks Standard does not assign a wholesaler to you.
+            <span class="ai-badge">AI setup</span> — answer a few questions, get a full plan, then auto-fill the wizard below.
           </p>
         </header>
+
+        <div v-if="policyLoading" class="text-muted text-center">Loading seller requirements…</div>
+        <SellerPolicyAgreement v-else-if="needsPolicyAcceptance" @accepted="loadPolicyStatus" />
+        <template v-else>
+        <section class="ai-coach" :class="{ open: showAi }">
+          <button type="button" class="ai-coach-toggle" @click="showAi = !showAi">
+            {{ showAi ? '▼' : '▶' }} Full AI dropship setup (start here)
+          </button>
+          <div v-if="showAi" class="ai-coach-body">
+            <div class="form-group">
+              <label class="label">Store name</label>
+              <input v-model="aiIntake.storeName" class="input" placeholder="Brandy's Sporting Goods" />
+            </div>
+            <div class="form-group">
+              <label class="label">What do you sell?</label>
+              <select v-model="aiIntake.niche" class="input">
+                <option value="sports-cards">Sports cards &amp; memorabilia</option>
+                <option value="sneakers">Sneakers &amp; streetwear</option>
+                <option value="general">General merchandise</option>
+                <option value="home">Home &amp; gifts</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="label">Details (optional)</label>
+              <input v-model="aiIntake.nicheDetail" class="input" placeholder="e.g. PSA graded baseball, vintage jerseys" />
+            </div>
+            <div class="form-row-ai">
+              <div class="form-group">
+                <label class="label">Experience</label>
+                <select v-model="aiIntake.experience" class="input">
+                  <option value="new">Brand new</option>
+                  <option value="some">Some sales</option>
+                  <option value="pro">Full-time seller</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="label">Orders / month</label>
+                <select v-model="aiIntake.monthlyOrders" class="input">
+                  <option value="0-5">0–5</option>
+                  <option value="5-20">5–20</option>
+                  <option value="20+">20+</option>
+                </select>
+              </div>
+            </div>
+            <label class="check-row">
+              <input v-model="aiIntake.wantsAutomation" type="checkbox" />
+              <span>I want auto-dispatch to my supplier when possible (Doba / Inventory Source API)</span>
+            </label>
+            <div class="form-group">
+              <label class="label">Existing supplier name (optional)</label>
+              <input v-model="aiIntake.supplierName" class="input" placeholder="Leave blank to let AI recommend" />
+            </div>
+            <button type="button" class="btn btn-primary" :disabled="aiBusy" @click="runAiSetup">
+              {{ aiBusy ? 'Building plan…' : 'Generate full AI setup plan' }}
+            </button>
+            <div v-if="aiPlan" class="ai-plan">
+              <p class="ai-plan-lead"><strong>{{ aiPlan.recommendedProviderName }}</strong> · {{ aiPlan.fulfillmentMode === 'integrated' ? 'Auto-dispatch' : 'Manual fulfillment' }}</p>
+              <p class="text-muted small">{{ aiPlan.whyProvider }}</p>
+              <p class="text-muted small">{{ aiPlan.storeBio }}</p>
+              <h3>Your checklist</h3>
+              <ul>
+                <li v-for="(s, i) in aiPlan.setupSteps" :key="'s' + i">{{ s }}</li>
+              </ul>
+              <h3>Import products</h3>
+              <ul>
+                <li v-for="(s, i) in aiPlan.catalogSteps" :key="'c' + i">{{ s }}</li>
+              </ul>
+              <button type="button" class="btn btn-primary btn-lg mt-2" @click="applyAiPlan">
+                Apply to wizard &amp; continue
+              </button>
+            </div>
+          </div>
+        </section>
 
         <div class="step-track" aria-label="Setup progress">
           <div
@@ -47,7 +121,25 @@
         </section>
 
         <section v-if="step === 2" class="setup-panel">
-          <h2>Step 2 — Create or link your account</h2>
+          <h2>Step 2 — Your store on The Franks Standard</h2>
+          <div class="form-group">
+            <label class="label">Store name (shown to buyers)</label>
+            <input v-model="form.storeName" class="input" placeholder="Brandy's Sporting Goods" />
+          </div>
+          <div class="form-group">
+            <label class="label">Store link slug</label>
+            <input v-model="form.storeSlug" class="input" placeholder="brandyssportinggoods" />
+            <p class="text-muted small">
+              Your shop URL:
+              <strong>thefranksstandard.com/store/{{ form.storeSlug || 'your-slug' }}</strong>
+            </p>
+          </div>
+          <div class="form-group">
+            <label class="label">Customer support email</label>
+            <input v-model="form.storeContactEmail" class="input" type="email" placeholder="yourname@thefranksstandard.com" />
+            <p class="text-muted small">Must be @thefranksstandard.com — buyers reach you through platform checkout &amp; Video Call, not personal inboxes.</p>
+          </div>
+          <h3 class="mt-3">Supplier account</h3>
           <p v-if="selectedProvider" class="text-muted">{{ selectedProvider.note }}</p>
           <ul class="checklist">
             <li v-if="selectedProvider?.website">
@@ -133,7 +225,7 @@
             <li><strong>Fulfillment:</strong> {{ form.fulfillmentMode === 'integrated' ? 'Auto-dispatch (when keys set)' : 'Manual — you place supplier orders' }}</li>
             <li><strong>Next:</strong> Create a dropship listing with supplier name, contact, and SKU per product.</li>
           </ul>
-          <p class="text-muted">Remember: COA or signed guarantee still required on every listing — that is The Franks Standard.</p>
+          <p class="text-muted">Remember: seller proof (uploaded COA or Franks COA) is required when the item category requires it — you back the item, not the Platform.</p>
         </section>
 
         <div class="setup-actions">
@@ -161,6 +253,7 @@
         <p class="text-center mt-3">
           <NuxtLink to="/sell?mode=dropship">Skip for now — go to sell page</NuxtLink>
         </p>
+        </template>
       </div>
     </div>
   </div>
@@ -168,8 +261,17 @@
 
 <script setup>
 import { providerByKey, useSellerDropship } from '~/composables/useSellerDropship.js'
+import { buildDropshipAiPlan } from '~/utils/dropshipAiSetup'
 
 definePageMeta({ middleware: 'requires-auth' })
+
+const {
+  needsAcceptance: needsPolicyAcceptance,
+  loading: policyLoading,
+  loadStatus: loadPolicyStatus,
+} = useSellerPolicyAcceptance()
+
+onMounted(() => loadPolicyStatus())
 
 useSeoMeta({
   title: 'Dropship setup — The Franks Standard',
@@ -177,12 +279,30 @@ useSeoMeta({
 })
 
 const router = useRouter()
+const route = useRoute()
 const { providers, saving, error, settings, load, saveSetup } = useSellerDropship()
 
 const stepLabels = ['Provider', 'Account', 'Fulfillment', 'API', 'Done']
 const step = ref(1)
+const showAi = ref(true)
+const aiBusy = ref(false)
+const aiPlan = ref(null)
+
+const aiIntake = reactive({
+  storeName: "Brandy's Sporting Goods",
+  niche: 'sports-cards',
+  nicheDetail: '',
+  experience: 'new',
+  wantsAutomation: false,
+  monthlyOrders: '0-5',
+  supplierName: '',
+  contactEmail: '',
+})
 
 const form = reactive({
+  storeName: "Brandy's Sporting Goods",
+  storeSlug: 'brandyssportinggoods',
+  storeContactEmail: 'brandy@thefranksstandard.com',
   providerKey: 'custom',
   customProviderName: '',
   accountCreated: false,
@@ -207,7 +327,9 @@ const canAdvance = computed(() => {
     if (form.providerKey === 'custom') return !!form.customProviderName.trim()
     return !!form.providerKey
   }
-  if (step.value === 2) return form.accountCreated
+  if (step.value === 2) {
+    return form.accountCreated && !!form.storeName.trim() && !!form.storeSlug.trim()
+  }
   if (step.value === 3) return !!form.fulfillmentMode
   return true
 })
@@ -217,10 +339,45 @@ function selectProvider (p) {
   if (p.key !== 'custom') form.customProviderName = ''
 }
 
+function runAiSetup () {
+  aiBusy.value = true
+  setTimeout(() => {
+    aiPlan.value = buildDropshipAiPlan({ ...aiIntake })
+    aiBusy.value = false
+  }, 600)
+}
+
+function applyAiPlan () {
+  if (!aiPlan.value) return
+  const p = aiPlan.value
+  form.storeName = aiIntake.storeName.trim() || form.storeName
+  form.storeSlug = p.storeSlug
+  form.storeContactEmail = aiIntake.contactEmail || form.storeContactEmail
+  form.providerKey = p.recommendedProviderKey
+  if (p.recommendedProviderKey === 'custom') {
+    form.customProviderName = aiIntake.supplierName || p.recommendedProviderName
+  } else {
+    form.customProviderName = ''
+  }
+  form.fulfillmentMode = p.fulfillmentMode
+  form.accountCreated = true
+  step.value = 2
+  showAi.value = false
+}
+
 async function persistPartial (complete = false) {
+  const { validateStoreContactEmail } = await import('~/utils/offPlatformGuard.js')
+  const contactCheck = validateStoreContactEmail(form.storeContactEmail)
+  if (!contactCheck.ok) {
+    alert(contactCheck.message)
+    return { ok: false }
+  }
   return saveSetup({
     setupComplete: complete,
     setupStep: step.value,
+    storeName: form.storeName,
+    storeSlug: form.storeSlug,
+    storeContactEmail: form.storeContactEmail,
     preferredProviderKey: form.providerKey,
     preferredProviderName: displayProviderName.value,
     fulfillmentMode: form.fulfillmentMode,
@@ -244,9 +401,18 @@ async function goNext () {
 }
 
 async function finishSetup () {
+  const { validateStoreContactEmail } = await import('~/utils/offPlatformGuard.js')
+  const contactCheck = validateStoreContactEmail(form.storeContactEmail)
+  if (!contactCheck.ok) {
+    alert(contactCheck.message)
+    return
+  }
   const res = await saveSetup({
     setupComplete: true,
     setupStep: 5,
+    storeName: form.storeName,
+    storeSlug: form.storeSlug,
+    storeContactEmail: form.storeContactEmail,
     preferredProviderKey: form.providerKey,
     preferredProviderName: displayProviderName.value,
     fulfillmentMode: form.fulfillmentMode,
@@ -261,6 +427,7 @@ async function finishSetup () {
 }
 
 onMounted(async () => {
+  if (route.query.ai === '1') showAi.value = true
   await load()
   if (settings.value) {
     step.value = Math.max(1, Math.min(5, Number(settings.value.setup_step) || 1))
@@ -316,4 +483,43 @@ onMounted(async () => {
 .setup-actions { display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap; }
 .setup-error { color: #b91c1c; margin-bottom: 12px; }
 .form-stack { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+.ai-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  background: linear-gradient(135deg, #7c3aed, #2563eb);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.ai-coach {
+  border: 2px solid #c4b5fd;
+  border-radius: var(--radius-lg);
+  margin-bottom: 24px;
+  background: linear-gradient(180deg, #faf5ff 0%, #fff 100%);
+}
+.ai-coach-toggle {
+  width: 100%;
+  text-align: left;
+  padding: 14px 16px;
+  font-weight: 700;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #5b21b6;
+}
+.ai-coach-body { padding: 0 16px 20px; }
+.ai-plan {
+  margin-top: 16px;
+  padding: 14px;
+  background: #f9fafb;
+  border-radius: var(--radius);
+  border: 1px solid #e5e7eb;
+}
+.ai-plan ul { line-height: 1.65; padding-left: 1.2rem; margin: 8px 0; font-size: 0.92rem; }
+.ai-plan h3 { font-size: 0.95rem; margin-top: 12px; color: #374151; }
+.ai-plan-lead { margin-bottom: 8px; }
+.form-row-ai { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 520px) { .form-row-ai { grid-template-columns: 1fr; } }
 </style>

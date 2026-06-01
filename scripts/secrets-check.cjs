@@ -23,6 +23,15 @@ const GROUPS = [
     note: 'Need Supabase URL + anon key. Ops: set OPS_ACCESS_KEY or its HASH (hash preferred).',
   },
   {
+    title: 'Signup email (GitHub → Push SendGrid secrets to Supabase workflow)',
+    vars: [
+      ['SENDGRID_API_KEY', true],
+      ['SENDGRID_FROM_EMAIL', false],
+      ['SENDGRID_FROM_NAME', false],
+    ],
+    note: 'Required in GitHub Secrets so auth mail survives redeploys. See docs/OWNER-ONE-TIME.md',
+  },
+  {
     title: 'Email campaigns (local .env only — never commit)',
     vars: [
       ['SENDGRID_API_KEY', true],
@@ -48,11 +57,25 @@ const GROUPS = [
     title: 'Social post script (local .env or GitHub secrets)',
     vars: [
       ['FACEBOOK_PAGE_ACCESS_TOKEN', false],
+      ['FACEBOOK_PAGE_ID', false],
       ['TELEGRAM_BOT_TOKEN', false],
+      ['TELEGRAM_CHANNEL_ID', false],
       ['TELEGRAM_NOTIFY_CHAT_ID', false],
       ['INSTAGRAM_BUSINESS_ACCOUNT_ID', false],
+      ['X_API_KEY', false],
+      ['X_ACCESS_TOKEN', false],
     ],
-    note: 'TELEGRAM_NOTIFY_CHAT_ID = your personal Telegram chat id for post alerts (getUpdates). Falls back to TELEGRAM_CHANNEL_ID. See docs/META-FACEBOOK-SETUP.md',
+    note: 'TELEGRAM_NOTIFY_CHAT_ID = your personal Telegram chat id for post alerts. See docs/META-FACEBOOK-SETUP.md',
+  },
+  {
+    title: 'Paid Meta ads (optional — bots create PAUSED campaigns)',
+    vars: [
+      ['META_AD_ACCOUNT_ID', false],
+      ['META_AD_ACCESS_TOKEN', false],
+      ['META_ADS_DAILY_BUDGET_USD', false],
+      ['META_ADS_STATUS', false],
+    ],
+    note: 'Set META_ADS_LIVE=1 only when ready. Dry-run: npm run ads:meta:dry. See docs/ADS-AUTOMATION-SETUP.md',
   },
 ]
 
