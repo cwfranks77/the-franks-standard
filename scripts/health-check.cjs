@@ -184,6 +184,11 @@ function requireSupabaseKey () {
     if (r.status === 404) return { ok: false, detail: 'HTTP 404 — deploy stripe-connect-sync' }
     return { ok: r.status === 401, detail: 'HTTP ' + r.status + (r.status === 401 ? ' (needs JWT)' : '') }
   })
+  await check('Edge stripe-margin-split alive', async () => {
+    const r = await post(sbUrl + '/functions/v1/stripe-margin-split', '{}')
+    if (r.status === 404) return { ok: false, detail: 'HTTP 404 — deploy stripe-margin-split' }
+    return { ok: r.status === 401, detail: 'HTTP ' + r.status + (r.status === 401 ? ' (needs JWT)' : '') }
+  })
   await check('Supabase authenticity_reports table', async () => {
     const skip = requireSupabaseKey()
     if (skip) return skip

@@ -99,3 +99,4 @@ jobs:
           deploy issue-coa-certificate
           deploy import-ebay-csv
           deploy log-admin-lead
+          deploy stripe-margin-split
