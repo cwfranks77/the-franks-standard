@@ -38,6 +38,7 @@
             <NuxtLink to="/browse" class="quick-tile" @click="closeAllNav">Browse</NuxtLink>
             <NuxtLink to="/sell/start" class="quick-tile quick-tile--gold" @click="closeAllNav">Sell</NuxtLink>
             <a href="tel:+18778370527" class="quick-tile" @click="closeAllNav">Call</a>
+            <NuxtLink v-if="isOwner" to="/ops/site-controls" class="quick-tile quick-tile--owner" @click="closeAllNav">Owner controls</NuxtLink>
           </div>
           <NavMegaDropdown label="Features" :sections="navFeatures" @navigate="closeAllNav" />
           <NavMegaDropdown label="Settings" :sections="navSettings" @navigate="closeAllNav" @action="onNavMenuAction" />

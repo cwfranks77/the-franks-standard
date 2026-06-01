@@ -32,11 +32,14 @@ type HookPayload = {
 }
 
 function buildConfirmUrl (emailData: HookPayload['email_data']): string {
-  const redirectTo = emailData.redirect_to || `${SITE_URL}/auth/verify`
-  const url = new URL(`${SUPABASE_URL}/auth/v1/verify`)
-  url.searchParams.set('token', emailData.token_hash)
+  // Send users to our static callback page and verify with supabase-js there.
+  // This avoids provider-side redirect quirks on GitHub Pages/static hosting.
+  const url = new URL(`${SITE_URL}/auth/verify`)
+  url.searchParams.set('token_hash', emailData.token_hash)
   url.searchParams.set('type', emailData.email_action_type)
-  url.searchParams.set('redirect_to', redirectTo)
+  if (emailData.redirect_to) {
+    url.searchParams.set('next', emailData.redirect_to)
+  }
   return url.toString()
 }
 

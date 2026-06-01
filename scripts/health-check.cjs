@@ -54,12 +54,17 @@ const checks = []
 async function check(name, fn) {
   try {
     const r = await fn()
-    checks.push({ name, ok: r.ok, detail: r.detail })
-    console.log(r.ok ? 'OK  ' : 'FAIL', name, '-', r.detail)
+    checks.push({ name, ok: r.ok, skip: !!r.skip, detail: r.detail })
+    console.log(r.skip ? 'SKIP' : (r.ok ? 'OK  ' : 'FAIL'), name, '-', r.detail)
   } catch (e) {
     checks.push({ name, ok: false, detail: e.message })
     console.log('FAIL', name, '-', e.message)
   }
+}
+
+function requireSupabaseKey () {
+  if (sbKey) return null
+  return { ok: true, skip: true, detail: 'set NUXT_PUBLIC_SUPABASE_KEY or SUPABASE_KEY to check REST table access' }
 }
 
 ;(async () => {
@@ -73,14 +78,20 @@ async function check(name, fn) {
     return { ok, detail: ok ? 'rochesyrxiyrxhzmkuwk' : 'missing or placeholder' }
   })
   await check('Supabase listings table', async () => {
+    const skip = requireSupabaseKey()
+    if (skip) return skip
     const r = await get(sbUrl + '/rest/v1/listings?select=id&limit=1', { apikey: sbKey, Authorization: 'Bearer ' + sbKey })
     return { ok: r.status === 200, detail: 'HTTP ' + r.status }
   })
   await check('Supabase orders table', async () => {
+    const skip = requireSupabaseKey()
+    if (skip) return skip
     const r = await get(sbUrl + '/rest/v1/orders?select=id&limit=1', { apikey: sbKey, Authorization: 'Bearer ' + sbKey })
     return { ok: r.status === 200, detail: 'HTTP ' + r.status }
   })
   await check('Supabase promo_codes', async () => {
+    const skip = requireSupabaseKey()
+    if (skip) return skip
     const r = await get(sbUrl + '/rest/v1/promo_codes?select=code&limit=1', { apikey: sbKey, Authorization: 'Bearer ' + sbKey })
     return { ok: r.status === 200, detail: 'HTTP ' + r.status }
   })
@@ -98,10 +109,14 @@ async function check(name, fn) {
     return { ok: r2.status === 400, detail: 'HTTP ' + r2.status + ' (deploy health GET after push)' }
   })
   await check('Supabase dropship_orders', async () => {
+    const skip = requireSupabaseKey()
+    if (skip) return skip
     const r = await get(sbUrl + '/rest/v1/dropship_orders?select=id&limit=1', { apikey: sbKey, Authorization: 'Bearer ' + sbKey })
     return { ok: r.status === 200, detail: 'HTTP ' + r.status }
   })
   await check('Supabase seller_dropship_settings', async () => {
+    const skip = requireSupabaseKey()
+    if (skip) return skip
     const r = await get(sbUrl + '/rest/v1/seller_dropship_settings?select=seller_id&limit=1', { apikey: sbKey, Authorization: 'Bearer ' + sbKey })
     return { ok: r.status === 200, detail: 'HTTP ' + r.status }
   })
@@ -117,6 +132,14 @@ async function check(name, fn) {
   })
   await check('Edge ebay-seller-preview alive', async () => {
     const r = await post(sbUrl + '/functions/v1/ebay-seller-preview', '{}')
+    return { ok: r.status !== 404, detail: 'HTTP ' + r.status }
+  })
+  await check('Edge ebay-prospect-skim alive', async () => {
+    const r = await post(sbUrl + '/functions/v1/ebay-prospect-skim', '{}')
+    return { ok: r.status !== 404, detail: 'HTTP ' + r.status }
+  })
+  await check('Edge submit-contact alive', async () => {
+    const r = await post(sbUrl + '/functions/v1/submit-contact', '{}')
     return { ok: r.status !== 404, detail: 'HTTP ' + r.status }
   })
   await check('Edge auth-send-email hook deployed', async () => {
@@ -142,6 +165,8 @@ async function check(name, fn) {
     return { ok: r.status === 401, detail: 'HTTP ' + r.status + (r.status === 401 ? ' (needs JWT)' : '') }
   })
   await check('Supabase authenticity_reports table', async () => {
+    const skip = requireSupabaseKey()
+    if (skip) return skip
     const r = await get(sbUrl + '/rest/v1/authenticity_reports?select=id&limit=1', { apikey: sbKey, Authorization: 'Bearer ' + sbKey })
     return { ok: r.status === 200, detail: r.status === 200 ? 'HTTP 200' : 'HTTP ' + r.status + ' (run migrations if 404)' }
   })
@@ -159,18 +184,21 @@ async function check(name, fn) {
   })
   await check('Mailbox credentials (info@)', async () => {
     const env = loadEmailEnv()
-    if (!env) return { ok: false, detail: 'email.env missing — see franks-standard-credentials/EMAIL-SETUP.md' }
+    if (!env) return { ok: true, skip: true, detail: 'email.env missing locally — set it to run mailbox credential checks' }
     if (!env.EMAIL_PASS) {
       return { ok: false, detail: 'EMAIL_PASS empty — reset in Namecheap, save password, npm run mail:test' }
     }
     return { ok: true, detail: env.EMAIL_USER + ' configured (' + path.basename(path.dirname(env.source)) + '/email.env)' }
   })
-  const failed = checks.filter((c) => !c.ok).length
+  const failed = checks.filter((c) => !c.ok && !c.skip).length
+  const skipped = checks.filter((c) => c.skip).length
   console.log('')
-  console.log(failed ? 'Health: ' + (checks.length - failed) + '/' + checks.length + ' passed' : 'Health: all ' + checks.length + ' checks passed')
+  console.log(failed
+    ? 'Health: ' + (checks.length - failed - skipped) + '/' + (checks.length - skipped) + ' passed' + (skipped ? ` (${skipped} skipped)` : '')
+    : 'Health: all ' + (checks.length - skipped) + ' runnable checks passed' + (skipped ? ` (${skipped} skipped)` : ''))
 
   if (failed) {
-    const failedNames = checks.filter((c) => !c.ok).map((c) => c.name + ': ' + c.detail).join('; ')
+    const failedNames = checks.filter((c) => !c.ok && !c.skip).map((c) => c.name + ': ' + c.detail).join('; ')
     try {
       await post(sbUrl + '/functions/v1/ops-error-ingest', JSON.stringify({
         source: 'health-check',

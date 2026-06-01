@@ -286,6 +286,13 @@
 .quick-tile--gold:hover {
   box-shadow: 0 0 24px rgba(255, 179, 0, 0.25);
 }
+.quick-tile--owner {
+  background: linear-gradient(135deg, rgba(0, 245, 160, 0.18), rgba(255, 179, 0, 0.14));
+  border-color: rgba(0, 245, 160, 0.45);
+}
+.quick-tile--owner:hover {
+  box-shadow: 0 0 24px rgba(0, 245, 160, 0.2);
+}
 
 /* Softer global buttons when .use-classic-btns not set on parent */
 .site-main .btn:not(.use-classic-btns *) {

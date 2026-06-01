@@ -44,6 +44,7 @@
           <NuxtLink to="/dashboard" class="btn btn-outline btn-lg">My Dashboard</NuxtLink>
           <NuxtLink to="/browse" class="btn btn-dark btn-lg">Browse Floor</NuxtLink>
           <NuxtLink to="/ops/status" class="btn btn-dark btn-lg">Transaction readiness</NuxtLink>
+          <NuxtLink to="/ops/site-controls" class="btn btn-primary btn-lg">Site UI controls</NuxtLink>
           <NuxtLink to="/ops/incidents" class="btn btn-primary btn-lg">Ops incidents &amp; alerts</NuxtLink>
           <NuxtLink to="/ops/documents" class="btn btn-primary btn-lg">COA template &amp; policies</NuxtLink>
           <NuxtLink to="/ops/site-qa" class="btn btn-primary btn-lg">Full site QA (all routes)</NuxtLink>
@@ -117,6 +118,7 @@
             <li><NuxtLink to="/ops/ads"><strong>Social Media Ads</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/google-ads"><strong>Google Ads setup &amp; copy</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/marketing"><strong>Marketing &amp; get found</strong></NuxtLink></li>
+            <li><NuxtLink to="/ops/site-controls"><strong>Site UI controls</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/influencers"><strong>Influencers &amp; affiliates</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/social-promo"><strong>Social promotion</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/niche-collections"><strong>Niche collections &amp; limited drops</strong></NuxtLink></li>
