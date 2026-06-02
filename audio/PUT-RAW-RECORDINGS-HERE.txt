@@ -1,0 +1,18 @@
+Drop your phone recordings in THIS folder.
+
+Name them (any audio format — m4a, mp3, wav):
+  charles-raw.m4a   (or charles-raw.mp3, etc.)
+  brandy-raw.m4a
+
+Then on your computer run:
+  cd C:\Users\ninja\dev\the-franks-standard
+  .\scripts\enhance-greeting-audio.ps1
+
+That creates the cleaned files:
+  charles-greeting.mp3
+  brandy-greeting.mp3
+
+If you stumbled over words, re-record that clip — automatic tools cannot fix wrong words,
+only background noise, volume, and long silences.
+
+After enhancement, tell your developer to set Supabase secrets and redeploy the voice function.
