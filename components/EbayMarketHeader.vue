@@ -60,6 +60,11 @@
             </div>
           </div>
 
+          <NuxtLink :to="ordersTo" class="mkt-header__utility-btn mkt-header__orders" @click="closeAll">
+            <span class="mkt-header__utility-hello">Returns</span>
+            <span class="mkt-header__utility-label">&amp; Orders</span>
+          </NuxtLink>
+
           <NuxtLink to="/browse" class="mkt-header__utility-btn mkt-header__cart" @click="closeAll">
             <span class="mkt-header__cart-icon-wrap" aria-hidden="true">
               <svg class="mkt-header__cart-icon" viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 20 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
@@ -82,30 +87,12 @@
         <NuxtLink to="/sell/start" class="mkt-sub-link">Sell</NuxtLink>
         <NuxtLink to="/collections" class="mkt-sub-link">Collections</NuxtLink>
         <NuxtLink to="/categories" class="mkt-sub-link">Categories</NuxtLink>
-        <NuxtLink
-          to="/shop"
-          class="mkt-sub-link mkt-sub-link--bc"
-        >
-          {{ BC_BRAND.full }} Dropship Portal →
-        </NuxtLink>
       </div>
     </nav>
 
-    <div class="mkt-header__bc-banner">
-      <div class="container mkt-header__bc-banner-inner">
-        <p class="mkt-header__bc-copy">
-          <span class="mkt-header__bc-glow">{{ BC_BRAND.short }}</span>
-          competition audio — live dropship checkout with Stripe Connect split payment
-        </p>
-        <NuxtLink to="/shop" class="mkt-header__bc-cta">
-          Enter {{ BC_BRAND.full }} store
-        </NuxtLink>
-      </div>
-    </div>
-
     <div v-if="menuOpen" class="mkt-header__mobile">
       <NuxtLink to="/browse" class="mkt-mobile-link" @click="closeAll">Browse</NuxtLink>
-      <NuxtLink to="/shop" class="mkt-mobile-link mkt-mobile-link--bc" @click="closeAll">{{ BC_BRAND.full }}</NuxtLink>
+      <NuxtLink to="/stores" class="mkt-mobile-link" @click="closeAll">Shop Stores</NuxtLink>
       <NuxtLink to="/sell/start" class="mkt-mobile-link" @click="closeAll">Sell</NuxtLink>
       <NuxtLink v-if="isOwner" to="/ops/panel" class="mkt-mobile-link" @click="closeAll">Ops</NuxtLink>
     </div>
@@ -113,8 +100,6 @@
 </template>
 
 <script setup>
-import { BC_BRAND } from '~/utils/bcBrand.js'
-
 const emit = defineEmits(['brand-click'])
 
 defineProps({
@@ -130,6 +115,8 @@ const accountOpen = ref(false)
 const searchText = ref('')
 const searchDepartment = ref('')
 const cartCount = ref(0)
+
+const ordersTo = computed(() => (isSignedIn.value ? '/dashboard' : '/auth/login?next=/dashboard'))
 
 const departments = [
   { value: 'Performance Car Audio', label: 'Performance Car Audio' },
@@ -383,50 +370,6 @@ function onLogoError (e) {
   white-space: nowrap;
 }
 .mkt-sub-link:hover { color: #f5f5f7; background: rgba(255, 255, 255, 0.05); }
-.mkt-sub-link--bc {
-  color: #ff5252;
-  border: 1px solid rgba(211, 47, 47, 0.45);
-  background: rgba(211, 47, 47, 0.1);
-  box-shadow: 0 0 16px rgba(211, 47, 47, 0.2);
-}
-.mkt-sub-link--bc:hover { color: #fff; background: #d32f2f; }
-.mkt-header__bc-banner {
-  background: linear-gradient(90deg, rgba(211, 47, 47, 0.18) 0%, rgba(10, 10, 12, 0.95) 55%);
-  border-bottom: 1px solid rgba(211, 47, 47, 0.35);
-}
-.mkt-header__bc-banner-inner {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 0;
-}
-.mkt-header__bc-copy {
-  margin: 0;
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: #c5cdd8;
-  letter-spacing: 0.02em;
-}
-.mkt-header__bc-glow {
-  color: #ff5252;
-  font-weight: 900;
-  text-shadow: 0 0 12px rgba(211, 47, 47, 0.65);
-}
-.mkt-header__bc-cta {
-  padding: 8px 16px;
-  border-radius: 8px;
-  background: #d32f2f;
-  color: #fff;
-  font-size: 0.78rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  text-decoration: none;
-  box-shadow: 0 4px 20px rgba(211, 47, 47, 0.45);
-}
-.mkt-header__bc-cta:hover { background: #ff5252; color: #fff; }
 .mkt-header__mobile {
   display: none;
   flex-direction: column;
@@ -441,8 +384,6 @@ function onLogoError (e) {
   text-decoration: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
-.mkt-mobile-link--bc { color: #ff5252; }
-
 @media (max-width: 960px) {
   .mkt-header__bar-inner {
     grid-template-columns: 1fr auto;
@@ -457,6 +398,5 @@ function onLogoError (e) {
   .mkt-header__menu { display: flex; grid-area: menu; }
   .mkt-header__name { display: none; }
   .mkt-header__mobile { display: flex; }
-  .mkt-header__bc-banner-inner { flex-direction: column; align-items: flex-start; }
 }
 </style>

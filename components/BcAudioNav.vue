@@ -25,7 +25,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 <template>
   <header class="bc-nav">
     <div class="bc-nav__inner">
-      <NuxtLink to="/shop" class="bc-nav__brand" @click="closeAll">
+      <NuxtLink to="/bc-audio" class="bc-nav__brand" @click="closeAll">
         <span class="bc-nav__logo">B<span class="bc-nav__amp">&</span>C</span>
         <span class="bc-nav__name">Performance Audio</span>
       </NuxtLink>
@@ -58,7 +58,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
             <NuxtLink to="/stores" class="bc-nav__stores-all" @click="closeAll">All stores on The Franks Standard →</NuxtLink>
           </div>
         </div>
-        <NuxtLink to="/shop" class="bc-nav__link" @click="closeAll">Catalog</NuxtLink>
+        <NuxtLink to="/bc-audio" class="bc-nav__link" @click="closeAll">Catalog</NuxtLink>
         <NuxtLink to="/" class="bc-nav__link bc-nav__link--muted" @click="closeAll">The Franks Standard</NuxtLink>
         <a href="tel:+18778370527" class="bc-nav__link" @click="closeAll">Support</a>
       </nav>

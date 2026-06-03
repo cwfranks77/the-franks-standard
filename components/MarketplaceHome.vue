@@ -11,9 +11,6 @@
         <p class="mkt-hero__lede">{{ hp.heroLede }}</p>
         <div class="mkt-hero__actions">
           <NuxtLink to="/browse" class="mkt-btn mkt-btn--primary">Browse all listings</NuxtLink>
-          <NuxtLink to="/shop" class="mkt-btn mkt-btn--bc">
-            {{ BC_BRAND.full }} dropship →
-          </NuxtLink>
           <NuxtLink to="/sell/start" class="mkt-btn mkt-btn--ghost">Start selling</NuxtLink>
         </div>
       </div>
@@ -21,17 +18,20 @@
 
     <section class="mkt-promo">
       <div class="container mkt-promo__grid">
-        <NuxtLink to="/shop" class="mkt-promo__tile mkt-promo__tile--bc">
-          <span class="mkt-promo__eyebrow">Partner store · Live Stripe checkout</span>
-          <h2>{{ BC_BRAND.full }}</h2>
-          <p>{{ hp.featuredStoreDesc }}</p>
-          <span class="mkt-promo__cta">Shop competition audio →</span>
-        </NuxtLink>
         <NuxtLink to="/browse?limited=1" class="mkt-promo__tile">
           <span class="mkt-promo__eyebrow">Limited drops</span>
           <h2>Exclusive floor listings</h2>
           <p>Seller-backed proof, escrow checkout, multi-vendor shelves.</p>
           <span class="mkt-promo__cta">View drops →</span>
+        </NuxtLink>
+        <NuxtLink to="/bc-audio" class="mkt-promo__tile mkt-promo__tile--vendor">
+          <span class="mkt-promo__eyebrow">Featured merchant store</span>
+          <h2>
+            {{ BC_BRAND.full }}
+            <span class="mkt-promo__chip">Independent vendor</span>
+          </h2>
+          <p>{{ hp.featuredStoreDesc }}</p>
+          <span class="mkt-promo__cta">Visit merchant store →</span>
         </NuxtLink>
         <NuxtLink to="/join/founders10" class="mkt-promo__tile">
           <span class="mkt-promo__eyebrow">FOUNDERS10</span>
@@ -42,18 +42,17 @@
       </div>
     </section>
 
-    <section class="mkt-bc-strip">
-      <div class="container mkt-bc-strip__inner">
-        <div class="mkt-bc-strip__copy">
-          <p class="mkt-bc-strip__label">Dropship portal</p>
-          <h2>{{ BC_BRAND.full }} — warehouse pull &amp; split payout</h2>
-          <p>Secure Stripe Connect checkout · 4.45% LA tax · wholesale routed to distributor instantly.</p>
-        </div>
-        <div class="mkt-bc-strip__links">
-          <NuxtLink to="/shop" class="mkt-bc-strip__link mkt-bc-strip__link--primary">Enter dropship store</NuxtLink>
-          <NuxtLink to="/stores" class="mkt-bc-strip__link">All partner stores</NuxtLink>
-          <NuxtLink to="/sell/dropship-setup" class="mkt-bc-strip__link">Set up your dropship channel</NuxtLink>
-        </div>
+    <section class="mkt-rail" aria-label="Browse departments">
+      <div class="container mkt-rail__inner">
+        <NuxtLink
+          v-for="rail in departmentRail"
+          :key="rail.label"
+          :to="rail.to"
+          class="mkt-rail__item"
+        >
+          <span class="mkt-rail__label">{{ rail.label }}</span>
+          <span class="mkt-rail__sub">{{ rail.sub }}</span>
+        </NuxtLink>
       </div>
     </section>
 
@@ -63,7 +62,7 @@
           title="Trending on the floor"
           subtitle="eBay-style multi-vendor shelves — price, seller badge, and one-click listing detail."
           :items="shelfItems"
-          empty-message="Browse the marketplace for live listings, or open the B&amp;C dropship store."
+          empty-message="Browse the marketplace for live listings."
         />
         <div class="mkt-shelf__foot">
           <NuxtLink to="/browse" class="mkt-btn mkt-btn--ghost">View all marketplace listings →</NuxtLink>
@@ -100,6 +99,15 @@ const trustBlocks = computed(() => {
   return Array.isArray(blocks) && blocks.length ? blocks : DEFAULT_HOMEPAGE.trustBlocks
 })
 
+const departmentRail = [
+  { label: 'Performance Car Audio', sub: 'Subwoofers · Amps · DSP', to: '/browse?category=Performance%20Car%20Audio' },
+  { label: 'Vintage Restorations', sub: 'Estate · Tube · Hi-Fi', to: '/browse?category=Vintage%20Restorations' },
+  { label: 'Workspace Tuning', sub: 'Studio · Monitors · Gear', to: '/browse?category=Workspace%20Tuning' },
+  { label: 'Collectibles & COA', sub: 'Cards · Coins · Memorabilia', to: '/browse?category=Collectibles' },
+  { label: 'Sporting Goods', sub: 'Hunt · Fish · Outdoor', to: '/browse?category=Sporting%20Goods' },
+  { label: 'Top Sellers', sub: 'Trusted shops on the floor', to: '/top-sellers' },
+]
+
 const marketplaceRows = ref([])
 
 const LISTING_SELECT =
@@ -118,17 +126,22 @@ async function loadMarketplaceShelf () {
       .limit(12)
 
     if (!error && data?.length) {
-      marketplaceRows.value = data.map((row) => ({
-        id: row.id,
-        title: row.title,
-        priceLabel: `$${Number(row.price).toLocaleString(undefined, { minimumFractionDigits: 2 })}`,
-        image: publicUrlForPath(row.image_paths?.[0]),
-        seller: row.seller?.full_name || 'Marketplace seller',
-        isBcSeller: false,
-        badge: row.category ? String(row.category).slice(0, 18) : '',
-        to: `/listing/${row.id}`,
-        fallbackImage: '/logo.svg',
-      }))
+      marketplaceRows.value = data.map((row) => {
+        const sellerName = row.seller?.full_name || 'Marketplace seller'
+        const lowered = sellerName.toLowerCase()
+        const isBcSeller = lowered.includes('b&c') || lowered.includes('b & c') || lowered.includes('bc performance')
+        return {
+          id: row.id,
+          title: row.title,
+          priceLabel: `$${Number(row.price).toLocaleString(undefined, { minimumFractionDigits: 2 })}`,
+          image: publicUrlForPath(row.image_paths?.[0]),
+          seller: sellerName,
+          isBcSeller,
+          badge: row.category ? String(row.category).slice(0, 18) : '',
+          to: `/listing/${row.id}`,
+          fallbackImage: '/logo.svg',
+        }
+      })
     }
   } catch {
     marketplaceRows.value = []
@@ -147,9 +160,9 @@ const shelfItems = computed(() => marketplaceRows.value.slice(0, 16))
 .mkt-hero {
   padding: 2.5rem 0 2rem;
   background:
-    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(211, 47, 47, 0.22) 0%, transparent 65%),
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255, 216, 20, 0.12) 0%, transparent 65%),
     #0a0a0c;
-  border-bottom: 1px solid rgba(211, 47, 47, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 .mkt-hero__ribbon {
   display: inline-block;
@@ -157,8 +170,8 @@ const shelfItems = computed(() => marketplaceRows.value.slice(0, 16))
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.16em;
-  color: #ff5252;
-  border: 1px solid rgba(211, 47, 47, 0.4);
+  color: #ffd814;
+  border: 1px solid rgba(255, 216, 20, 0.4);
   border-radius: 999px;
   padding: 6px 12px;
   margin-bottom: 14px;
@@ -191,18 +204,12 @@ const shelfItems = computed(() => marketplaceRows.value.slice(0, 16))
 }
 .mkt-btn--primary { background: #ffd814; color: #0a0a0c; }
 .mkt-btn--primary:hover { background: #f7ca00; color: #0a0a0c; }
-.mkt-btn--bc {
-  background: #d32f2f;
-  color: #fff;
-  box-shadow: 0 4px 20px rgba(211, 47, 47, 0.4);
-}
-.mkt-btn--bc:hover { background: #ff5252; color: #fff; }
 .mkt-btn--ghost {
   border-color: rgba(255, 255, 255, 0.2);
   color: #e5e7eb;
   background: transparent;
 }
-.mkt-btn--ghost:hover { border-color: #d32f2f; color: #ff5252; }
+.mkt-btn--ghost:hover { border-color: rgba(255, 255, 255, 0.45); color: #fff; }
 
 .mkt-promo { padding: 1.75rem 0; background: #121216; }
 .mkt-promo__grid {
@@ -221,69 +228,73 @@ const shelfItems = computed(() => marketplaceRows.value.slice(0, 16))
   flex-direction: column;
   gap: 8px;
 }
-.mkt-promo__tile:hover { border-color: rgba(211, 47, 47, 0.4); }
-.mkt-promo__tile--bc {
+.mkt-promo__tile:hover { border-color: rgba(255, 216, 20, 0.4); }
+.mkt-promo__tile--vendor {
   border-color: rgba(211, 47, 47, 0.45);
-  background: linear-gradient(145deg, rgba(211, 47, 47, 0.15) 0%, #16161c 55%);
-  box-shadow: inset 0 0 40px rgba(211, 47, 47, 0.08);
+  background: linear-gradient(145deg, rgba(211, 47, 47, 0.12) 0%, #16161c 60%);
 }
+.mkt-promo__tile--vendor:hover { border-color: rgba(211, 47, 47, 0.7); }
 .mkt-promo__eyebrow {
   font-size: 0.65rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: #ff5252;
+  color: #9ca3af;
 }
-.mkt-promo__tile h2 { font-size: 1.05rem; margin: 0; color: #f5f5f7; }
+.mkt-promo__tile--vendor .mkt-promo__eyebrow { color: #ff5252; }
+.mkt-promo__tile h2 {
+  font-size: 1.05rem;
+  margin: 0;
+  color: #f5f5f7;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.mkt-promo__chip {
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #c5cdd8;
+}
+.mkt-promo__tile--vendor .mkt-promo__chip {
+  color: #ff5252;
+  border-color: rgba(211, 47, 47, 0.45);
+  background: rgba(211, 47, 47, 0.12);
+}
 .mkt-promo__tile p { margin: 0; font-size: 0.82rem; color: #9ca3af; line-height: 1.45; flex: 1; }
 .mkt-promo__cta { font-size: 0.78rem; font-weight: 800; color: #ffd814; margin-top: 4px; }
-.mkt-promo__tile--bc .mkt-promo__cta { color: #ff5252; }
+.mkt-promo__tile--vendor .mkt-promo__cta { color: #ff5252; }
 
-.mkt-bc-strip {
-  padding: 1.25rem 0;
-  background: linear-gradient(90deg, rgba(211, 47, 47, 0.2) 0%, #0a0a0c 50%);
-  border-top: 1px solid rgba(211, 47, 47, 0.35);
-  border-bottom: 1px solid rgba(211, 47, 47, 0.35);
+.mkt-rail {
+  background: #0a0a0c;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
-.mkt-bc-strip__inner {
+.mkt-rail__inner {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1px;
+  background: rgba(255, 255, 255, 0.06);
+}
+.mkt-rail__item {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-.mkt-bc-strip__label {
-  font-size: 0.65rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: #ff5252;
-  margin: 0 0 4px;
-}
-.mkt-bc-strip__copy h2 {
-  font-size: 1.1rem;
-  margin: 0 0 6px;
-  color: #f5f5f7;
-}
-.mkt-bc-strip__copy p { margin: 0; font-size: 0.82rem; color: #9ca3af; max-width: 520px; }
-.mkt-bc-strip__links { display: flex; flex-wrap: wrap; gap: 8px; }
-.mkt-bc-strip__link {
-  padding: 8px 14px;
-  border-radius: 8px;
-  font-size: 0.78rem;
-  font-weight: 800;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  background: #0a0a0c;
   text-decoration: none;
-  color: #e5e7eb;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: inherit;
+  transition: background 0.15s, color 0.15s;
 }
-.mkt-bc-strip__link:hover { border-color: #d32f2f; color: #ff5252; }
-.mkt-bc-strip__link--primary {
-  background: #d32f2f;
-  border-color: #d32f2f;
-  color: #fff;
-  box-shadow: 0 0 20px rgba(211, 47, 47, 0.35);
-}
-.mkt-bc-strip__link--primary:hover { background: #ff5252; color: #fff; }
+.mkt-rail__item:hover { background: #16161c; }
+.mkt-rail__label { font-weight: 800; font-size: 0.85rem; color: #f5f5f7; }
+.mkt-rail__sub { font-size: 0.7rem; color: #7a8190; letter-spacing: 0.04em; }
 
 .mkt-shelf { padding: 2rem 0 2.5rem; background: #0a0a0c; }
 .mkt-shelf__foot { margin-top: 1.25rem; text-align: center; }
