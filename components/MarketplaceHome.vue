@@ -88,7 +88,6 @@ import { BC_BRAND } from '~/utils/bcBrand.js'
 
 const props = defineProps({
   homepage: { type: Object, default: () => ({}) },
-  bcCatalogItems: { type: Array, default: () => [] },
 })
 
 const hp = computed(() => ({
@@ -140,21 +139,7 @@ onMounted(() => {
   loadMarketplaceShelf()
 })
 
-const shelfItems = computed(() => {
-  const bcItems = (props.bcCatalogItems || []).slice(0, 4).map((item) => ({
-    id: `bc-${item.id}`,
-    title: `${item.brand || BC_BRAND.short} — ${item.name}`,
-    priceLabel: item.formattedPrice || `$${Number(item.retailPrice || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}`,
-    image: item.image || '/logo.svg',
-    seller: BC_BRAND.full,
-    isBcSeller: true,
-    badge: 'Dropship',
-    to: '/shop',
-    fallbackImage: '/logo.svg',
-  }))
-
-  return [...bcItems, ...marketplaceRows.value].slice(0, 16)
-})
+const shelfItems = computed(() => marketplaceRows.value.slice(0, 16))
 </script>
 
 <style scoped>

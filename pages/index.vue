@@ -1,16 +1,10 @@
 <template>
-  <MarketplaceHome
-    :homepage="homepagePayload"
-    :bc-catalog-items="bcCatalogItems"
-  />
+  <MarketplaceHome :homepage="homepagePayload" />
 </template>
 
 <script setup>
 import { DEFAULT_HOMEPAGE } from '~/utils/ownerConfigDefaults'
 import { BC_BRAND } from '~/utils/bcBrand.js'
-import { BC_AUDIO_CATALOG, processCatalogArrays } from '~/utils/dropshipCatalogs.js'
-
-const staticBcItems = processCatalogArrays([BC_AUDIO_CATALOG])
 
 async function fetchHomepageContent () {
   try {
@@ -20,31 +14,14 @@ async function fetchHomepageContent () {
   }
 }
 
-async function fetchBcCatalog () {
-  try {
-    const data = await $fetch('/api/public/dropship-catalog', {
-      query: { storeId: 'bc-performance-audio' },
-    })
-    return data?.items?.length ? data.items : staticBcItems
-  } catch {
-    return staticBcItems
-  }
-}
-
 const { data: siteContent } = await useAsyncData('homepage-content', fetchHomepageContent, {
   default: () => ({ homepage: DEFAULT_HOMEPAGE }),
-})
-
-const { data: bcCatalogData } = await useAsyncData('homepage-bc-catalog', fetchBcCatalog, {
-  default: () => staticBcItems,
 })
 
 const homepagePayload = computed(() => ({
   ...DEFAULT_HOMEPAGE,
   ...(siteContent.value?.homepage || {}),
 }))
-
-const bcCatalogItems = computed(() => bcCatalogData.value || staticBcItems)
 
 useSeoMeta({
   title: 'The Franks Standard — Marketplace for Collectibles & Partner Stores',
