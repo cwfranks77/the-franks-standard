@@ -189,7 +189,7 @@ const shelfItems = computed(() => marketplaceRows.value.slice(0, 16))
   text-shadow: 0 0 24px rgba(255, 216, 20, 0.25);
 }
 .mkt-hero__sub { font-weight: 700; color: #c5cdd8; margin: 0 0 10px; }
-.mkt-hero__lede { max-width: 640px; color: #9ca3af; line-height: 1.6; margin: 0 0 20px; }
+.mkt-hero__lede { max-width: 640px; color: #d1d5db; line-height: 1.6; margin: 0 0 20px; }
 .mkt-hero__actions { display: flex; flex-wrap: wrap; gap: 10px; }
 
 .mkt-btn {
