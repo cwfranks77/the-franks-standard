@@ -47,6 +47,18 @@ function post(url, body, headers = {}) {
   })
 }
 
+// Supabase Edge Functions occasionally return 404 on the first hit after a
+// cold start. Retry POSTs that come back as 404 a couple of times before
+// declaring the function undeployed.
+async function postWithRetry(url, body, headers = {}, { retries = 2, delayMs = 1500 } = {}) {
+  let r = await post(url, body, headers)
+  for (let i = 0; i < retries && r.status === 404; i++) {
+    await new Promise((res) => setTimeout(res, delayMs))
+    r = await post(url, body, headers)
+  }
+  return r
+}
+
 const sbUrl = process.env.NUXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || 'https://rochesyrxiyrxhzmkuwk.supabase.co'
 const sbKey = process.env.NUXT_PUBLIC_SUPABASE_KEY || process.env.SUPABASE_KEY || ''
 const checks = []
@@ -120,7 +132,7 @@ async function check(name, fn) {
     return { ok: r.status !== 404, detail: 'HTTP ' + r.status }
   })
   await check('Edge auth-send-email hook deployed', async () => {
-    const r = await post(sbUrl + '/functions/v1/auth-send-email', '{}')
+    const r = await postWithRetry(sbUrl + '/functions/v1/auth-send-email', '{}')
     if (r.status === 404) return { ok: false, detail: 'HTTP 404 — deploy auth-send-email' }
     if (r.body && r.body.includes('missing_send_email_hook_secret')) {
       return { ok: false, detail: 'hook secret missing on Edge — run auth:push-hook-secret or Deploy workflow' }

@@ -25,6 +25,17 @@ function post (url, body) {
   })
 }
 
+// Supabase Edge Functions occasionally cold-start a 404 on first hit.
+// Retry the POST a couple of times before treating 404 as undeployed.
+async function postWithRetry (url, body, { retries = 2, delayMs = 1500 } = {}) {
+  let r = await post(url, body)
+  for (let i = 0; i < retries && r.status === 404; i++) {
+    await new Promise((res) => setTimeout(res, delayMs))
+    r = await post(url, body)
+  }
+  return r
+}
+
 function get (url) {
   return new Promise((resolve, reject) => {
     https.get(url, (res) => {
@@ -40,7 +51,7 @@ function get (url) {
   const ok = (name, detail) => console.log('OK  ', name, '-', detail)
   const fail = (name, detail) => { console.log('FAIL', name, '-', detail); failed++ }
 
-  const hook = await post(HOOK_URL, '{}')
+  const hook = await postWithRetry(HOOK_URL, '{}')
   if (hook.status === 404) {
     fail('auth-send-email deployed', 'HTTP 404 — run Deploy Supabase Edge Functions workflow')
   } else if (hook.status === 500 && hook.body.includes('missing_send_email_hook_secret')) {
