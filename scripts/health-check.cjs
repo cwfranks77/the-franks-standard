@@ -158,8 +158,16 @@ async function check(name, fn) {
     return { ok: r.status === 200, detail: 'HTTP ' + r.status }
   })
   await check('Mailbox credentials (info@)', async () => {
+    // The email.env file lives in the gitignored franks-standard-credentials/
+    // sibling directory and is local-only. CI runners can never see it, so
+    // treat its absence as "skipped" (ok=true) instead of failing the run.
     const env = loadEmailEnv()
-    if (!env) return { ok: false, detail: 'email.env missing — see franks-standard-credentials/EMAIL-SETUP.md' }
+    if (!env) {
+      if (process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true') {
+        return { ok: true, detail: 'skipped on CI (local-only credentials file)' }
+      }
+      return { ok: false, detail: 'email.env missing — see franks-standard-credentials/EMAIL-SETUP.md' }
+    }
     if (!env.EMAIL_PASS) {
       return { ok: false, detail: 'EMAIL_PASS empty — reset in Namecheap, save password, npm run mail:test' }
     }
