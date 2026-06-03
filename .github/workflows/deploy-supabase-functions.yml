@@ -69,6 +69,7 @@ jobs:
           deploy promo-availability --no-verify-jwt
           deploy redeem-promo-code --no-verify-jwt
           deploy stripe-webhook --no-verify-jwt
+          deploy bc-dropship-checkout --no-verify-jwt
           deploy inventory-source-dispatch --no-verify-jwt
           deploy inventory-source-webhook --no-verify-jwt
           deploy reconcile-orders --no-verify-jwt

@@ -1,0 +1,246 @@
+<script setup>
+import { BC_BRAND, bcPageTitle } from '~/utils/bcBrand.js'
+
+definePageMeta({ layout: 'bc-audio' })
+
+const ownerName = 'C.W. Franks'
+const primarySupportNumber = '1-800-555-FRNK'
+
+const brandsCarried = [
+  { name: 'Kicker', series: 'SoloBaric L7X' },
+  { name: 'Rockford Fosgate', series: 'Punch Power' },
+  { name: 'AudioControl', series: 'Epicenter Matrix' },
+  { name: 'Skar Audio', series: 'EVL Competition' },
+  { name: 'JL Audio', series: 'W7 Anniversary' },
+]
+
+const selectedProduct = ref(null)
+const route = useRoute()
+const checkoutCancelled = computed(() => route.query.cancelled === '1')
+
+const { data: dropshipData } = await useFetch('/api/public/dropship-catalog', {
+  query: { storeId: 'bc-performance-audio' },
+})
+
+const storeLive = computed(() => dropshipData.value?.store?.is_live !== false && !dropshipData.value?.offline)
+const storeName = computed(() => dropshipData.value?.store?.name || BC_BRAND.full)
+const heroEyebrow = computed(() => dropshipData.value?.store?.hero_json?.eyebrow || 'Dropship partner store · The Franks Standard')
+const heroSlogan = computed(() => dropshipData.value?.store?.hero_json?.slogan || dropshipData.value?.store?.tagline || BC_BRAND.tagline)
+const catalogItems = computed(() => dropshipData.value?.items || [])
+
+function onSelectProduct (item) {
+  selectedProduct.value = item
+}
+
+useSeoMeta({
+  title: bcPageTitle('Competition Subwoofers & Amplifiers'),
+  description: `Shop competition-grade audio from ${BC_BRAND.full}. Dropship fulfillment with automated split-payment on The Franks Standard.`,
+})
+</script>
+
+<template>
+  <div class="bc-shop">
+    <section v-if="!storeLive" class="bc-shop-offline">
+      <div class="bc-shop-offline__inner">
+        <h1>{{ storeName }} is temporarily offline</h1>
+        <p>Check back soon or browse the main marketplace.</p>
+        <NuxtLink to="/browse" class="btn btn-primary">Browse marketplace</NuxtLink>
+      </div>
+    </section>
+
+    <template v-else>
+      <section class="bc-shop-hero">
+        <div class="bc-shop-hero__glow" aria-hidden="true" />
+        <div class="bc-shop-hero__inner">
+          <p class="bc-shop-hero__eyebrow">{{ heroEyebrow }}</p>
+          <h1 class="bc-shop-hero__title">
+            <span class="bc-shop-hero__brand">{{ storeName.includes('&') ? storeName.split(' ')[0] : BC_BRAND.short }}</span>
+            <span class="bc-shop-hero__accent">Performance Audio</span>
+          </h1>
+          <p class="bc-shop-hero__slogan">{{ heroSlogan }}</p>
+        </div>
+      </section>
+
+      <section class="bc-shop-brands" aria-label="Authorized brands">
+        <div class="bc-shop-brands__row">
+          <div v-for="brand in brandsCarried" :key="brand.name" class="bc-shop-brands__node">
+            <p class="bc-shop-brands__name">{{ brand.name }}</p>
+            <p class="bc-shop-brands__series">{{ brand.series }}</p>
+          </div>
+        </div>
+      </section>
+
+      <section v-if="checkoutCancelled" class="bc-shop-cancelled" role="status">
+        <p>Checkout was cancelled. Your card was not charged — select a product and try again.</p>
+      </section>
+
+      <section class="bc-shop-split" aria-label="Catalog and dropship order">
+        <div class="bc-shop-split__inner">
+          <BcProductCatalogGrid
+            :catalogs="[catalogItems]"
+            :selected-id="selectedProduct?.id ?? null"
+            @select="onSelectProduct"
+          />
+          <BcDropshipOrderForm :product="selectedProduct" />
+        </div>
+      </section>
+
+      <footer class="bc-shop-footer">
+        <div class="bc-shop-footer__grid">
+          <div>
+            <p class="bc-shop-footer__brand">{{ storeName }} Marketplace</p>
+            <p class="bc-shop-footer__meta">Operator: {{ ownerName }}</p>
+          </div>
+          <div>
+            <p class="bc-shop-footer__label">Central support</p>
+            <p class="bc-shop-footer__phone">{{ primarySupportNumber }} · Option 3 for audio dispatch</p>
+          </div>
+        </div>
+        <p class="bc-shop-footer__copy">&copy; 2026 {{ storeName }} · A partner store on The Franks Standard</p>
+      </footer>
+    </template>
+  </div>
+</template>
+
+<style scoped>
+.bc-shop { background: #0a0a0c; color: #f5f5f7; }
+.bc-shop-offline {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+.bc-shop-offline__inner h1 { margin: 0 0 12px; }
+.bc-shop-offline__inner p { color: #9ca3af; margin: 0 0 20px; }
+
+.bc-shop-hero {
+  position: relative;
+  padding: 3rem 1.5rem 2.5rem;
+  text-align: center;
+  overflow: hidden;
+}
+.bc-shop-hero__glow {
+  position: absolute;
+  inset: -20% 0 0;
+  background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(211, 47, 47, 0.28) 0%, transparent 65%);
+  pointer-events: none;
+}
+.bc-shop-hero__inner { position: relative; max-width: 720px; margin: 0 auto; }
+.bc-shop-hero__eyebrow {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #ff5252;
+  margin: 0 0 12px;
+}
+.bc-shop-hero__title {
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  margin: 0;
+  line-height: 1.05;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35em;
+}
+.bc-shop-hero__brand { color: #f5f5f7; }
+.bc-shop-hero__accent {
+  color: #d32f2f;
+  text-shadow: 0 0 32px rgba(211, 47, 47, 0.5);
+}
+.bc-shop-hero__slogan {
+  margin: 14px 0 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #9ca3af;
+  font-weight: 700;
+}
+
+.bc-shop-brands {
+  border-top: 1px solid rgba(211, 47, 47, 0.15);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 1.25rem 1.5rem;
+  overflow-x: auto;
+}
+.bc-shop-brands__row {
+  max-width: 80rem;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  min-width: 560px;
+}
+.bc-shop-brands__node {
+  flex: 1;
+  text-align: center;
+  padding: 0 0.75rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+}
+.bc-shop-brands__name { font-size: 0.85rem; font-weight: 800; margin: 0; }
+.bc-shop-brands__series { font-size: 0.65rem; color: #7a8190; margin: 4px 0 0; font-family: monospace; }
+
+.bc-shop-cancelled {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+.bc-shop-cancelled p {
+  margin: 0 0 1rem;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  color: #fcd34d;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.bc-shop-split {
+  padding: 2rem 1.5rem 3rem;
+  background: linear-gradient(180deg, #0a0a0c 0%, #121216 100%);
+}
+.bc-shop-split__inner {
+  max-width: 80rem;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+@media (min-width: 1024px) {
+  .bc-shop-split__inner {
+    grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+    gap: 2rem;
+  }
+}
+
+.bc-shop-footer {
+  margin-top: 0;
+  padding: 2.5rem 1.5rem;
+  border-top: 1px solid rgba(211, 47, 47, 0.15);
+  text-align: center;
+  font-size: 0.75rem;
+  color: #7a8190;
+}
+.bc-shop-footer__grid {
+  max-width: 64rem;
+  margin: 0 auto 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  justify-content: space-between;
+}
+@media (min-width: 768px) {
+  .bc-shop-footer__grid { flex-direction: row; text-align: left; }
+}
+.bc-shop-footer__brand { font-weight: 800; color: #e5e5e5; margin: 0; }
+.bc-shop-footer__meta { margin: 4px 0 0; }
+.bc-shop-footer__label { font-weight: 800; color: #f5f5f7; margin: 0; }
+.bc-shop-footer__phone { margin: 4px 0 0; color: #ff5252; }
+.bc-shop-footer__copy { margin: 0; color: #52525b; }
+</style>

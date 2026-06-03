@@ -1,5 +1,5 @@
 <template>
-  <div class="site-wrapper">
+  <div class="site-wrapper marketplace-dark">
     <div class="site-ribbon" role="status" aria-label="Site highlights">
       <div class="container site-ribbon-inner">
         <span class="ribbon-txt">{{ RIBBON_LINE_PROOF }}</span>
@@ -13,49 +13,7 @@
         <span class="ribbon-txt">4–5% seller fees · FOUNDERS10: 3 mo Pro free</span>
       </div>
     </div>
-    <header class="site-header">
-      <div class="container header-inner">
-        <div class="header-left">
-          <NuxtLink
-            to="/"
-            class="header-brand"
-            @click="onBrandOrLogoClick"
-          >
-            <img
-              src="/franks-pavilion.png"
-              alt=""
-              class="header-logo"
-              :class="{ 'op-knock-home': onHome }"
-              @error="onPavilionImgError"
-            />
-            <span class="header-name">The Franks Standard</span>
-            <span v-if="isOwner" class="header-owner-pill">Owner</span>
-          </NuxtLink>
-        </div>
-
-        <nav class="header-nav" :class="{ open: menuOpen }">
-          <div class="header-quick-dock">
-            <NuxtLink to="/browse" class="quick-tile" @click="closeAllNav">Browse</NuxtLink>
-            <NuxtLink to="/sell/start" class="quick-tile quick-tile--gold" @click="closeAllNav">Sell</NuxtLink>
-            <a href="tel:+18778370527" class="quick-tile" @click="closeAllNav">Call</a>
-          </div>
-          <NavMegaDropdown label="Features" :sections="navFeatures" @navigate="closeAllNav" />
-          <NavMegaDropdown label="Settings" :sections="navSettings" @navigate="closeAllNav" @action="onNavMenuAction" />
-          <template v-if="isSignedIn">
-            <NuxtLink to="/dashboard" class="quick-tile" @click="closeAllNav">Dashboard</NuxtLink>
-            <button type="button" class="quick-tile quick-tile--signout" aria-label="Sign out of your account" @click="onSignOut">Sign out</button>
-          </template>
-          <template v-else>
-            <NuxtLink to="/auth/login" class="quick-tile" @click="closeAllNav">Sign in</NuxtLink>
-            <NuxtLink to="/auth/register" class="quick-tile quick-tile--gold" @click="closeAllNav">Join free</NuxtLink>
-          </template>
-        </nav>
-
-        <button class="menu-toggle" @click="menuOpen = !menuOpen" aria-label="Toggle menu">
-          <span></span><span></span><span></span>
-        </button>
-      </div>
-    </header>
+        <EbayMarketHeader :on-home="onHome" :is-owner="isOwner" @brand-click="onBrandOrLogoClick" />
 
     <div class="site-trust" aria-label="Why buyers and sellers use this marketplace">
       <div class="container trust-chip-row">
