@@ -1,5 +1,9 @@
 <script setup>
 import { SHOP_STORES } from '~/utils/dropshipCatalogs.js'
+import { getBcExternalSiteUrl } from '~/utils/bcExternalSite.js'
+
+const config = useRuntimeConfig()
+const bcExternalUrl = computed(() => getBcExternalSiteUrl(config))
 
 const menuOpen = ref(false)
 const storesOpen = ref(false)
@@ -59,6 +63,14 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
           </div>
         </div>
         <NuxtLink to="/bc-audio" class="bc-nav__link" @click="closeAll">Catalog</NuxtLink>
+        <a
+          v-if="bcExternalUrl"
+          :href="bcExternalUrl"
+          class="bc-nav__link bc-nav__link--external"
+          target="_blank"
+          rel="noopener noreferrer"
+          @click="closeAll"
+        >Full website ↗</a>
         <NuxtLink to="/" class="bc-nav__link bc-nav__link--muted" @click="closeAll">The Franks Standard</NuxtLink>
         <a href="tel:+18778370527" class="bc-nav__link" @click="closeAll">Support</a>
       </nav>
@@ -133,6 +145,8 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 }
 .bc-nav__link:hover { background: rgba(211, 47, 47, 0.12); color: #ff5252; }
 .bc-nav__link--muted { color: #9ca3af; }
+.bc-nav__link--external { color: #ffd814; }
+.bc-nav__link--external:hover { color: #fff; background: rgba(255, 216, 20, 0.12); }
 .bc-nav__stores { position: relative; }
 .bc-nav__stores-btn {
   display: inline-flex;

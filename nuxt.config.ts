@@ -96,6 +96,8 @@ export default defineNuxtConfig({
       socialX: process.env.NUXT_PUBLIC_SOCIAL_X || '',
       socialLinkedin: process.env.NUXT_PUBLIC_SOCIAL_LINKEDIN || '',
       ownerNotifyEmail: process.env.NUXT_PUBLIC_OWNER_NOTIFY_EMAIL || 'info@thefranksstandard.com',
+      /** Optional full B&C site (e.g. https://bcperformanceaudio.com). Marketplace still links /bc-audio for checkout. */
+      bcAudioExternalUrl: (process.env.NUXT_PUBLIC_BC_AUDIO_EXTERNAL_URL || '').trim(),
     },
   },
 

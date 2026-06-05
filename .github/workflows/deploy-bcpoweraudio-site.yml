@@ -1,0 +1,58 @@
+# Publishes the same Nuxt static build to cwfranks77/bcpoweraudio for www.bcpoweraudio.com
+# (GitHub Pages allows one custom domain per repo; thefranksstandard.com stays on the-franks-standard.)
+name: Deploy B&C to bcpoweraudio.com
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'pages/bc-audio/**'
+      - 'content/**'
+      - 'plugins/bc-domain-host.client.js'
+      - '.github/workflows/deploy-bcpoweraudio-site.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-bcpoweraudio
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install
+        run: npm install --no-audit --no-fund
+
+      - name: Build static site
+        env:
+          NUXT_PUBLIC_SUPABASE_URL: ${{ secrets.NUXT_PUBLIC_SUPABASE_URL }}
+          NUXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NUXT_PUBLIC_SUPABASE_KEY }}
+          NUXT_PUBLIC_SITE_URL: https://www.bcpoweraudio.com
+          NUXT_PUBLIC_BC_AUDIO_EXTERNAL_URL: https://www.bcpoweraudio.com
+          NUXT_PUBLIC_OPS_ACCESS_KEY_HASH: ${{ secrets.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH }}
+          NUXT_PUBLIC_PAY_LISTING_FEE_URL: ${{ secrets.NUXT_PUBLIC_PAY_LISTING_FEE_URL }}
+          NUXT_PUBLIC_PAY_PRO_SELLER_URL: ${{ secrets.NUXT_PUBLIC_PAY_PRO_SELLER_URL }}
+          NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL: ${{ secrets.NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL }}
+        run: npm run build
+
+      - name: Add CNAME for www.bcpoweraudio.com
+        run: echo 'www.bcpoweraudio.com' > .output/public/CNAME
+
+      - name: Deploy to cwfranks77/bcpoweraudio
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: .output/public
+          repository-name: cwfranks77/bcpoweraudio
+          branch: gh-pages
+          clean: true
+          token: ${{ secrets.GITHUB_TOKEN }}

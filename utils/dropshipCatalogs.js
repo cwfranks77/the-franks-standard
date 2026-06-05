@@ -10,7 +10,9 @@ export const SHOP_STORES = [
     id: 'bc-performance-audio',
     name: BC_BRAND.full,
     slug: 'bc-performance-audio',
-    path: '/shop',
+    path: '/bc-audio',
+    /** Set NUXT_PUBLIC_BC_AUDIO_EXTERNAL_URL for a standalone marketing site (opens in new tab). */
+    externalUrlEnv: 'NUXT_PUBLIC_BC_AUDIO_EXTERNAL_URL',
     tagline: 'Competition-grade subwoofers, amps & staging — dropship fulfillment',
     accent: '#d32f2f',
     status: 'live',

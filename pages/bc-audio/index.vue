@@ -1,7 +1,19 @@
 <script setup>
-import { BC_BRAND, bcPageTitle } from '~/utils/bcBrand.js'
+import { BC_BRAND } from '~/utils/bcBrand.js'
+import metaConfig from '~/content/meta-config.json'
+import productsData from '~/content/products.json'
 
 definePageMeta({ layout: 'bc-audio' })
+
+const megastoreItems = productsData.map((item) => ({
+  id: item.id,
+  name: item.name,
+  category: item.category,
+  image: item.image,
+  tagline: item.description,
+  retailPrice: item.price,
+  brand: item.category,
+}))
 
 const ownerName = 'C.W. Franks'
 const primarySupportNumber = '1-800-555-FRNK'
@@ -26,15 +38,35 @@ const storeLive = computed(() => dropshipData.value?.store?.is_live !== false &&
 const storeName = computed(() => dropshipData.value?.store?.name || BC_BRAND.full)
 const heroEyebrow = computed(() => dropshipData.value?.store?.hero_json?.eyebrow || `Independent merchant store · ${BC_BRAND.full}`)
 const heroSlogan = computed(() => dropshipData.value?.store?.hero_json?.slogan || dropshipData.value?.store?.tagline || BC_BRAND.tagline)
-const catalogItems = computed(() => dropshipData.value?.items || [])
+const catalogItems = computed(() => {
+  const api = dropshipData.value?.items || []
+  const merged = new Map(megastoreItems.map((i) => [i.id, i]))
+  for (const item of api) merged.set(item.id, item)
+  return [...merged.values()]
+})
 
 function onSelectProduct (item) {
   selectedProduct.value = item
 }
 
-useSeoMeta({
-  title: bcPageTitle('Competition Subwoofers & Amplifiers'),
-  description: `Shop competition-grade audio from ${BC_BRAND.full}. Dropship fulfillment with automated split-payment.`,
+useHead({
+  title: metaConfig.title,
+  meta: [
+    { name: 'description', content: metaConfig.description },
+    { name: 'robots', content: 'index, follow' },
+    { name: 'googlebot', content: 'index, follow' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: metaConfig.url },
+    { property: 'og:title', content: metaConfig.title },
+    { property: 'og:description', content: metaConfig.description },
+    { property: 'og:image', content: metaConfig.image },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:url', content: metaConfig.url },
+    { name: 'twitter:title', content: metaConfig.title },
+    { name: 'twitter:description', content: metaConfig.description },
+    { name: 'twitter:image', content: metaConfig.image },
+  ],
+  link: [{ rel: 'canonical', href: metaConfig.url }],
 })
 </script>
 
@@ -57,6 +89,9 @@ useSeoMeta({
             <span class="bc-shop-hero__accent">Performance Audio</span>
           </h1>
           <p class="bc-shop-hero__slogan">{{ heroSlogan }}</p>
+          <p class="bc-shop-hero__parent">
+            A proud division of {{ metaConfig.parentCompany }} · Live tax token sourcing active
+          </p>
         </div>
       </section>
 
@@ -158,6 +193,12 @@ useSeoMeta({
   text-transform: uppercase;
   color: #9ca3af;
   font-weight: 700;
+}
+.bc-shop-hero__parent {
+  margin: 10px 0 0;
+  font-size: 0.75rem;
+  color: #6b7280;
+  letter-spacing: 0.04em;
 }
 
 .bc-shop-brands {

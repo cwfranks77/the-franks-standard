@@ -24,15 +24,24 @@
           <p>Seller-backed proof, escrow checkout, multi-vendor shelves.</p>
           <span class="mkt-promo__cta">View drops →</span>
         </NuxtLink>
-        <NuxtLink to="/bc-audio" class="mkt-promo__tile mkt-promo__tile--vendor">
+        <article class="mkt-promo__tile mkt-promo__tile--vendor">
           <span class="mkt-promo__eyebrow">Featured merchant store</span>
           <h2>
             {{ BC_BRAND.full }}
             <span class="mkt-promo__chip">Independent vendor</span>
           </h2>
           <p>{{ hp.featuredStoreDesc }}</p>
-          <span class="mkt-promo__cta">Visit merchant store →</span>
-        </NuxtLink>
+          <div class="mkt-promo__vendor-links">
+            <NuxtLink to="/bc-audio" class="mkt-promo__cta">Shop &amp; checkout on Franks →</NuxtLink>
+            <a
+              v-if="bcExternalUrl"
+              :href="bcExternalUrl"
+              class="mkt-promo__cta mkt-promo__cta--external"
+              target="_blank"
+              rel="noopener noreferrer"
+            >Full B&amp;C website ↗</a>
+          </div>
+        </article>
         <NuxtLink to="/join/founders10" class="mkt-promo__tile">
           <span class="mkt-promo__eyebrow">FOUNDERS10</span>
           <h2>3 months Pro free</h2>
@@ -84,6 +93,10 @@
 <script setup>
 import { DEFAULT_HOMEPAGE } from '~/utils/ownerConfigDefaults'
 import { BC_BRAND } from '~/utils/bcBrand.js'
+import { getBcExternalSiteUrl } from '~/utils/bcExternalSite.js'
+
+const config = useRuntimeConfig()
+const bcExternalUrl = computed(() => getBcExternalSiteUrl(config))
 
 const props = defineProps({
   homepage: { type: Object, default: () => ({}) },
@@ -268,7 +281,21 @@ const shelfItems = computed(() => marketplaceRows.value.slice(0, 16))
   background: rgba(211, 47, 47, 0.12);
 }
 .mkt-promo__tile p { margin: 0; font-size: 0.82rem; color: #9ca3af; line-height: 1.45; flex: 1; }
-.mkt-promo__cta { font-size: 0.78rem; font-weight: 800; color: #ffd814; margin-top: 4px; }
+.mkt-promo__vendor-links {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+.mkt-promo__cta {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #ffd814;
+  text-decoration: none;
+}
+.mkt-promo__cta:hover { color: #fff; }
+.mkt-promo__cta--external { color: #ff8a80; }
+.mkt-promo__cta--external:hover { color: #ff5252; }
 .mkt-promo__tile--vendor .mkt-promo__cta { color: #ff5252; }
 
 .mkt-rail {

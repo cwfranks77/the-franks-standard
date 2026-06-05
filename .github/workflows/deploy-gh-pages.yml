@@ -55,6 +55,7 @@ jobs:
           NUXT_PUBLIC_STRIPE_TAX_CHECKOUT_ENABLED: ${{ secrets.NUXT_PUBLIC_STRIPE_TAX_CHECKOUT_ENABLED }}
           NUXT_PUBLIC_CUSTOMER_SERVICE_PHONE: ${{ secrets.NUXT_PUBLIC_CUSTOMER_SERVICE_PHONE }}
           NUXT_PUBLIC_OG_IMAGE: ${{ secrets.NUXT_PUBLIC_OG_IMAGE }}
+          NUXT_PUBLIC_BC_AUDIO_EXTERNAL_URL: https://www.bcpoweraudio.com
         run: npm run build
 
       - name: Upload Pages artifact
