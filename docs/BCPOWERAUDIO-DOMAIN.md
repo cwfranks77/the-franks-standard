@@ -21,19 +21,19 @@ Repo: **cwfranks77/the-franks-standard** (or your fork)
 3. GitHub now supports multiple domains on one Pages site: add **`www.bcpoweraudio.com`** (and optionally apex `bcpoweraudio.com`).
 4. Save; wait for DNS check ✅.
 
-## 2. DNS at your registrar (bcpoweraudio.com)
+## 2. DNS at your registrar (bcpoweraudio.com) — REQUIRED for www
 
-Point the domain at GitHub Pages (replace `YOUR_GITHUB_USERNAME` if docs show a different target):
+**Repo deployed:** [github.com/cwfranks77/bcpoweraudio](https://github.com/cwfranks77/bcpoweraudio) (branch `gh-pages`, CNAME `www.bcpoweraudio.com`).
+
+**Until you add this record, `www.bcpoweraudio.com` will not resolve** (verified: NXDOMAIN).
 
 | Type | Name | Value |
 |------|------|--------|
-| **CNAME** | `www` | `YOUR_GITHUB_USERNAME.github.io` |
-| **A** (apex only) | `@` | `185.199.108.153` |
-| **A** | `@` | `185.199.109.153` |
-| **A** | `@` | `185.199.110.153` |
-| **A** | `@` | `185.199.111.153` |
+| **CNAME** | `www` | `cwfranks77.github.io` |
 
-Redirect apex → www at registrar if you do not use A records.
+**Apex (`bcpoweraudio.com`):** Your DNS already aliases the apex to The Franks Standard GitHub Pages IPs. Visitors may hit the main site; the app redirects `bcpoweraudio.com` → `/bc-audio`. For a single canonical host, forward apex → `https://www.bcpoweraudio.com` at your registrar.
+
+**Preview (works now, before www DNS):** https://cwfranks77.github.io/bcpoweraudio/bc-audio
 
 ## 3. Deploy secrets (GitHub Actions)
 

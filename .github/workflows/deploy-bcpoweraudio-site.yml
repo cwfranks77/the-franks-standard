@@ -13,7 +13,10 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+
+# Cross-repo deploy needs a PAT with repo scope on cwfranks77/bcpoweraudio.
+# Add repository secret BC_DEPLOY_PAT (or disable this workflow; manual gh-pages push works).
 
 concurrency:
   group: pages-bcpoweraudio
@@ -55,4 +58,4 @@ jobs:
           repository-name: cwfranks77/bcpoweraudio
           branch: gh-pages
           clean: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.BC_DEPLOY_PAT }}
