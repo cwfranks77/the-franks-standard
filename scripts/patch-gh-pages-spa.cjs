@@ -8,6 +8,12 @@ const path = require('node:path')
 
 const ROOT = path.join(__dirname, '..', '.output', 'public')
 const INDEX = path.join(ROOT, 'index.html')
+const siteUrl = String(process.env.NUXT_PUBLIC_SITE_URL || '').trim().toLowerCase()
+const bcPrimarySite = /(^https?:\/\/)?(www\.)?bcpoweraudio\.com\/?$/i.test(siteUrl)
+  || siteUrl.includes('bcpoweraudio.com')
+const BC_HOME_REDIRECT = bcPrimarySite
+  ? `<script id="bc-storefront-home">(function(){var p=location.pathname;if(p==='/'||p==='/index.html'||p==='')location.replace('/bc-audio'+location.search+location.hash)})();</script>`
+  : ''
 const SPA_REDIRECT = `<script id="gh-pages-spa-redirect">(function(){var p=location.pathname+location.search+location.hash;if(p!=='/'&&p!=='/index.html'){sessionStorage.setItem('ghSpaRedirect',p)}})();</script>`
 const CHUNK_RECOVERY_INLINE = `<script id="fss-chunk-recovery-inline">(function(){var k='fss-chunk-reload-v1';function go(){if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1');var u=new URL(location.href);u.searchParams.set('_cb',String(Date.now()));location.replace(u.toString())}var s=document.querySelector('script[type=module][src*="/_nuxt/"]');if(s){s.addEventListener('error',go,{once:true})}})();</script>`
 const NUXT_STORAGE_FIX = `<script id="fss-nuxt-storage-fix">(function(){try{var c=window.__NUXT__&&window.__NUXT__.config;if(c&&c.public&&c.public.supabase){var a=c.public.supabase.clientOptions&&c.public.supabase.clientOptions.auth;if(a&&a.storage&&typeof a.storage.getItem!=='function')delete a.storage}if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister()})})}if(window.caches&&caches.keys){caches.keys().then(function(ks){ks.forEach(function(k){if(/workbox|fss-/i.test(k))caches.delete(k)})})}}catch(e){}})();</script>`
@@ -17,6 +23,9 @@ const SPA_BLOCKING_DIRS = ['store', 'ops/print']
 
 function injectRedirect (html) {
   let out = html
+  if (BC_HOME_REDIRECT && !out.includes('bc-storefront-home')) {
+    out = out.replace(/<head[^>]*>/i, (m) => `${m}\n${BC_HOME_REDIRECT}`)
+  }
   if (!out.includes('gh-pages-spa-redirect')) {
     const idx = out.indexOf('<div id="__nuxt">')
     if (idx === -1) out = out.replace(/<\/head>/i, `${SPA_REDIRECT}\n</head>`)

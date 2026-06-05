@@ -1,18 +1,21 @@
-/**
- * When the static site is served on www.bcpoweraudio.com (same GitHub Pages deploy
- * as thefranksstandard.com), send visitors to the B&C storefront.
- */
-const BC_HOSTS = new Set(['bcpoweraudio.com', 'www.bcpoweraudio.com'])
+import { BC_POWER_AUDIO_HOSTS, isBcPowerAudioPrimarySite } from '~/utils/bcPrimarySite.js'
 
+/**
+ * Franks marketplace build served on bcpoweraudio.com hostnames: send / to the B&C storefront.
+ * B&C-primary builds already redirect via middleware + index.html script.
+ */
 export default defineNuxtPlugin(() => {
   if (!import.meta.client) return
 
-  const host = window.location.hostname.toLowerCase()
-  if (!BC_HOSTS.has(host)) return
+  const config = useRuntimeConfig()
+  if (isBcPowerAudioPrimarySite(config.public.siteUrl)) return
 
-  const router = useRouter()
-  const path = router.currentRoute.value.path
+  const host = window.location.hostname.toLowerCase()
+  if (!BC_POWER_AUDIO_HOSTS.has(host)) return
+
+  const path = window.location.pathname
   if (path === '/' || path === '') {
-    router.replace('/bc-audio')
+    const target = `/bc-audio${window.location.search}${window.location.hash}`
+    window.location.replace(target)
   }
 })

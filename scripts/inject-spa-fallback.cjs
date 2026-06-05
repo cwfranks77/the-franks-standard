@@ -13,6 +13,7 @@ const fs = require('node:fs')
 const path = require('node:path')
 
 const SITE_URL = (process.env.NUXT_PUBLIC_SITE_URL || 'https://thefranksstandard.com').replace(/\/$/, '')
+const BC_PRIMARY_SITE = /bcpoweraudio\.com/i.test(SITE_URL)
 const PHONE_DISPLAY = process.env.NUXT_PUBLIC_CUSTOMER_SERVICE_PHONE || '(877) 837-0527'
 const PHONE_TEL = '+1' + PHONE_DISPLAY.replace(/\D+/g, '').replace(/^1/, '')
 const SUPPORT_EMAIL = 'info@thefranksstandard.com'
@@ -40,7 +41,9 @@ const SHARED_FOOTER = `
     <a href="tel:${PHONE_TEL}">${PHONE_DISPLAY}</a> &middot;
     <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a>
   </p>
-  <p class="fss-static-tag">The Franks Standard &mdash; Authenticity-Guaranteed Marketplace &middot; ${SITE_URL.replace(/^https?:\/\//, '')}</p>
+  <p class="fss-static-tag">${BC_PRIMARY_SITE
+    ? 'B&amp;C Performance Audio &mdash; Competition car audio megastore'
+    : 'The Franks Standard &mdash; Authenticity-Guaranteed Marketplace'} &middot; ${SITE_URL.replace(/^https?:\/\//, '')}</p>
 </footer>`
 
 const EARLY_HIDE_SCRIPT = `<script id="fss-static-boot-hide">(function(){try{document.documentElement.classList.add("nuxt-ready");var b=document.getElementById("fss-static-boot");var s=document.getElementById("fss-static-boot-style");if(b)b.remove();if(s)s.remove();}catch(e){}})();</script>`
@@ -189,6 +192,16 @@ function fallbackForRoute (route) {
       ${contactBlock}`
       break
     case '/':
+      if (BC_PRIMARY_SITE) {
+        body = `
+      <p class="fss-static-ribbon">Competition car audio</p>
+      <h1 class="fss-static-h1"><span class="fss-s1">B&amp;C</span> <span class="fss-s2">Performance Audio</span></h1>
+      <p class="fss-static-sub">Taramps, Sundown, Rockford Fosgate, Kicker, and more &mdash; your megastore for competition-grade sound.</p>
+      <p class="fss-static-actions"><a class="fss-static-btn fss-static-btn-primary" href="/bc-audio">Open storefront</a></p>
+      ${contactBlock}`
+        break
+      }
+      // fall through for Franks marketplace home
     default:
       body = `
       <p class="fss-static-ribbon">Proof-first marketplace. <span>Live floor energy.</span></p>
@@ -251,7 +264,9 @@ function ensureHtmlNoCacheMeta (html) {
 function patchFile (file) {
   let s = fs.readFileSync(file, 'utf8')
   const route = routeForFile(file)
-  const canonical = SITE_URL + (route === '/' ? '/' : route)
+  const canonical = BC_PRIMARY_SITE && route === '/'
+    ? `${SITE_URL}/bc-audio`
+    : SITE_URL + (route === '/' ? '/' : route)
 
   // Always (re)set the per-page canonical URL.
   s = ensureCanonical(s, canonical)

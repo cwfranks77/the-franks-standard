@@ -7,8 +7,14 @@ on:
     branches: [main, master]
     paths:
       - 'pages/bc-audio/**'
+      - 'pages/index.vue'
       - 'content/**'
+      - 'middleware/**'
+      - 'utils/bcPrimarySite.js'
       - 'plugins/bc-domain-host.client.js'
+      - 'scripts/patch-gh-pages-spa.cjs'
+      - 'scripts/inject-spa-fallback.cjs'
+      - 'nuxt.config.ts'
       - '.github/workflows/deploy-bcpoweraudio-site.yml'
   workflow_dispatch:
 

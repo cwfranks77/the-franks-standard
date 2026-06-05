@@ -54,7 +54,7 @@ npm run build
 
 ## 4. Verify (production, not localhost)
 
-- https://www.bcpoweraudio.com/ → loads, then shows **B&C Performance Audio** (`/bc-audio`)
+- https://www.bcpoweraudio.com/ → opens **B&C Performance Audio** immediately (redirects to `/bc-audio`)
 - https://www.bcpoweraudio.com/bc-audio → megastore + catalog
 - View page source: `canonical` and `og:url` should reference **bcpoweraudio.com**
 

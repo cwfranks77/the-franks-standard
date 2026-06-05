@@ -1,11 +1,13 @@
 import { createHash } from 'node:crypto'
 import { normalizeOpsPhrase } from './utils/opsPhrase'
 import { META_DESCRIPTION, OG_DESCRIPTION } from './utils/marketplaceFacilitatorCopy.js'
+import { isBcPowerAudioPrimarySite } from './utils/bcPrimarySite.js'
 
 const rawSite = process.env.NUXT_PUBLIC_SITE_URL
 const siteUrl = (rawSite && String(rawSite).trim())
   ? String(rawSite).replace(/\/$/, '')
   : 'https://thefranksstandard.com'
+const bcPrimarySite = isBcPowerAudioPrimarySite(siteUrl)
 const rawOg = process.env.NUXT_PUBLIC_OG_IMAGE
 const ogImage = (rawOg && String(rawOg).trim()) ? String(rawOg).trim() : `${siteUrl}/franks-pavilion.png`
 
@@ -104,9 +106,13 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/supabase', '@vite-pwa/nuxt'],
 
   routeRules: {
-    '/': {
-      headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
-    },
+    ...(bcPrimarySite
+      ? { '/': { redirect: { to: '/bc-audio', statusCode: 302 } } }
+      : {
+          '/': {
+            headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
+          },
+        }),
     '/**': {
       headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
     },
@@ -135,7 +141,7 @@ export default defineNuxtConfig({
       theme_color: '#0c0619',
       background_color: '#0c0619',
       display: 'standalone',
-      start_url: '/',
+      start_url: bcPrimarySite ? '/bc-audio' : '/',
       scope: '/',
       orientation: 'any',
       categories: ['shopping', 'business'],
