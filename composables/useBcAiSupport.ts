@@ -15,7 +15,7 @@ function matchAny (q: string, patterns: RegExp[]): boolean {
 
 function ownerEscalationBlock (phone: string, email: string, owner: string): string {
   return `**Speak with ${owner} (Open Door)**\n\n` +
-    `• **Call:** ${phone} — say you want the **B&amp;C dispatch desk** or the owner\n` +
+    `• **Call:** ${phone} — B&amp;C dedicated line; ask for the owner if needed\n` +
     `• **Email:** [${email}](mailto:${email}?subject=Open%20Door%20-%20B%26C%20Audio)\n` +
     `• **Open Door page:** /bc-audio/open-door\n\n` +
     `Our AI can route urgent install, warranty, or billing issues to the owner. ` +
@@ -66,10 +66,10 @@ export function getBcAiReply (message: string, support?: { phoneDisplay: string;
     return `I want to make sure you get the right help.\n\n${ownerEscalationBlock(phone, email, owner)}`
   }
 
-  if (matchAny(q, [/phone|call|number|option 3|dispatch/])) {
+  if (matchAny(q, [/phone|call|number|dispatch|support line/])) {
     return `📞 **${BC_BRAND.full} support:** ${phone}\n\n` +
-      'AI answers first — orders, product questions, and install basics. ' +
-      'Ask for the **owner** or **dispatch desk** anytime; we escalate complex issues.\n\n' +
+      'This is the **B&amp;C-only** line — separate from The Franks Standard marketplace. ' +
+      'AI answers first; ask for the **owner** anytime for urgent issues.\n\n' +
       `Email: ${email}`
   }
 
@@ -100,7 +100,7 @@ export function getBcAiReply (message: string, support?: { phoneDisplay: string;
   if (matchAny(q, [/install|wire|wiring|gauge|alternator|electrical/])) {
     return '**Install guidance:** Match amp power to sub RMS, use proper gauge wire, and fuse at the battery. ' +
       'We recommend a professional install for competition systems.\n\n' +
-      `For hands-on help, call **${phone}** — Option 3 routes to the B&amp;C dispatch desk.`
+      `For hands-on help, call the B&amp;C line: **${phone}**.`
   }
 
   return `I'm here for **${BC_BRAND.full}** — products, orders, and owner access.\n\n` +

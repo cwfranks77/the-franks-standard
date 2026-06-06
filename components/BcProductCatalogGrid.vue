@@ -63,7 +63,11 @@ function selectItem (item) {
         </div>
         <div class="bc-catalog__body">
           <p class="bc-catalog__brand">{{ item.brand }}</p>
-          <h3 class="bc-catalog__name">{{ item.name }}</h3>
+          <h3 class="bc-catalog__name">
+            <NuxtLink :to="`/bc-audio/product/${item.id}`" class="bc-catalog__name-link" @click.stop>
+              {{ item.name }}
+            </NuxtLink>
+          </h3>
           <p class="bc-catalog__tagline">{{ item.tagline }}</p>
           <ul v-if="item.specs?.length" class="bc-catalog__specs">
             <li v-for="spec in item.specs.slice(0, 3)" :key="spec">{{ spec }}</li>
@@ -181,6 +185,14 @@ function selectItem (item) {
   letter-spacing: 0.1em;
   color: #d32f2f;
   margin: 0 0 4px;
+}
+.bc-catalog__name-link {
+  color: inherit;
+  text-decoration: none;
+}
+.bc-catalog__name-link:hover {
+  color: #ff5252;
+  text-decoration: underline;
 }
 .bc-catalog__name {
   font-size: 0.95rem;

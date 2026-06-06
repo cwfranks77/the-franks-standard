@@ -11,7 +11,7 @@ STEP 2: [IMMEDIATE SEAMLESS AUDIO SWITCH TO: YOU AND YOUR WIFE'S LIVE VOICE STRE
 "Hi! Thank you so much for calling! We are incredibly excited to announce that our brand new marketplace expansion, B&C Performance Audio, is now officially open for business! Whether you need loud, competition-grade square subwoofers, heavy-duty monoblock amplifiers, or custom voice staging components, we have you covered. Please select from our updated menu framework so we can handle your request:
     - Press 1 for Corporate Administration, Bulk Invoicing, and Account Statuses.
     - Press 2 for Core Commercial Operations and General Field Service Requests.
-    - Press 3 to transfer straight through to the B&C Performance Audio Dispatch Desk.
+    - For B&C Performance Audio car audio, call the B&C dedicated line directly (see NUXT_PUBLIC_BC_AUDIO_SUPPORT_PHONE on the website — no longer Option 3 on this hub).
     - Press 0 or stay on the line to reach an administrator at our main table."
 
 --------------------------------------------------------------------------------

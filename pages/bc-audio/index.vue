@@ -1,6 +1,7 @@
 <script setup>
 import { BC_BRAND } from '~/utils/bcBrand.js'
 import { getBcSupport } from '~/utils/bcSupport.js'
+import { BC_SEO_KEYWORDS, bcStoreJsonLd } from '~/utils/bcSeo.js'
 import metaConfig from '~/content/meta-config.json'
 import productsData from '~/content/products.json'
 
@@ -60,10 +61,23 @@ function onSelectProduct (item) {
   selectedProduct.value = item
 }
 
+const siteUrl = computed(() => String(config.public.siteUrl || metaConfig.url).replace(/\/$/, ''))
+
+function applyPickFromQuery () {
+  const pick = String(route.query.pick || '')
+  if (!pick) return
+  const item = catalogItems.value.find((i) => String(i.id) === pick)
+  if (item) selectedProduct.value = item
+}
+
+onMounted(applyPickFromQuery)
+watch(() => route.query.pick, applyPickFromQuery)
+
 useHead(() => ({
   title: pageMeta.value.title,
   meta: [
     { name: 'description', content: pageMeta.value.description },
+    { name: 'keywords', content: BC_SEO_KEYWORDS },
     { name: 'robots', content: 'index, follow' },
     { name: 'googlebot', content: 'index, follow' },
     { property: 'og:type', content: 'website' },
@@ -78,6 +92,10 @@ useHead(() => ({
     { name: 'twitter:image', content: pageMeta.value.image },
   ],
   link: [{ rel: 'canonical', href: metaConfig.url }],
+  script: [{
+    type: 'application/ld+json',
+    innerHTML: JSON.stringify(bcStoreJsonLd(siteUrl.value, catalogItems.value, support.value.phoneTel)),
+  }],
 }))
 </script>
 

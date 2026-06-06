@@ -10,15 +10,29 @@
     </header>
 
     <section class="card phone-lane">
-      <h2>📞 Customer Service</h2>
+      <h2>📞 The Franks Standard — Customer Service</h2>
       <div class="phone-row">
-        <a href="tel:+18778370527" class="phone-number">{{ phoneDisplay }}</a>
+        <a :href="`tel:${franksTel}`" class="phone-number">{{ phoneDisplay }}</a>
         <span class="phone-badge">AI-Powered</span>
         <span class="phone-badge phone-badge-rec">Calls Recorded</span>
       </div>
       <p class="text-muted">
-        Our AI customer service handles orders, returns, billing, and general inquiries.
-        For complex issues, the AI connects you to the owner directly. All calls are recorded for quality and training.
+        Marketplace orders, seller accounts, COA, returns, and billing on The Franks Standard.
+        For complex issues, the AI connects you to the owner directly. All calls are recorded.
+      </p>
+    </section>
+
+    <section class="card phone-lane phone-lane--bc">
+      <h2>📞 B&amp;C Performance Audio LLC — Car Audio Line</h2>
+      <div class="phone-row">
+        <a :href="`tel:${bcSupport.phoneTel}`" class="phone-number phone-number--bc">{{ bcSupport.phoneDisplay }}</a>
+        <span class="phone-badge phone-badge--bc">B&amp;C Only</span>
+      </div>
+      <p class="text-muted">
+        Competition subwoofers, amplifiers, and install questions for
+        <NuxtLink to="/bc-audio">B&amp;C Performance Audio</NuxtLink>.
+        Separate line from the marketplace — or shop at
+        <a href="https://www.bcpoweraudio.com" rel="noopener">www.bcpoweraudio.com</a>.
       </p>
     </section>
 
@@ -91,8 +105,17 @@
 </template>
 
 <script setup>
+import { getBcSupport } from '~/utils/bcSupport.js'
+
 const config = useRuntimeConfig()
 const phoneDisplay = computed(() => config.public.customerServicePhone || '(877) 837-0527')
+const franksTel = computed(() => {
+  const raw = String(phoneDisplay.value).replace(/[^\d+]/g, '')
+  if (raw.startsWith('+')) return raw
+  const digits = raw.replace(/\D/g, '')
+  return digits.length === 10 ? `+1${digits}` : `+${digits}`
+})
+const bcSupport = computed(() => getBcSupport(config))
 
 useSeoMeta({
   title: 'Support and tech - The Franks Standard',
@@ -118,6 +141,11 @@ useSeoMeta({
 .voice-lane h2 { color: #7f1d1d; }
 .voice-lane .text-muted { color: #1f2937 !important; }
 .phone-lane { padding: 28px 24px; margin-bottom: 24px; border: 2px solid #86efac; background: #ecfdf5; }
+.phone-lane--bc { border-color: rgba(211, 47, 47, 0.45); background: #1a0a0c; }
+.phone-lane--bc h2 { color: #ff8a80; }
+.phone-lane--bc .text-muted { color: #d1d5db !important; }
+.phone-number--bc { color: #ff5252 !important; }
+.phone-badge--bc { background: rgba(211, 47, 47, 0.2); color: #ff8a80; border-color: rgba(211, 47, 47, 0.45); }
 .phone-lane h2 { font-size: 1.3rem; margin-bottom: 14px; color: #14532d; }
 .phone-lane .text-muted { color: #1f2937 !important; }
 .phone-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }

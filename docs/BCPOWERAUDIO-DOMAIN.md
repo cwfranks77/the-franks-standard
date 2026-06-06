@@ -58,13 +58,31 @@ npm run build
 - https://www.bcpoweraudio.com/bc-audio → megastore + catalog
 - View page source: `canonical` and `og:url` should reference **bcpoweraudio.com**
 
-## 5. Search consoles
+## 5. Google & search engines (discoverability)
 
-After DNS is live (24–48 h):
+Each B&C deploy writes:
 
-- [Google Search Console](https://search.google.com/search-console) — add property `https://www.bcpoweraudio.com`
-- Bing Webmaster — same URL
-- Submit sitemap if you enable `/@nuxtjs/sitemap` later
+- `https://www.bcpoweraudio.com/sitemap.xml` — storefront, Open Door, and **each product page**
+- `https://www.bcpoweraudio.com/robots.txt` — allows catalog; **blocks `/bc-audio/ops`** (owner area hidden)
+
+**One-time setup (you):**
+
+1. Open [Google Search Console](https://search.google.com/search-console)
+2. Add property **`https://www.bcpoweraudio.com`**
+3. Verify domain (DNS TXT or HTML file — follow Google’s steps)
+4. Go to **Sitemaps** → submit **`https://www.bcpoweraudio.com/sitemap.xml`**
+5. Use **URL Inspection** → enter `https://www.bcpoweraudio.com/bc-audio` → **Request indexing**
+6. Repeat for [Bing Webmaster Tools](https://www.bing.com/webmasters) with the same sitemap URL
+
+Product pages (`/bc-audio/product/...`) target niche keywords: competition subwoofers, car audio amplifiers, Kicker, Sundown, Taramps, etc.
+
+**Owner security:** There is **no Owner button** on the site. Unlock is **logo ×5 only**; `/bc-audio/ops` is blocked in robots.txt and redirects visitors home.
+
+## 6. B&C support phone (separate from Franks)
+
+B&C uses its **own** Twilio line — not Option 3 on `(877) 837-0527`. Setup: **`docs/BC-PHONE-SETUP.md`**.
+
+GitHub secrets: `NUXT_PUBLIC_BC_AUDIO_SUPPORT_PHONE` and `NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL`.
 
 ## Owner unlock (same as The Franks Standard)
 

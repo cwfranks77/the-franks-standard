@@ -1,9 +1,13 @@
 import { isBcPowerAudioPrimarySite } from '~/utils/bcPrimarySite.js'
 
-/** B&C Performance Audio — dedicated support line (Option 3 on the central hub). */
+/**
+ * B&C Performance Audio LLC — dedicated support line (separate from Franks Standard).
+ * Set NUXT_PUBLIC_BC_AUDIO_SUPPORT_PHONE and NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL in GitHub Actions.
+ * See docs/BC-PHONE-SETUP.md for Twilio purchase + Studio flow.
+ */
 export const BC_SUPPORT_DEFAULTS = Object.freeze({
-  phoneDisplay: '(877) 837-0527 · Option 3',
-  phoneTel: '+18778370527,3',
+  phoneDisplay: '(833) 322-8439',
+  phoneTel: '+18333228439',
   email: 'bc-audio@thefranksstandard.com',
   ownerName: 'Charles W. Franks',
 })

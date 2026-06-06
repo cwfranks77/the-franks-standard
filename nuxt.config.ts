@@ -2,12 +2,19 @@ import { createHash } from 'node:crypto'
 import { normalizeOpsPhrase } from './utils/opsPhrase'
 import { META_DESCRIPTION, OG_DESCRIPTION } from './utils/marketplaceFacilitatorCopy.js'
 import { isBcPowerAudioPrimarySite } from './utils/bcPrimarySite.js'
+import productsData from './content/products.json'
 
 const rawSite = process.env.NUXT_PUBLIC_SITE_URL
 const siteUrl = (rawSite && String(rawSite).trim())
   ? String(rawSite).replace(/\/$/, '')
   : 'https://thefranksstandard.com'
 const bcPrimarySite = isBcPowerAudioPrimarySite(siteUrl)
+const bcPrerenderRoutes = bcPrimarySite
+  ? [
+      '/bc-audio/open-door',
+      ...productsData.map((p) => `/bc-audio/product/${p.id}`),
+    ]
+  : []
 const rawOg = process.env.NUXT_PUBLIC_OG_IMAGE
 const ogImage = (rawOg && String(rawOg).trim()) ? String(rawOg).trim() : `${siteUrl}/franks-pavilion.png`
 
@@ -69,6 +76,7 @@ export default defineNuxtConfig({
         '/ops/print-pack',
         '/ops/print-coa',
         '/verify/coa',
+        ...bcPrerenderRoutes,
       ],
     },
   },
@@ -100,9 +108,9 @@ export default defineNuxtConfig({
       ownerNotifyEmail: process.env.NUXT_PUBLIC_OWNER_NOTIFY_EMAIL || 'info@thefranksstandard.com',
       /** Optional full B&C site (e.g. https://bcperformanceaudio.com). Marketplace still links /bc-audio for checkout. */
       bcAudioExternalUrl: (process.env.NUXT_PUBLIC_BC_AUDIO_EXTERNAL_URL || '').trim(),
-      /** B&C dedicated support (Option 3 on central hub). Display + E.164 tel (comma = DTMF pause/extension). */
-      bcAudioSupportPhone: process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_PHONE || '(877) 837-0527 · Option 3',
-      bcAudioSupportTel: process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL || '+18778370527,3',
+      /** B&C dedicated support line (separate from Franks — see docs/BC-PHONE-SETUP.md). */
+      bcAudioSupportPhone: process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_PHONE || '(833) 322-8439',
+      bcAudioSupportTel: process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL || '+18333228439',
       bcAudioSupportEmail: process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_EMAIL || 'bc-audio@thefranksstandard.com',
       bcAudioOwnerName: process.env.NUXT_PUBLIC_BC_AUDIO_OWNER_NAME || 'Charles W. Franks',
     },

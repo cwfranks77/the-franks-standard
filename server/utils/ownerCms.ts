@@ -23,8 +23,8 @@ export function getServiceSupabase (): SupabaseClient | null {
 }
 
 const DEFAULT_BC_META = {
-  title: 'B&C Performance Audio Megastore | Competition Subwoofers & Amplifiers',
-  description: 'Shop competition-grade subwoofers, monoblock amplifiers, and home audio from B&C Performance Audio.',
+  title: 'B&C Performance Audio LLC | Competition Subwoofers & Car Audio Amplifiers',
+  description: 'Shop competition subwoofers, monoblock amplifiers, Sundown, Kicker, Rockford Fosgate, and Taramps from B&C Performance Audio LLC — Louisiana checkout with dropship fulfillment.',
   image: 'https://www.bcpoweraudio.com/franks-pavilion.png',
   parentCompany: 'The Franks Standard LLC',
 }
