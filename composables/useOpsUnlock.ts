@@ -1,11 +1,10 @@
 import { normalizeOpsPhrase } from '~/utils/opsPhrase'
 import {
-  isOpsApiUnavailable,
   storeOpsPhraseForSession,
   verifyOpsPhraseBrowser,
 } from '~/utils/opsClientAuth'
 
-/** Owner unlock — server cookie in dev; browser hash + Supabase edge on static GitHub Pages. */
+/** Owner unlock — browser hash on static GitHub Pages; server cookie in dev. */
 export function useOpsUnlock () {
   const config = useRuntimeConfig()
   const router = useRouter()
@@ -37,12 +36,8 @@ export function useOpsUnlock () {
         return true
       }
 
-      try {
-        if (await verifyOpsPhraseBrowser(raw, expectedHash)) {
-          return await unlockSuccess()
-        }
-      } catch {
-        /* crypto unavailable on insecure origin — try server below */
+      if (await verifyOpsPhraseBrowser(raw, expectedHash)) {
+        return await unlockSuccess()
       }
 
       if (import.meta.dev) {
@@ -60,23 +55,8 @@ export function useOpsUnlock () {
         }
       }
 
-      try {
-        await $fetch('/api/ops/session', {
-          method: 'POST',
-          body: { phrase: normalizeOpsPhrase(raw) },
-        })
-        return await unlockSuccess()
-      } catch (e: unknown) {
-        if (isOpsApiUnavailable(e)) {
-          try {
-            if (await verifyOpsPhraseBrowser(raw, expectedHash)) {
-              return await unlockSuccess()
-            }
-          } catch { /* fall through */ }
-        }
-        error.value = 'That phrase does not match your owner password. Type it exactly — capitals do not matter.'
-        return false
-      }
+      error.value = 'That phrase does not match your owner password. Type it exactly — capitals do not matter.'
+      return false
     } finally {
       submitting.value = false
     }
