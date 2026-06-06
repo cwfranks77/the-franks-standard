@@ -100,6 +100,11 @@ export default defineNuxtConfig({
       ownerNotifyEmail: process.env.NUXT_PUBLIC_OWNER_NOTIFY_EMAIL || 'info@thefranksstandard.com',
       /** Optional full B&C site (e.g. https://bcperformanceaudio.com). Marketplace still links /bc-audio for checkout. */
       bcAudioExternalUrl: (process.env.NUXT_PUBLIC_BC_AUDIO_EXTERNAL_URL || '').trim(),
+      /** B&C dedicated support (Option 3 on central hub). Display + E.164 tel (comma = DTMF pause/extension). */
+      bcAudioSupportPhone: process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_PHONE || '(877) 837-0527 · Option 3',
+      bcAudioSupportTel: process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL || '+18778370527,3',
+      bcAudioSupportEmail: process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_EMAIL || 'bc-audio@thefranksstandard.com',
+      bcAudioOwnerName: process.env.NUXT_PUBLIC_BC_AUDIO_OWNER_NAME || 'Charles W. Franks',
     },
   },
 

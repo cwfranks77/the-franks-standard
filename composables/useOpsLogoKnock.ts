@@ -1,3 +1,5 @@
+import { getBcOpsPanelPath } from '~/utils/bcSupport.js'
+
 /** Five-tap logo knock opens the operator unlock modal (same on Franks home and B&C storefront). */
 export function useOpsLogoKnock () {
   const route = useRoute()
@@ -53,7 +55,7 @@ export function useOpsLogoKnock () {
     const ok = await submitOpsPhrase()
     if (ok) {
       closeOpModal()
-      await router.push('/ops/panel')
+      await router.push(getBcOpsPanelPath())
     }
   }
 

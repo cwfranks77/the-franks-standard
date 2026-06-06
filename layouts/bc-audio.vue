@@ -17,7 +17,9 @@
       @submit="submitOpModal"
     />
 
-    <NuxtLink v-if="isOwner" to="/ops/panel" class="bc-owner-fab" title="Owner toolkit">
+    <BcAiSupportDrawer />
+
+    <NuxtLink v-if="isOwner" to="/bc-audio/ops/panel" class="bc-owner-fab" title="B&amp;C owner toolkit">
       <span class="bc-owner-fab__icon">⚙</span>
       <span class="bc-owner-fab__label">Owner</span>
     </NuxtLink>
@@ -25,7 +27,10 @@
 </template>
 
 <script setup>
+import '~/assets/css/bc-premium-theme.css'
 import { BC_BRAND } from '~/utils/bcBrand.js'
+
+useBcTheme()
 
 useHead({
   titleTemplate: (title) => title ? `${title} · ${BC_BRAND.full}` : BC_BRAND.full,

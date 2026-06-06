@@ -1,9 +1,11 @@
 <script setup>
 import { SHOP_STORES } from '~/utils/dropshipCatalogs.js'
 import { getBcExternalSiteUrl } from '~/utils/bcExternalSite.js'
+import { getBcSupport } from '~/utils/bcSupport.js'
 
 const config = useRuntimeConfig()
 const bcExternalUrl = computed(() => getBcExternalSiteUrl(config))
+const support = computed(() => getBcSupport(config))
 const onBrandKnock = inject('opsLogoKnock', null)
 
 const menuOpen = ref(false)
@@ -76,8 +78,9 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
           rel="noopener noreferrer"
           @click="closeAll"
         >Full website ↗</a>
+        <NuxtLink to="/bc-audio/open-door" class="bc-nav__link bc-nav__link--door" @click="closeAll">Open Door</NuxtLink>
         <NuxtLink to="/" class="bc-nav__link bc-nav__link--muted" @click="closeAll">The Franks Standard</NuxtLink>
-        <a href="tel:+18778370527" class="bc-nav__link" @click="closeAll">Support</a>
+        <a :href="`tel:${support.phoneTel}`" class="bc-nav__link" @click="closeAll">{{ support.phoneDisplay }}</a>
       </nav>
 
       <button type="button" class="bc-nav__toggle" aria-label="Menu" @click="menuOpen = !menuOpen">
@@ -152,6 +155,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 .bc-nav__link--muted { color: #9ca3af; }
 .bc-nav__link--external { color: #ffd814; }
 .bc-nav__link--external:hover { color: #fff; background: rgba(255, 216, 20, 0.12); }
+.bc-nav__link--door { color: #ff5252; }
 .bc-nav__stores { position: relative; }
 .bc-nav__stores-btn {
   display: inline-flex;

@@ -1,9 +1,13 @@
 <script setup>
 import { BC_BRAND } from '~/utils/bcBrand.js'
+import { getBcSupport } from '~/utils/bcSupport.js'
 import metaConfig from '~/content/meta-config.json'
 import productsData from '~/content/products.json'
 
 definePageMeta({ layout: 'bc-audio' })
+
+const config = useRuntimeConfig()
+const support = computed(() => getBcSupport(config))
 
 const megastoreItems = productsData.map((item) => ({
   id: item.id,
@@ -15,8 +19,7 @@ const megastoreItems = productsData.map((item) => ({
   brand: item.category,
 }))
 
-const ownerName = 'C.W. Franks'
-const primarySupportNumber = '1-800-555-FRNK'
+const ownerName = computed(() => support.value.ownerName)
 
 const brandsCarried = [
   { name: 'Kicker', series: 'SoloBaric L7X' },
@@ -127,7 +130,10 @@ useHead({
           </div>
           <div>
             <p class="bc-shop-footer__label">Central support</p>
-            <p class="bc-shop-footer__phone">{{ primarySupportNumber }} · Option 3 for audio dispatch</p>
+            <p class="bc-shop-footer__phone">
+              <a :href="`tel:${support.phoneTel}`">{{ support.phoneDisplay }}</a>
+              · <NuxtLink to="/bc-audio/open-door">Open Door</NuxtLink>
+            </p>
           </div>
         </div>
         <p class="bc-shop-footer__copy">&copy; 2026 {{ storeName }} · Independent merchant storefront</p>
