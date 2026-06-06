@@ -1,0 +1,16 @@
+{
+  "parentCompany": {
+    "name": "The Franks Standard LLC",
+    "lineType": "General Marketplace Support",
+    "phone": "Your Personal Cell Number Here",
+    "email": "info@thefranksstandard.com",
+    "hours": "Mon-Sat 9AM - 6PM CST"
+  },
+  "audioDivision": {
+    "name": "B&C Performance Audio LLC",
+    "lineType": "Competition Audio Tech Support",
+    "phone": "Your New Google Voice Number Here",
+    "email": "bc-audio@thefranksstandard.com",
+    "hours": "Mon-Sat 9AM - 6PM CST"
+  }
+}

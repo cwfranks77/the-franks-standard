@@ -94,6 +94,12 @@ Deno.serve(async (req) => {
     return json({ ok: true })
   }
 
+  if (action === 'delete_listing' && listingId) {
+    const { error } = await admin.from('listings').delete().eq('id', listingId)
+    if (error) return json({ error: error.message }, 500)
+    return json({ ok: true, deleted: listingId })
+  }
+
   if (action === 'hold_seller_for_review') {
     const targetSeller = sellerId || ''
     if (!targetSeller && listingId) {

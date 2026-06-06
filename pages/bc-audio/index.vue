@@ -119,7 +119,8 @@ useHead(() => ({
           </h1>
           <p class="bc-shop-hero__slogan">{{ heroSlogan }}</p>
           <p class="bc-shop-hero__parent">
-            A proud division of {{ pageMeta.parentCompany }} · Live tax token sourcing active
+            A proud division of {{ pageMeta.parentCompany }} ·
+            <span class="bc-shop-hero__trust">Authorized Factory Direct Dealer</span>
           </p>
         </div>
       </section>
@@ -231,6 +232,13 @@ useHead(() => ({
   font-size: 0.75rem;
   color: #6b7280;
   letter-spacing: 0.04em;
+}
+.bc-shop-hero__trust {
+  color: #e8eaed;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.68rem;
 }
 
 .bc-shop-brands {

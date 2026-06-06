@@ -10,29 +10,33 @@
     </header>
 
     <section class="card phone-lane">
-      <h2>📞 The Franks Standard — Customer Service</h2>
+      <p class="support-line-type">{{ franksSupport.lineType }}</p>
+      <h2>📞 {{ franksSupport.name }}</h2>
       <div class="phone-row">
-        <a :href="`tel:${franksTel}`" class="phone-number">{{ phoneDisplay }}</a>
+        <a :href="`tel:${franksSupport.phoneTel}`" class="phone-number">{{ franksSupport.phoneDisplay }}</a>
         <span class="phone-badge">AI-Powered</span>
         <span class="phone-badge phone-badge-rec">Calls Recorded</span>
       </div>
       <p class="text-muted">
-        Marketplace orders, seller accounts, COA, returns, and billing on The Franks Standard.
-        For complex issues, the AI connects you to the owner directly. All calls are recorded.
+        Marketplace orders, seller accounts, COA, returns, and billing.
+        Email <a :href="`mailto:${franksSupport.email}`">{{ franksSupport.email }}</a>
+        · {{ franksSupport.hours }}
       </p>
     </section>
 
     <section class="card phone-lane phone-lane--bc">
-      <h2>📞 B&amp;C Performance Audio LLC — Car Audio Line</h2>
+      <p class="support-line-type support-line-type--bc">{{ bcSupport.lineType }}</p>
+      <h2>📞 {{ bcSupport.name }}</h2>
       <div class="phone-row">
         <a :href="`tel:${bcSupport.phoneTel}`" class="phone-number phone-number--bc">{{ bcSupport.phoneDisplay }}</a>
         <span class="phone-badge phone-badge--bc">B&amp;C Only</span>
       </div>
       <p class="text-muted">
-        Competition subwoofers, amplifiers, and install questions for
-        <NuxtLink to="/bc-audio">B&amp;C Performance Audio</NuxtLink>.
-        Separate line from the marketplace — or shop at
-        <a href="https://www.bcpoweraudio.com" rel="noopener">www.bcpoweraudio.com</a>.
+        Competition subwoofers, amplifiers, and install help.
+        Email <a :href="`mailto:${bcSupport.email}`">{{ bcSupport.email }}</a>
+        · {{ bcSupport.hours }}
+        · Shop at <a href="https://www.bcpoweraudio.com" rel="noopener">www.bcpoweraudio.com</a>
+        or <NuxtLink to="/bc-audio">/bc-audio</NuxtLink>.
       </p>
     </section>
 
@@ -106,15 +110,10 @@
 
 <script setup>
 import { getBcSupport } from '~/utils/bcSupport.js'
+import { getFranksSupport } from '~/utils/supportContacts.js'
 
 const config = useRuntimeConfig()
-const phoneDisplay = computed(() => config.public.customerServicePhone || '(877) 837-0527')
-const franksTel = computed(() => {
-  const raw = String(phoneDisplay.value).replace(/[^\d+]/g, '')
-  if (raw.startsWith('+')) return raw
-  const digits = raw.replace(/\D/g, '')
-  return digits.length === 10 ? `+1${digits}` : `+${digits}`
-})
+const franksSupport = computed(() => getFranksSupport(config))
 const bcSupport = computed(() => getBcSupport(config))
 
 useSeoMeta({
@@ -140,6 +139,15 @@ useSeoMeta({
 .voice-lane { padding: 22px 20px; margin-bottom: 24px; border: 1px solid #fca5a5; background: #fef2f2; }
 .voice-lane h2 { color: #7f1d1d; }
 .voice-lane .text-muted { color: #1f2937 !important; }
+.support-line-type {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #166534;
+  margin: 0 0 6px;
+}
+.support-line-type--bc { color: #ff8a80; }
 .phone-lane { padding: 28px 24px; margin-bottom: 24px; border: 2px solid #86efac; background: #ecfdf5; }
 .phone-lane--bc { border-color: rgba(211, 47, 47, 0.45); background: #1a0a0c; }
 .phone-lane--bc h2 { color: #ff8a80; }

@@ -87,6 +87,7 @@
         <NuxtLink to="/sell/start" class="mkt-sub-link">Sell</NuxtLink>
         <NuxtLink to="/collections" class="mkt-sub-link">Collections</NuxtLink>
         <NuxtLink to="/categories" class="mkt-sub-link">Categories</NuxtLink>
+        <NuxtLink to="/bc-audio" class="mkt-sub-link mkt-sub-link--bc">B&amp;C Audio Store</NuxtLink>
       </div>
     </nav>
 
@@ -161,11 +162,11 @@ function onLogoError (e) {
   position: sticky;
   top: 0;
   z-index: 240;
-  background: #0a0a0c;
-  border-bottom: 1px solid rgba(211, 47, 47, 0.2);
+  background: #0e1116;
+  border-bottom: 1px solid rgba(255, 216, 20, 0.22);
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
 }
-.mkt-header__bar { background: #121216; }
+.mkt-header__bar { background: #151a22; }
 .mkt-header__bar-inner {
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -187,9 +188,9 @@ function onLogoError (e) {
   height: 36px;
   object-fit: cover;
   border-radius: 4px;
-  border: 1px solid rgba(211, 47, 47, 0.35);
+  border: 1px solid rgba(255, 216, 20, 0.35);
 }
-.mkt-header__logo--knock { box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.45); }
+.mkt-header__logo--knock { box-shadow: 0 0 0 2px rgba(255, 216, 20, 0.5); }
 .mkt-header__name {
   font-weight: 800;
   font-size: 0.92rem;
@@ -203,9 +204,9 @@ function onLogoError (e) {
   letter-spacing: 0.08em;
   padding: 3px 8px;
   border-radius: 999px;
-  background: rgba(211, 47, 47, 0.15);
-  color: #ff5252;
-  border: 1px solid rgba(211, 47, 47, 0.4);
+  background: rgba(255, 216, 20, 0.12);
+  color: #ffd814;
+  border: 1px solid rgba(255, 216, 20, 0.4);
 }
 .mkt-header__search {
   display: flex;
@@ -213,11 +214,11 @@ function onLogoError (e) {
   max-width: 760px;
   width: 100%;
   margin: 0 auto;
-  border: 2px solid rgba(211, 47, 47, 0.55);
+  border: 2px solid rgba(255, 216, 20, 0.45);
   border-radius: 8px;
   overflow: hidden;
   background: #0a0a0c;
-  box-shadow: 0 0 20px rgba(211, 47, 47, 0.12);
+  box-shadow: 0 0 20px rgba(255, 216, 20, 0.08);
 }
 .mkt-header__dept {
   border: none;
@@ -244,15 +245,15 @@ function onLogoError (e) {
 .mkt-header__search-input:focus { outline: none; }
 .mkt-header__search-btn {
   border: none;
-  background: #d32f2f;
-  color: #fff;
+  background: #ffd814;
+  color: #0a0a0c;
   padding: 0 18px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.mkt-header__search-btn:hover { background: #ff5252; }
+.mkt-header__search-btn:hover { background: #f7ca00; }
 .mkt-header__utility {
   display: flex;
   align-items: center;
@@ -272,7 +273,7 @@ function onLogoError (e) {
   font: inherit;
   line-height: 1.2;
 }
-.mkt-header__utility-btn:hover { background: rgba(211, 47, 47, 0.12); }
+.mkt-header__utility-btn:hover { background: rgba(255, 216, 20, 0.1); }
 .mkt-header__utility-hello { font-size: 0.68rem; color: #9ca3af; }
 .mkt-header__utility-label { font-size: 0.82rem; font-weight: 800; }
 .mkt-header__account { position: relative; }
@@ -283,7 +284,7 @@ function onLogoError (e) {
   min-width: 200px;
   padding: 8px 0;
   background: #16161c;
-  border: 1px solid rgba(211, 47, 47, 0.35);
+  border: 1px solid rgba(255, 216, 20, 0.25);
   border-radius: 10px;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
   z-index: 300;
@@ -296,10 +297,10 @@ function onLogoError (e) {
   font-weight: 700;
   text-decoration: none;
 }
-.mkt-header__drop-link:hover { background: rgba(211, 47, 47, 0.12); color: #ff5252; }
+.mkt-header__drop-link:hover { background: rgba(255, 216, 20, 0.1); color: #ffd814; }
 .mkt-header__drop-link--cta {
-  background: #d32f2f;
-  color: #fff !important;
+  background: #ffd814;
+  color: #0a0a0c !important;
   margin: 4px 8px 8px;
   border-radius: 8px;
   text-align: center;
@@ -323,14 +324,14 @@ function onLogoError (e) {
   height: 18px;
   padding: 0 5px;
   border-radius: 999px;
-  background: #d32f2f;
-  color: #fff;
+  background: #ffd814;
+  color: #0a0a0c;
   font-size: 0.65rem;
   font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 12px rgba(211, 47, 47, 0.6);
+  box-shadow: 0 0 12px rgba(255, 216, 20, 0.35);
 }
 .mkt-header__menu {
   display: none;
@@ -370,6 +371,16 @@ function onLogoError (e) {
   white-space: nowrap;
 }
 .mkt-sub-link:hover { color: #f5f5f7; background: rgba(255, 255, 255, 0.05); }
+.mkt-sub-link--bc {
+  color: #ff8a80;
+  border: 1px solid rgba(211, 47, 47, 0.45);
+  background: rgba(211, 47, 47, 0.1);
+}
+.mkt-sub-link--bc:hover {
+  color: #fff;
+  background: rgba(211, 47, 47, 0.35);
+  border-color: rgba(211, 47, 47, 0.65);
+}
 .mkt-header__mobile {
   display: none;
   flex-direction: column;
