@@ -33,7 +33,7 @@ const BC_CATALOG = [
 export const DEFAULT_HOMEPAGE = {
   heroRibbon: 'Marketplace facilitator · seller-backed proof on collectibles',
   heroTitleLine1: 'If it is here,',
-  heroTitleLine2: 'the seller put proof on file.',
+  heroTitleLine2: 'the seller puts proof on file.',
   heroTitleSub: 'We screen and enforce — we do not certify or guarantee authenticity.',
   heroLede:
     'The Franks Standard LLC is a marketplace facilitator, not the seller of listed items and not a guarantor of genuineness.',

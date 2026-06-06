@@ -9,7 +9,7 @@ export const SITE_FACILITATOR_NAME = 'The Franks Standard LLC'
 export const HERO_RIBBON = 'Marketplace facilitator · seller-backed proof on collectibles'
 
 export const HERO_TITLE_LINE_1 = 'If it is here,'
-export const HERO_TITLE_LINE_2 = 'the seller put proof on file.'
+export const HERO_TITLE_LINE_2 = 'the seller puts proof on file.'
 export const HERO_TITLE_SUB = 'We screen and enforce — we do not certify or guarantee authenticity.'
 
 export const HERO_LEDE =
