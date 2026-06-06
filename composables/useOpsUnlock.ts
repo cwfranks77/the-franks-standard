@@ -1,14 +1,6 @@
 import { normalizeOpsPhrase } from '~/utils/opsPhrase'
 
-async function sha256Hex (input: string): Promise<string> {
-  const bytes = new TextEncoder().encode(input)
-  const digest = await crypto.subtle.digest('SHA-256', bytes)
-  return Array.from(new Uint8Array(digest))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('')
-}
-
-/** Owner unlock phrase check (matches value in NUXT_PUBLIC_OPS_ACCESS_KEY at build time). */
+/** Owner unlock — verifies phrase on server and sets the ops session cookie for API saves. */
 export function useOpsUnlock () {
   const config = useRuntimeConfig()
   const router = useRouter()
@@ -24,21 +16,23 @@ export function useOpsUnlock () {
 
   async function submit (): Promise<boolean> {
     error.value = ''
-    const expectedHash = String(config.public?.opsAccessKeyHash || '').toLowerCase()
-    if (!expectedHash) {
+    if (!keyConfigured.value) {
       error.value = 'Operator key is not configured on this build. Add NUXT_PUBLIC_OPS_ACCESS_KEY in GitHub Actions and redeploy.'
       return false
     }
     submitting.value = true
     try {
-      const typedHash = await sha256Hex(normalizeOpsPhrase(phrase.value))
-      if (typedHash === expectedHash) {
-        grant()
-        phrase.value = ''
-        return true
-      }
-      error.value =
-        'That phrase does not match this build. Use the exact value from NUXT_PUBLIC_OPS_ACCESS_KEY (check .env and GitHub Actions secret). Special characters like # must match exactly.'
+      await $fetch('/api/ops/session', {
+        method: 'POST',
+        body: { phrase: normalizeOpsPhrase(phrase.value) },
+      })
+      grant()
+      phrase.value = ''
+      return true
+    } catch (e: unknown) {
+      const err = e as { data?: { statusMessage?: string }; message?: string }
+      error.value = err?.data?.statusMessage || err?.message ||
+        'That phrase does not match. Use the exact value from NUXT_PUBLIC_OPS_ACCESS_KEY.'
       return false
     } finally {
       submitting.value = false

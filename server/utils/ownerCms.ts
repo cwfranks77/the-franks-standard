@@ -22,10 +22,27 @@ export function getServiceSupabase (): SupabaseClient | null {
   return serviceClient
 }
 
+const DEFAULT_BC_META = {
+  title: 'B&C Performance Audio Megastore | Competition Subwoofers & Amplifiers',
+  description: 'Shop competition-grade subwoofers, monoblock amplifiers, and home audio from B&C Performance Audio.',
+  image: 'https://www.bcpoweraudio.com/franks-pavilion.png',
+  parentCompany: 'The Franks Standard LLC',
+}
+
+const DEFAULT_BC_THEME = {
+  presetId: 'classic-red',
+  accent: '#d32f2f',
+  accentBright: '#ff5252',
+  bg: '#0a0a0c',
+  bgCard: '#16161c',
+}
+
 export async function fetchSiteMarketing (keys?: string[]) {
   const defaults: Record<string, unknown> = {
     homepage: DEFAULT_HOMEPAGE,
     ads: DEFAULT_ADS,
+    bcMeta: DEFAULT_BC_META,
+    bcTheme: DEFAULT_BC_THEME,
   }
   const wanted = keys?.length ? keys : Object.keys(defaults)
   const out: Record<string, unknown> = {}

@@ -22,8 +22,11 @@ export function useOpsSession () {
     }
   }
 
-  function revoke () {
+  async function revoke () {
     if (import.meta.client) {
+      try {
+        await $fetch('/api/ops/session', { method: 'DELETE' })
+      } catch { /* cookie may already be gone */ }
       localStorage.removeItem(STORAGE_KEY)
       sessionStorage.removeItem(STORAGE_KEY)
       isAuthed.value = false

@@ -42,11 +42,29 @@ export function applyBcThemeToDom (theme: BcThemeState) {
 
 export function useBcTheme () {
   const theme = ref<BcThemeState>(readStored())
+  const themeLoaded = ref(false)
+  const themeSaving = ref(false)
+  const themeMessage = ref('')
 
-  function persist () {
+  function persistLocal () {
     if (!import.meta.client) return
     localStorage.setItem(STORAGE_KEY, JSON.stringify(theme.value))
     applyBcThemeToDom(theme.value)
+  }
+
+  async function loadPublishedTheme () {
+    try {
+      const data = await $fetch('/api/public/site-content', { query: { keys: 'bcTheme' } })
+      const published = data?.bcTheme as Partial<BcThemeState> | undefined
+      if (published?.accent) {
+        theme.value = { ...defaults, ...published }
+        persistLocal()
+      }
+    } catch { /* use local/default */ }
+    finally {
+      themeLoaded.value = true
+      applyBcThemeToDom(theme.value)
+    }
   }
 
   function applyPreset (presetId: string) {
@@ -59,20 +77,52 @@ export function useBcTheme () {
       bg: preset.bg,
       bgCard: preset.bgCard,
     }
-    persist()
+    persistLocal()
   }
 
   function patch (partial: Partial<BcThemeState>) {
     theme.value = { ...theme.value, ...partial, presetId: 'custom' }
-    persist()
+    persistLocal()
   }
 
   function resetTheme () {
     theme.value = { ...defaults }
-    persist()
+    persistLocal()
   }
 
-  onMounted(() => applyBcThemeToDom(theme.value))
+  async function publishTheme () {
+    themeSaving.value = true
+    themeMessage.value = ''
+    try {
+      await $fetch('/api/ops/site-content', {
+        method: 'PUT',
+        body: { contentKey: 'bcTheme', payload: theme.value },
+      })
+      themeMessage.value = 'Theme published — all visitors will see this look.'
+    } catch (e: unknown) {
+      const err = e as { data?: { statusMessage?: string } }
+      themeMessage.value = err?.data?.statusMessage || 'Could not publish theme. Unlock owner mode again.'
+    } finally {
+      themeSaving.value = false
+    }
+  }
 
-  return { theme, applyPreset, patch, resetTheme, presets: BC_THEME_PRESETS }
+  onMounted(() => {
+    if (import.meta.client) {
+      applyBcThemeToDom(theme.value)
+      loadPublishedTheme()
+    }
+  })
+
+  return {
+    theme,
+    themeLoaded,
+    themeSaving,
+    themeMessage,
+    applyPreset,
+    patch,
+    resetTheme,
+    publishTheme,
+    presets: BC_THEME_PRESETS,
+  }
 }

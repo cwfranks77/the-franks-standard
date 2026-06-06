@@ -9,6 +9,14 @@ definePageMeta({ layout: 'bc-audio' })
 const config = useRuntimeConfig()
 const support = computed(() => getBcSupport(config))
 
+const { data: bcSiteContent } = await useAsyncData('bc-site-meta', () =>
+  $fetch('/api/public/site-content', { query: { keys: 'bcMeta' } }).catch(() => ({ bcMeta: null })),
+)
+const pageMeta = computed(() => ({
+  ...metaConfig,
+  ...(bcSiteContent.value?.bcMeta || {}),
+}))
+
 const megastoreItems = productsData.map((item) => ({
   id: item.id,
   name: item.name,
@@ -52,25 +60,25 @@ function onSelectProduct (item) {
   selectedProduct.value = item
 }
 
-useHead({
-  title: metaConfig.title,
+useHead(() => ({
+  title: pageMeta.value.title,
   meta: [
-    { name: 'description', content: metaConfig.description },
+    { name: 'description', content: pageMeta.value.description },
     { name: 'robots', content: 'index, follow' },
     { name: 'googlebot', content: 'index, follow' },
     { property: 'og:type', content: 'website' },
     { property: 'og:url', content: metaConfig.url },
-    { property: 'og:title', content: metaConfig.title },
-    { property: 'og:description', content: metaConfig.description },
-    { property: 'og:image', content: metaConfig.image },
+    { property: 'og:title', content: pageMeta.value.title },
+    { property: 'og:description', content: pageMeta.value.description },
+    { property: 'og:image', content: pageMeta.value.image },
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:url', content: metaConfig.url },
-    { name: 'twitter:title', content: metaConfig.title },
-    { name: 'twitter:description', content: metaConfig.description },
-    { name: 'twitter:image', content: metaConfig.image },
+    { name: 'twitter:title', content: pageMeta.value.title },
+    { name: 'twitter:description', content: pageMeta.value.description },
+    { name: 'twitter:image', content: pageMeta.value.image },
   ],
   link: [{ rel: 'canonical', href: metaConfig.url }],
-})
+}))
 </script>
 
 <template>
@@ -93,7 +101,7 @@ useHead({
           </h1>
           <p class="bc-shop-hero__slogan">{{ heroSlogan }}</p>
           <p class="bc-shop-hero__parent">
-            A proud division of {{ metaConfig.parentCompany }} · Live tax token sourcing active
+            A proud division of {{ pageMeta.parentCompany }} · Live tax token sourcing active
           </p>
         </div>
       </section>
