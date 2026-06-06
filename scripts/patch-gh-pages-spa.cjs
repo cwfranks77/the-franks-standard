@@ -11,8 +11,11 @@ const INDEX = path.join(ROOT, 'index.html')
 const siteUrl = String(process.env.NUXT_PUBLIC_SITE_URL || '').trim().toLowerCase()
 const bcPrimarySite = /(^https?:\/\/)?(www\.)?bcpoweraudio\.com\/?$/i.test(siteUrl)
   || siteUrl.includes('bcpoweraudio.com')
+const BC_HTTPS_UPGRADE = bcPrimarySite
+  ? '<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">'
+  : ''
 const BC_HOME_REDIRECT = bcPrimarySite
-  ? `<script id="bc-storefront-home">(function(){var p=location.pathname;if(p==='/'||p==='/index.html'||p==='')location.replace('/bc-audio'+location.search+location.hash)})();</script>`
+  ? `<script id="bc-storefront-home">(function(){var h=location.hostname.toLowerCase(),p=location.pathname+location.search+location.hash;if(h==='bcpoweraudio.com'||location.protocol==='http:'){location.replace('https://www.bcpoweraudio.com'+p);return}if(p==='/'||p==='/index.html'||p==='')location.replace('/bc-audio'+location.search+location.hash)})();</script>`
   : ''
 const SPA_REDIRECT = `<script id="gh-pages-spa-redirect">(function(){var p=location.pathname+location.search+location.hash;if(p!=='/'&&p!=='/index.html'){sessionStorage.setItem('ghSpaRedirect',p)}})();</script>`
 const CHUNK_RECOVERY_INLINE = `<script id="fss-chunk-recovery-inline">(function(){var k='fss-chunk-reload-v1';function go(){if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1');var u=new URL(location.href);u.searchParams.set('_cb',String(Date.now()));location.replace(u.toString())}var s=document.querySelector('script[type=module][src*="/_nuxt/"]');if(s){s.addEventListener('error',go,{once:true})}})();</script>`
@@ -23,6 +26,9 @@ const SPA_BLOCKING_DIRS = ['store', 'ops/print']
 
 function injectRedirect (html) {
   let out = html
+  if (BC_HTTPS_UPGRADE && !out.includes('upgrade-insecure-requests')) {
+    out = out.replace(/<head[^>]*>/i, (m) => `${m}\n${BC_HTTPS_UPGRADE}`)
+  }
   if (BC_HOME_REDIRECT && !out.includes('bc-storefront-home')) {
     out = out.replace(/<head[^>]*>/i, (m) => `${m}\n${BC_HOME_REDIRECT}`)
   }

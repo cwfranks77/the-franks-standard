@@ -37,55 +37,17 @@
 
     <MarketplaceLandingFooter />
 
-    <Teleport to="body">
-      <div
-        v-if="opModalOpen"
-        class="op-modal-backdrop"
-        @click.self="closeOpModal"
-      >
-        <div
-          class="op-modal"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Operator unlock"
-        >
-          <h2 class="op-modal-h">Operator access</h2>
-          <p class="op-modal-sub text-muted">
-            Enter the value of <code>NUXT_PUBLIC_OPS_ACCESS_KEY</code> from your <code>.env</code> (build) or the matching GitHub Actions secret.
-          </p>
-          <p v-if="isDev" class="op-hint text-muted">
-            Dev: open the modal with <code>?ops=unlock</code> on any URL, then set a key in <code>.env</code> and restart.
-          </p>
-          <form @submit.prevent="submitOpModal">
-            <div v-if="!keyConfigured" class="op-warn" role="alert">
-              Add <code>NUXT_PUBLIC_OPS_ACCESS_KEY</code> in <code>.env</code> and in GitHub Actions secrets, then rebuild.
-            </div>
-            <template v-else>
-              <div class="form-group">
-                <label class="label" for="op-phrase">Your phrase (access key)</label>
-                <input
-                  id="op-phrase"
-                  v-model="opPhrase"
-                  class="input"
-                  type="password"
-                  autocomplete="off"
-                  placeholder="Type the same value as in NUXT_PUBLIC_OPS_ACCESS_KEY"
-                />
-              </div>
-            </template>
-            <p v-if="opError" class="op-err" role="alert">{{ opError }}</p>
-            <div class="op-modal-actions">
-              <button type="button" class="btn btn-outline btn-sm" @click="closeOpModal">Cancel</button>
-              <button
-                type="submit"
-                class="btn btn-primary btn-sm"
-                :disabled="!keyConfigured || opSubmitting"
-              >{{ opSubmitting ? 'Checking' : 'Unlock' }}</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </Teleport>
+    <OperatorUnlockModal
+      :open="opModalOpen"
+      :phrase="opPhrase"
+      :error="opError"
+      :submitting="opSubmitting"
+      :key-configured="keyConfigured"
+      :is-dev="isDev"
+      @update:phrase="opPhrase = $event"
+      @close="closeOpModal"
+      @submit="submitOpModal"
+    />
 
     <NuxtLink v-if="isOwner" to="/sell/start" class="owner-sell-fab" title="Create a listing (free)">
       <span class="fab-plus">+</span>
@@ -126,61 +88,18 @@ useSeoMeta({
   description: `Browse authenticated listings and partner dropship stores including ${BC_BRAND.full} on The Franks Standard.`,
 })
 
-const route = useRoute()
-const router = useRouter()
 const { isOwner } = useOwnerMode()
-const isDev = computed(() => import.meta.dev)
-
-const opModalOpen = ref(false)
 const {
-  phrase: opPhrase,
-  error: opError,
-  submitting: opSubmitting,
+  isDev,
+  opModalOpen,
+  opPhrase,
+  opError,
+  opSubmitting,
   keyConfigured,
-  submit: submitOpsPhrase,
-} = useOpsUnlock()
-let opKnockClicks = 0
-let opKnockTimer = null
-
-function tryOpenOpsFromQuery () {
-  if (!import.meta.client || !import.meta.dev) return
-  const q = route.query
-  if (String(q.ops) === 'unlock') {
-    opModalOpen.value = true
-    opError.value = ''
-    const { ops: _drop, ...rest } = q
-    router.replace({ path: route.path, query: rest })
-  }
-}
-onMounted(tryOpenOpsFromQuery)
-watch(() => [route.path, route.query], tryOpenOpsFromQuery, { deep: true })
-
-function onBrandOrLogoClick (e) {
-  e.preventDefault()
-  if (opKnockTimer) clearTimeout(opKnockTimer)
-  opKnockClicks += 1
-  opKnockTimer = setTimeout(() => { opKnockClicks = 0 }, 2800)
-  if (opKnockClicks >= 5) {
-    opKnockClicks = 0
-    if (opKnockTimer) clearTimeout(opKnockTimer)
-    opModalOpen.value = true
-    opError.value = ''
-  }
-}
-
-function closeOpModal () {
-  opModalOpen.value = false
-  opPhrase.value = ''
-  opError.value = ''
-}
-
-async function submitOpModal () {
-  const ok = await submitOpsPhrase()
-  if (ok) {
-    closeOpModal()
-    await router.push('/ops/panel')
-  }
-}
+  onBrandOrLogoClick,
+  closeOpModal,
+  submitOpModal,
+} = useOpsLogoKnock()
 </script>
 
 <style scoped>
@@ -196,40 +115,6 @@ async function submitOpModal () {
   background: rgba(0, 0, 0, 0.25);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
-.op-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(4px);
-}
-.op-modal {
-  max-width: 400px;
-  width: 100%;
-  padding: 28px 24px;
-  background: #16161c;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.5);
-}
-.op-modal-h { font-size: 1.25rem; margin-bottom: 6px; color: #f5f5f7; }
-.op-modal-sub { font-size: 0.9rem; margin-bottom: 16px; }
-.op-warn {
-  font-size: 0.85rem;
-  color: #e5e7eb;
-  background: rgba(211, 47, 47, 0.12);
-  border: 1px solid rgba(211, 47, 47, 0.35);
-  border-radius: 8px;
-  padding: 10px;
-  margin-bottom: 12px;
-}
-.op-err { color: #ff5252; font-size: 0.88rem; margin-top: 6px; }
-.op-modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
-.op-hint { font-size: 0.8rem; margin: 0 0 8px; }
 .owner-sell-fab {
   position: fixed;
   bottom: 90px;

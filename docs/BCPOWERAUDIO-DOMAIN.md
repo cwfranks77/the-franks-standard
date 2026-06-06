@@ -66,11 +66,32 @@ After DNS is live (24–48 h):
 - Bing Webmaster — same URL
 - Submit sitemap if you enable `/@nuxtjs/sitemap` later
 
+## Owner unlock (same as The Franks Standard)
+
+On **www.bcpoweraudio.com** (B&C storefront):
+
+1. Tap the **B&C logo** in the top-left **5 times** quickly.
+2. Enter the same operator phrase as the main site (`NUXT_PUBLIC_OPS_ACCESS_KEY`).
+3. You land on **`/ops/panel`** — same owner toolkit.
+
+Uses the **same GitHub Actions secret** as the Franks deploy. The B&C workflow must pass `NUXT_PUBLIC_OPS_ACCESS_KEY` at build time.
+
+## HTTPS (`https://` broken)
+
+| Host | What to do |
+|------|------------|
+| **www.bcpoweraudio.com** | DNS **CNAME `www`** → `cwfranks77.github.io` (already correct). In [bcpoweraudio repo → Settings → Pages](https://github.com/cwfranks77/bcpoweraudio/settings/pages), turn on **Enforce HTTPS** when the checkbox is available (GitHub must finish issuing the certificate first — up to 24 h). |
+| **bcpoweraudio.com** (no www) | Apex currently points at parking, not GitHub. In **Namecheap → Domain → Redirect**, forward **`bcpoweraudio.com`** → **`https://www.bcpoweraudio.com`**. |
+
+Until HTTPS is live, **http://www.bcpoweraudio.com** works; the build upgrades to HTTPS automatically once the certificate exists.
+
 ## Troubleshooting
 
 | Issue | Fix |
 |--------|-----|
-| Domain shows GitHub 404 | Pages **Source** = **GitHub Actions**, not old branch deploy |
-| SSL pending | Wait up to 24 h after DNS; enforce HTTPS in Pages |
+| Domain shows GitHub 404 | Pages **Source** = **gh-pages** branch from deploy workflow |
+| SSL / certificate pending | Wait 24 h; confirm CNAME `www` → `cwfranks77.github.io`; then Enforce HTTPS in Pages settings |
+| Apex HTTPS wrong | Forward apex → `https://www.bcpoweraudio.com` at registrar (do not point apex at parking IP) |
 | Still only localhost | DNS not pointed; or deploy not run after code push |
-| Wrong homepage on bcpoweraudio | Hard-refresh; confirm `bc-domain-host.client.js` is in latest deploy |
+| Wrong homepage on bcpoweraudio | Hard-refresh; confirm latest B&C deploy finished |
+| Owner unlock missing on B&C | Redeploy after `NUXT_PUBLIC_OPS_ACCESS_KEY` is set in Actions secrets |

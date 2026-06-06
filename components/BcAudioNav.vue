@@ -4,6 +4,7 @@ import { getBcExternalSiteUrl } from '~/utils/bcExternalSite.js'
 
 const config = useRuntimeConfig()
 const bcExternalUrl = computed(() => getBcExternalSiteUrl(config))
+const onBrandKnock = inject('opsLogoKnock', null)
 
 const menuOpen = ref(false)
 const storesOpen = ref(false)
@@ -29,7 +30,11 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 <template>
   <header class="bc-nav">
     <div class="bc-nav__inner">
-      <NuxtLink to="/bc-audio" class="bc-nav__brand" @click="closeAll">
+      <NuxtLink
+        to="/bc-audio"
+        class="bc-nav__brand"
+        @click="(e) => { closeAll(); onBrandKnock?.(e) }"
+      >
         <span class="bc-nav__logo">B<span class="bc-nav__amp">&</span>C</span>
         <span class="bc-nav__name">Performance Audio</span>
       </NuxtLink>
