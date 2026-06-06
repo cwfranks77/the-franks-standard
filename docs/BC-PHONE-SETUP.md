@@ -1,5 +1,7 @@
 # B&C Performance Audio — dedicated support phone line
 
+**Master contact ledger:** `src/content/support-contacts.json` — one file for both brands (phone, email, hours). Replace placeholder phones with your real cell and Google Voice numbers, then redeploy.
+
 B&C uses its **own** customer service number, separate from The Franks Standard `(877) 837-0527`.
 
 | Brand | Display on site | Twilio |
@@ -7,12 +9,39 @@ B&C uses its **own** customer service number, separate from The Franks Standard 
 | **The Franks Standard** | `NUXT_PUBLIC_CUSTOMER_SERVICE_PHONE` | Main marketplace Studio flow |
 | **B&C Performance Audio LLC** | `NUXT_PUBLIC_BC_AUDIO_SUPPORT_PHONE` | B&C Studio flow (below) |
 
-## 1. Buy a Twilio number for B&C
+## Already have a paid Twilio account? (recommended)
 
-1. Sign in at [twilio.com/console](https://www.twilio.com/console) (same account as Franks is fine).
+If you have **balance on file** (same account as Franks), use the project script — it charges your Twilio balance (~$2/month per toll-free number).
+
+1. Open [twilio.com/console](https://console.twilio.com) → copy **Account SID** and **Auth Token**.
+2. In the project folder, create **`.env.local`** (never commit this file):
+
+```
+TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+TWILIO_AUTH_TOKEN=your_auth_token_here
+```
+
+3. In a terminal, from the project folder:
+
+```powershell
+npm run ops:setup-bc-phone
+npm run ops:setup-bc-phone -- --search
+npm run ops:setup-bc-phone -- --buy --gh-secrets
+```
+
+- **`--search`** — shows toll-free numbers available to buy  
+- **`--buy`** — purchases one number from your balance  
+- **`--gh-secrets`** — saves the number to GitHub Actions so the next deploy updates the live site  
+
+4. Set `PRIVATE_OWNER_CELL_PHONE` in `.env.local` to your cell (E.164). In Studio, the **“talk to owner”** path dials that number.
+5. Continue with **section 3** below (Studio flow on the new number).
+
+## 1. Buy manually in Twilio (alternative)
+
+1. Sign in at [twilio.com/console](https://console.twilio.com/console) (same account as Franks is fine).
 2. Go to **Phone Numbers → Manage → Buy a number**.
 3. Search **toll-free** (1-800 / 1-833 / 1-888) or a **Louisiana local** number.
-4. Buy the number (~$2/month toll-free).
+4. Buy the number (~$2/month toll-free, paid from your Twilio balance).
 5. Copy the number in display form, e.g. `(833) 322-8439`, and E.164 form, e.g. `+18333228439`.
 
 ## 2. GitHub secrets (both repos use the same repo secrets)
