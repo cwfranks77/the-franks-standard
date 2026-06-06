@@ -26,35 +26,57 @@ export function useOpsUnlock () {
       return false
     }
     submitting.value = true
-    const normalized = normalizeOpsPhrase(phrase.value)
     try {
-      await $fetch('/api/ops/session', {
-        method: 'POST',
-        body: { phrase: normalized },
-      })
-      grant()
-      storeOpsPhraseForSession(normalized)
-      phrase.value = ''
-      return true
-    } catch (e: unknown) {
-      if (isOpsApiUnavailable(e)) {
-        const ok = await verifyOpsPhraseBrowser(
-          normalized,
-          String(config.public?.opsAccessKeyHash || ''),
-        )
-        if (ok) {
-          grant()
-          storeOpsPhraseForSession(normalized)
-          phrase.value = ''
-          return true
+      const raw = String(phrase.value || '').trim()
+      const expectedHash = String(config.public?.opsAccessKeyHash || '').trim().toLowerCase()
+
+      async function unlockSuccess () {
+        grant()
+        storeOpsPhraseForSession(normalizeOpsPhrase(raw))
+        phrase.value = ''
+        return true
+      }
+
+      try {
+        if (await verifyOpsPhraseBrowser(raw, expectedHash)) {
+          return await unlockSuccess()
         }
-        error.value = 'That phrase does not match. Use the exact value from NUXT_PUBLIC_OPS_ACCESS_KEY.'
+      } catch {
+        /* crypto unavailable on insecure origin — try server below */
+      }
+
+      if (import.meta.dev) {
+        try {
+          await $fetch('/api/ops/session', {
+            method: 'POST',
+            body: { phrase: normalizeOpsPhrase(raw) },
+          })
+          return await unlockSuccess()
+        } catch (e: unknown) {
+          const err = e as { data?: { statusMessage?: string }; message?: string }
+          error.value = err?.data?.statusMessage || err?.message ||
+            'That phrase does not match your owner password.'
+          return false
+        }
+      }
+
+      try {
+        await $fetch('/api/ops/session', {
+          method: 'POST',
+          body: { phrase: normalizeOpsPhrase(raw) },
+        })
+        return await unlockSuccess()
+      } catch (e: unknown) {
+        if (isOpsApiUnavailable(e)) {
+          try {
+            if (await verifyOpsPhraseBrowser(raw, expectedHash)) {
+              return await unlockSuccess()
+            }
+          } catch { /* fall through */ }
+        }
+        error.value = 'That phrase does not match your owner password. Type it exactly — capitals do not matter.'
         return false
       }
-      const err = e as { data?: { statusMessage?: string }; message?: string }
-      error.value = err?.data?.statusMessage || err?.message ||
-        'That phrase does not match. Use the exact value from NUXT_PUBLIC_OPS_ACCESS_KEY.'
-      return false
     } finally {
       submitting.value = false
     }

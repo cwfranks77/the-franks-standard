@@ -26,7 +26,7 @@ const emit = defineEmits(['update:phrase', 'close', 'submit'])
       >
         <h2 class="op-modal-h">Operator access</h2>
         <p class="op-modal-sub text-muted">
-          Enter the value of <code>NUXT_PUBLIC_OPS_ACCESS_KEY</code> from your <code>.env</code> (build) or the matching GitHub Actions secret.
+          Enter your <strong>owner password</strong> (the private phrase you set for this site — not your email login).
         </p>
         <p v-if="isDev" class="op-hint text-muted">
           Dev: open the modal with <code>?ops=unlock</code> on any URL, then set a key in <code>.env</code> and restart.
@@ -44,7 +44,7 @@ const emit = defineEmits(['update:phrase', 'close', 'submit'])
                 class="input"
                 type="password"
                 autocomplete="off"
-                placeholder="Type the same value as in NUXT_PUBLIC_OPS_ACCESS_KEY"
+                placeholder="Owner password"
                 @input="emit('update:phrase', $event.target.value)"
               />
             </div>
