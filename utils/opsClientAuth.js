@@ -1,13 +1,18 @@
 import { normalizeOpsPhrase } from '~/utils/opsPhrase'
+import { sha256HexUtf8 } from '~/utils/sha256Browser.js'
 
 export const OPS_PHRASE_STORAGE_KEY = 'tfs_ops_phrase_v1'
 
 export async function hashOpsPhraseBrowser (input) {
-  const bytes = new TextEncoder().encode(normalizeOpsPhrase(input))
-  const digest = await crypto.subtle.digest('SHA-256', bytes)
-  return Array.from(new Uint8Array(digest))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('')
+  const normalized = normalizeOpsPhrase(input)
+  if (import.meta.client && globalThis.crypto?.subtle && globalThis.isSecureContext) {
+    const bytes = new TextEncoder().encode(normalized)
+    const digest = await crypto.subtle.digest('SHA-256', bytes)
+    return Array.from(new Uint8Array(digest))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('')
+  }
+  return sha256HexUtf8(normalized)
 }
 
 export async function verifyOpsPhraseBrowser (phrase, expectedHash) {
