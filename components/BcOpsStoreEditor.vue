@@ -24,7 +24,7 @@ async function load () {
   loadError.value = ''
   message.value = ''
   try {
-    const data = await $fetch('/api/ops/dropship-store', { query: { storeId: 'bc-performance-audio' } })
+    const data = await opsFetch('/api/ops/dropship-store', { query: { storeId: 'bc-performance-audio' } })
     store.value = {
       ...store.value,
       ...data.store,
@@ -86,7 +86,7 @@ async function save () {
   message.value = ''
   loadError.value = ''
   try {
-    const data = await $fetch('/api/ops/dropship-store', {
+    const data = await opsFetch('/api/ops/dropship-store', {
       method: 'PUT',
       body: { store: store.value, items: items.value },
     })

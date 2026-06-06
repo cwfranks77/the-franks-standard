@@ -41,7 +41,7 @@ async function loadSeo () {
   seoLoading.value = true
   seoError.value = ''
   try {
-    const data = await $fetch('/api/ops/site-content', { query: { keys: 'bcMeta' } })
+    const data = await opsFetch('/api/ops/site-content', { query: { keys: 'bcMeta' } })
     if (data?.bcMeta) {
       seo.value = { ...seo.value, ...data.bcMeta }
     }
@@ -57,7 +57,7 @@ async function saveSeo () {
   seoMessage.value = ''
   seoError.value = ''
   try {
-    await $fetch('/api/ops/site-content', {
+    await opsFetch('/api/ops/site-content', {
       method: 'PUT',
       body: { contentKey: 'bcMeta', payload: seo.value },
     })
@@ -73,7 +73,7 @@ async function loadOrders () {
   ordersLoading.value = true
   ordersError.value = ''
   try {
-    const data = await $fetch('/api/ops/bc-orders')
+    const data = await opsFetch('/api/ops/bc-orders')
     orders.value = data?.rows || []
   } catch (e) {
     ordersError.value = e?.data?.statusMessage || 'Could not load orders.'

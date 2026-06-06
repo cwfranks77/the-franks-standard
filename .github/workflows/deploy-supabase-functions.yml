@@ -76,6 +76,7 @@ jobs:
           deploy tax-inspect-session --no-verify-jwt
           deploy ops-force-refund --no-verify-jwt
           deploy ops-integrity-action --no-verify-jwt
+          deploy ops-cms-action --no-verify-jwt
           deploy ops-error-ingest --no-verify-jwt
           deploy ops-incident-action --no-verify-jwt
           deploy verify-coa-serial --no-verify-jwt

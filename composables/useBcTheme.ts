@@ -94,7 +94,7 @@ export function useBcTheme () {
     themeSaving.value = true
     themeMessage.value = ''
     try {
-      await $fetch('/api/ops/site-content', {
+      await opsFetch('/api/ops/site-content', {
         method: 'PUT',
         body: { contentKey: 'bcTheme', payload: theme.value },
       })

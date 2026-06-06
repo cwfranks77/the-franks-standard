@@ -1,6 +1,11 @@
 import { normalizeOpsPhrase } from '~/utils/opsPhrase'
+import {
+  isOpsApiUnavailable,
+  storeOpsPhraseForSession,
+  verifyOpsPhraseBrowser,
+} from '~/utils/opsClientAuth'
 
-/** Owner unlock — verifies phrase on server and sets the ops session cookie for API saves. */
+/** Owner unlock — server cookie in dev; browser hash + Supabase edge on static GitHub Pages. */
 export function useOpsUnlock () {
   const config = useRuntimeConfig()
   const router = useRouter()
@@ -21,15 +26,31 @@ export function useOpsUnlock () {
       return false
     }
     submitting.value = true
+    const normalized = normalizeOpsPhrase(phrase.value)
     try {
       await $fetch('/api/ops/session', {
         method: 'POST',
-        body: { phrase: normalizeOpsPhrase(phrase.value) },
+        body: { phrase: normalized },
       })
       grant()
+      storeOpsPhraseForSession(normalized)
       phrase.value = ''
       return true
     } catch (e: unknown) {
+      if (isOpsApiUnavailable(e)) {
+        const ok = await verifyOpsPhraseBrowser(
+          normalized,
+          String(config.public?.opsAccessKeyHash || ''),
+        )
+        if (ok) {
+          grant()
+          storeOpsPhraseForSession(normalized)
+          phrase.value = ''
+          return true
+        }
+        error.value = 'That phrase does not match. Use the exact value from NUXT_PUBLIC_OPS_ACCESS_KEY.'
+        return false
+      }
       const err = e as { data?: { statusMessage?: string }; message?: string }
       error.value = err?.data?.statusMessage || err?.message ||
         'That phrase does not match. Use the exact value from NUXT_PUBLIC_OPS_ACCESS_KEY.'

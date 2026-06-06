@@ -1,3 +1,5 @@
+import { clearStoredOpsPhrase } from '~/utils/opsClientAuth'
+
 const STORAGE_KEY = 'tfs_ops_session_v1'
 
 export function useOpsSession () {
@@ -29,6 +31,7 @@ export function useOpsSession () {
       } catch { /* cookie may already be gone */ }
       localStorage.removeItem(STORAGE_KEY)
       sessionStorage.removeItem(STORAGE_KEY)
+      clearStoredOpsPhrase()
       isAuthed.value = false
     }
   }
