@@ -12,6 +12,7 @@ const bcPrimarySite = isBcPowerAudioPrimarySite(siteUrl)
 const bcPrerenderRoutes = bcPrimarySite
   ? [
       '/bc-audio/open-door',
+      '/bc-audio/sms-consent',
       ...productsData.map((p) => `/bc-audio/product/${p.id}`),
     ]
   : []
