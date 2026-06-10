@@ -177,6 +177,15 @@ function fallbackForRoute (route) {
       <p class="fss-static-sub"><strong>Reach us:</strong> general feedback, technical issues, partnership inquiries, or a direct call &mdash; all answered by a human on the team.</p>
       ${contactBlock}`
       break
+    case '/bc-audio/sms-consent':
+      body = `
+      <p class="fss-static-ribbon">SMS &amp; text messaging</p>
+      <h1 class="fss-static-h1"><span class="fss-s1">How we ask</span> <span class="fss-s2">before texting you</span></h1>
+      <p class="fss-static-sub"><strong>B&amp;C Performance Audio</strong> (a division of The Franks Standard LLC) sends text messages about <strong>order status</strong>, <strong>shipping updates</strong>, and <strong>support requests</strong> only after you give permission on a phone call.</p>
+      <p class="fss-static-sub"><strong>Verbal opt-in (phone):</strong> When you call our toll-free support line at <a href="tel:${PHONE_TEL}">${PHONE_DISPLAY}</a>, our agent asks: &ldquo;May we send text messages to this mobile number about your order or support request? Message and data rates may apply. Reply STOP to opt out and HELP for help.&rdquo; <strong>We only send SMS after you clearly say yes.</strong> We do not send marketing texts without separate written consent.</p>
+      <p class="fss-static-sub"><strong>Message frequency:</strong> A few messages per order or support case. <strong>Opt out:</strong> Reply STOP to any message. <strong>Help:</strong> Reply HELP or call ${PHONE_DISPLAY}. Mobile information is not sold or shared with third parties for their marketing.</p>
+      ${contactBlock}`
+      break
     case '/honor':
       body = `
       <p class="fss-static-ribbon">With gratitude</p>
