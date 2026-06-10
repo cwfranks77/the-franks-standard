@@ -27,6 +27,7 @@ const productIds = loadProductIds()
 const staticPaths = [
   '/bc-audio',
   '/bc-audio/open-door',
+  '/bc-audio/sms-consent',
   ...productIds.map((id) => `/bc-audio/product/${id}`),
 ]
 
