@@ -33,6 +33,7 @@ if (!fs.existsSync(ROOT)) {
 const productIds = loadProductIds()
 const staticPaths = [
   '/bc-audio',
+  '/bc-audio/catalog',
   '/bc-audio/open-door',
   '/bc-audio/sms-consent',
   ...productIds.map((id) => `/bc-audio/product/${id}`),

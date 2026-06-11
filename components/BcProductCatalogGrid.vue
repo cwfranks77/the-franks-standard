@@ -5,6 +5,7 @@ import { BC_BRAND } from '~/utils/bcBrand.js'
 const props = defineProps({
   catalogs: { type: Array, default: () => [] },
   selectedId: { type: String, default: null },
+  initialCategory: { type: String, default: '' },
 })
 
 const emit = defineEmits(['select'])
@@ -14,6 +15,11 @@ const siteUrl = computed(() => String(config.public.siteUrl || '').replace(/\/$/
 
 const filter = ref('All')
 const search = ref('')
+
+watch(() => props.initialCategory, (cat) => {
+  const value = String(cat || '').trim()
+  filter.value = value || 'All'
+}, { immediate: true })
 const pageSize = 48
 const visibleCount = ref(pageSize)
 

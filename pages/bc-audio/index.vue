@@ -16,7 +16,7 @@ const pageMeta = computed(() => ({
   ...(bcSiteContent.value?.bcMeta || {}),
 }))
 
-const { megastoreItems, pending: catalogPending, error: catalogError } = useBcProductCatalog()
+const { megastoreItems, pending: catalogPending } = useBcProductCatalog()
 
 const ownerName = computed(() => support.value.ownerName)
 
@@ -39,8 +39,9 @@ const storeName = computed(() => dropshipData.value?.store?.name || BC_BRAND.ful
 const heroEyebrow = computed(() => dropshipData.value?.store?.hero_json?.eyebrow || `Independent merchant store · ${BC_BRAND.full}`)
 const heroSlogan = computed(() => dropshipData.value?.store?.hero_json?.slogan || dropshipData.value?.store?.tagline || BC_BRAND.tagline)
 const catalogItems = computed(() => {
-  const api = dropshipData.value?.items || []
-  const merged = new Map(megastoreItems.value.map((i) => [i.id, i]))
+  const api = Array.isArray(dropshipData.value?.items) ? dropshipData.value.items : []
+  const local = Array.isArray(megastoreItems.value) ? megastoreItems.value : []
+  const merged = new Map(local.map((i) => [i.id, i]))
   for (const item of api) merged.set(item.id, item)
   return [...merged.values()]
 })
@@ -55,7 +56,11 @@ function applyPickFromQuery () {
   const pick = String(route.query.pick || '')
   if (!pick) return
   const item = catalogItems.value.find((i) => String(i.id) === pick)
-  if (item) selectedProduct.value = item
+  if (item) {
+    selectedProduct.value = item
+    return
+  }
+  navigateTo(`/bc-audio/catalog?pick=${encodeURIComponent(pick)}`, { replace: true })
 }
 
 onMounted(applyPickFromQuery)
@@ -123,21 +128,25 @@ useHead(() => ({
       </section>
 
       <section v-if="checkoutCancelled" class="bc-shop-cancelled" role="status">
-        <p>Checkout was cancelled. Your card was not charged — select a product and try again.</p>
+        <p>Checkout was cancelled. Your card was not charged — open <strong>Products</strong> in the top menu and try again.</p>
       </section>
 
-      <section class="bc-shop-split" aria-label="Catalog and dropship order">
-        <div class="bc-shop-split__inner">
-          <p v-if="catalogPending" class="bc-shop-catalog-loading">Loading product catalog…</p>
-          <p v-else-if="catalogError" class="bc-shop-catalog-error" role="alert">
-            Catalog could not load. Refresh the page or call {{ support.phoneDisplay }} for wholesale access.
+      <section class="bc-shop-cta" aria-label="Browse catalog">
+        <div class="bc-shop-cta__inner">
+          <h2 class="bc-shop-cta__title">Wholesale &amp; retail catalog</h2>
+          <p class="bc-shop-cta__sub">
+            {{ catalogPending ? 'Loading…' : `${catalogItems.length.toLocaleString()} products` }}
+            — browse by category from the <strong>Products</strong> menu (top right).
           </p>
-          <BcProductCatalogGrid
-            v-else-if="catalogItems.length"
-            :catalogs="[catalogItems]"
-            :selected-id="selectedProduct?.id ?? null"
-            @select="onSelectProduct"
-          />
+          <div class="bc-shop-cta__actions">
+            <NuxtLink to="/bc-audio/catalog" class="bc-shop-cta__btn">Open full catalog</NuxtLink>
+            <a :href="`tel:${support.phoneTel}`" class="bc-shop-cta__btn bc-shop-cta__btn--ghost">{{ support.phoneDisplay }}</a>
+          </div>
+        </div>
+      </section>
+
+      <section v-if="selectedProduct" class="bc-shop-order" aria-label="Selected product checkout">
+        <div class="bc-shop-order__inner">
           <BcDropshipOrderForm :product="selectedProduct" />
         </div>
       </section>
@@ -164,21 +173,6 @@ useHead(() => ({
 
 <style scoped>
 .bc-shop { background: #0a0a0c; color: #f5f5f7; }
-.bc-shop-catalog-loading {
-  padding: 2rem 1rem;
-  text-align: center;
-  color: #9ca3af;
-  font-size: 0.95rem;
-}
-.bc-shop-catalog-error {
-  padding: 1.25rem 1rem;
-  text-align: center;
-  color: #fecaca;
-  background: rgba(127, 29, 29, 0.35);
-  border: 1px solid rgba(211, 47, 47, 0.45);
-  border-radius: 10px;
-  font-size: 0.95rem;
-}
 .bc-shop-offline {
   min-height: 60vh;
   display: flex;
@@ -288,23 +282,58 @@ useHead(() => ({
   text-align: center;
 }
 
-.bc-shop-split {
-  padding: 2rem 1.5rem 3rem;
+.bc-shop-cta {
+  padding: 2.5rem 1.5rem;
   background: linear-gradient(180deg, #0a0a0c 0%, #121216 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
-.bc-shop-split__inner {
-  max-width: 80rem;
+.bc-shop-cta__inner {
+  max-width: 40rem;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
-  align-items: start;
+  text-align: center;
 }
-@media (min-width: 1024px) {
-  .bc-shop-split__inner {
-    grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
-    gap: 2rem;
-  }
+.bc-shop-cta__title {
+  margin: 0;
+  font-size: clamp(1.25rem, 2.5vw, 1.65rem);
+  font-weight: 900;
+}
+.bc-shop-cta__sub {
+  margin: 10px 0 0;
+  font-size: 0.95rem;
+  color: #9ca3af;
+  line-height: 1.5;
+}
+.bc-shop-cta__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 1.25rem;
+}
+.bc-shop-cta__btn {
+  display: inline-block;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-decoration: none;
+  background: linear-gradient(135deg, #d32f2f, #b71c1c);
+  color: #fff;
+  border: 1px solid rgba(211, 47, 47, 0.6);
+}
+.bc-shop-cta__btn:hover {
+  filter: brightness(1.08);
+}
+.bc-shop-cta__btn--ghost {
+  background: transparent;
+  color: #ff5252;
+}
+.bc-shop-order {
+  padding: 0 1.5rem 2.5rem;
+}
+.bc-shop-order__inner {
+  max-width: 32rem;
+  margin: 0 auto;
 }
 
 .bc-shop-footer {

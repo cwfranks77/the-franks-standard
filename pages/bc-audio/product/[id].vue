@@ -25,7 +25,7 @@ watch([catalogItem, catalogPending], () => {
   throw createError({ statusCode: 404, statusMessage: 'Product not found' })
 }, { immediate: true })
 
-const buyUrl = computed(() => `/bc-audio?pick=${encodeURIComponent(productId.value)}`)
+const buyUrl = computed(() => `/bc-audio/catalog?pick=${encodeURIComponent(productId.value)}`)
 
 useSeoMeta({
   title: () => (catalogItem.value ? bcProductSeoTitle(catalogItem.value.name) : 'Product'),
@@ -49,7 +49,7 @@ useHead(() => ({
 <template>
   <article v-if="catalogItem" class="bc-product-page">
     <nav class="bc-product-page__crumb">
-      <NuxtLink to="/bc-audio">Catalog</NuxtLink>
+      <NuxtLink to="/bc-audio/catalog">Catalog</NuxtLink>
       <span aria-hidden="true"> / </span>
       <span>{{ catalogItem.category }}</span>
     </nav>

@@ -69,7 +69,8 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
             <NuxtLink to="/stores" class="bc-nav__stores-all" @click="closeAll">All stores on The Franks Standard →</NuxtLink>
           </div>
         </div>
-        <NuxtLink to="/bc-audio" class="bc-nav__link" @click="closeAll">Catalog</NuxtLink>
+        <NuxtLink to="/bc-audio/open-door" class="bc-nav__link bc-nav__link--door" @click="closeAll">Open Door</NuxtLink>
+        <NuxtLink to="/" class="bc-nav__link bc-nav__link--muted" @click="closeAll">The Franks Standard</NuxtLink>
         <a
           v-if="bcExternalUrl"
           :href="bcExternalUrl"
@@ -78,9 +79,8 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
           rel="noopener noreferrer"
           @click="closeAll"
         >Full website ↗</a>
-        <NuxtLink to="/bc-audio/open-door" class="bc-nav__link bc-nav__link--door" @click="closeAll">Open Door</NuxtLink>
-        <NuxtLink to="/" class="bc-nav__link bc-nav__link--muted" @click="closeAll">The Franks Standard</NuxtLink>
-        <a :href="`tel:${support.phoneTel}`" class="bc-nav__link" @click="closeAll">{{ support.phoneDisplay }}</a>
+        <BcCatalogNavMenu @close="closeAll" />
+        <a :href="`tel:${support.phoneTel}`" class="bc-nav__link bc-nav__phone" @click="closeAll">{{ support.phoneDisplay }}</a>
       </nav>
 
       <button type="button" class="bc-nav__toggle" aria-label="Menu" @click="menuOpen = !menuOpen">
@@ -156,6 +156,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 .bc-nav__link--external { color: #ffd814; }
 .bc-nav__link--external:hover { color: #fff; background: rgba(255, 216, 20, 0.12); }
 .bc-nav__link--door { color: #ff5252; }
+.bc-nav__phone { color: #ff5252; white-space: nowrap; }
 .bc-nav__stores { position: relative; }
 .bc-nav__stores-btn {
   display: inline-flex;
