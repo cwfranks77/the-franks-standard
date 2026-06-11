@@ -11,10 +11,11 @@ const INDEX = path.join(ROOT, 'index.html')
 const siteUrl = String(process.env.NUXT_PUBLIC_SITE_URL || '').trim().toLowerCase()
 const bcPrimarySite = /(^https?:\/\/)?(www\.)?bcpoweraudio\.com\/?$/i.test(siteUrl)
   || siteUrl.includes('bcpoweraudio.com')
-// Do not force http→https until GitHub Pages TLS is live (upgrade breaks owner unlock on http).
-const BC_HTTPS_UPGRADE = ''
+const BC_HTTPS_UPGRADE = bcPrimarySite
+  ? '<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">'
+  : ''
 const BC_HOME_REDIRECT = bcPrimarySite
-  ? `<script id="bc-storefront-home">(function(){var h=location.hostname.toLowerCase(),p=location.pathname+location.search+location.hash;if(h==='bcpoweraudio.com'){location.replace(location.protocol+'//www.bcpoweraudio.com'+p);return}if(p==='/'||p==='/index.html'||p==='')location.replace('/bc-audio'+location.search+location.hash)})();</script>`
+  ? `<script id="bc-storefront-home">(function(){var h=location.hostname.toLowerCase(),p=location.pathname+location.search+location.hash,w='www.bcpoweraudio.com';if(location.protocol==='http:'){location.replace('https://'+(h==='bcpoweraudio.com'?w:h)+p);return}if(h==='bcpoweraudio.com'){location.replace('https://'+w+p);return}if(p==='/'||p==='/index.html'||p==='')location.replace('/bc-audio'+location.search+location.hash)})();</script>`
   : ''
 const SPA_REDIRECT = `<script id="gh-pages-spa-redirect">(function(){var p=location.pathname+location.search+location.hash;if(p!=='/'&&p!=='/index.html'){sessionStorage.setItem('ghSpaRedirect',p)}})();</script>`
 const CHUNK_RECOVERY_INLINE = `<script id="fss-chunk-recovery-inline">(function(){var k='fss-chunk-reload-v1';function go(){if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1');var u=new URL(location.href);u.searchParams.set('_cb',String(Date.now()));location.replace(u.toString())}var s=document.querySelector('script[type=module][src*="/_nuxt/"]');if(s){s.addEventListener('error',go,{once:true})}})();</script>`

@@ -3,8 +3,6 @@ import { BC_BRAND } from '~/utils/bcBrand.js'
 import { getBcSupport } from '~/utils/bcSupport.js'
 import { BC_SEO_KEYWORDS, bcStoreJsonLd } from '~/utils/bcSeo.js'
 import metaConfig from '~/content/meta-config.json'
-import productsData from '~/content/products.json'
-
 definePageMeta({ layout: 'bc-audio' })
 
 const config = useRuntimeConfig()
@@ -18,15 +16,7 @@ const pageMeta = computed(() => ({
   ...(bcSiteContent.value?.bcMeta || {}),
 }))
 
-const megastoreItems = productsData.map((item) => ({
-  id: item.id,
-  name: item.name,
-  category: item.category,
-  image: item.image,
-  tagline: item.description,
-  retailPrice: item.price,
-  brand: item.category,
-}))
+const { megastoreItems, pending: catalogPending } = useBcProductCatalog()
 
 const ownerName = computed(() => support.value.ownerName)
 
@@ -140,7 +130,9 @@ useHead(() => ({
 
       <section class="bc-shop-split" aria-label="Catalog and dropship order">
         <div class="bc-shop-split__inner">
+          <p v-if="catalogPending" class="bc-shop-catalog-loading">Loading product catalog…</p>
           <BcProductCatalogGrid
+            v-else
             :catalogs="[catalogItems]"
             :selected-id="selectedProduct?.id ?? null"
             @select="onSelectProduct"
@@ -171,6 +163,12 @@ useHead(() => ({
 
 <style scoped>
 .bc-shop { background: #0a0a0c; color: #f5f5f7; }
+.bc-shop-catalog-loading {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 0.95rem;
+}
 .bc-shop-offline {
   min-height: 60vh;
   display: flex;

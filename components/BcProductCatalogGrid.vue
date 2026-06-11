@@ -9,7 +9,13 @@ const props = defineProps({
 
 const emit = defineEmits(['select'])
 
+const config = useRuntimeConfig()
+const siteUrl = computed(() => String(config.public.siteUrl || '').replace(/\/$/, ''))
+
 const filter = ref('All')
+const search = ref('')
+const pageSize = 48
+const visibleCount = ref(pageSize)
 
 const items = computed(() => processCatalogArrays(props.catalogs))
 
@@ -18,10 +24,29 @@ const categories = computed(() => {
   return ['All', ...Array.from(set)]
 })
 
-const visible = computed(() => {
-  if (filter.value === 'All') return items.value
-  return items.value.filter((i) => i.category === filter.value)
+const filtered = computed(() => {
+  const q = search.value.trim().toLowerCase()
+  let rows = items.value
+  if (filter.value !== 'All') {
+    rows = rows.filter((i) => i.category === filter.value)
+  }
+  if (!q) return rows
+  return rows.filter((i) =>
+    [i.name, i.brand, i.category, i.tagline].some((part) => String(part || '').toLowerCase().includes(q)),
+  )
 })
+
+const visible = computed(() => filtered.value.slice(0, visibleCount.value))
+
+const hasMore = computed(() => visibleCount.value < filtered.value.length)
+
+watch([filter, search], () => {
+  visibleCount.value = pageSize
+})
+
+function loadMore () {
+  visibleCount.value += pageSize
+}
 
 function selectItem (item) {
   emit('select', item)
@@ -35,6 +60,17 @@ function selectItem (item) {
       <h2 class="bc-catalog__title">Product grid</h2>
       <p class="bc-catalog__sub">Select a unit — order form updates on the right.</p>
     </header>
+
+    <div class="bc-catalog__search-row">
+      <input
+        v-model="search"
+        class="bc-catalog__search"
+        type="search"
+        placeholder="Search catalog…"
+        aria-label="Search catalog"
+      >
+      <p class="bc-catalog__count">{{ filtered.length.toLocaleString() }} products</p>
+    </div>
 
     <div v-if="categories.length > 1" class="bc-catalog__filters">
       <button
@@ -58,7 +94,13 @@ function selectItem (item) {
         @click="selectItem(item)"
       >
         <div class="bc-catalog__img-wrap">
-          <img :src="item.image || '/img/hero-showcase-v2.svg'" :alt="item.name" loading="lazy">
+          <img
+            :src="bcProductImageSrc(item.image, siteUrl)"
+            :alt="item.name"
+            loading="lazy"
+            decoding="async"
+            referrerpolicy="no-referrer"
+          >
           <span v-if="item.badge" class="bc-catalog__badge">{{ item.badge }}</span>
         </div>
         <div class="bc-catalog__body">
@@ -78,6 +120,12 @@ function selectItem (item) {
           </div>
         </div>
       </article>
+    </div>
+
+    <div v-if="hasMore" class="bc-catalog__more-wrap">
+      <button type="button" class="bc-catalog__more" @click="loadMore">
+        Load more ({{ visible.length }} of {{ filtered.length }})
+      </button>
     </div>
   </div>
 </template>
@@ -100,6 +148,43 @@ function selectItem (item) {
 }
 .bc-catalog__sub { margin: 0; font-size: 0.85rem; color: #7a8190; }
 
+.bc-catalog__search-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.bc-catalog__search {
+  flex: 1 1 220px;
+  min-width: 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #121218;
+  color: #f5f5f7;
+  font-size: 0.9rem;
+}
+.bc-catalog__count {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #7a8190;
+  font-weight: 700;
+}
+.bc-catalog__more-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.25rem;
+}
+.bc-catalog__more {
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: 1px solid rgba(211, 47, 47, 0.45);
+  background: #16161c;
+  color: #ff5252;
+  font-weight: 800;
+  cursor: pointer;
+}
 .bc-catalog__filters {
   display: flex;
   flex-wrap: wrap;

@@ -2,8 +2,6 @@ import { createHash } from 'node:crypto'
 import { normalizeOpsPhrase } from './utils/opsPhrase'
 import { META_DESCRIPTION, OG_DESCRIPTION } from './utils/marketplaceFacilitatorCopy.js'
 import { isBcPowerAudioPrimarySite } from './utils/bcPrimarySite.js'
-import productsData from './content/products.json'
-
 const rawSite = process.env.NUXT_PUBLIC_SITE_URL
 const siteUrl = (rawSite && String(rawSite).trim())
   ? String(rawSite).replace(/\/$/, '')
@@ -11,9 +9,9 @@ const siteUrl = (rawSite && String(rawSite).trim())
 const bcPrimarySite = isBcPowerAudioPrimarySite(siteUrl)
 const bcPrerenderRoutes = bcPrimarySite
   ? [
+      '/bc-audio',
       '/bc-audio/open-door',
       '/bc-audio/sms-consent',
-      ...productsData.map((p) => `/bc-audio/product/${p.id}`),
     ]
   : []
 const rawOg = process.env.NUXT_PUBLIC_OG_IMAGE
@@ -110,8 +108,8 @@ export default defineNuxtConfig({
       /** Optional full B&C site (e.g. https://bcperformanceaudio.com). Marketplace still links /bc-audio for checkout. */
       bcAudioExternalUrl: (process.env.NUXT_PUBLIC_BC_AUDIO_EXTERNAL_URL || '').trim(),
       /** B&C dedicated support line (separate from Franks — see docs/BC-PHONE-SETUP.md). */
-      bcAudioSupportPhone: process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_PHONE || '(833) 322-8439',
-      bcAudioSupportTel: process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL || '+18333228439',
+      bcAudioSupportPhone: process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_PHONE || '(877) 837-0527',
+      bcAudioSupportTel: process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL || '+18778370527',
       bcAudioSupportEmail: process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_EMAIL || 'bc-audio@thefranksstandard.com',
       bcAudioOwnerName: process.env.NUXT_PUBLIC_BC_AUDIO_OWNER_NAME || 'Charles W. Franks',
     },
@@ -253,6 +251,8 @@ export default defineNuxtConfig({
         { rel: 'preconnect', href: 'https://checkout.stripe.com' },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+        { rel: 'preconnect', href: 'https://petraimages.com.s3.amazonaws.com' },
+        { rel: 'dns-prefetch', href: 'https://petraimages.com.s3.amazonaws.com' },
         { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Cinzel:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800&display=swap' },
       ],
     },

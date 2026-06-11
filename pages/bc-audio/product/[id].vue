@@ -1,40 +1,31 @@
 <script setup>
 import { BC_BRAND } from '~/utils/bcBrand.js'
 import { bcProductJsonLd, bcProductSeoTitle, BC_SEO_KEYWORDS } from '~/utils/bcSeo.js'
-import productsData from '~/content/products.json'
-
 definePageMeta({ layout: 'bc-audio' })
 
 const route = useRoute()
 const config = useRuntimeConfig()
 const siteUrl = computed(() => String(config.public.siteUrl || 'https://www.bcpoweraudio.com').replace(/\/$/, ''))
 
-const { data: dropshipData, pending: catalogPending } = await useFetch('/api/public/dropship-catalog', {
+const { data: dropshipData, pending: dropshipPending } = await useFetch('/api/public/dropship-catalog', {
   query: { storeId: 'bc-performance-audio' },
 })
+
+const { findProduct, pending: jsonCatalogPending } = useBcProductCatalog()
 
 const productId = computed(() => String(route.params.id || ''))
 
 const catalogItem = computed(() => {
   const fromApi = (dropshipData.value?.items || []).find((i) => String(i.id) === productId.value)
   if (fromApi) return fromApi
-  const fromJson = productsData.find((p) => p.id === productId.value)
-  if (!fromJson) return null
-  return {
-    id: fromJson.id,
-    name: fromJson.name,
-    category: fromJson.category,
-    brand: fromJson.category,
-    image: fromJson.image,
-    tagline: fromJson.description,
-    description: fromJson.description,
-    retailPrice: fromJson.price,
-  }
+  return findProduct(productId.value)
 })
+
+const catalogPending = computed(() => dropshipPending.value || jsonCatalogPending.value)
 
 watch([catalogItem, catalogPending], () => {
   if (catalogPending.value) return
-  if (productsData.some((p) => p.id === productId.value) || catalogItem.value) return
+  if (catalogItem.value) return
   throw createError({ statusCode: 404, statusMessage: 'Product not found' })
 }, { immediate: true })
 
@@ -47,11 +38,7 @@ useSeoMeta({
   robots: 'index, follow',
   ogTitle: () => (catalogItem.value ? bcProductSeoTitle(catalogItem.value.name) : BC_BRAND.full),
   ogDescription: () => catalogItem.value?.tagline || catalogItem.value?.description,
-  ogImage: () => {
-    const img = catalogItem.value?.image
-    if (!img) return `${siteUrl.value}/franks-pavilion.png`
-    return img.startsWith('http') ? img : `${siteUrl.value}${img}`
-  },
+  ogImage: () => bcProductImageSrc(catalogItem.value?.image, siteUrl.value),
 })
 
 useHead(() => ({
@@ -74,11 +61,13 @@ useHead(() => ({
     <div class="bc-product-page__grid">
       <div class="bc-product-page__media">
         <img
-          :src="catalogItem.image"
+          :src="bcProductImageSrc(catalogItem.image, siteUrl)"
           :alt="catalogItem.name"
           width="480"
           height="480"
-          loading="eager"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
         >
       </div>
       <div class="bc-product-page__copy">

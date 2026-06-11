@@ -1,1 +1,8 @@
-[{"id":"taramps-smart3","name":"Taramps SMART 3 Bass Monoblock Amplifier - 3000W RMS","price":289.99,"category":"Amplifiers","image":"/images/smart3.jpg","description":"Multi-impedance technology delivering 3000 Watts True RMS power across 1 to 2 Ohms. Premium competition power output."},{"id":"sundown-sa12","name":"Sundown Audio SA-12 V.2 1000W RMS Competition Subwoofer","price":349.99,"category":"Subwoofers","image":"/images/sa12.jpg","description":"Legendary competition grade 12-inch subwoofer. Dual 4-Ohm, 1000 Watts RMS with massive excursion clearance."},{"id":"rockford-p3","name":"Rockford Fosgate Punch P3 Dual 12\" Loaded Enclosure","price":499.99,"category":"Subwoofers","image":"/images/p3_dual.jpg","description":"Classic Punch hard-hitting bass. Dual 12-inch loaded vented enclosure wired to a clean 1-Ohm load."},{"id":"home-soundbar","name":"Premium 5.1 Home Theater Wireless Surround Soundbar System","price":399.99,"category":"Home Audio","image":"/images/hometheater.jpg","description":"High-fidelity home audio wireless soundbar with dedicated 10-inch subwoofer and rear satellite speakers."}]
+{
+  "catalogUrl": "/catalog/petra-products.json",
+  "imagePolicy": "external-only",
+  "imageHost": "https://petraimages.com.s3.amazonaws.com",
+  "count": 2391,
+  "inStockCount": 1856,
+  "updatedAt": "2026-06-11T04:48:45.089Z"
+}

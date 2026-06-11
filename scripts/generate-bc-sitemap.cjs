@@ -7,12 +7,19 @@ const path = require('node:path')
 
 const ROOT = path.join(__dirname, '..', '.output', 'public')
 const SITE = (process.env.NUXT_PUBLIC_SITE_URL || 'https://www.bcpoweraudio.com').replace(/\/$/, '')
+const CATALOG_PATH = path.join(__dirname, '..', 'public', 'catalog', 'petra-products.json')
 const PRODUCTS_PATH = path.join(__dirname, '..', 'content', 'products.json')
+const MAX_PRODUCT_URLS = 500
 
 function loadProductIds () {
   try {
+    if (fs.existsSync(CATALOG_PATH)) {
+      const catalog = JSON.parse(fs.readFileSync(CATALOG_PATH, 'utf8'))
+      const rows = Array.isArray(catalog?.products) ? catalog.products : []
+      return rows.map((p) => p.id).filter(Boolean).slice(0, MAX_PRODUCT_URLS)
+    }
     const rows = JSON.parse(fs.readFileSync(PRODUCTS_PATH, 'utf8'))
-    return Array.isArray(rows) ? rows.map((p) => p.id).filter(Boolean) : []
+    return Array.isArray(rows) ? rows.map((p) => p.id).filter(Boolean).slice(0, MAX_PRODUCT_URLS) : []
   } catch {
     return []
   }
