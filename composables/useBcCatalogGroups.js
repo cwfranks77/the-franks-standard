@@ -4,14 +4,20 @@
 const PINNED_CATEGORIES = [
   'Amplifiers',
   'Subwoofers',
-  'Speakers',
+  'Speakers, Subwoofers & Accessories',
+  'Automotive Electronics',
+  'Car Safety & Security',
   'Home Audio',
-  'Car Audio',
-  'Marine Audio',
+  'Home Audio & Theater',
+  'Marine Electronics',
+  'Portable Audio & Video',
+  'Musical Equipment',
 ]
 
+const MAX_MENU_CATEGORIES = 12
+
 export function useBcCatalogGroups () {
-  const { megastoreItems, pending, error } = useBcProductCatalog()
+  const { megastoreItems, pending, error, refresh } = useBcProductCatalog()
 
   const items = computed(() => {
     const rows = megastoreItems.value
@@ -28,10 +34,14 @@ export function useBcCatalogGroups () {
     const rest = [...counts.keys()]
       .filter((c) => !PINNED_CATEGORIES.includes(c))
       .sort((a, b) => (counts.get(b) || 0) - (counts.get(a) || 0))
-    return [...pinned, ...rest].map((name) => ({
-      name,
-      count: counts.get(name) || 0,
-    }))
+    const ordered = [...pinned, ...rest]
+      .map((name) => ({ name, count: counts.get(name) || 0 }))
+    return ordered.slice(0, MAX_MENU_CATEGORIES)
+  })
+
+  const totalCategoryCount = computed(() => {
+    const set = new Set(items.value.map((i) => i.category).filter(Boolean))
+    return set.size
   })
 
   function itemsForCategory (category, limit = 8) {
@@ -42,8 +52,10 @@ export function useBcCatalogGroups () {
   return {
     items,
     categories,
+    totalCategoryCount,
     itemsForCategory,
     pending,
     error,
+    refresh,
   }
 }

@@ -9,7 +9,7 @@ const config = useRuntimeConfig()
 const support = computed(() => getBcSupport(config))
 const route = useRoute()
 
-const { megastoreItems, pending: catalogPending, error: catalogError } = useBcProductCatalog()
+const { megastoreItems, pending: catalogPending, error: catalogError, refresh: refreshCatalog } = useBcProductCatalog()
 const { data: dropshipData } = useBcDropshipCatalog()
 
 const catalogItems = computed(() => {
@@ -34,7 +34,10 @@ function applyPickFromQuery () {
   if (item) selectedProduct.value = item
 }
 
-onMounted(applyPickFromQuery)
+onMounted(() => {
+  refreshCatalog()
+  applyPickFromQuery()
+})
 watch(() => route.query.pick, applyPickFromQuery)
 
 useHead(() => ({
@@ -60,9 +63,10 @@ useHead(() => ({
     <section class="bc-catalog-page__split" aria-label="Catalog and order">
       <div class="bc-catalog-page__split-inner">
         <p v-if="catalogPending" class="bc-catalog-page__loading">Loading product catalog…</p>
-        <p v-else-if="catalogError" class="bc-catalog-page__error" role="alert">
-          Catalog could not load. Refresh or call {{ support.phoneDisplay }}.
-        </p>
+        <div v-else-if="catalogError" class="bc-catalog-page__error" role="alert">
+          <p>Catalog could not load. Check your connection or call {{ support.phoneDisplay }}.</p>
+          <button type="button" class="bc-catalog-page__retry" @click="refreshCatalog">Try again</button>
+        </div>
         <BcProductCatalogGrid
           v-else-if="catalogItems.length"
           :catalogs="[catalogItems]"
@@ -143,5 +147,16 @@ useHead(() => ({
   color: #fecaca;
   background: rgba(127, 29, 29, 0.35);
   border: 1px solid rgba(211, 47, 47, 0.45);
+}
+.bc-catalog-page__error p { margin: 0 0 10px; }
+.bc-catalog-page__retry {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(211, 47, 47, 0.5);
+  background: rgba(211, 47, 47, 0.15);
+  color: #ff5252;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
 }
 </style>

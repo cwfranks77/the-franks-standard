@@ -6,6 +6,8 @@ export function useBcProductCatalog () {
   const { data, pending, error, refresh } = useFetch('/catalog/petra-products.json', {
     key: 'bc-petra-catalog',
     server: false,
+    lazy: false,
+    retry: 2,
   })
 
   const products = computed(() => data.value?.products || [])

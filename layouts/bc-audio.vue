@@ -27,6 +27,9 @@ import { BC_BRAND } from '~/utils/bcBrand.js'
 
 useBcTheme()
 
+const { refresh: refreshCatalog } = useBcProductCatalog()
+onMounted(() => { refreshCatalog() })
+
 useHead({
   titleTemplate: (title) => title ? `${title} · ${BC_BRAND.full}` : BC_BRAND.full,
 })

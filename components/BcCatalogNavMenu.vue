@@ -9,13 +9,15 @@ const route = useRoute()
 
 const open = ref(false)
 const root = ref(null)
+const panel = ref(null)
 const activeCategory = ref('Amplifiers')
+const panelStyle = ref({})
 
-const { categories, itemsForCategory, pending, error, items } = useBcCatalogGroups()
+const { categories, itemsForCategory, pending, error, items, totalCategoryCount, refresh } = useBcCatalogGroups()
 
 const menuProducts = computed(() => itemsForCategory(activeCategory.value, 8))
-
 const totalCount = computed(() => items.value.length)
+const moreCategories = computed(() => Math.max(0, totalCategoryCount.value - categories.value.length))
 
 watch(categories, (list) => {
   if (!list.length) return
@@ -34,23 +36,67 @@ function productLink (id) {
   return `/bc-audio/catalog?pick=${encodeURIComponent(id)}`
 }
 
-function toggle () {
-  open.value = !open.value
+function positionPanel () {
+  const btn = root.value?.querySelector('.bc-cat-nav__btn')
+  if (!btn) return
+  const rect = btn.getBoundingClientRect()
+  const width = Math.min(420, window.innerWidth - 16)
+  let left = rect.right - width
+  if (left < 8) left = 8
+  const top = rect.bottom + 8
+  panelStyle.value = {
+    position: 'fixed',
+    top: `${top}px`,
+    left: `${left}px`,
+    width: `${width}px`,
+    zIndex: '9999',
+  }
 }
 
-function close () {
+function openMenu () {
+  open.value = true
+  nextTick(() => {
+    positionPanel()
+    if (!items.value.length && !pending.value) refresh()
+  })
+}
+
+function closeMenu () {
   open.value = false
   emit('close')
 }
 
-function onDocClick (e) {
-  if (root.value && !root.value.contains(e.target)) close()
+function onBtnPointerDown (e) {
+  e.stopPropagation()
+  if (open.value) closeMenu()
+  else openMenu()
 }
 
-onMounted(() => document.addEventListener('click', onDocClick))
-onUnmounted(() => document.removeEventListener('click', onDocClick))
+function onDocPointerDown (e) {
+  if (!open.value) return
+  const t = e.target
+  if (root.value?.contains(t) || panel.value?.contains(t)) return
+  closeMenu()
+}
 
-watch(() => route.fullPath, close)
+function onResize () {
+  if (open.value) positionPanel()
+}
+
+onMounted(() => {
+  document.addEventListener('pointerdown', onDocPointerDown)
+  window.addEventListener('resize', onResize)
+  window.addEventListener('scroll', onResize, true)
+  refresh()
+})
+
+onUnmounted(() => {
+  document.removeEventListener('pointerdown', onDocPointerDown)
+  window.removeEventListener('resize', onResize)
+  window.removeEventListener('scroll', onResize, true)
+})
+
+watch(() => route.fullPath, closeMenu)
 </script>
 
 <template>
@@ -60,84 +106,99 @@ watch(() => route.fullPath, close)
       class="bc-cat-nav__btn"
       :aria-expanded="open"
       aria-haspopup="true"
-      @click.stop="toggle"
+      @pointerdown.stop.prevent="onBtnPointerDown"
     >
       Products
       <span class="bc-cat-nav__chev" :class="{ 'bc-cat-nav__chev--open': open }" />
     </button>
 
-    <div v-show="open" class="bc-cat-nav__panel" role="menu">
-      <header class="bc-cat-nav__head">
-        <p class="bc-cat-nav__eyebrow">{{ BC_BRAND.short }} catalog</p>
-        <p v-if="totalCount" class="bc-cat-nav__total">{{ totalCount.toLocaleString() }} products</p>
-      </header>
+    <Teleport to="body">
+      <div
+        v-if="open"
+        ref="panel"
+        class="bc-cat-nav__panel"
+        role="menu"
+        :style="panelStyle"
+        @pointerdown.stop
+      >
+        <header class="bc-cat-nav__head">
+          <p class="bc-cat-nav__eyebrow">{{ BC_BRAND.short }} catalog</p>
+          <p v-if="totalCount" class="bc-cat-nav__total">{{ totalCount.toLocaleString() }} products</p>
+        </header>
 
-      <p v-if="pending" class="bc-cat-nav__status">Loading catalog…</p>
-      <p v-else-if="error" class="bc-cat-nav__status bc-cat-nav__status--err">Catalog unavailable</p>
+        <p v-if="pending" class="bc-cat-nav__status">Loading catalog…</p>
+        <p v-else-if="error" class="bc-cat-nav__status bc-cat-nav__status--err">
+          Catalog could not load.
+          <button type="button" class="bc-cat-nav__retry" @click="refresh">Try again</button>
+        </p>
 
-      <template v-else>
-        <div class="bc-cat-nav__cats" role="tablist" aria-label="Product categories">
-          <button
-            v-for="cat in categories"
-            :key="cat.name"
-            type="button"
-            role="tab"
-            class="bc-cat-nav__cat"
-            :class="{ 'bc-cat-nav__cat--active': activeCategory === cat.name }"
-            :aria-selected="activeCategory === cat.name"
-            @click="activeCategory = cat.name"
-          >
-            {{ cat.name }}
-            <span class="bc-cat-nav__cat-count">{{ cat.count }}</span>
-          </button>
-        </div>
-
-        <div class="bc-cat-nav__grid" role="tabpanel">
-          <NuxtLink
-            v-for="item in menuProducts"
-            :key="item.id"
-            :to="productLink(item.id)"
-            class="bc-cat-nav__card"
-            role="menuitem"
-            @click="close"
-          >
-            <img
-              :src="bcProductImageSrc(item.image, siteUrl)"
-              :alt="item.name"
-              loading="lazy"
-              decoding="async"
-              referrerpolicy="no-referrer"
+        <template v-else-if="categories.length">
+          <div class="bc-cat-nav__cats" role="tablist" aria-label="Product categories">
+            <button
+              v-for="cat in categories"
+              :key="cat.name"
+              type="button"
+              role="tab"
+              class="bc-cat-nav__cat"
+              :class="{ 'bc-cat-nav__cat--active': activeCategory === cat.name }"
+              :aria-selected="activeCategory === cat.name"
+              @click="activeCategory = cat.name"
             >
-            <span class="bc-cat-nav__card-brand">{{ item.brand }}</span>
-            <span class="bc-cat-nav__card-name">{{ item.name }}</span>
-          </NuxtLink>
-        </div>
+              {{ cat.name }}
+              <span class="bc-cat-nav__cat-count">{{ cat.count }}</span>
+            </button>
+          </div>
 
-        <footer class="bc-cat-nav__foot">
-          <NuxtLink
-            :to="catalogLink(activeCategory)"
-            class="bc-cat-nav__all"
-            @click="close"
-          >
-            View all {{ activeCategory }} →
-          </NuxtLink>
-          <NuxtLink
-            :to="catalogLink()"
-            class="bc-cat-nav__all bc-cat-nav__all--muted"
-            @click="close"
-          >
-            Full catalog
-          </NuxtLink>
-        </footer>
-      </template>
-    </div>
+          <div v-if="menuProducts.length" class="bc-cat-nav__grid" role="tabpanel">
+            <NuxtLink
+              v-for="item in menuProducts"
+              :key="item.id"
+              :to="productLink(item.id)"
+              class="bc-cat-nav__card"
+              role="menuitem"
+              @click="closeMenu"
+            >
+              <img
+                :src="bcProductImageSrc(item.image, siteUrl)"
+                :alt="item.name"
+                loading="lazy"
+                decoding="async"
+                referrerpolicy="no-referrer"
+              >
+              <span class="bc-cat-nav__card-brand">{{ item.brand }}</span>
+              <span class="bc-cat-nav__card-name">{{ item.name }}</span>
+            </NuxtLink>
+          </div>
+          <p v-else class="bc-cat-nav__status">No products in this category.</p>
+
+          <footer class="bc-cat-nav__foot">
+            <NuxtLink
+              :to="catalogLink(activeCategory)"
+              class="bc-cat-nav__all"
+              @click="closeMenu"
+            >
+              View all {{ activeCategory }} →
+            </NuxtLink>
+            <NuxtLink
+              :to="catalogLink()"
+              class="bc-cat-nav__all bc-cat-nav__all--muted"
+              @click="closeMenu"
+            >
+              Full catalog<span v-if="moreCategories"> (+{{ moreCategories }} more categories)</span>
+            </NuxtLink>
+          </footer>
+        </template>
+
+        <p v-else class="bc-cat-nav__status">No products found.</p>
+      </div>
+    </Teleport>
   </div>
 </template>
 
 <style scoped>
 .bc-cat-nav {
   position: relative;
-  margin-left: auto;
+  flex-shrink: 0;
 }
 .bc-cat-nav__btn {
   display: inline-flex;
@@ -168,10 +229,6 @@ watch(() => route.fullPath, close)
   transform: rotate(180deg);
 }
 .bc-cat-nav__panel {
-  position: absolute;
-  top: calc(100% + 10px);
-  right: 0;
-  width: min(420px, calc(100vw - 24px));
   max-height: min(70vh, 560px);
   overflow: auto;
   background: #141418;
@@ -179,7 +236,6 @@ watch(() => route.fullPath, close)
   border-radius: 14px;
   box-shadow: 0 20px 56px rgba(0, 0, 0, 0.65);
   padding: 14px;
-  z-index: 300;
 }
 .bc-cat-nav__head {
   display: flex;
@@ -209,12 +265,24 @@ watch(() => route.fullPath, close)
   color: #9ca3af;
 }
 .bc-cat-nav__status--err { color: #fecaca; }
+.bc-cat-nav__retry {
+  display: block;
+  margin: 8px auto 0;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(211, 47, 47, 0.5);
+  background: rgba(211, 47, 47, 0.15);
+  color: #ff5252;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
 .bc-cat-nav__cats {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
   margin-bottom: 12px;
-  max-height: 120px;
+  max-height: 110px;
   overflow-y: auto;
 }
 .bc-cat-nav__cat {
@@ -294,8 +362,8 @@ watch(() => route.fullPath, close)
 }
 .bc-cat-nav__foot {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px 16px;
+  flex-direction: column;
+  gap: 8px;
   margin-top: 12px;
   padding-top: 10px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
