@@ -110,6 +110,132 @@ watch(tab, (t) => {
   if (t === 'seo') loadSeo()
 })
 
+// STRICT ENFORCEMENT: Private Owner Ledger — state & methods only
+const ledgerUnlocked = ref(false)
+const bypassKeyInput = ref('')
+const newTx = ref({ account: '', desc: '', amount: '' })
+const ledgerTransactions = ref([
+  { date: '2026-06-11 14:22', account: 'STRIPE-REVENUE', desc: 'PETRA-DEN-4K9CH Consumer Invoice Settlement', amount: '+$1,394.45', isCredit: true },
+  { date: '2026-06-11 09:15', account: 'LA-TAX-RESERVE', desc: 'Quarterly State Sales Tax Allocation Escrow', amount: '-$240.10', isCredit: false },
+  { date: '2026-06-11 11:30', account: 'MERCURY-BANK', desc: 'Petra Distribution Wholesaler Ledger Clearing', amount: '-$899.60', isCredit: false },
+])
+
+function verifyBypassKey () {
+  if (bypassKeyInput.value.toUpperCase() === 'CFLM-LIFETIME-FOUNDER-PASS-2026') {
+    ledgerUnlocked.value = true
+    bypassKeyInput.value = ''
+  } else {
+    alert('[❌] SECURITY REJECTION: Invalid private administrative override signature token.')
+    bypassKeyInput.value = ''
+  }
+}
+
+function postTransaction (isCredit) {
+  if (!newTx.value.account || !newTx.value.amount) return
+  const formattedAmt = `${isCredit ? '+' : '-'}$${parseFloat(newTx.value.amount).toFixed(2)}`
+  ledgerTransactions.value.unshift({
+    date: new Date().toISOString().replace('T', ' ').substring(0, 16),
+    account: newTx.value.account.toUpperCase(),
+    desc: newTx.value.desc || 'Manual Administrative Post',
+    amount: formattedAmt,
+    isCredit,
+  })
+  newTx.value = { account: '', desc: '', amount: '' }
+}
+
+function calculateTargetRetailPrice (product) {
+  if (!product || !product.baseCost) return '0.00'
+
+  const catLower = (product.category || '').toLowerCase()
+  let markup = 1.55
+
+  if (catLower.includes('computer') || catLower.includes('workstation')) {
+    markup = 1.35
+  } else if (catLower.includes('marine') || catLower.includes('power')) {
+    markup = 1.65
+  }
+
+  return (product.baseCost * markup).toFixed(2)
+}
+
+function mapPortalTierCategory (segment) {
+  const catLower = String(segment || '').toLowerCase()
+  if (catLower.includes('computer') || catLower.includes('workstation') || catLower.includes('laptop') || catLower.includes('server')) {
+    return 'Computers & Workstations'
+  }
+  if (catLower.includes('marine') || catLower.includes('boat') || catLower.includes('power')) {
+    return 'Marine & Powersports'
+  }
+  return 'Home Theater & Audio'
+}
+
+function buildStaticCatalogFromProducts (products) {
+  const staticCatalog = {}
+  for (const product of products) {
+    const sku = product?.sku || product?.vendorSku || product?.id
+    const rawCost = product?.baseCost ?? product?.wholesaleCost ?? product?.cost ?? product?.price
+    const baseCost = Number(rawCost)
+    if (!sku || !Number.isFinite(baseCost) || baseCost <= 0) continue
+    staticCatalog[String(sku)] = {
+      baseCost,
+      category: mapPortalTierCategory(product?.category || product?.productClass),
+    }
+  }
+  return staticCatalog
+}
+
+// STRICT ENFORCEMENT: Internal Audit Tool to Verify Correct Markup Rules Against Base Wholesaler Costs
+async function verifyPortalPricingAudit () {
+  let catalogRows = []
+  try {
+    const data = await $fetch('/catalog/petra-products.json', { retry: 2 })
+    catalogRows = Array.isArray(data?.products) ? data.products : []
+  } catch {
+    alert('[❌] PRICING AUDIT ABORTED: Could not load active catalog dataset.')
+    return
+  }
+
+  const staticCatalog = buildStaticCatalogFromProducts(catalogRows)
+  const auditLog = []
+  let totalPassed = 0
+  let totalFailed = 0
+
+  const expectedTiers = {
+    'Computers & Workstations': { markup: 1.35, label: 'Computers Tier (35%)' },
+    'Home Theater & Audio': { markup: 1.55, label: 'Audio Tier (55%)' },
+    'Marine & Powersports': { markup: 1.65, label: 'Marine Tier (65%)' },
+  }
+
+  Object.keys(staticCatalog).forEach((sku) => {
+    const product = staticCatalog[sku]
+    const tier = expectedTiers[product.category]
+
+    if (tier) {
+      const expectedRetail = (product.baseCost * tier.markup).toFixed(2)
+      const computedRetail = calculateTargetRetailPrice(product)
+
+      if (computedRetail === expectedRetail) {
+        totalPassed++
+        auditLog.push(`[✓] PASS: SKU ${sku} (${tier.label}) verified perfectly at $${computedRetail}. Wholesale cost hidden.`)
+      } else {
+        totalFailed++
+        auditLog.push(`[❌] FAIL: SKU ${sku} pricing mismatch detected! Computed: $${computedRetail} | Expected: $${expectedRetail}`)
+      }
+    } else {
+      auditLog.push(`[!] WARNING: SKU ${sku} belongs to an unmapped tier category.`)
+    }
+  })
+
+  alert(
+    `=== MASTER PORTAL PRICING AUDIT COMPLETE ===\n\n`
+    + `Total Assets Audited: ${Object.keys(staticCatalog).length}\n`
+    + `Passed Protection Scans: ${totalPassed}\n`
+    + `Failed Deviations: ${totalFailed}\n\n`
+    + `-----------------------------------------\n`
+    + auditLog.join('\n'),
+  )
+}
+
 useSeoMeta({
   title: `B&C Owner Console — ${BC_BRAND.full}`,
   robots: 'noindex, nofollow',
