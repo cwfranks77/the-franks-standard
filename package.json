@@ -7,6 +7,7 @@
   },
   "scripts": {
     "catalog:import-petra": "node scripts/import-petra-prodlist.cjs",
+    "sync:stripe-env": "node scripts/sync-local-stripe-env.cjs",
     "build": "node scripts/import-petra-prodlist.cjs && nuxt generate && node scripts/inject-spa-fallback.cjs && node scripts/patch-gh-pages-spa.cjs && node scripts/finish-pwa.cjs",
     "dev": "nuxt dev",
     "generate": "npm run build",

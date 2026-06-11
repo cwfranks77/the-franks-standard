@@ -6,6 +6,11 @@ function makeOrderId () {
   return `BC-${Date.now().toString(36).toUpperCase()}`
 }
 
+function connectDestinationReady (accountId: string) {
+  const id = String(accountId || '').trim()
+  return id.startsWith('acct_') && !id.includes('Distributor99')
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -47,10 +52,12 @@ Deno.serve(async (req) => {
 
     const distributorAccountId =
       Deno.env.get('STRIPE_DISTRIBUTOR_CONNECT_ACCOUNT_ID') || 'acct_1Distributor99X'
+    const useConnect = connectDestinationReady(distributorAccountId)
     const baseUrl = siteUrl()
     const stripe = stripeClient()
+    const cancelPath = baseUrl.includes('bcpoweraudio.com') ? '/bc-audio?cancelled=1' : '/shop?cancelled=1'
 
-    const session = await stripe.checkout.sessions.create({
+    const sessionParams: Record<string, unknown> = {
       payment_method_types: ['card'],
       line_items: [{
         price_data: {
@@ -66,7 +73,7 @@ Deno.serve(async (req) => {
       mode: 'payment',
       customer_email: customerEmail,
       success_url: `${baseUrl}/order/success?order=${encodeURIComponent(orderId)}&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${baseUrl}/shop?cancelled=1`,
+      cancel_url: `${baseUrl}${cancelPath}`,
       metadata: {
         orderId,
         productName,
@@ -76,13 +83,19 @@ Deno.serve(async (req) => {
         wholesaleCents: String(wholesaleCents),
         retailCents: String(retailCents),
         laTaxCents: String(laTaxCents),
+        checkoutMode: useConnect ? 'connect' : 'direct',
       },
-      payment_intent_data: {
+    }
+
+    if (useConnect) {
+      sessionParams.payment_intent_data = {
         application_fee_amount: applicationFeeAmount,
         transfer_data: { destination: distributorAccountId },
         metadata: { orderId, productName },
-      },
-    })
+      }
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams)
 
     return json({
       url: session.url,

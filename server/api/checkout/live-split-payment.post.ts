@@ -7,6 +7,11 @@ function makeOrderId () {
   return `BC-${Date.now().toString(36).toUpperCase()}`
 }
 
+function connectDestinationReady (accountId: string) {
+  const id = String(accountId || '').trim()
+  return id.startsWith('acct_') && !id.includes('Distributor99')
+}
+
 /**
  * POST /api/checkout/live-split-payment
  * Live buyer charges via Stripe Checkout + Connect destination split.
@@ -62,14 +67,16 @@ export default defineEventHandler(async (event) => {
 
   const siteUrl = String(config.public?.siteUrl || 'https://thefranksstandard.com').replace(/\/$/, '')
 
-  console.log(`\n[STRIPE CONNECT] Processing Live Payment Split for Order #${orderId}`)
+  const useConnect = connectDestinationReady(distributorAccountId)
+  console.log(`\n[STRIPE] Processing checkout for Order #${orderId} (${useConnect ? 'Connect split' : 'direct platform'})`)
   console.log(` -> Gross Customer Charge: $${(totalCustomerGrossCents / 100).toFixed(2)} (Includes 4.45% LA Tax)`)
   console.log(` -> Processing fee estimate: $${(processingFeeCents / 100).toFixed(2)}`)
 
   const stripe = new Stripe(secretKey)
+  const cancelPath = siteUrl.includes('bcpoweraudio.com') ? '/bc-audio?cancelled=1' : '/shop?cancelled=1'
 
   try {
-    const session = await stripe.checkout.sessions.create({
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ['card'],
       line_items: [{
         price_data: {
@@ -85,7 +92,7 @@ export default defineEventHandler(async (event) => {
       mode: 'payment',
       customer_email: customerEmail,
       success_url: `${siteUrl}/order/success?order=${encodeURIComponent(orderId)}&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${siteUrl}/shop?cancelled=1`,
+      cancel_url: `${siteUrl}${cancelPath}`,
       metadata: {
         orderId,
         productName,
@@ -95,18 +102,19 @@ export default defineEventHandler(async (event) => {
         wholesaleCents: String(wholesaleCents),
         retailCents: String(retailCents),
         laTaxCents: String(laTaxCents),
+        checkoutMode: useConnect ? 'connect' : 'direct',
       },
-      payment_intent_data: {
+    }
+
+    if (useConnect) {
+      sessionParams.payment_intent_data = {
         application_fee_amount: applicationFeeAmount,
-        transfer_data: {
-          destination: distributorAccountId,
-        },
-        metadata: {
-          orderId,
-          productName,
-        },
-      },
-    })
+        transfer_data: { destination: distributorAccountId },
+        metadata: { orderId, productName },
+      }
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams)
 
     console.log(' -> SUCCESS: Stripe Session Created. Routing Buyer to Secure Check-out Port.')
 

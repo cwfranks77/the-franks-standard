@@ -84,6 +84,8 @@ export default defineNuxtConfig({
   // Operator unlock phrase for /ops — only the SHA-256 hash ships to the browser.
   // See the-franks-standard-continuity/OPS-ACCESS.md and scripts/hash-ops-key.cjs.
   runtimeConfig: {
+    stripeSecretKey: process.env.STRIPE_SECRET_KEY || '',
+    stripeDistributorConnectAccountId: process.env.STRIPE_DISTRIBUTOR_CONNECT_ACCOUNT_ID || '',
     public: {
       siteUrl: siteUrl,
       opsAccessKeyHash,

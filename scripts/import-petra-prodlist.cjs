@@ -160,14 +160,55 @@ function loadPetraRows (csvPath) {
     const description = longDesc || shortDesc
     if (!description) continue
 
+    const product = {
+      PRICE: price,
+      NAME: shortDesc,
+      CATEGORY: pickCategory(cols, headers),
+    }
+
+    // ---------------------------
+    // CATEGORY-BASED MARKUP ENGINE
+    // ---------------------------
+    const wholesale = Number(product.PRICE) || 0
+    let markup = 1.55 // default
+
+    const name = (product.NAME || '').toLowerCase()
+    const category = (product.CATEGORY || '').toLowerCase()
+
+    // Marine Audio
+    if (category.includes('marine') || name.includes('marine')) {
+      markup = 2.10
+    }
+    // Car Audio
+    else if (category.includes('car') || name.includes('car audio') || name.includes('subwoofer') || name.includes('amplifier')) {
+      markup = 1.55
+    }
+    // Home Audio / Home Theater
+    else if (category.includes('home') || name.includes('receiver') || name.includes('soundbar') || name.includes('theater')) {
+      markup = 1.70
+    }
+    // Accessories / Cables / Mounts
+    else if (category.includes('accessory') || name.includes('cable') || name.includes('mount') || name.includes('adapter')) {
+      markup = 2.50
+    }
+    // Electronics / Computers
+    else if (category.includes('electronics') || category.includes('computer')) {
+      markup = 1.35
+    }
+
+    // Final retail price
+    product.retailPrice = Number((wholesale * markup).toFixed(2))
+
     seen.add(id)
     products.push({
       id,
       sku: petraSku,
       vendorSku: String(cols[headers['VENDOR SKU']] || '').trim(),
       name: shortDesc,
-      price,
-      category: pickCategory(cols, headers),
+      wholesalePrice: wholesale,
+      retailPrice: product.retailPrice,
+      price: product.retailPrice,
+      category: product.CATEGORY,
       brand: String(cols[headers['BRAND NAME']] || '').trim(),
       description: description.slice(0, 500),
       image,

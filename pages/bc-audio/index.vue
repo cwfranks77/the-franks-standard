@@ -1,523 +1,764 @@
-<script setup>
-import { BC_BRAND } from '~/utils/bcBrand.js'
-import { getBcSupport } from '~/utils/bcSupport.js'
-import { BC_SEO_KEYWORDS, bcStoreJsonLd } from '~/utils/bcSeo.js'
-import metaConfig from '~/content/meta-config.json'
-
-definePageMeta({ layout: 'bc-audio' })
-
-const config = useRuntimeConfig()
-const support = computed(() => getBcSupport(config))
-
-const { data: bcSiteContent } = await useAsyncData('bc-site-meta', () =>
-  $fetch('/api/public/site-content', { query: { keys: 'bcMeta' } }).catch(() => ({ bcMeta: null })),
-)
-const pageMeta = computed(() => ({
-  ...metaConfig,
-  ...(bcSiteContent.value?.bcMeta || {}),
-}))
-
-const { megastoreItems, pending: catalogPending } = useBcProductCatalog()
-const route = useRoute()
-const selectedProduct = ref(null)
-const checkoutCancelled = computed(() => route.query.cancelled === '1')
-const { data: dropshipData } = useBcDropshipCatalog()
-
-const storeLive = computed(() => dropshipData.value?.store?.is_live !== false && !dropshipData.value?.offline)
-const storeName = computed(() => dropshipData.value?.store?.name || BC_BRAND.full)
-const ownerName = computed(() => support.value.ownerName)
-
-const catalogItems = computed(() => {
-  const api = Array.isArray(dropshipData.value?.items) ? dropshipData.value.items : []
-  const local = Array.isArray(megastoreItems.value) ? megastoreItems.value : []
-  const merged = new Map(local.map((i) => [i.id, i]))
-  for (const item of api) merged.set(item.id, item)
-  return [...merged.values()]
-})
-
-const showroomDepts = [
-  {
-    key: 'computers',
-    icon: '💻',
-    title: 'Computers & Enterprise Workstations',
-    blurb: 'Factory-direct systems with high-memory configurations for continuous database and commercial workloads.',
-    category: 'Computers & Computer Accessories',
-    tone: 'indigo',
-  },
-  {
-    key: 'home-theater',
-    icon: '📺',
-    title: 'Premium Home Theater & Audio',
-    blurb: 'Multi-channel receivers and acoustic arrays for residential and architectural sound enclosures.',
-    category: 'Home Audio & Theater',
-    tone: 'red',
-  },
-  {
-    key: 'marine',
-    icon: '⚓',
-    title: 'Marine & Powersports Sound',
-    blurb: 'Weatherproof acoustic modules built for salt, spray, and UV exposure on open water.',
-    category: 'Marine Electronics',
-    tone: 'blue',
-  },
-]
-
-const activeDeptKey = computed(() => {
-  const key = String(route.query.dept || 'showroom')
-  return showroomDepts.some((d) => d.key === key) ? key : 'showroom'
-})
-
-const viewMode = computed(() => (activeDeptKey.value === 'showroom' ? 'showroom' : 'category'))
-
-const activeDept = computed(() => showroomDepts.find((d) => d.key === activeDeptKey.value) || null)
-
-const filteredItems = computed(() => {
-  const cat = activeDept.value?.category
-  if (!cat) return []
-  return catalogItems.value.filter((i) => i.category === cat)
-})
-
-const filteredPreview = computed(() => filteredItems.value.slice(0, 48))
-
-const siteUrl = computed(() => String(config.public.siteUrl || metaConfig.url).replace(/\/$/, ''))
-
-function deptCatalogLink (category) {
-  return `/bc-audio/catalog?category=${encodeURIComponent(category)}`
-}
-
-function openDept (key) {
-  navigateTo({ path: '/bc-audio', query: { dept: key } })
-}
-
-function resetToShowroom () {
-  navigateTo({ path: '/bc-audio', query: {} })
-}
-
-function applyPickFromQuery () {
-  const pick = String(route.query.pick || '')
-  if (!pick) return
-  const item = catalogItems.value.find((i) => String(i.id) === pick)
-  if (item) {
-    selectedProduct.value = item
-    return
-  }
-  navigateTo(`/bc-audio/catalog?pick=${encodeURIComponent(pick)}`, { replace: true })
-}
-
-onMounted(applyPickFromQuery)
-watch(() => route.query.pick, applyPickFromQuery)
-
-useHead(() => ({
-  title: pageMeta.value.title,
-  meta: [
-    { name: 'description', content: pageMeta.value.description },
-    { name: 'keywords', content: BC_SEO_KEYWORDS },
-    { name: 'robots', content: 'index, follow' },
-  ],
-  link: [{ rel: 'canonical', href: metaConfig.url }],
-  script: [{
-    type: 'application/ld+json',
-    innerHTML: JSON.stringify(bcStoreJsonLd(siteUrl.value, catalogItems.value.slice(0, 50), support.value.phoneTel)),
-  }],
-}))
-</script>
-
+<!--
+CURSOR: STRICT MODE — B&C PERFORMANCE AUDIO standalone storefront.
+Only this file. No Franks Standard / Zentraware / ZentraMesh branding.
+-->
 <template>
-  <div class="bc-showroom">
-    <div class="bc-showroom__ribbon" role="status">
-      <span>A division of {{ pageMeta.parentCompany }}</span>
-      <span class="bc-showroom__ribbon-tag">Authorized dealer network</span>
-    </div>
+  <div class="page-root">
+    <!-- Header / Brand Lock -->
+    <header class="site-header">
+      <div class="brand-block">
+        <h1 class="brand-title">
+          B&amp;C PERFORMANCE AUDIO
+        </h1>
+        <p class="brand-subtitle">
+          Authorized Wholesale Distribution Hub
+        </p>
+        <p class="brand-hotline">
+          Helpdesk Hotline: <span>1-866-319-8547</span>
+        </p>
+      </div>
 
-    <section v-if="!storeLive" class="bc-showroom__offline">
-      <h1>{{ storeName }} is temporarily offline</h1>
-      <p>Check back soon or call {{ support.phoneDisplay }}.</p>
-    </section>
+      <!-- Top-right categorized expansion dropdown -->
+      <div class="catalog-select-wrapper">
+        <label class="catalog-label" for="catalog-select">
+          Catalog
+        </label>
+        <select
+          id="catalog-select"
+          v-model="selectedProductId"
+          class="catalog-select"
+        >
+          <option disabled value="">
+            Browse wholesale catalog…
+          </option>
+          <optgroup
+            v-for="(items, segment) in groupedProducts"
+            :key="segment"
+            :label="segment"
+          >
+            <option
+              v-for="item in items"
+              :key="getProductId(item)"
+              :value="getProductId(item)"
+            >
+              {{ getProductName(item) }}
+            </option>
+          </optgroup>
+        </select>
+      </div>
+    </header>
 
-    <template v-else>
-      <section v-if="checkoutCancelled" class="bc-showroom__alert" role="status">
-        Checkout was cancelled. Your card was not charged — pick a product from <strong>Products</strong> (top right).
+    <!-- Main content -->
+    <main class="page-main">
+      <!-- Showroom mode -->
+      <section v-if="isShowroom" class="showroom-grid">
+        <article class="showroom-tile">
+          <div class="tile-icon">💻</div>
+          <h2 class="tile-title">
+            Computers &amp; Enterprise Workstations
+          </h2>
+          <p class="tile-body">
+            Precision-engineered systems for mission-critical workloads, secure deployments, and high-throughput creative pipelines.
+          </p>
+        </article>
+
+        <article class="showroom-tile">
+          <div class="tile-icon">📺</div>
+          <h2 class="tile-title">
+            Premium Home Theater &amp; Audio
+          </h2>
+          <p class="tile-body">
+            Reference-grade sound stages, cinema-calibrated amplification, and immersive listening rooms tuned for pure fidelity.
+          </p>
+        </article>
+
+        <article class="showroom-tile">
+          <div class="tile-icon">⚓</div>
+          <h2 class="tile-title">
+            Element-Proof Marine Sound Systems
+          </h2>
+          <p class="tile-body">
+            Salt, spray, and sun–certified audio arrays built to survive open-water abuse without sacrificing clarity or punch.
+          </p>
+        </article>
       </section>
 
-      <div v-if="viewMode === 'showroom'">
-        <header class="bc-showroom__hero">
-          <p class="bc-showroom__badge">Official dealer showroom</p>
-          <h1 class="bc-showroom__title">Next-generation commercial technology &amp; audio solutions</h1>
-          <p class="bc-showroom__lead">
-            {{ catalogPending ? 'Loading catalog…' : `${catalogItems.length.toLocaleString()} wholesale SKUs` }}
-            — pick a department from the top-right dropdown or tap a showcase card below.
-          </p>
-          <div class="bc-showroom__hero-actions">
-            <NuxtLink to="/bc-audio/catalog" class="bc-showroom__btn">Open full catalog</NuxtLink>
-            <a :href="`tel:${support.phoneTel}`" class="bc-showroom__btn bc-showroom__btn--ghost">{{ support.phoneDisplay }}</a>
-          </div>
+      <!-- Detail view mode -->
+      <section v-else class="detail-view">
+        <header class="detail-header">
+          <button class="back-link" type="button" @click="resetSelection">
+            ← Back to Genesis Showroom
+          </button>
+          <h2 class="detail-title">
+            {{ getProductName(selectedProduct) }}
+          </h2>
         </header>
 
-        <section class="bc-showroom__grid" aria-label="Wholesale department showcase">
-          <article
-            v-for="dept in showroomDepts"
-            :key="dept.category"
-            class="bc-showroom__card bc-showroom__card--click"
-            :class="`bc-showroom__card--${dept.tone}`"
-            role="button"
-            tabindex="0"
-            @click="openDept(dept.key)"
-            @keydown.enter="openDept(dept.key)"
-          >
-            <div class="bc-showroom__card-visual" aria-hidden="true">
-              <span class="bc-showroom__card-icon">{{ dept.icon }}</span>
-            </div>
-            <div class="bc-showroom__card-body">
-              <h2 class="bc-showroom__card-title">{{ dept.title }}</h2>
-              <p class="bc-showroom__card-blurb">{{ dept.blurb }}</p>
-              <span class="bc-showroom__card-link">View department inventory →</span>
-            </div>
-          </article>
-        </section>
-      </div>
+        <div class="detail-layout">
+          <!-- Image placeholder / icon matrix -->
+          <div class="detail-media">
+            <div class="media-frame">
+              <div class="media-label">
+                ✓ AUTHORIZED WHOLESALE PICTURE ASSET MATRIX
+              </div>
 
-      <div v-else class="bc-showroom__matrix">
-        <div class="bc-showroom__matrix-head">
-          <button type="button" class="bc-showroom__back" @click="resetToShowroom">
-            ← Return to main showroom
-          </button>
-          <h2 class="bc-showroom__matrix-title">
-            {{ activeDept?.title }}
-            <span class="bc-showroom__matrix-count">{{ filteredItems.length.toLocaleString() }} SKUs</span>
-          </h2>
+              <div v-if="getProductImage(selectedProduct)" class="media-image-wrap">
+                <img
+                  :src="getProductImage(selectedProduct)"
+                  :alt="getProductName(selectedProduct)"
+                  class="media-image"
+                  loading="lazy"
+                >
+              </div>
+              <div v-else class="media-icon">
+                {{ getIconForProduct(selectedProduct) }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Product data deck -->
+          <div class="detail-body">
+            <dl class="detail-meta">
+              <div class="meta-row">
+                <dt>Model SKU</dt>
+                <dd>{{ getProductSku(selectedProduct) }}</dd>
+              </div>
+              <div class="meta-row">
+                <dt>Brand</dt>
+                <dd>{{ getProductBrand(selectedProduct) }}</dd>
+              </div>
+              <div class="meta-row">
+                <dt>Segment</dt>
+                <dd>{{ getProductSegment(selectedProduct) }}</dd>
+              </div>
+              <div class="meta-row">
+                <dt>Price</dt>
+                <dd>{{ getProductPrice(selectedProduct) }}</dd>
+              </div>
+              <div class="meta-row">
+                <dt>Availability</dt>
+                <dd>{{ getProductAvailability(selectedProduct) }}</dd>
+              </div>
+            </dl>
+
+            <section class="detail-specs">
+              <h3>Technical Specifications</h3>
+              <p>
+                {{ getProductDescription(selectedProduct) }}
+              </p>
+            </section>
+
+            <section class="detail-actions">
+              <button
+                type="button"
+                class="btn btn-cart"
+                @click="handleAddToCart(selectedProduct)"
+              >
+                Add to Cart
+              </button>
+              <button
+                type="button"
+                class="btn btn-buy"
+                :disabled="checkoutBusy"
+                @click="handleStripeExpress(selectedProduct)"
+              >
+                {{ checkoutBusy ? 'Starting checkout…' : 'Buy Now (Stripe Express)' }}
+              </button>
+            </section>
+          </div>
         </div>
-
-        <p v-if="catalogPending" class="bc-showroom__matrix-loading">Loading live catalog data…</p>
-        <p v-else-if="!filteredPreview.length" class="bc-showroom__matrix-empty">
-          No live rows in this department yet.
-          <NuxtLink :to="deptCatalogLink(activeDept?.category || '')">Open full catalog</NuxtLink>
-        </p>
-        <section v-else class="bc-showroom__table-wrap">
-          <table class="bc-showroom__table">
-            <thead>
-              <tr>
-                <th>Model SKU</th>
-                <th>Product name</th>
-                <th>Description</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="item in filteredPreview" :key="item.id">
-                <td class="bc-showroom__sku">{{ item.id }}</td>
-                <td class="bc-showroom__name">{{ item.name }}</td>
-                <td class="bc-showroom__desc">{{ item.tagline || item.brand }}</td>
-                <td>
-                  <span
-                    class="bc-showroom__status"
-                    :class="item.inStock === false ? 'bc-showroom__status--out' : 'bc-showroom__status--live'"
-                  >
-                    {{ item.inStock === false ? 'Out of stock' : 'Live data' }}
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <p v-if="filteredItems.length > filteredPreview.length" class="bc-showroom__matrix-more">
-            Showing {{ filteredPreview.length }} of {{ filteredItems.length.toLocaleString() }} —
-            <NuxtLink :to="deptCatalogLink(activeDept?.category || '')">view all in this department</NuxtLink>
-          </p>
-        </section>
-      </div>
-
-      <section v-if="selectedProduct" class="bc-showroom__order">
-        <BcDropshipOrderForm :product="selectedProduct" />
       </section>
-
-      <footer class="bc-showroom__footer">
-        <p class="bc-showroom__footer-entity">{{ pageMeta.parentCompany }} — parent distribution</p>
-        <p class="bc-showroom__footer-line">
-          {{ storeName }} · Operator {{ ownerName }} ·
-          <a :href="`tel:${support.phoneTel}`">{{ support.phoneDisplay }}</a>
-          · <NuxtLink to="/bc-audio/open-door">Open Door</NuxtLink>
-        </p>
-        <p class="bc-showroom__copy">&copy; 2026 {{ storeName }}</p>
-      </footer>
-    </template>
+    </main>
   </div>
 </template>
 
-<style scoped>
-.bc-showroom {
-  background: #0a0a0c;
-  color: #f5f5f7;
-  min-height: calc(100vh - 64px);
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import { useFetch } from '#app'
+
+const selectedProductId = ref<string>('')
+const { addItem, itemCount } = useCart()
+const checkoutBusy = ref(false)
+
+async function createBcLiveCheckout (body: Record<string, unknown>) {
+  try {
+    return await $fetch('/api/checkout/live-split-payment', { method: 'POST', body })
+  } catch {
+    const config = useRuntimeConfig()
+    const supabaseUrl = String(config.public.supabaseUrl || '').replace(/\/$/, '')
+    const supabaseKey = String(config.public.supabaseKey || '')
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error('Checkout is unavailable. Try again later.')
+    }
+    return await $fetch(`${supabaseUrl}/functions/v1/bc-dropship-checkout`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${supabaseKey}`,
+        apikey: supabaseKey,
+      },
+      body,
+    })
+  }
 }
-.bc-showroom__ribbon {
+
+// Load live Petra catalog JSON from your site runtime:
+// https://www.bcpoweraudio.com/catalog/petra-products.json
+const { data: productsData } = await useFetch('/catalog/petra-products.json')
+
+// Normalize products safely
+const products = computed<any[]>(() => {
+  const raw = productsData.value
+  if (Array.isArray(raw)) return raw
+  if (Array.isArray((raw as any)?.products)) return (raw as any).products
+  if (Array.isArray((raw as any)?.items)) return (raw as any).items
+  return []
+})
+
+const getProductId = (product: any) => {
+  if (!product) return ''
+  return (
+    product.id ||
+    product.sku ||
+    product.vendorSku ||
+    product.code ||
+    product.slug ||
+    product.name ||
+    product.title ||
+    JSON.stringify(product)
+  )
+}
+
+const getProductName = (product: any) => {
+  if (!product) return 'Unnamed product'
+  return product.name || product.title || 'Unnamed product'
+}
+
+const getProductSku = (product: any) => {
+  if (!product) return 'N/A'
+  return product.sku || product.vendorSku || 'N/A'
+}
+
+const getProductBrand = (product: any) => {
+  if (!product) return 'Unbranded'
+  return product.brand || 'Unbranded'
+}
+
+const getProductSegment = (product: any) => {
+  if (!product) return 'Uncategorized'
+  return product.category || product.productClass || 'Uncategorized'
+}
+
+const getProductDescription = (product: any) => {
+  if (!product) return 'No specifications available.'
+  return (
+    product.description ||
+    product.longDesc ||
+    product.specs ||
+    'No specifications available.'
+  )
+}
+
+// Only show customer-facing price (no wholesale/MSRP/MAP)
+const getProductPrice = (product: any) => {
+  if (!product) return 'Contact for pricing'
+  const raw = product.price
+  if (raw == null || raw === '') return 'Contact for pricing'
+  const numeric = Number(raw)
+  if (Number.isNaN(numeric)) return String(raw)
+  return `$${numeric.toFixed(2)}`
+}
+
+const getProductAvailability = (product: any) => {
+  if (!product) return 'Unknown'
+  if (product.inStock === true) return 'In stock'
+  if (product.inStock === false) return 'Out of stock'
+  if (typeof product.available === 'number') {
+    return product.available > 0 ? `In stock (${product.available})` : 'Out of stock'
+  }
+  return 'Check availability'
+}
+
+// Image helper: use image field or Petra CDN fallback
+const getProductImage = (product: any) => {
+  if (!product) return ''
+  if (product.image && typeof product.image === 'string') {
+    return product.image.replace('http://', 'https://')
+  }
+  if (product.sku) {
+    return `https://petraimages.com.s3.amazonaws.com/600x600/${String(
+      product.sku
+    ).toUpperCase()}.jpg`
+  }
+  return ''
+}
+
+// Group products by category for <optgroup>
+const groupedProducts = computed<Record<string, any[]>>(() => {
+  const groups: Record<string, any[]> = {}
+  for (const p of products.value) {
+    const segment = getProductSegment(p)
+    if (!groups[segment]) groups[segment] = []
+    groups[segment].push(p)
+  }
+  return groups
+})
+
+const selectedProduct = computed<any | null>(
+  () =>
+    products.value.find((p) => getProductId(p) === selectedProductId.value) ||
+    null
+)
+
+const isShowroom = computed<boolean>(() => !selectedProduct.value)
+
+// Icon placeholder based on niche
+const getIconForProduct = (product: any) => {
+  const segment = getProductSegment(product).toLowerCase()
+  if (
+    segment.includes('computer') ||
+    segment.includes('workstation') ||
+    segment.includes('server') ||
+    segment.includes('laptop')
+  ) {
+    return '💻'
+  }
+  if (
+    segment.includes('theater') ||
+    segment.includes('audio') ||
+    segment.includes('speaker') ||
+    segment.includes('home') ||
+    segment.includes('cinema')
+  ) {
+    return '📺'
+  }
+  if (
+    segment.includes('marine') ||
+    segment.includes('boat') ||
+    segment.includes('water') ||
+    segment.includes('offshore')
+  ) {
+    return '⚓'
+  }
+  return '🛒'
+}
+
+const handleAddToCart = (product: any) => {
+  if (!product) return
+  const price = Number(product.price)
+  if (!Number.isFinite(price) || price <= 0) {
+    alert('Contact helpdesk for pricing on this item.')
+    return
+  }
+  addItem({
+    id: getProductId(product),
+    name: getProductName(product),
+    sku: getProductSku(product),
+    price,
+    image: getProductImage(product) || undefined,
+  })
+  alert(`Added "${getProductName(product)}" to cart. (${itemCount.value} item${itemCount.value === 1 ? '' : 's'} total)`)
+}
+
+const handleStripeExpress = async (product: any) => {
+  if (!product || checkoutBusy.value) return
+  const retailPrice = Number(product.price)
+  if (!Number.isFinite(retailPrice) || retailPrice <= 0) {
+    alert('Contact helpdesk for pricing on this item.')
+    return
+  }
+
+  const customerEmail = window.prompt('Email for your receipt:')?.trim()
+  if (!customerEmail) return
+
+  const customerZip = window.prompt('Shipping ZIP code:', '70801')?.trim() || '70801'
+  const customerName = window.prompt('Ship to name:', 'Wholesale Buyer')?.trim() || 'Wholesale Buyer'
+
+  checkoutBusy.value = true
+  try {
+    const wholesaleCost = Math.round(retailPrice * 0.7 * 100) / 100
+    const checkout = await createBcLiveCheckout({
+      productId: getProductId(product),
+      productName: getProductName(product),
+      productSku: getProductSku(product),
+      customerEmail,
+      customerZip,
+      shippingAddress: `${customerName} — B&C wholesale order`,
+      retailPrice,
+      wholesaleCost,
+    })
+
+    if (checkout?.url) {
+      window.location.assign(checkout.url)
+      return
+    }
+    throw new Error('No checkout URL returned from Stripe.')
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Checkout could not start.'
+    alert(message)
+  } finally {
+    checkoutBusy.value = false
+  }
+}
+
+const resetSelection = () => {
+  selectedProductId.value = ''
+}
+</script>
+
+<style scoped>
+.page-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(circle at top left, #1f2933 0, #020617 55%, #000 100%);
+  color: #f9fafb;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Text',
+    'Segoe UI', sans-serif;
+}
+
+/* Header */
+.site-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1.75rem 2.5rem 1.25rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+  backdrop-filter: blur(18px);
+  background: linear-gradient(
+    to right,
+    rgba(15, 23, 42, 0.96),
+    rgba(15, 23, 42, 0.88)
+  );
+}
+
+.brand-block {
+  max-width: 32rem;
+}
+
+.brand-title {
+  margin: 0;
+  font-size: 1.4rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #e5e7eb;
+}
+
+.brand-subtitle {
+  margin: 0.25rem 0 0.35rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: #9ca3af;
+}
+
+.brand-hotline {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #e5e7eb;
+}
+
+.brand-hotline span {
+  font-weight: 600;
+  color: #f97316;
+}
+
+/* Catalog select */
+.catalog-select-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+}
+
+.catalog-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: #9ca3af;
+}
+
+.catalog-select {
+  min-width: 16rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  background: rgba(15, 23, 42, 0.96);
+  color: #e5e7eb;
+  font-size: 0.9rem;
+  outline: none;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, #e5e7eb 50%),
+    linear-gradient(135deg, #e5e7eb 50%, transparent 50%);
+  background-position: calc(100% - 14px) calc(50% - 3px),
+    calc(100% - 9px) calc(50% - 3px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.catalog-select:focus {
+  border-color: #f97316;
+  box-shadow: 0 0 0 1px rgba(249, 115, 22, 0.6);
+}
+
+/* Main */
+.page-main {
+  flex: 1;
+  padding: 2.5rem 2.5rem 3rem;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+
+/* Showroom */
+.showroom-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.75rem;
+  max-width: 72rem;
+  width: 100%;
+}
+
+.showroom-tile {
+  border-radius: 1.25rem;
+  padding: 1.75rem 1.5rem;
+  background: radial-gradient(circle at top, #111827, #020617);
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  box-shadow: 0 22px 45px rgba(15, 23, 42, 0.9);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tile-icon {
+  font-size: 2.2rem;
+  margin-bottom: 0.25rem;
+}
+
+.tile-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #e5e7eb;
+}
+
+.tile-body {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #9ca3af;
+}
+
+/* Detail view */
+.detail-view {
+  max-width: 72rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.detail-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 8px 1.25rem;
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  background: linear-gradient(90deg, #4a0e0e 0%, #1a0a14 50%, #0f1020 100%);
-  border-bottom: 1px solid rgba(211, 47, 47, 0.25);
 }
-.bc-showroom__ribbon-tag {
-  color: #ffd814;
-  font-size: 0.62rem;
-  letter-spacing: 0.14em;
-}
-.bc-showroom__offline {
-  padding: 4rem 1.5rem;
-  text-align: center;
-}
-.bc-showroom__alert {
-  max-width: 48rem;
-  margin: 1rem auto 0;
-  padding: 12px 16px;
-  border-radius: 10px;
-  background: rgba(251, 191, 36, 0.12);
-  border: 1px solid rgba(251, 191, 36, 0.35);
-  color: #fcd34d;
-  font-size: 0.85rem;
-  text-align: center;
-}
-.bc-showroom__hero {
-  max-width: 42rem;
-  margin: 0 auto;
-  padding: 2.5rem 1.5rem 1.5rem;
-  text-align: center;
-}
-.bc-showroom__badge {
-  display: inline-block;
-  margin: 0;
-  padding: 4px 12px;
-  border-radius: 999px;
-  border: 1px solid rgba(211, 47, 47, 0.35);
-  background: rgba(211, 47, 47, 0.12);
-  color: #ff5252;
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-.bc-showroom__title {
-  margin: 14px 0 0;
-  font-size: clamp(1.75rem, 4vw, 2.35rem);
-  font-weight: 900;
-  line-height: 1.15;
-}
-.bc-showroom__lead {
-  margin: 12px 0 0;
-  font-size: 0.92rem;
-  color: #9ca3af;
-  line-height: 1.55;
-}
-.bc-showroom__hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-  margin-top: 1.25rem;
-}
-.bc-showroom__btn {
-  display: inline-block;
-  padding: 11px 18px;
-  border-radius: 10px;
-  font-size: 0.85rem;
-  font-weight: 800;
-  text-decoration: none;
-  background: linear-gradient(135deg, #d32f2f, #b71c1c);
-  color: #fff;
-  border: 1px solid rgba(211, 47, 47, 0.55);
-}
-.bc-showroom__btn--ghost {
-  background: transparent;
-  color: #ff5252;
-}
-.bc-showroom__grid {
-  max-width: 72rem;
-  margin: 0 auto;
-  padding: 1rem 1.5rem 2.5rem;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.25rem;
-}
-@media (min-width: 768px) {
-  .bc-showroom__grid { grid-template-columns: repeat(3, 1fr); }
-}
-.bc-showroom__card {
-  border-radius: 16px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: linear-gradient(180deg, #141418 0%, #0a0a0c 100%);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
-  transition: border-color 0.15s;
-}
-.bc-showroom__card:hover { border-color: rgba(211, 47, 47, 0.35); }
-.bc-showroom__card--click { cursor: pointer; }
-.bc-showroom__card--click:focus-visible { outline: 2px solid #ff5252; outline-offset: 2px; }
-.bc-showroom__matrix {
-  max-width: 72rem;
-  margin: 0 auto;
-  padding: 2rem 1.5rem 2.5rem;
-}
-.bc-showroom__matrix-head {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 1.25rem;
-}
-.bc-showroom__back {
-  align-self: flex-start;
+
+.back-link {
   border: none;
-  background: none;
-  color: #ff5252;
-  font-size: 0.78rem;
-  font-weight: 800;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 0.85rem;
   cursor: pointer;
   padding: 0;
 }
-.bc-showroom__back:hover { text-decoration: underline; }
-.bc-showroom__matrix-title {
+
+.back-link:hover {
+  color: #e5e7eb;
+}
+
+.detail-title {
   margin: 0;
-  font-size: 1.1rem;
-  font-weight: 900;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #f9fafb;
 }
-.bc-showroom__matrix-count {
-  display: block;
-  margin-top: 4px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: #ffd814;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+
+.detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.6fr);
+  gap: 2rem;
 }
-.bc-showroom__matrix-loading,
-.bc-showroom__matrix-empty {
-  font-size: 0.88rem;
-  color: #9ca3af;
+
+/* Media placeholder */
+.detail-media {
+  display: flex;
+  align-items: stretch;
 }
-.bc-showroom__table-wrap {
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(20, 20, 24, 0.65);
-  padding: 1rem;
-  overflow-x: auto;
-}
-.bc-showroom__table {
+
+.media-frame {
+  border-radius: 1.25rem;
+  border: 1px dashed rgba(148, 163, 184, 0.9);
+  background: radial-gradient(circle at top, #020617, #020617 40%, #000 100%);
+  padding: 1.25rem 1rem 1.75rem;
   width: 100%;
-  border-collapse: collapse;
-  font-size: 0.78rem;
-  text-align: left;
+  display: flex;
+  flex-direction: column;
 }
-.bc-showroom__table th {
-  padding: 0 0 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 0.62rem;
-  letter-spacing: 0.1em;
+
+.media-label {
+  font-size: 0.7rem;
   text-transform: uppercase;
+  letter-spacing: 0.16em;
   color: #9ca3af;
+  text-align: center;
+  margin-bottom: 1.25rem;
 }
-.bc-showroom__table td {
-  padding: 12px 8px 12px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  vertical-align: top;
-}
-.bc-showroom__sku {
-  font-family: ui-monospace, monospace;
-  color: #ff5252;
-  white-space: nowrap;
-}
-.bc-showroom__name { font-weight: 800; color: #f5f5f7; min-width: 10rem; }
-.bc-showroom__desc { color: #9ca3af; max-width: 22rem; }
-.bc-showroom__status {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 6px;
-  font-size: 0.62rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-.bc-showroom__status--live {
-  color: #34d399;
-  background: rgba(52, 211, 153, 0.1);
-  border: 1px solid rgba(52, 211, 153, 0.25);
-}
-.bc-showroom__status--out {
-  color: #fbbf24;
-  background: rgba(251, 191, 36, 0.1);
-  border: 1px solid rgba(251, 191, 36, 0.25);
-}
-.bc-showroom__matrix-more {
-  margin: 12px 0 0;
-  font-size: 0.75rem;
-  color: #9ca3af;
-}
-.bc-showroom__matrix-more a { color: #ff5252; }
-.bc-showroom__card-visual {
-  height: 10rem;
+
+.media-image-wrap {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
 }
-.bc-showroom__card--indigo .bc-showroom__card-visual {
-  background: linear-gradient(135deg, #1e1b4b, #0f172a 60%, #0a0a0c);
+
+.media-image {
+  max-width: 100%;
+  max-height: 260px;
+  object-fit: contain;
+  border-radius: 0.75rem;
+  background: #020617;
 }
-.bc-showroom__card--red .bc-showroom__card-visual {
-  background: linear-gradient(135deg, #450a0a, #1a0a0a 60%, #0a0a0c);
-}
-.bc-showroom__card--blue .bc-showroom__card-visual {
-  background: linear-gradient(135deg, #172554, #0f172a 60%, #0a0a0c);
-}
-.bc-showroom__card-icon { font-size: 3rem; }
-.bc-showroom__card-body {
-  padding: 1.1rem 1.15rem 1.25rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-}
-.bc-showroom__card-title {
-  margin: 0;
-  font-size: 0.95rem;
-  font-weight: 800;
-}
-.bc-showroom__card-blurb {
-  margin: 8px 0 0;
-  font-size: 0.78rem;
-  color: #9ca3af;
-  line-height: 1.45;
-}
-.bc-showroom__card-link {
-  display: inline-block;
-  margin-top: 12px;
-  font-size: 0.78rem;
-  font-weight: 800;
-  color: #ff5252;
-  text-decoration: none;
-}
-.bc-showroom__card-link:hover { text-decoration: underline; }
-.bc-showroom__order {
-  max-width: 32rem;
-  margin: 0 auto;
-  padding: 0 1.5rem 2rem;
-}
-.bc-showroom__footer {
-  padding: 2rem 1.5rem;
-  border-top: 1px solid rgba(211, 47, 47, 0.15);
+
+.media-icon {
+  font-size: 4rem;
   text-align: center;
-  font-size: 0.75rem;
-  color: #7a8190;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.bc-showroom__footer-entity {
+
+/* Detail body */
+.detail-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.detail-meta {
   margin: 0;
-  font-weight: 800;
-  color: #c4c7cf;
+  padding: 1rem 1.25rem;
+  border-radius: 1rem;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.5);
+}
+
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.9rem;
+  padding: 0.25rem 0;
+}
+
+.meta-row dt {
+  color: #9ca3af;
+}
+
+.meta-row dd {
+  margin: 0;
+  color: #e5e7eb;
+  font-weight: 500;
+}
+
+.detail-specs h3 {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.12em;
+  color: #e5e7eb;
 }
-.bc-showroom__footer-line {
-  margin: 8px 0 0;
+
+.detail-specs p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #d1d5db;
 }
-.bc-showroom__footer-line a { color: #ff5252; text-decoration: none; }
-.bc-showroom__copy { margin: 10px 0 0; color: #52525b; }
+
+.detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.btn {
+  border-radius: 999px;
+  padding: 0.6rem 1.4rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease,
+    border-color 0.15s ease, transform 0.05s ease;
+}
+
+.btn-cart {
+  background: #e5e7eb;
+  color: #020617;
+}
+
+.btn-cart:hover {
+  background: #f9fafb;
+  transform: translateY(-1px);
+}
+
+.btn-buy {
+  background: #f97316;
+  color: #111827;
+}
+
+.btn-buy:hover {
+  background: #fb923c;
+  transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .showroom-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .detail-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .site-header {
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 1.25rem 1.25rem 1rem;
+  }
+
+  .page-main {
+    padding: 1.5rem 1.25rem 2.25rem;
+  }
+
+  .showroom-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .catalog-select-wrapper {
+    align-items: flex-start;
+  }
+
+  .catalog-select {
+    min-width: 0;
+    width: 100%;
+  }
+}
 </style>
