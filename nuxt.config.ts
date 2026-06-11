@@ -58,14 +58,6 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
   // Off by default: the floating Nuxt DevTools bubble looks like a stray "moving blue outline" on the page in dev.
   devtools: { enabled: false },
-  hooks: {
-    'app:resolve'(app) {
-      app.plugins = app.plugins.filter((p) => {
-        const src = String(p.src || '').replace(/\\/g, '/')
-        return !(src.includes('@nuxtjs/supabase') && src.includes('supabase.client'))
-      })
-    },
-  },
   ssr: false,
   nitro: {
     // Vercel static hosting: use generic static preset. GitHub Pages keeps github-pages (.nojekyll, etc.).
