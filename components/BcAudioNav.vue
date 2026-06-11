@@ -42,6 +42,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
       </NuxtLink>
 
       <div class="bc-nav__actions">
+        <BcWholesaleDeptSelect class="bc-nav__dept" />
         <BcCatalogNavMenu @close="closeAll" />
 
         <button type="button" class="bc-nav__toggle" aria-label="Menu" @click="menuOpen = !menuOpen">
@@ -77,6 +78,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
             <NuxtLink to="/stores" class="bc-nav__stores-all" @click="closeAll">All stores on The Franks Standard →</NuxtLink>
           </div>
         </div>
+        <BcWholesaleDeptSelect class="bc-nav__dept-mobile" @click="closeAll" />
         <NuxtLink to="/bc-audio/catalog" class="bc-nav__link bc-nav__link--catalog" @click="closeAll">Full catalog</NuxtLink>
         <NuxtLink to="/bc-audio/open-door" class="bc-nav__link bc-nav__link--door" @click="closeAll">Open Door</NuxtLink>
         <NuxtLink to="/" class="bc-nav__link bc-nav__link--muted" @click="closeAll">The Franks Standard</NuxtLink>
@@ -149,6 +151,10 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   align-items: center;
   gap: 8px;
   margin-left: auto;
+}
+.bc-nav__dept { display: none; }
+@media (min-width: 900px) {
+  .bc-nav__dept { display: block; }
 }
 .bc-nav__links {
   display: flex;
@@ -263,6 +269,9 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 }
 @media (max-width: 768px) {
   .bc-nav__toggle { display: flex; }
+  .bc-nav__dept { display: none; }
+  .bc-nav__dept-mobile { display: block; width: 100%; }
+  .bc-nav__dept-mobile :deep(.bc-dept__select) { width: 100%; max-width: none; }
   .bc-nav__links {
     display: none;
     width: 100%;
@@ -275,6 +284,8 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   }
   .bc-nav__links.open { display: flex; }
   .bc-nav__stores-panel { position: static; margin-top: 8px; width: 100%; }
-  .bc-nav__link--catalog { display: none; }
+}
+@media (min-width: 769px) {
+  .bc-nav__dept-mobile { display: none; }
 }
 </style>
