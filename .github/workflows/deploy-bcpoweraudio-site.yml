@@ -52,6 +52,7 @@ on:
       - 'components/BcProductCatalogGrid.vue'
       - 'scripts/patch-gh-pages-spa.cjs'
       - 'scripts/inject-spa-fallback.cjs'
+      - 'scripts/configure-bcpoweraudio-github-pages.cjs'
       - 'nuxt.config.ts'
       - '.github/workflows/deploy-bcpoweraudio-site.yml'
   workflow_dispatch:
@@ -101,8 +102,8 @@ jobs:
           NUXT_PUBLIC_SITE_URL: https://www.bcpoweraudio.com
         run: node scripts/generate-bc-sitemap.cjs
 
-      - name: Add CNAME for apex (HTTPS cert covers www + apex)
-        run: echo 'bcpoweraudio.com' > .output/public/CNAME
+      - name: Add CNAME (must match GitHub Pages custom domain exactly)
+        run: echo 'www.bcpoweraudio.com' > .output/public/CNAME
 
       - name: Deploy to cwfranks77/bcpoweraudio
         uses: JamesIves/github-pages-deploy-action@v4
@@ -112,3 +113,8 @@ jobs:
           branch: gh-pages
           clean: true
           token: ${{ secrets.BC_DEPLOY_PAT }}
+
+      - name: Sync GitHub Pages domain and Enforce HTTPS
+        env:
+          GH_TOKEN: ${{ secrets.BC_DEPLOY_PAT }}
+        run: node scripts/configure-bcpoweraudio-github-pages.cjs
