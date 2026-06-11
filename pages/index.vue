@@ -88,7 +88,6 @@
     <main class="portal-main">
       <div v-if="viewMode === 'showroom'" class="portal-fade">
         <div class="portal-hero">
-          <span class="portal-hero__eyebrow">Official Dealer Grid</span>
           <h2 class="portal-hero__title">Authorized Dealer Distribution Network</h2>
         </div>
 

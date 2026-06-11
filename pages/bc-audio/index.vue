@@ -277,7 +277,6 @@ const isCheckoutBusy = (product: any) =>
 
     <main class="bc-home__main">
       <div class="bc-home__hero bc-fade-in">
-        <span class="bc-home__eyebrow">Official Dealer Grid</span>
         <h2 class="bc-home__title">High-Capacity Inventory Grid Matrix</h2>
         <p class="bc-home__lede">
           Filter active enterprise hardware lines using the wholesale department dropdown above.
