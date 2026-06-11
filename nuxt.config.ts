@@ -253,8 +253,8 @@ export default defineNuxtConfig({
         { 'http-equiv': 'Expires', content: '0' },
       ],
       link: [
-        { rel: 'icon', type: 'image/png', href: '/franks-pavilion.png' },
-        { rel: 'apple-touch-icon', href: '/franks-pavilion.png' },
+        { rel: 'icon', type: 'image/png', href: bcPrimarySite ? '/icons/icon-192.png' : '/franks-pavilion.png' },
+        { rel: 'apple-touch-icon', href: bcPrimarySite ? '/icons/icon-192.png' : '/franks-pavilion.png' },
         { rel: 'manifest', href: '/manifest.webmanifest' },
         { rel: 'preconnect', href: 'https://meet.jit.si' },
         { rel: 'preconnect', href: 'https://js.stripe.com' },

@@ -34,8 +34,8 @@ export function bcStoreJsonLd (siteUrl, products = [], phoneTel = BC_SUPPORT_DEF
         '@type': 'Organization',
         name: BC_LEGAL_NAME,
         alternateName: BC_BRAND.full,
-        url: `${base}/bc-audio`,
-        logo: `${base}/franks-pavilion.png`,
+        url: base,
+        logo: `${base}/img/hero-showcase-v2.svg`,
         contactPoint: {
           '@type': 'ContactPoint',
           telephone: phoneTel,
