@@ -1,8 +1,8 @@
 import { BC_POWER_AUDIO_HOSTS, isBcPowerAudioPrimarySite } from '~/utils/bcPrimarySite.js'
 
 /**
- * Franks marketplace build served on bcpoweraudio.com hostnames: send / to the B&C storefront.
- * B&C-primary builds already redirect via middleware + index.html script.
+ * Franks marketplace build served on bcpoweraudio.com hostnames: keep root URL (no /bc-audio suffix).
+ * B&C-primary builds serve the revised storefront at /.
  */
 export default defineNuxtPlugin(() => {
   if (!import.meta.client) return
@@ -14,8 +14,7 @@ export default defineNuxtPlugin(() => {
   if (!BC_POWER_AUDIO_HOSTS.has(host)) return
 
   const path = window.location.pathname
-  if (path === '/' || path === '') {
-    const target = `/bc-audio${window.location.search}${window.location.hash}`
-    window.location.replace(target)
+  if (path === '/bc-audio' || path === '/bc-audio/') {
+    window.location.replace(`/${window.location.search}${window.location.hash}`)
   }
 })

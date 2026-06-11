@@ -206,7 +206,7 @@ function fallbackForRoute (route) {
       <p class="fss-static-ribbon">Competition car audio</p>
       <h1 class="fss-static-h1"><span class="fss-s1">B&amp;C</span> <span class="fss-s2">Performance Audio</span></h1>
       <p class="fss-static-sub">Taramps, Sundown, Rockford Fosgate, Kicker, and more &mdash; your megastore for competition-grade sound.</p>
-      <p class="fss-static-actions"><a class="fss-static-btn fss-static-btn-primary" href="/bc-audio">Open storefront</a></p>
+      <p class="fss-static-actions"><a class="fss-static-btn fss-static-btn-primary" href="/">Open storefront</a></p>
       ${contactBlock}`
         break
       }
@@ -274,7 +274,7 @@ function patchFile (file) {
   let s = fs.readFileSync(file, 'utf8')
   const route = routeForFile(file)
   const canonical = BC_PRIMARY_SITE && route === '/'
-    ? `${SITE_URL}/bc-audio`
+    ? `${SITE_URL}/`
     : SITE_URL + (route === '/' ? '/' : route)
 
   // Always (re)set the per-page canonical URL.

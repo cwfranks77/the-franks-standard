@@ -32,7 +32,7 @@ if (!fs.existsSync(ROOT)) {
 
 const productIds = loadProductIds()
 const staticPaths = [
-  '/bc-audio',
+  '/',
   '/bc-audio/catalog',
   '/bc-audio/open-door',
   '/bc-audio/sms-consent',
@@ -40,7 +40,7 @@ const staticPaths = [
 ]
 
 const urls = staticPaths.map((p) => {
-  const priority = p === '/bc-audio' ? '1.0' : p.includes('/product/') ? '0.85' : '0.7'
+  const priority = p === '/' ? '1.0' : p.includes('/product/') ? '0.85' : '0.7'
   const changefreq = p.includes('/product/') ? 'weekly' : 'daily'
   return `  <url><loc>${SITE}${p}</loc><changefreq>${changefreq}</changefreq><priority>${priority}</priority></url>`
 }).join('\n')

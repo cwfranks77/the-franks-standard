@@ -17,7 +17,7 @@ const siteDescription = bcPrimarySite ? bcSiteDescription : META_DESCRIPTION
 const siteOgDescription = bcPrimarySite ? bcSiteDescription : OG_DESCRIPTION
 const bcPrerenderRoutes = bcPrimarySite
   ? [
-      '/bc-audio',
+      '/',
       '/bc-audio/catalog',
       '/bc-audio/open-door',
       '/bc-audio/sms-consent',
@@ -122,7 +122,12 @@ export default defineNuxtConfig({
 
   routeRules: {
     ...(bcPrimarySite
-      ? { '/': { redirect: { to: '/bc-audio', statusCode: 302 } } }
+      ? {
+          '/': {
+            headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
+          },
+          '/bc-audio': { redirect: { to: '/', statusCode: 301 } },
+        }
       : {
           '/': {
             headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
@@ -156,7 +161,7 @@ export default defineNuxtConfig({
       theme_color: '#0c0619',
       background_color: '#0c0619',
       display: 'standalone',
-      start_url: bcPrimarySite ? '/bc-audio' : '/',
+      start_url: '/',
       scope: '/',
       orientation: 'any',
       categories: ['shopping', 'business'],
