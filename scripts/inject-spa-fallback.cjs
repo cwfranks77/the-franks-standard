@@ -46,7 +46,8 @@ const SHARED_FOOTER = `
     : 'The Franks Standard &mdash; Authenticity-Guaranteed Marketplace'} &middot; ${SITE_URL.replace(/^https?:\/\//, '')}</p>
 </footer>`
 
-const EARLY_HIDE_SCRIPT = `<script id="fss-static-boot-hide">(function(){try{document.documentElement.classList.add("nuxt-ready");var b=document.getElementById("fss-static-boot");var s=document.getElementById("fss-static-boot-style");if(b)b.remove();if(s)s.remove();}catch(e){}})();</script>`
+// Boot HTML stays visible until Nuxt mounts (see plugins/0.remove-static-fallback.client.ts).
+const EARLY_HIDE_SCRIPT = ''
 
 const SHARED_STYLE = `<style id="fss-static-boot-style">
 #fss-static-boot,.fss-static-aur,.fss-static-footer{box-sizing:border-box}
@@ -86,13 +87,21 @@ function fallbackForRoute (route) {
   <div class="fss-static-aur" aria-hidden="true"></div>
   <div class="fss-static-inner">
     <div class="fss-static-copy">`
-  const heroClose = `    </div>
+  const heroCloseFranks = `    </div>
     <div class="fss-static-media">
       <img src="/franks-pavilion.png" alt="The Franks Standard" width="200" height="200" />
     </div>
   </div>
   ${SHARED_FOOTER}
 </div>`
+  const heroCloseBc = `    </div>
+    <div class="fss-static-media">
+      <img src="/img/hero-showcase-v2.svg" alt="B&amp;C Performance Audio" width="200" height="200" />
+    </div>
+  </div>
+  ${SHARED_FOOTER}
+</div>`
+  const heroClose = (BC_PRIMARY_SITE && route === '/') ? heroCloseBc : heroCloseFranks
 
   const contactBlock = `
       <div class="fss-static-contact-block">

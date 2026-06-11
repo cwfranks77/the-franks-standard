@@ -7,6 +7,12 @@
 </template>
 
 <script setup>
+import { isBcPowerAudioPrimarySite } from '~/utils/bcPrimarySite.js'
+
 const route = useRoute()
-const showFranksHelp = computed(() => !route.path.startsWith('/bc-audio'))
+const config = useRuntimeConfig()
+const showFranksHelp = computed(() => {
+  if (isBcPowerAudioPrimarySite(config.public.siteUrl)) return false
+  return !route.path.startsWith('/bc-audio')
+})
 </script>

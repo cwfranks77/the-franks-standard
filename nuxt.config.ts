@@ -24,7 +24,9 @@ const bcPrerenderRoutes = bcPrimarySite
     ]
   : []
 const rawOg = process.env.NUXT_PUBLIC_OG_IMAGE
-const ogImage = (rawOg && String(rawOg).trim()) ? String(rawOg).trim() : `${siteUrl}/franks-pavilion.png`
+const ogImage = (rawOg && String(rawOg).trim())
+  ? String(rawOg).trim()
+  : (bcPrimarySite ? `${siteUrl}/img/hero-showcase-v2.svg` : `${siteUrl}/franks-pavilion.png`)
 
 // Operator unlock: hash the phrase at BUILD time (normalized, same as the modal).
 // NUXT_PUBLIC_OPS_ACCESS_KEY is the source of truth when set; HASH is fallback only.
