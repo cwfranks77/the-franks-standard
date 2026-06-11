@@ -1,6 +1,6 @@
 import { BC_POWER_AUDIO_HOSTS, isBcPowerAudioPrimarySite } from '~/utils/bcPrimarySite.js'
 
-/** Prefer https://www.bcpoweraudio.com (GitHub Pages cert is issued for www). */
+/** Always use https://www.bcpoweraudio.com — upgrade http and bare host to secure www. */
 export default defineNuxtPlugin(() => {
   if (!import.meta.client) return
 

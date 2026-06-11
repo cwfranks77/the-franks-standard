@@ -101,8 +101,8 @@ jobs:
           NUXT_PUBLIC_SITE_URL: https://www.bcpoweraudio.com
         run: node scripts/generate-bc-sitemap.cjs
 
-      - name: Add CNAME for www.bcpoweraudio.com
-        run: echo 'www.bcpoweraudio.com' > .output/public/CNAME
+      - name: Add CNAME for apex (HTTPS cert covers www + apex)
+        run: echo 'bcpoweraudio.com' > .output/public/CNAME
 
       - name: Deploy to cwfranks77/bcpoweraudio
         uses: JamesIves/github-pages-deploy-action@v4
