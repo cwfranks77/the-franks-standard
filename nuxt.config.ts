@@ -3,7 +3,8 @@ import { normalizeOpsPhrase } from './utils/opsPhrase'
 import { META_DESCRIPTION, OG_DESCRIPTION } from './utils/marketplaceFacilitatorCopy.js'
 import { isBcPowerAudioPrimarySite } from './utils/bcPrimarySite.js'
 import { BC_BRAND } from './utils/bcBrand.js'
-import { BC_LEGAL_NAME } from './utils/bcSeo.js'
+
+const BC_LEGAL_NAME = 'B&C Performance Audio LLC'
 const rawSite = process.env.NUXT_PUBLIC_SITE_URL
 const siteUrl = (rawSite && String(rawSite).trim())
   ? String(rawSite).replace(/\/$/, '')
