@@ -1,0 +1,1 @@
+import{j as a,i as r,I as u}from"./Ca90fpAH.js";async function n(){const t=a(),s=r();if(t.query.switch==="1"){await s.auth.signOut();return}const{data:{session:e}}=await s.auth.getSession();e?.user&&(typeof t.query.redirect=="string"&&t.query.redirect.startsWith("/")||await u("/dashboard"))}export{n as u};

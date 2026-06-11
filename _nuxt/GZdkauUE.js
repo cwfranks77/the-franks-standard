@@ -1,0 +1,1 @@
+import{aL as a,aM as e,ad as i,I as s,J as n}from"./Ca90fpAH.js";const u=a(()=>{const o=n(),t=window.location.hostname.toLowerCase();if(!(e.has(t)||i(o.public.siteUrl)))return s("/bc-audio")});export{u as default};
