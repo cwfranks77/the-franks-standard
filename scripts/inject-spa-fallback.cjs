@@ -14,9 +14,15 @@ const path = require('node:path')
 
 const SITE_URL = (process.env.NUXT_PUBLIC_SITE_URL || 'https://thefranksstandard.com').replace(/\/$/, '')
 const BC_PRIMARY_SITE = /bcpoweraudio\.com/i.test(SITE_URL)
-const PHONE_DISPLAY = process.env.NUXT_PUBLIC_CUSTOMER_SERVICE_PHONE || '(877) 837-0527'
-const PHONE_TEL = '+1' + PHONE_DISPLAY.replace(/\D+/g, '').replace(/^1/, '')
-const SUPPORT_EMAIL = 'info@thefranksstandard.com'
+const PHONE_DISPLAY = BC_PRIMARY_SITE
+  ? (process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_PHONE || '1-866-319-8547')
+  : (process.env.NUXT_PUBLIC_CUSTOMER_SERVICE_PHONE || '(877) 837-0527')
+const PHONE_TEL = BC_PRIMARY_SITE
+  ? (process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL || '+18663198547')
+  : ('+1' + PHONE_DISPLAY.replace(/\D+/g, '').replace(/^1/, ''))
+const SUPPORT_EMAIL = BC_PRIMARY_SITE
+  ? (process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_EMAIL || 'bc-audio@bcpoweraudio.com')
+  : 'info@thefranksstandard.com'
 
 // Auto-noindex: set noindex when this build is NOT serving the canonical
 // host. Vercel always sets VERCEL_URL to the actual deploy host (like
