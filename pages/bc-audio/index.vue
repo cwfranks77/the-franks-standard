@@ -16,7 +16,7 @@ const pageMeta = computed(() => ({
   ...(bcSiteContent.value?.bcMeta || {}),
 }))
 
-const { megastoreItems, pending: catalogPending } = useBcProductCatalog()
+const { megastoreItems, pending: catalogPending, error: catalogError } = useBcProductCatalog()
 
 const ownerName = computed(() => support.value.ownerName)
 
@@ -40,7 +40,7 @@ const heroEyebrow = computed(() => dropshipData.value?.store?.hero_json?.eyebrow
 const heroSlogan = computed(() => dropshipData.value?.store?.hero_json?.slogan || dropshipData.value?.store?.tagline || BC_BRAND.tagline)
 const catalogItems = computed(() => {
   const api = dropshipData.value?.items || []
-  const merged = new Map(megastoreItems.map((i) => [i.id, i]))
+  const merged = new Map(megastoreItems.value.map((i) => [i.id, i]))
   for (const item of api) merged.set(item.id, item)
   return [...merged.values()]
 })
@@ -129,8 +129,11 @@ useHead(() => ({
       <section class="bc-shop-split" aria-label="Catalog and dropship order">
         <div class="bc-shop-split__inner">
           <p v-if="catalogPending" class="bc-shop-catalog-loading">Loading product catalog…</p>
+          <p v-else-if="catalogError" class="bc-shop-catalog-error" role="alert">
+            Catalog could not load. Refresh the page or call {{ support.phoneDisplay }} for wholesale access.
+          </p>
           <BcProductCatalogGrid
-            v-else
+            v-else-if="catalogItems.length"
             :catalogs="[catalogItems]"
             :selected-id="selectedProduct?.id ?? null"
             @select="onSelectProduct"
@@ -165,6 +168,15 @@ useHead(() => ({
   padding: 2rem 1rem;
   text-align: center;
   color: #9ca3af;
+  font-size: 0.95rem;
+}
+.bc-shop-catalog-error {
+  padding: 1.25rem 1rem;
+  text-align: center;
+  color: #fecaca;
+  background: rgba(127, 29, 29, 0.35);
+  border: 1px solid rgba(211, 47, 47, 0.45);
+  border-radius: 10px;
   font-size: 0.95rem;
 }
 .bc-shop-offline {
