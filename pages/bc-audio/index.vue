@@ -37,6 +37,7 @@ const catalogItems = computed(() => {
 
 const showroomDepts = [
   {
+    key: 'computers',
     icon: '💻',
     title: 'Computers & Enterprise Workstations',
     blurb: 'Factory-direct systems with high-memory configurations for continuous database and commercial workloads.',
@@ -44,6 +45,7 @@ const showroomDepts = [
     tone: 'indigo',
   },
   {
+    key: 'home-theater',
     icon: '📺',
     title: 'Premium Home Theater & Audio',
     blurb: 'Multi-channel receivers and acoustic arrays for residential and architectural sound enclosures.',
@@ -51,6 +53,7 @@ const showroomDepts = [
     tone: 'red',
   },
   {
+    key: 'marine',
     icon: '⚓',
     title: 'Marine & Powersports Sound',
     blurb: 'Weatherproof acoustic modules built for salt, spray, and UV exposure on open water.',
@@ -59,10 +62,35 @@ const showroomDepts = [
   },
 ]
 
+const activeDeptKey = computed(() => {
+  const key = String(route.query.dept || 'showroom')
+  return showroomDepts.some((d) => d.key === key) ? key : 'showroom'
+})
+
+const viewMode = computed(() => (activeDeptKey.value === 'showroom' ? 'showroom' : 'category'))
+
+const activeDept = computed(() => showroomDepts.find((d) => d.key === activeDeptKey.value) || null)
+
+const filteredItems = computed(() => {
+  const cat = activeDept.value?.category
+  if (!cat) return []
+  return catalogItems.value.filter((i) => i.category === cat)
+})
+
+const filteredPreview = computed(() => filteredItems.value.slice(0, 48))
+
 const siteUrl = computed(() => String(config.public.siteUrl || metaConfig.url).replace(/\/$/, ''))
 
 function deptCatalogLink (category) {
   return `/bc-audio/catalog?category=${encodeURIComponent(category)}`
+}
+
+function openDept (key) {
+  navigateTo({ path: '/bc-audio', query: { dept: key } })
+}
+
+function resetToShowroom () {
+  navigateTo({ path: '/bc-audio', query: {} })
 }
 
 function applyPickFromQuery () {
@@ -111,38 +139,91 @@ useHead(() => ({
         Checkout was cancelled. Your card was not charged — pick a product from <strong>Products</strong> (top right).
       </section>
 
-      <header class="bc-showroom__hero">
-        <p class="bc-showroom__badge">Official dealer showroom</p>
-        <h1 class="bc-showroom__title">Commercial technology &amp; competition-grade audio</h1>
-        <p class="bc-showroom__lead">
-          {{ catalogPending ? 'Loading catalog…' : `${catalogItems.length.toLocaleString()} wholesale SKUs` }}
-          — use <strong>Products</strong> or <strong>Wholesale departments</strong> in the top-right menu. No full catalog dump on this page.
-        </p>
-        <div class="bc-showroom__hero-actions">
-          <NuxtLink to="/bc-audio/catalog" class="bc-showroom__btn">Open full catalog</NuxtLink>
-          <a :href="`tel:${support.phoneTel}`" class="bc-showroom__btn bc-showroom__btn--ghost">{{ support.phoneDisplay }}</a>
-        </div>
-      </header>
+      <div v-if="viewMode === 'showroom'">
+        <header class="bc-showroom__hero">
+          <p class="bc-showroom__badge">Official dealer showroom</p>
+          <h1 class="bc-showroom__title">Next-generation commercial technology &amp; audio solutions</h1>
+          <p class="bc-showroom__lead">
+            {{ catalogPending ? 'Loading catalog…' : `${catalogItems.length.toLocaleString()} wholesale SKUs` }}
+            — pick a department from the top-right dropdown or tap a showcase card below.
+          </p>
+          <div class="bc-showroom__hero-actions">
+            <NuxtLink to="/bc-audio/catalog" class="bc-showroom__btn">Open full catalog</NuxtLink>
+            <a :href="`tel:${support.phoneTel}`" class="bc-showroom__btn bc-showroom__btn--ghost">{{ support.phoneDisplay }}</a>
+          </div>
+        </header>
 
-      <section class="bc-showroom__grid" aria-label="Wholesale department showcase">
-        <article
-          v-for="dept in showroomDepts"
-          :key="dept.category"
-          class="bc-showroom__card"
-          :class="`bc-showroom__card--${dept.tone}`"
-        >
-          <div class="bc-showroom__card-visual" aria-hidden="true">
-            <span class="bc-showroom__card-icon">{{ dept.icon }}</span>
-          </div>
-          <div class="bc-showroom__card-body">
-            <h2 class="bc-showroom__card-title">{{ dept.title }}</h2>
-            <p class="bc-showroom__card-blurb">{{ dept.blurb }}</p>
-            <NuxtLink :to="deptCatalogLink(dept.category)" class="bc-showroom__card-link">
-              Browse department →
-            </NuxtLink>
-          </div>
-        </article>
-      </section>
+        <section class="bc-showroom__grid" aria-label="Wholesale department showcase">
+          <article
+            v-for="dept in showroomDepts"
+            :key="dept.category"
+            class="bc-showroom__card bc-showroom__card--click"
+            :class="`bc-showroom__card--${dept.tone}`"
+            role="button"
+            tabindex="0"
+            @click="openDept(dept.key)"
+            @keydown.enter="openDept(dept.key)"
+          >
+            <div class="bc-showroom__card-visual" aria-hidden="true">
+              <span class="bc-showroom__card-icon">{{ dept.icon }}</span>
+            </div>
+            <div class="bc-showroom__card-body">
+              <h2 class="bc-showroom__card-title">{{ dept.title }}</h2>
+              <p class="bc-showroom__card-blurb">{{ dept.blurb }}</p>
+              <span class="bc-showroom__card-link">View department inventory →</span>
+            </div>
+          </article>
+        </section>
+      </div>
+
+      <div v-else class="bc-showroom__matrix">
+        <div class="bc-showroom__matrix-head">
+          <button type="button" class="bc-showroom__back" @click="resetToShowroom">
+            ← Return to main showroom
+          </button>
+          <h2 class="bc-showroom__matrix-title">
+            {{ activeDept?.title }}
+            <span class="bc-showroom__matrix-count">{{ filteredItems.length.toLocaleString() }} SKUs</span>
+          </h2>
+        </div>
+
+        <p v-if="catalogPending" class="bc-showroom__matrix-loading">Loading live catalog data…</p>
+        <p v-else-if="!filteredPreview.length" class="bc-showroom__matrix-empty">
+          No live rows in this department yet.
+          <NuxtLink :to="deptCatalogLink(activeDept?.category || '')">Open full catalog</NuxtLink>
+        </p>
+        <section v-else class="bc-showroom__table-wrap">
+          <table class="bc-showroom__table">
+            <thead>
+              <tr>
+                <th>Model SKU</th>
+                <th>Product name</th>
+                <th>Description</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in filteredPreview" :key="item.id">
+                <td class="bc-showroom__sku">{{ item.id }}</td>
+                <td class="bc-showroom__name">{{ item.name }}</td>
+                <td class="bc-showroom__desc">{{ item.tagline || item.brand }}</td>
+                <td>
+                  <span
+                    class="bc-showroom__status"
+                    :class="item.inStock === false ? 'bc-showroom__status--out' : 'bc-showroom__status--live'"
+                  >
+                    {{ item.inStock === false ? 'Out of stock' : 'Live data' }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p v-if="filteredItems.length > filteredPreview.length" class="bc-showroom__matrix-more">
+            Showing {{ filteredPreview.length }} of {{ filteredItems.length.toLocaleString() }} —
+            <NuxtLink :to="deptCatalogLink(activeDept?.category || '')">view all in this department</NuxtLink>
+          </p>
+        </section>
+      </div>
 
       <section v-if="selectedProduct" class="bc-showroom__order">
         <BcDropshipOrderForm :product="selectedProduct" />
@@ -273,6 +354,107 @@ useHead(() => ({
   transition: border-color 0.15s;
 }
 .bc-showroom__card:hover { border-color: rgba(211, 47, 47, 0.35); }
+.bc-showroom__card--click { cursor: pointer; }
+.bc-showroom__card--click:focus-visible { outline: 2px solid #ff5252; outline-offset: 2px; }
+.bc-showroom__matrix {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 2.5rem;
+}
+.bc-showroom__matrix-head {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 1.25rem;
+}
+.bc-showroom__back {
+  align-self: flex-start;
+  border: none;
+  background: none;
+  color: #ff5252;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 0;
+}
+.bc-showroom__back:hover { text-decoration: underline; }
+.bc-showroom__matrix-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 900;
+}
+.bc-showroom__matrix-count {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #ffd814;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.bc-showroom__matrix-loading,
+.bc-showroom__matrix-empty {
+  font-size: 0.88rem;
+  color: #9ca3af;
+}
+.bc-showroom__table-wrap {
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(20, 20, 24, 0.65);
+  padding: 1rem;
+  overflow-x: auto;
+}
+.bc-showroom__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  text-align: left;
+}
+.bc-showroom__table th {
+  padding: 0 0 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #9ca3af;
+}
+.bc-showroom__table td {
+  padding: 12px 8px 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  vertical-align: top;
+}
+.bc-showroom__sku {
+  font-family: ui-monospace, monospace;
+  color: #ff5252;
+  white-space: nowrap;
+}
+.bc-showroom__name { font-weight: 800; color: #f5f5f7; min-width: 10rem; }
+.bc-showroom__desc { color: #9ca3af; max-width: 22rem; }
+.bc-showroom__status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.bc-showroom__status--live {
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.1);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+}
+.bc-showroom__status--out {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.25);
+}
+.bc-showroom__matrix-more {
+  margin: 12px 0 0;
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+.bc-showroom__matrix-more a { color: #ff5252; }
 .bc-showroom__card-visual {
   height: 10rem;
   display: flex;

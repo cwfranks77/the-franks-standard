@@ -1,19 +1,36 @@
 <script setup>
+const route = useRoute()
+
 const departments = [
-  { label: 'Computers & Workstations', category: 'Computers & Computer Accessories' },
-  { label: 'Home Theater & Audio', category: 'Home Audio & Theater' },
-  { label: 'Marine & Powersports', category: 'Marine Electronics' },
-  { label: 'Automotive Electronics', category: 'Automotive Electronics' },
-  { label: 'Amplifiers & Subwoofers', category: 'Amplifiers' },
+  { key: 'showroom', label: 'Wholesale catalog departments', category: '' },
+  { key: 'computers', label: 'Computers & Workstations', category: 'Computers & Computer Accessories' },
+  { key: 'home-theater', label: 'Home Theater & Audio', category: 'Home Audio & Theater' },
+  { key: 'marine', label: 'Marine & Powersports', category: 'Marine Electronics' },
 ]
 
-const selected = ref('')
+const selected = computed({
+  get () {
+    const dept = String(route.query.dept || 'showroom')
+    return departments.some((d) => d.key === dept) ? dept : 'showroom'
+  },
+  set (key) {
+    if (!key || key === 'showroom') {
+      navigateTo({ path: '/bc-audio', query: {} })
+      return
+    }
+    if (route.path === '/bc-audio' || route.path === '/bc-audio/') {
+      navigateTo({ path: '/bc-audio', query: { dept: key } })
+      return
+    }
+    const dept = departments.find((d) => d.key === key)
+    if (dept?.category) {
+      navigateTo(`/bc-audio/catalog?category=${encodeURIComponent(dept.category)}`)
+    }
+  },
+})
 
-function onPick () {
-  const dept = departments.find((d) => d.category === selected.value)
-  if (!dept) return
-  navigateTo(`/bc-audio/catalog?category=${encodeURIComponent(dept.category)}`)
-  selected.value = ''
+function onPick (event) {
+  selected.value = event.target.value
 }
 </script>
 
@@ -21,15 +38,14 @@ function onPick () {
   <label class="bc-dept">
     <span class="bc-dept__sr">Wholesale catalog department</span>
     <select
-      v-model="selected"
+      :value="selected"
       class="bc-dept__select"
       @change="onPick"
     >
-      <option value="" disabled selected>Wholesale departments</option>
       <option
         v-for="dept in departments"
-        :key="dept.category"
-        :value="dept.category"
+        :key="dept.key"
+        :value="dept.key"
       >
         {{ dept.label }}
       </option>
@@ -47,7 +63,7 @@ function onPick () {
   clip: rect(0, 0, 0, 0);
 }
 .bc-dept__select {
-  max-width: 11rem;
+  max-width: 13rem;
   padding: 8px 10px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -63,6 +79,6 @@ function onPick () {
   border-color: rgba(211, 47, 47, 0.55);
 }
 @media (max-width: 480px) {
-  .bc-dept__select { max-width: 9rem; font-size: 0.68rem; }
+  .bc-dept__select { max-width: 100%; font-size: 0.68rem; }
 }
 </style>
