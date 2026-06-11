@@ -48,10 +48,10 @@ export function getBcSupportFromLedger (runtimeConfig) {
   const envTel = String(pub.bcAudioSupportTel || '').trim()
   const phoneDisplay = !isPlaceholderPhone(row.phone)
     ? String(row.phone).trim()
-    : (envDisplay || '(877) 837-0527')
+    : (envDisplay || '(833) 322-8439')
   const phoneTel = !isPlaceholderPhone(row.phone)
     ? (phoneDisplayToTel(row.phone) || envTel)
-    : (envTel || phoneDisplayToTel(phoneDisplay) || '+18778370527')
+    : (envTel || phoneDisplayToTel(phoneDisplay) || '+18333228439')
   return {
     name: row.name || 'B&C Performance Audio LLC',
     lineType: row.lineType || 'Competition Audio Tech Support',

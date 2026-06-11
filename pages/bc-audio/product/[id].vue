@@ -7,11 +7,9 @@ const route = useRoute()
 const config = useRuntimeConfig()
 const siteUrl = computed(() => String(config.public.siteUrl || 'https://www.bcpoweraudio.com').replace(/\/$/, ''))
 
-const { data: dropshipData, pending: dropshipPending } = await useFetch('/api/public/dropship-catalog', {
-  query: { storeId: 'bc-performance-audio' },
-})
+const { data: dropshipData } = useBcDropshipCatalog()
 
-const { findProduct, pending: jsonCatalogPending } = useBcProductCatalog()
+const { findProduct, pending: catalogPending } = useBcProductCatalog()
 
 const productId = computed(() => String(route.params.id || ''))
 
@@ -20,8 +18,6 @@ const catalogItem = computed(() => {
   if (fromApi) return fromApi
   return findProduct(productId.value)
 })
-
-const catalogPending = computed(() => dropshipPending.value || jsonCatalogPending.value)
 
 watch([catalogItem, catalogPending], () => {
   if (catalogPending.value) return

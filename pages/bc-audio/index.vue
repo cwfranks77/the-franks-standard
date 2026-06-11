@@ -32,9 +32,7 @@ const selectedProduct = ref(null)
 const route = useRoute()
 const checkoutCancelled = computed(() => route.query.cancelled === '1')
 
-const { data: dropshipData } = await useFetch('/api/public/dropship-catalog', {
-  query: { storeId: 'bc-performance-audio' },
-})
+const { data: dropshipData } = useBcDropshipCatalog()
 
 const storeLive = computed(() => dropshipData.value?.store?.is_live !== false && !dropshipData.value?.offline)
 const storeName = computed(() => dropshipData.value?.store?.name || BC_BRAND.full)
