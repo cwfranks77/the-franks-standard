@@ -1,0 +1,1 @@
+const c="/img/hero-showcase-v2.svg";function i(e,s=""){const t=String(e||"").trim();if(!t)return c;if(/^https?:\/\//i.test(t))return t.replace(/^http:\/\//i,"https://");if(t.startsWith("/"))return t;const r=String(s||"").replace(/\/$/,"");return r?`${r}/${t.replace(/^\//,"")}`:t}export{i as b};

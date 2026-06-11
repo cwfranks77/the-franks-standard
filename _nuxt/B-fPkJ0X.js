@@ -1,0 +1,1 @@
+import{aK as a,aL as e,ab as i,I as s,J as n}from"./CEBG3wtd.js";const u=a(()=>{const o=n(),t=window.location.hostname.toLowerCase();if(!(e.has(t)||i(o.public.siteUrl)))return s("/bc-audio")});export{u as default};

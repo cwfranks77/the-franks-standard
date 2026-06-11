@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Franks Standard — 4×6 advertising postcard (sample)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Inter, system-ui, sans-serif;
+      background: #1a1a2e;
+      color: #0f172a;
+      padding: 24px;
+    }
+    .instructions {
+      max-width: 720px;
+      margin: 0 auto 24px;
+      padding: 16px 20px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(0, 224, 255, 0.35);
+      border-radius: 12px;
+      color: #e2e8f0;
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+    .instructions h1 {
+      font-family: Syne, sans-serif;
+      font-size: 1.15rem;
+      color: #fde047;
+      margin-bottom: 8px;
+    }
+    .instructions ol { padding-left: 1.2rem; margin-top: 8px; }
+    .instructions li { margin-bottom: 6px; }
+    .instructions code {
+      background: rgba(0, 0, 0, 0.35);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .sheet-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 32px;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .postcard {
+      width: 6in;
+      height: 4in;
+      position: relative;
+      overflow: hidden;
+      border-radius: 2px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+      background: #fff;
+      flex-shrink: 0;
+    }
+    .postcard-front {
+      background: linear-gradient(145deg, #0f0a1a 0%, #1a1035 42%, #0c1829 100%);
+      color: #f8fafc;
+      padding: 0.24in 0.3in;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .front-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.1in;
+    }
+    .brand {
+      font-family: Syne, sans-serif;
+      font-weight: 800;
+      font-size: 0.2in;
+      letter-spacing: 0.04em;
+      line-height: 1.1;
+      color: #fde047;
+    }
+    .brand-sub {
+      display: block;
+      font-size: 0.09in;
+      font-weight: 700;
+      color: #67e8f9;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-top: 0.03in;
+    }
+    .pill-security {
+      display: inline-block;
+      margin-top: 0.05in;
+      padding: 0.03in 0.08in;
+      font-size: 0.075in;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #0f172a;
+      background: #00f5a0;
+      border-radius: 4px;
+    }
+    .qr {
+      width: 0.8in;
+      height: 0.8in;
+      border-radius: 6px;
+      background: #fff;
+      padding: 4px;
+      flex-shrink: 0;
+    }
+    .qr img { width: 100%; height: 100%; display: block; }
+    .headline {
+      font-family: Syne, sans-serif;
+      font-size: 0.23in;
+      font-weight: 800;
+      line-height: 1.06;
+      margin: 0.06in 0 0.05in;
+      color: #fff;
+    }
+    .headline em {
+      font-style: normal;
+      color: #00f5a0;
+    }
+    .subhead {
+      font-size: 0.09in;
+      font-weight: 700;
+      color: #94a3b8;
+      margin-bottom: 0.05in;
+    }
+    .bullets {
+      list-style: none;
+      font-size: 0.098in;
+      font-weight: 700;
+      line-height: 1.32;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.03in 0.12in;
+    }
+    .bullets li {
+      padding-left: 0.13in;
+      position: relative;
+    }
+    .bullets li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: #fde047;
+      font-weight: 800;
+    }
+    .banners {
+      display: flex;
+      flex-direction: column;
+      gap: 0.04in;
+      margin-top: 0.04in;
+    }
+    .banner {
+      padding: 0.05in 0.08in;
+      border-radius: 5px;
+      font-size: 0.085in;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+    .banner-founders {
+      background: linear-gradient(90deg, rgba(253, 224, 71, 0.3), rgba(255, 45, 122, 0.12));
+      border: 1px solid rgba(253, 224, 71, 0.55);
+      color: #fef9c3;
+    }
+    .banner-excellence {
+      background: rgba(0, 245, 160, 0.12);
+      border: 1px solid rgba(0, 245, 160, 0.45);
+      color: #a7f3d0;
+    }
+    .front-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      font-size: 0.09in;
+      font-weight: 700;
+      color: #cbd5e1;
+      border-top: 1px solid rgba(0, 224, 255, 0.35);
+      padding-top: 0.05in;
+    }
+    .url { color: #67e8f9; font-size: 0.105in; }
+    .postcard-back {
+      padding: 0.26in 0.3in;
+      font-size: 0.088in;
+      font-weight: 600;
+      line-height: 1.38;
+      color: #1e293b;
+      white-space: pre-wrap;
+    }
+    .back-title {
+      font-family: Syne, sans-serif;
+      font-size: 0.14in;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 0.06in;
+    }
+    @media print {
+      body { background: #fff; padding: 0; }
+      .instructions { display: none; }
+      .sheet-wrap { gap: 0; }
+      .postcard {
+        box-shadow: none;
+        page-break-after: always;
+        margin: 0;
+      }
+      @page { size: 6in 4in; margin: 0; }
+    }
+  </style>
+<link rel="canonical" href="https://thefranksstandard.com/mail/postcard-design">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="manifest" href="/manifest.json">
+</head>
+<body>
+  <div class="instructions">
+    <h1>Advertising sample — 4×6 seller postcard</h1>
+    <p>This is your <strong>print-ready sample</strong>: security, low fees, seller perks, and <strong>Seller Excellence</strong> volume rewards.</p>
+    <ol>
+      <li><strong>Preview</strong> — front + back below (same as mailed copy).</li>
+      <li><strong>Print PDF</strong> — Print → Save as PDF (6×4 in, no margins) for local print shop.</li>
+      <li><strong>Lob mail</strong> — Upload front PDF/screenshot to <a href="https://dashboard.lob.com" style="color:#67e8f9">Lob</a> → <code>LOB_POSTCARD_FRONT_URL</code> · back uses <code>assets/email-campaign/postcard-copy.txt</code>.</li>
+      <li><strong>Batch mail</strong> — Ops → <a href="/ops/mail-prospects" style="color:#67e8f9">Mail physical sellers</a> (I can run Lob when you add keys).</li>
+    </ol>
+  </div>
+
+  <div class="sheet-wrap">
+    <section class="postcard postcard-front" aria-label="Postcard front">
+      <div class="front-top">
+        <div>
+          <div class="brand">THE FRANKS<span class="brand-sub">STANDARD</span></div>
+          <span class="pill-security">COA · Escrow · Enforced</span>
+        </div>
+        <div class="qr" title="QR to sell + FOUNDERS10">
+          <img
+            src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&amp;data=https://thefranksstandard.com/go/postcard?ref=postcard&amp;utm_source=postcard&amp;utm_medium=mail&amp;promo=FOUNDERS10"
+            alt="QR — thefranksstandard.com/go/postcard"
+            width="200"
+            height="200"
+          />
+        </div>
+      </div>
+      <p class="subhead">Proof-first marketplace for serious sellers</p>
+      <p class="headline"><em>Security</em> built in. Fees half the big sites.</p>
+      <ul class="bullets">
+        <li>COA + escrow every sale</li>
+        <li>4–5% fees — not ~13%</li>
+        <li>Refund rules in writing</li>
+        <li>eBay import · AI store</li>
+        <li>Video inspect · dropship</li>
+        <li>Top volume → fee rewards</li>
+      </ul>
+      <div class="banners">
+        <p class="banner banner-founders">FOUNDERS10 — 3 months Pro FREE (limited)</p>
+        <p class="banner banner-excellence">Seller Excellence — #1 wins 0% platform fees 30 days</p>
+      </div>
+      <div class="front-foot">
+        <span class="url">thefranksstandard.com/sell</span>
+        <span>(877) 837-0527</span>
+      </div>
+    </section>
+
+    <section class="postcard postcard-back" aria-label="Postcard back">
+      <p class="back-title">THE FRANKS STANDARD</p>
+      <p id="backCopy">Loading…</p>
+    </section>
+  </div>
+
+  <script>
+    const fallback = `THE FRANKS STANDARD — sell where proof is required
+
+SECURITY: COA required · verify COA · escrow · enforcement in writing
+LOW FEES: 4–5% by plan · 3% launch · not 13%+ stacked
+PERKS: FOUNDERS10 · HONOR26 · AI store · eBay import
+VOLUME: Seller Excellence every 6 mo — #1 gets 0% fees 30 days
+
+thefranksstandard.com/sell · (877) 837-0527`
+    const el = document.getElementById('backCopy')
+    fetch('/mail/postcard-copy.txt')
+      .then((r) => (r.ok ? r.text() : Promise.reject()))
+      .then((t) => { el.textContent = t.trim() })
+      .catch(() => { el.textContent = fallback })
+  </script>
+</body>
+</html>

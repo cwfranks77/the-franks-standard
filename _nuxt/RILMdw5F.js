@@ -1,0 +1,1 @@
+import{aK as o,a0 as r,g as i,aM as c,I as d}from"./CEBG3wtd.js";const p=o(async a=>{let e,t;const{isAuthed:s}=r();if(s.value)return;const u=i(),{data:{user:n}}=([e,t]=c(()=>u.auth.getUser()),e=await e,t(),e);if(!n)return d(`/auth/login?redirect=${encodeURIComponent(a.fullPath)}`)});export{p as default};

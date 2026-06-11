@@ -1,0 +1,1 @@
+import{h as a,g as r,I as u}from"./CEBG3wtd.js";async function n(){const t=a(),s=r();if(t.query.switch==="1"){await s.auth.signOut();return}const{data:{session:e}}=await s.auth.getSession();e?.user&&(typeof t.query.redirect=="string"&&t.query.redirect.startsWith("/")||await u("/dashboard"))}export{n as u};

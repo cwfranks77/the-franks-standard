@@ -1,0 +1,1 @@
+import{aK as s,a0 as u,I as a}from"./CEBG3wtd.js";const r=s(t=>{const{isAuthed:e}=u();if(e.value&&t.path==="/bc-audio/ops")return a("/bc-audio/ops/panel",{replace:!0});if(!e.value)return a("/bc-audio",{replace:!0})});export{r as default};
