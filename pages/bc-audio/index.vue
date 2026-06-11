@@ -5,6 +5,7 @@ Only this namespace. No Franks Standard branding in page copy.
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { BC_BRAND } from '~/utils/bcBrand.js'
+import { BC_LEGAL_NAME } from '~/utils/bcSeo.js'
 import { getBcSupport } from '~/utils/bcSupport.js'
 
 definePageMeta({ layout: 'bc-audio' })
@@ -37,9 +38,15 @@ onMounted(() => {
 })
 
 useHead({
-  title: BC_BRAND.full,
+  title: BC_LEGAL_NAME,
+  titleTemplate: () => BC_LEGAL_NAME,
   meta: [
-    { name: 'description', content: `${BC_BRAND.full} — authorized wholesale distribution. Browse competition audio, marine, and enterprise systems.` },
+    { key: 'description', name: 'description', content: `${BC_LEGAL_NAME} — authorized wholesale distribution portal.` },
+    { key: 'og:title', property: 'og:title', content: BC_LEGAL_NAME },
+    { key: 'og:description', property: 'og:description', content: `${BC_LEGAL_NAME} — authorized wholesale distribution portal.` },
+    { key: 'twitter:title', name: 'twitter:title', content: BC_LEGAL_NAME },
+    { key: 'twitter:description', name: 'twitter:description', content: `${BC_LEGAL_NAME} — authorized wholesale distribution portal.` },
+    { key: 'apple-mobile-web-app-title', name: 'apple-mobile-web-app-title', content: BC_BRAND.short },
   ],
 })
 

@@ -2,11 +2,18 @@ import { createHash } from 'node:crypto'
 import { normalizeOpsPhrase } from './utils/opsPhrase'
 import { META_DESCRIPTION, OG_DESCRIPTION } from './utils/marketplaceFacilitatorCopy.js'
 import { isBcPowerAudioPrimarySite } from './utils/bcPrimarySite.js'
+import { BC_BRAND } from './utils/bcBrand.js'
+import { BC_LEGAL_NAME } from './utils/bcSeo.js'
 const rawSite = process.env.NUXT_PUBLIC_SITE_URL
 const siteUrl = (rawSite && String(rawSite).trim())
   ? String(rawSite).replace(/\/$/, '')
   : 'https://thefranksstandard.com'
 const bcPrimarySite = isBcPowerAudioPrimarySite(siteUrl)
+const bcSiteDescription = `${BC_LEGAL_NAME} — authorized wholesale distribution portal.`
+const franksSiteTitle = 'The Franks Standard — Marketplace Facilitator for Collectibles & Gear'
+const siteTitle = bcPrimarySite ? BC_LEGAL_NAME : franksSiteTitle
+const siteDescription = bcPrimarySite ? bcSiteDescription : META_DESCRIPTION
+const siteOgDescription = bcPrimarySite ? bcSiteDescription : OG_DESCRIPTION
 const bcPrerenderRoutes = bcPrimarySite
   ? [
       '/bc-audio',
@@ -142,9 +149,9 @@ export default defineNuxtConfig({
     includeAssets: ['franks-pavilion.png', 'logo.svg', 'icons/icon-192.png', 'icons/icon-512.png'],
     manifest: {
       id: '/',
-      name: 'The Franks Standard',
-      short_name: 'Franks Standard',
-      description: META_DESCRIPTION,
+      name: bcPrimarySite ? BC_LEGAL_NAME : 'The Franks Standard',
+      short_name: bcPrimarySite ? BC_BRAND.short : 'Franks Standard',
+      description: siteDescription,
       theme_color: '#0c0619',
       background_color: '#0c0619',
       display: 'standalone',
@@ -214,25 +221,25 @@ export default defineNuxtConfig({
     pageTransition: { name: 'page', mode: 'out-in' },
     layoutTransition: { name: 'layout', mode: 'out-in' },
     head: {
-      title: 'The Franks Standard — Marketplace Facilitator for Collectibles & Gear',
+      title: siteTitle,
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'description', content: META_DESCRIPTION },
-        { property: 'og:title', content: 'The Franks Standard — Marketplace Facilitator' },
-        { property: 'og:description', content: OG_DESCRIPTION },
+        { name: 'description', content: siteDescription },
+        { property: 'og:title', content: siteTitle },
+        { property: 'og:description', content: siteOgDescription },
         { property: 'og:url', content: siteUrl },
         { property: 'og:type', content: 'website' },
         { property: 'og:image', content: ogImage },
         { name: 'twitter:card', content: 'summary_large_image' },
-        { name: 'twitter:title', content: 'The Franks Standard' },
-        { name: 'twitter:description', content: META_DESCRIPTION },
+        { name: 'twitter:title', content: siteTitle },
+        { name: 'twitter:description', content: siteOgDescription },
         { name: 'twitter:image', content: ogImage },
         { name: 'theme-color', content: '#0c0619' },
         { name: 'mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
-        { name: 'apple-mobile-web-app-title', content: 'Franks Standard' },
+        { name: 'apple-mobile-web-app-title', content: bcPrimarySite ? BC_BRAND.short : 'Franks Standard' },
         { 'http-equiv': 'Cache-Control', content: 'no-cache, no-store, must-revalidate' },
         { 'http-equiv': 'Pragma', content: 'no-cache' },
         { 'http-equiv': 'Expires', content: '0' },

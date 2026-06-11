@@ -23,7 +23,7 @@
 
 <script setup>
 import '~/assets/css/bc-premium-theme.css'
-import { BC_BRAND } from '~/utils/bcBrand.js'
+import { BC_LEGAL_NAME } from '~/utils/bcSeo.js'
 
 useBcTheme()
 
@@ -31,7 +31,7 @@ const { refresh: refreshCatalog } = useBcProductCatalog()
 onMounted(() => { refreshCatalog() })
 
 useHead({
-  titleTemplate: (title) => title ? `${title} · ${BC_BRAND.full}` : BC_BRAND.full,
+  titleTemplate: (title) => title || BC_LEGAL_NAME,
 })
 
 const {
