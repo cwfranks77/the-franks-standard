@@ -331,6 +331,7 @@
 import { BC_BRAND } from '~/utils/bcBrand.js'
 import { getBcSupport } from '~/utils/bcSupport.js'
 import { buildSocialLinks } from '~/utils/siteSocial.js'
+import { getPublicSupabaseKey, getPublicSupabaseUrl } from '~/utils/publicSupabase.js'
 
 definePageMeta({ layout: false })
 
@@ -829,8 +830,8 @@ async function handleBuyNow () {
     try {
       checkout = await $fetch('/api/checkout/live-split-payment', { method: 'POST', body })
     } catch {
-      const supabaseUrl = String(config.public.supabase?.url || '').replace(/\/$/, '')
-      const supabaseKey = String(config.public.supabase?.key || '')
+      const supabaseUrl = getPublicSupabaseUrl(config)
+      const supabaseKey = getPublicSupabaseKey(config)
       if (!supabaseUrl || !supabaseKey) {
         throw new Error('Checkout is unavailable. Try again later.')
       }

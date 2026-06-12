@@ -7,6 +7,7 @@ import { computed, ref, watch } from 'vue'
 import { BC_BRAND } from '~/utils/bcBrand.js'
 import { BC_LEGAL_NAME } from '~/utils/bcSeo.js'
 import { getBcSupport } from '~/utils/bcSupport.js'
+import { getPublicSupabaseKey, getPublicSupabaseUrl } from '~/utils/publicSupabase.js'
 
 definePageMeta({ layout: 'bc-audio' })
 
@@ -54,8 +55,8 @@ async function createBcLiveCheckout (body: Record<string, unknown>) {
   try {
     return await $fetch('/api/checkout/live-split-payment', { method: 'POST', body })
   } catch {
-    const supabaseUrl = String(config.public.supabaseUrl || '').replace(/\/$/, '')
-    const supabaseKey = String(config.public.supabaseKey || '')
+    const supabaseUrl = getPublicSupabaseUrl(config)
+    const supabaseKey = getPublicSupabaseKey(config)
     if (!supabaseUrl || !supabaseKey) {
       throw new Error('Checkout is unavailable. Try again later.')
     }

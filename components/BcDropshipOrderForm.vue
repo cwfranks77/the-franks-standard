@@ -1,5 +1,6 @@
 <script setup>
 import { BC_BRAND } from '~/utils/bcBrand.js'
+import { getPublicSupabaseKey, getPublicSupabaseUrl } from '~/utils/publicSupabase.js'
 
 const props = defineProps({
   product: { type: Object, default: null },
@@ -24,8 +25,8 @@ async function createBcLiveCheckout (body) {
     return await $fetch('/api/checkout/live-split-payment', { method: 'POST', body })
   } catch {
     const config = useRuntimeConfig()
-    const supabaseUrl = String(config.public.supabaseUrl || '').replace(/\/$/, '')
-    const supabaseKey = String(config.public.supabaseKey || '')
+    const supabaseUrl = getPublicSupabaseUrl(config)
+    const supabaseKey = getPublicSupabaseKey(config)
     if (!supabaseUrl || !supabaseKey) {
       throw new Error('Checkout is unavailable. Try again later.')
     }

@@ -1,4 +1,5 @@
 import { BC_META_DEFAULTS } from '~/utils/bcMetaDefaults.js'
+import { getPublicSupabaseKey, getPublicSupabaseUrl, hasPublicSupabase } from '~/utils/publicSupabase.js'
 
 type SiteContentKey = 'bcMeta' | 'bcTheme' | 'homepage' | 'ads' | 'antiqueLedger'
 
@@ -42,14 +43,37 @@ export async function fetchBcPublicSiteContent (keys: SiteContentKey[]) {
   } catch { /* static host — fall through to Supabase */ }
 
   try {
-    const supabase = useSupabaseClient()
-    const { data, error } = await supabase
-      .from('site_marketing_content')
-      .select('content_key, payload')
-      .in('content_key', wanted)
-    if (error) throw error
-    return mergeRows(wanted, data || [])
+    const config = useRuntimeConfig()
+    if (hasPublicSupabase(config)) {
+      const supabase = useSupabaseClient()
+      const { data, error } = await supabase
+        .from('site_marketing_content')
+        .select('content_key, payload')
+        .in('content_key', wanted)
+      if (error) throw error
+      return mergeRows(wanted, data || [])
+    }
   } catch {
-    return mergeRows(wanted, null)
+    try {
+      const config = useRuntimeConfig()
+      const base = getPublicSupabaseUrl(config)
+      const key = getPublicSupabaseKey(config)
+      if (!base || !key) throw new Error('supabase_not_configured')
+      const rows = await $fetch<Array<{ content_key: string, payload: Record<string, unknown> }>>(
+        `${base}/rest/v1/site_marketing_content`,
+        {
+          query: {
+            select: 'content_key,payload',
+            content_key: `in.(${wanted.join(',')})`,
+          },
+          headers: {
+            apikey: key,
+            Authorization: `Bearer ${key}`,
+          },
+        },
+      )
+      return mergeRows(wanted, rows || [])
+    } catch { /* fall through */ }
   }
+  return mergeRows(wanted, null)
 }

@@ -1,3 +1,5 @@
+import { getPublicSupabaseUrl } from '~/utils/publicSupabase.js'
+
 /**
  * Capture Vue + window runtime errors and POST to ops-error-ingest.
  */
@@ -5,7 +7,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   if (import.meta.server) return
 
   const config = useRuntimeConfig()
-  const base = String(config.public.supabaseUrl || '').replace(/\/+$/, '')
+  const base = getPublicSupabaseUrl(config)
   if (!base) return
 
   const ingestUrl = `${base}/functions/v1/ops-error-ingest`

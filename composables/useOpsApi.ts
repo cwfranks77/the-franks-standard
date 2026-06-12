@@ -2,6 +2,7 @@ import {
   getStoredOpsPhrase,
   isOpsApiUnavailable,
 } from '~/utils/opsClientAuth'
+import { getSupabaseFunctionsBase } from '~/utils/publicSupabase.js'
 
 type OpsFetchOptions = {
   method?: string
@@ -10,10 +11,7 @@ type OpsFetchOptions = {
 }
 
 function functionsBase () {
-  const config = useRuntimeConfig()
-  const url = String(config.public?.supabaseUrl || '').replace(/\/+$/, '')
-  if (!url) throw new Error('Supabase URL is not configured on this build.')
-  return `${url}/functions/v1`
+  return getSupabaseFunctionsBase(useRuntimeConfig())
 }
 
 async function invokeOpsCms (action: string, payload: Record<string, unknown> = {}) {
