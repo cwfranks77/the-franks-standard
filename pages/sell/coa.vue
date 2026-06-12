@@ -46,6 +46,8 @@
 </template>
 
 <script setup>
+definePageMeta({ middleware: 'requires-auth' })
+
 import { collectibleListingRoute, SELL_FORM_PATH } from '~/utils/listItemRoutes.js'
 
 const coaType = ref('')

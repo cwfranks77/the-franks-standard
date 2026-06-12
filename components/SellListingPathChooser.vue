@@ -7,18 +7,30 @@
     </p>
 
     <div class="choice-grid">
-      <button type="button" class="choice-card choice-card--general" @click="chooseGeneral">
+      <button
+        type="button"
+        class="choice-card choice-card--general"
+        :disabled="!!choosing"
+        :aria-busy="choosing === 'general'"
+        @click="chooseGeneral"
+      >
         <span class="choice-icon" aria-hidden="true">📦</span>
         <span class="choice-title">Non-collectible</span>
         <span class="choice-desc">Retail only: electronics, tools, apparel, appliances — not cards, coins, art, antiques, or memorabilia.</span>
-        <span class="choice-cta">Continue to list an item →</span>
+        <span class="choice-cta">{{ choosing === 'general' ? 'Opening listing form…' : 'Continue to list an item →' }}</span>
       </button>
 
-      <button type="button" class="choice-card choice-card--collectible" @click="chooseCollectible">
+      <button
+        type="button"
+        class="choice-card choice-card--collectible"
+        :disabled="!!choosing"
+        :aria-busy="choosing === 'collectible'"
+        @click="chooseCollectible"
+      >
         <span class="choice-icon" aria-hidden="true">🏛️</span>
         <span class="choice-title">Collectible</span>
         <span class="choice-desc">Cards, coins, watches, art, antiques, memorabilia — COA upload or Franks Standard COA only.</span>
-        <span class="choice-cta">Continue to COA / proof step →</span>
+        <span class="choice-cta">{{ choosing === 'collectible' ? 'Opening COA step…' : 'Continue to COA / proof step →' }}</span>
       </button>
     </div>
   </section>
@@ -27,14 +39,24 @@
 <script setup>
 import { generalListingRoute, LIST_ITEM_COA_PATH } from '~/utils/listItemRoutes.js'
 
-const router = useRouter()
+const choosing = ref('')
 
-function chooseGeneral () {
-  router.push(generalListingRoute())
+async function chooseGeneral () {
+  choosing.value = 'general'
+  try {
+    await navigateTo(generalListingRoute())
+  } finally {
+    choosing.value = ''
+  }
 }
 
-function chooseCollectible () {
-  router.push(`${LIST_ITEM_COA_PATH}/`)
+async function chooseCollectible () {
+  choosing.value = 'collectible'
+  try {
+    await navigateTo(LIST_ITEM_COA_PATH)
+  } finally {
+    choosing.value = ''
+  }
 }
 </script>
 
@@ -85,10 +107,14 @@ function chooseCollectible () {
   font-family: inherit;
   color: inherit;
 }
-.choice-card:hover {
+.choice-card:hover:not(:disabled) {
   border-color: #f7ca00;
   background: #fff8d9;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+.choice-card:disabled {
+  opacity: 0.7;
+  cursor: wait;
 }
 .choice-card--collectible {
   border-color: rgba(201, 168, 76, 0.45);
