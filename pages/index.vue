@@ -130,6 +130,7 @@
         <div class="portal-scroll-stack" :class="{ 'portal-scroll-stack--pending': catalogPending }">
           <section
             v-for="lane in showcaseLanes"
+            v-show="lane.tiles.length"
             :key="lane.deptKey"
             class="portal-showcase"
           >
@@ -187,6 +188,7 @@
                         class="portal-scroll__img"
                         loading="eager"
                         decoding="async"
+                        @error="onScrollImageError($event, tile)"
                       >
                     </div>
                   </figure>
@@ -629,6 +631,7 @@ function pushTile (tiles, seen, product) {
   tiles.push({
     productId,
     url,
+    fallbackUrl: bcPlaceholderImageForProduct(product),
     alt: getProductName(product),
     sku: getProductSku(product),
     triedSkuFallback: false,
@@ -638,17 +641,19 @@ function pushTile (tiles, seen, product) {
 function buildLaneTiles (deptKey, perLane = 28) {
   const tiles = []
   const seen = new Set()
-  const withImages = catalogProducts.value.filter((product) => hasCatalogImage(product))
-  const deptProducts = withImages.filter((product) => laneMatchesProduct(deptKey, product))
+  const deptProducts = catalogProducts.value
+    .filter((product) => laneMatchesProduct(deptKey, product) && hasCatalogImage(product))
+    .sort((a, b) => {
+      const aUrl = getProductImage(a)
+      const bUrl = getProductImage(b)
+      const aPhoto = aUrl.includes('amazonaws.com') ? 1 : 0
+      const bPhoto = bUrl.includes('amazonaws.com') ? 1 : 0
+      return bPhoto - aPhoto
+    })
 
   for (const product of deptProducts) {
     pushTile(tiles, seen, product)
-    if (tiles.length >= perLane) return tiles
-  }
-
-  const laneIndex = SHOWCASE_LANE_DEFS.find((lane) => lane.deptKey === deptKey)?.laneIndex ?? 0
-  for (let i = 0; i < withImages.length && tiles.length < perLane; i++) {
-    pushTile(tiles, seen, withImages[(i + laneIndex * 41) % withImages.length])
+    if (tiles.length >= perLane) break
   }
 
   return tiles
@@ -664,14 +669,16 @@ const showcaseLanes = computed(() =>
 function onScrollImageError (event, tile) {
   const img = event?.target
   if (!img || !tile) return
-  const fixed = fixPetraImageUrl(tile.url) || petraImageUrlFromSku(tile.sku)
-  if (fixed && img.src !== fixed) {
-    img.src = fixed
-    return
+  if (!tile.triedSkuFallback) {
+    tile.triedSkuFallback = true
+    const fixed = fixPetraImageUrl(tile.url) || petraImageUrlFromSku(tile.sku)
+    if (fixed && img.src !== fixed) {
+      img.src = fixed
+      return
+    }
   }
-  if (!img.src.endsWith(SCROLL_IMAGE_FALLBACK)) {
-    img.src = SCROLL_IMAGE_FALLBACK
-  }
+  const fallback = tile.fallbackUrl || SCROLL_IMAGE_FALLBACK
+  if (img.src !== fallback) img.src = fallback
 }
 
 function onDetailImageError (event, product) {
