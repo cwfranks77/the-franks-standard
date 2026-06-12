@@ -199,13 +199,20 @@
             <p class="text-muted small">Minimum bid: <strong>${{ minBid.toLocaleString() }}</strong></p>
           </div>
 
+          <CheckoutOrderAcknowledgment
+            v-if="showCheckoutAck"
+            v-model:agreed="checkoutAckAgreed"
+            v-model:serialized-agreed="checkoutSerializedAgreed"
+            :has-serialized-coa="hasSerializedCoa"
+          />
+
           <div class="listing-actions">
             <button
               v-if="listing.saleType !== 'auction'"
               type="button"
               class="btn btn-primary btn-lg"
               style="flex: 1;"
-              :disabled="checkoutLoading || isOwnListing || listing.integrityStatus === 'review' || (coaBond && !coaBond.paired)"
+              :disabled="checkoutLoading || isOwnListing || listing.integrityStatus === 'review' || (coaBond && !coaBond.paired) || !checkoutReady"
               @click="buyNow"
             >{{ checkoutLoading ? 'Opening checkout…' : `Buy now — $${listing.price.toLocaleString()} + tax at checkout` }}</button>
             <button
@@ -213,7 +220,7 @@
               type="button"
               class="btn btn-primary btn-lg"
               style="flex: 1;"
-              :disabled="checkoutLoading"
+              :disabled="checkoutLoading || !checkoutReady"
               @click="buyNow"
             >{{ checkoutLoading ? 'Opening checkout…' : `Buy It Now — $${listing.buyNowPrice.toLocaleString()} + tax` }}</button>
             <button
@@ -221,7 +228,7 @@
               type="button"
               class="btn btn-primary btn-lg"
               style="flex: 1;"
-              :disabled="checkoutLoading"
+              :disabled="checkoutLoading || !checkoutReady"
               @click="buyNow"
             >{{ checkoutLoading ? 'Opening checkout…' : `Pay winning bid — $${displayBid.toLocaleString()} + tax` }}</button>
             <button
@@ -265,6 +272,13 @@
       :listing-id="listing.id"
       @close="showReportModal = false"
     />
+
+    <div v-if="showBuyerPolicyModal" class="buyer-policy-modal-backdrop" role="dialog" aria-modal="true">
+      <div class="buyer-policy-modal">
+        <BuyerPolicyAgreement @accepted="onBuyerPolicyAccepted" />
+        <button type="button" class="btn btn-outline btn-sm modal-close" @click="showBuyerPolicyModal = false">Cancel</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -278,6 +292,11 @@ import {
   buyNowAvailable,
 } from '~/utils/auctionHelpers.js'
 import { listingShowsAuthenticitySeal, SCREENING_LABEL, SEAL_LISTING_LEAD } from '~/utils/authenticitySeal.js'
+import {
+  CHECKOUT_ACK_VERSION,
+  checkoutAckTextForHash,
+} from '~/utils/buyerCheckoutAcknowledgment.js'
+import { sha256HexUtf8 } from '~/utils/sha256Browser.js'
 
 const showAuthenticitySeal = computed(() => listingShowsAuthenticitySeal(listing.value))
 
@@ -332,6 +351,20 @@ async function shareListing () {
 
 const { loading: checkoutLoading, error: checkoutError, startCheckout } = useMarketplaceCheckout()
 const { loading: bidLoading, error: bidError, placeBid } = usePlaceBid()
+const { needsAcceptance, loadStatus: loadBuyerPolicyStatus } = useBuyerPolicyAcceptance()
+
+const checkoutAckAgreed = ref(false)
+const checkoutSerializedAgreed = ref(false)
+const showBuyerPolicyModal = ref(false)
+
+const hasSerializedCoa = computed(() => listing.value?.coaType === 'franks_issued')
+const showCheckoutAck = computed(() => !!user.value?.id && !isOwnListing.value && !!listing.value)
+const checkoutReady = computed(() => {
+  if (!showCheckoutAck.value) return true
+  if (!checkoutAckAgreed.value) return false
+  if (hasSerializedCoa.value && !checkoutSerializedAgreed.value) return false
+  return true
+})
 
 const bidAmount = ref('')
 const timeLeftLabel = ref('')
@@ -380,7 +413,38 @@ async function submitBid () {
 
 async function buyNow () {
   const id = (route.params.id || '').toString()
-  if (id) await startCheckout(id)
+  if (!id) return
+
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) {
+    await startCheckout(id)
+    return
+  }
+
+  await loadBuyerPolicyStatus()
+  if (needsAcceptance.value) {
+    showBuyerPolicyModal.value = true
+    return
+  }
+
+  if (!checkoutReady.value) {
+    checkoutError.value = hasSerializedCoa.value
+      ? 'Check both checkout acknowledgment boxes before paying.'
+      : 'Check the checkout acknowledgment box before paying.'
+    return
+  }
+
+  const ackHash = sha256HexUtf8(checkoutAckTextForHash({ hasSerializedCoa: hasSerializedCoa.value }))
+  await startCheckout(id, {
+    ackVersion: CHECKOUT_ACK_VERSION,
+    ackHash,
+    serializedCoaSerial: hasSerializedCoa.value ? (listing.value?.coaSerial || null) : null,
+  })
+}
+
+function onBuyerPolicyAccepted () {
+  showBuyerPolicyModal.value = false
+  buyNow()
 }
 
 const messageSellerHref = computed(() => {
@@ -521,6 +585,10 @@ async function load() {
 
 onMounted(() => {
   load()
+  if (user.value?.id) loadBuyerPolicyStatus()
+})
+watch(user, (u) => {
+  if (u?.id) loadBuyerPolicyStatus()
 })
 onUnmounted(() => {
   if (auctionTimer) clearInterval(auctionTimer)
@@ -704,6 +772,27 @@ watch(
   margin-top: 4px;
   text-align: center;
 }
+
+.buyer-policy-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.buyer-policy-modal {
+  max-width: 640px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--stone-950, #0f0f0f);
+  border-radius: var(--radius-lg);
+  padding: 8px 8px 16px;
+}
+.buyer-policy-modal .modal-close { margin: 8px 12px 0; }
 
 @media (max-width: 768px) {
   .listing-layout { grid-template-columns: 1fr; }

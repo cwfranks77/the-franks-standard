@@ -515,6 +515,13 @@
             </p>
           </div>
 
+          <SellerLiabilityReleaseGate
+            v-if="form.category"
+            :release-type="sellerReleaseType"
+            v-model:legal-name="liabilityLegalName"
+            v-model:agreed="liabilityAgreed"
+          />
+
           <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;" :disabled="submitting">
             {{ submitting ? 'Publishing…' : 'Publish to marketplace' }}
           </button>
@@ -539,6 +546,7 @@ import { calcCharitySplit, CHARITY_PERCENT_PRESETS } from '~/utils/charitySplit.
 import { auctionEndsAtFromDays } from '~/utils/auctionHelpers.js'
 import { DROPSHIP_PROVIDER_CATALOG, useSellerDropship } from '~/composables/useSellerDropship.js'
 import { COLLECTION_SLUG_OPTIONS } from '~/utils/nicheCollections.js'
+import { sellerReleaseTypeForListing } from '~/utils/sellerLiabilityReleases.js'
 
 const sellDockTiles = [
   { to: '/sell/import', icon: '📥', label: 'Import inventory', hint: 'eBay CSV or store' },
@@ -673,6 +681,10 @@ const coaFile = ref(null)
 const coaFileName = ref('')
 const coaCompareAck = ref(false)
 const coaFranksAck = ref(false)
+const liabilityLegalName = ref('')
+const liabilityAgreed = ref(false)
+const { recordRelease: recordSellerLiabilityRelease } = useSellerLiabilityRelease()
+const sellerReleaseType = computed(() => sellerReleaseTypeForListing(requiresCoa.value))
 
 const aiDescTone = ref('professional')
 const aiDescNotes = ref('')
@@ -962,6 +974,10 @@ async function submitListing() {
     alert('You must digitally sign all seller policies before publishing.')
     return
   }
+  if (!liabilityAgreed.value || liabilityLegalName.value.trim().length < 2) {
+    alert('Sign the seller liability release (full legal name + checkbox) before publishing.')
+    return
+  }
   const needsCoa = listingRequiresCoa(form.category, form.title, form.description)
   if (needsCoa) {
     if (!form.coaType) {
@@ -1241,6 +1257,23 @@ async function submitListing() {
     }
 
     const listingId = row.id
+
+    try {
+      await recordSellerLiabilityRelease({
+        needsCoa,
+        legalName: liabilityLegalName.value.trim(),
+        listingId,
+        serializedCoaUsed: effectiveCoaType === 'franks_issued',
+      })
+    } catch (releaseErr) {
+      const releaseMsg = releaseErr instanceof Error ? releaseErr.message : String(releaseErr)
+      if (/record_seller_liability_release|function.*does not exist|42883/i.test(releaseMsg)) {
+        alert('Listing saved but liability release could not be stored. Run Supabase migration 041_seller_buyer_liability_releases.sql, then contact support to link this listing.')
+      } else {
+        throw releaseErr
+      }
+    }
+
     const base = `${user.id}/${listingId}`
 
     const imagePaths = []
