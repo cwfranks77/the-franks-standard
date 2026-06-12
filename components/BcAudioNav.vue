@@ -38,12 +38,13 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
         @click="(e) => { closeAll(); onBrandKnock?.(e) }"
       >
         <img
-          src="/img/bc-logo-primary.png"
+          src="/img/bc-logo-primary.png?v=20260612"
           alt="B&amp;C Performance Audio"
           class="bc-nav__logo-img"
-          width="240"
-          height="56"
+          width="260"
+          height="60"
           decoding="async"
+          fetchpriority="high"
         >
       </NuxtLink>
 
@@ -138,8 +139,8 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 .bc-nav__logo-img {
   display: block;
   width: auto;
-  max-width: min(240px, 58vw);
-  height: 48px;
+  max-width: min(260px, 62vw);
+  height: 56px;
   object-fit: contain;
 }
 .bc-nav__actions {

@@ -11,6 +11,8 @@ on:
       - 'content/**'
       - 'src/content/**'
       - 'public/catalog/**'
+      - 'public/img/bc-logo-primary.png'
+      - 'public/img/pictures/**'
       - 'package.json'
       - 'composables/useBcProductCatalog.js'
       - 'utils/bcProductImage.js'
