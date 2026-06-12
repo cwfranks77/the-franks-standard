@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Marine audio">
+  <rect width="600" height="600" fill="#0d0d0d"/>
+  <path d="M100 380 Q300 300 500 380 L500 420 Q300 340 100 420 Z" fill="#161616" stroke="#d32f2f" stroke-width="4"/>
+  <rect x="230" y="200" width="140" height="170" rx="16" fill="#141414" stroke="#d32f2f" stroke-width="4"/>
+  <circle cx="300" cy="285" r="40" fill="#d32f2f" opacity="0.9"/>
+  <text x="300" y="500" text-anchor="middle" fill="#d32f2f" font-family="Arial,sans-serif" font-size="26" font-weight="700">MARINE AUDIO</text>
+</svg>

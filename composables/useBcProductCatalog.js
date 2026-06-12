@@ -1,4 +1,5 @@
 import { filterBcAudioProducts } from '~/utils/bcAudioOnlyCatalog.js'
+import { bcPlaceholderImageForProduct, resolveBcProductImage } from '~/utils/bcProductImage.js'
 
 /**
  * Load B&C product rows at runtime from /catalog/petra-products.json.
@@ -20,7 +21,8 @@ export function useBcProductCatalog () {
       name: item.name,
       category: item.category,
       brand: item.brand || item.category,
-      image: item.image || '',
+      image: resolveBcProductImage(item),
+      fallbackImage: bcPlaceholderImageForProduct(item),
       tagline: item.description,
       retailPrice: item.price,
       badge: item.inStock === false ? 'Out of stock' : '',
@@ -37,7 +39,8 @@ export function useBcProductCatalog () {
       name: hit.name,
       category: hit.category,
       brand: hit.brand || hit.category,
-      image: hit.image || '',
+      image: resolveBcProductImage(hit),
+      fallbackImage: bcPlaceholderImageForProduct(hit),
       tagline: hit.description,
       description: hit.description,
       retailPrice: hit.price,

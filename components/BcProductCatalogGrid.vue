@@ -57,6 +57,13 @@ function loadMore () {
 function selectItem (item) {
   emit('select', item)
 }
+
+function onImageError (event, item) {
+  const img = event?.target
+  if (!img) return
+  const fallback = item?.fallbackImage || '/img/bc-catalog/speaker.svg'
+  if (img.src !== fallback) img.src = fallback
+}
 </script>
 
 <template>
@@ -106,6 +113,7 @@ function selectItem (item) {
             loading="lazy"
             decoding="async"
             referrerpolicy="no-referrer"
+            @error="onImageError($event, item)"
           >
           <span v-if="item.badge" class="bc-catalog__badge">{{ item.badge }}</span>
         </div>

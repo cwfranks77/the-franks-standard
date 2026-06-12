@@ -14,6 +14,7 @@ import {
   bcAudioDepartmentKey,
   bcAudioDepartmentLabel,
 } from '~/utils/bcAudioOnlyCatalog.js'
+import { bcPlaceholderImageForProduct, resolveBcProductImage } from '~/utils/bcProductImage.js'
 
 definePageMeta({ layout: 'bc-audio' })
 
@@ -113,15 +114,13 @@ const formatPrice = (product: any) => {
   return `$${numeric.toFixed(2)}`
 }
 
-const getProductImage = (product: any) => {
-  if (!product) return ''
-  if (product.image && typeof product.image === 'string') {
-    return product.image.replace('http://', 'https://')
-  }
-  if (product.sku) {
-    return `https://petraimages.com.s3.amazonaws.com/600x600/${String(product.sku).toUpperCase()}.jpg`
-  }
-  return ''
+const getProductImage = (product: any) => resolveBcProductImage(product)
+
+function onProductImageError (event: Event, product: any) {
+  const img = event.target as HTMLImageElement | null
+  if (!img) return
+  const fallback = bcPlaceholderImageForProduct(product)
+  if (img.src !== fallback) img.src = fallback
 }
 
 function getDeptKey (product: any): DeptKey | null {
@@ -286,6 +285,7 @@ const isCheckoutBusy = (product: any) =>
                 :alt="getProductName(product)"
                 class="bc-home__card-img"
                 loading="lazy"
+                @error="onProductImageError($event, product)"
               >
               <span v-else class="bc-home__card-icon">{{ getIconForDept(getDeptKey(product)) }}</span>
               <span class="bc-home__card-badge">✓ AUTHORIZED PICTURE MATRIX</span>
