@@ -45,6 +45,7 @@
     "audit:site": "node site-audit.cjs",
     "ops:remove-listing": "node scripts/remove-listing.cjs",
     "ops:setup-bc-phone": "node scripts/setup-bc-twilio-line.cjs",
+    "ops:rotate-bc-phone": "node scripts/setup-bc-twilio-line.cjs --buy --gh-secrets --deploy-voice",
     "ops:deploy-franks-voice": "node scripts/deploy-franks-voice.cjs",
     "ops:deploy-bc-voice": "node scripts/deploy-ai-voice-agent.cjs",
     "ops:deploy-voice": "node scripts/deploy-franks-voice.cjs && node scripts/deploy-ai-voice-agent.cjs",

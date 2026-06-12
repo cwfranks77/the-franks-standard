@@ -3,8 +3,8 @@ import { getBcSupportFromLedger } from '~/utils/supportContacts.js'
 
 /** @deprecated use getBcSupportFromLedger — kept for imports site-wide */
 export const BC_SUPPORT_DEFAULTS = Object.freeze({
-  phoneDisplay: '(833) 322-8439',
-  phoneTel: '+18333228439',
+  phoneDisplay: '(833) 722-4147',
+  phoneTel: '+18337224147',
   email: 'bc-audio@thefranksstandard.com',
   ownerName: 'Charles W. Franks',
 })

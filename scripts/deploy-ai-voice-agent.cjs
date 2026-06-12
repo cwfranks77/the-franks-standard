@@ -54,8 +54,8 @@ async function pickBcLine () {
     const hit = bcRows.find((r) => r.phone_number === preferred)
     if (hit) return hit
   }
-  const toll833 = bcRows.find((r) => String(r.phone_number).includes('8333228439'))
-  return toll833 || bcRows[0]
+  const bcNamed = bcRows.find((r) => /b&c|bc performance/i.test(String(r.friendly_name || '')))
+  return bcNamed || bcRows[0]
 }
 
 async function main () {

@@ -46,12 +46,9 @@ export function getBcSupportFromLedger (runtimeConfig) {
   const row = supportLedger.audioDivision || {}
   const envDisplay = String(pub.bcAudioSupportPhone || '').trim()
   const envTel = String(pub.bcAudioSupportTel || '').trim()
-  const phoneDisplay = !isPlaceholderPhone(row.phone)
-    ? String(row.phone).trim()
-    : (envDisplay || '(833) 322-8439')
-  const phoneTel = !isPlaceholderPhone(row.phone)
-    ? (phoneDisplayToTel(row.phone) || envTel)
-    : (envTel || phoneDisplayToTel(phoneDisplay) || '+18333228439')
+  const ledgerDisplay = !isPlaceholderPhone(row.phone) ? String(row.phone).trim() : ''
+  const phoneDisplay = envDisplay || ledgerDisplay || '(833) 722-4147'
+  const phoneTel = envTel || phoneDisplayToTel(ledgerDisplay) || phoneDisplayToTel(phoneDisplay) || '+18337224147'
   return {
     name: row.name || 'B&C Performance Audio LLC',
     lineType: row.lineType || 'Competition Audio Tech Support',
