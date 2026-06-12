@@ -84,6 +84,21 @@
         <p class="portal-nav__policy">
           Open-door policy: the owner is available anytime for customer questions and issues.
         </p>
+        <form class="portal-nav__search" role="search" @submit.prevent="runCatalogSearch">
+          <label class="portal-nav__search-label" for="portal-catalog-search">Search catalog</label>
+          <input
+            id="portal-catalog-search"
+            v-model="catalogSearchQuery"
+            type="search"
+            class="portal-nav__search-input"
+            placeholder="Search products, brands, or SKU..."
+            autocomplete="off"
+            :disabled="catalogPending"
+          >
+          <button type="submit" class="portal-nav__search-btn" :disabled="catalogPending || catalogSearchQuery.trim().length < 2">
+            Search
+          </button>
+        </form>
       </div>
 
       <div class="portal-nav__balance" aria-hidden="true" />
@@ -174,15 +189,19 @@
         </div>
       </div>
 
-      <div v-else-if="viewMode === 'category'" class="portal-category portal-fade">
+      <div v-else-if="viewMode === 'category' || viewMode === 'search'" class="portal-category portal-fade">
         <button type="button" class="portal-detail__back" @click="backToShowroom">
           ← Return to Master Showroom
         </button>
 
         <header class="portal-category__head">
-          <span class="portal-category__eyebrow">Category catalog</span>
-          <h2 class="portal-category__title">{{ selectedCategoryLabel }}</h2>
-          <p class="portal-category__meta">{{ categoryListProducts.length }} items — select one for full details</p>
+          <span class="portal-category__eyebrow">{{ viewMode === 'search' ? 'Catalog search' : 'Category catalog' }}</span>
+          <h2 class="portal-category__title">
+            {{ viewMode === 'search' ? `Results for “${catalogSearchQuery.trim()}”` : selectedCategoryLabel }}
+          </h2>
+          <p class="portal-category__meta">
+            {{ categoryListProducts.length }} items — select one for full details
+          </p>
         </header>
 
         <div class="portal-category__grid">
@@ -338,6 +357,7 @@ const selectedProductId = ref('')
 const selectedCategoryLabel = ref('')
 const catalogMenuOpen = ref(false)
 const expandedCategory = ref('')
+const catalogSearchQuery = ref('')
 const catalogPickerRef = ref(null)
 const checkoutBusy = ref(false)
 
@@ -437,46 +457,55 @@ function getProductDescription (product) {
   return product.description || product.longDesc || product.specs || 'No specifications available.'
 }
 
-function getProductBaseCost (product) {
+function resolveCategoryMarkup (category, name) {
+  const cat = String(category || '').toLowerCase()
+  const label = String(name || '').toLowerCase()
+  if (cat.includes('marine') || label.includes('marine')) return 2.10
+  if (cat.includes('car') || label.includes('car audio') || label.includes('subwoofer') || label.includes('amplifier')) return 1.55
+  if (cat.includes('home') || label.includes('receiver') || label.includes('soundbar') || label.includes('theater')) return 1.70
+  if (cat.includes('accessory') || label.includes('cable') || label.includes('mount') || label.includes('adapter')) return 2.50
+  if (cat.includes('electronics') || cat.includes('computer') || cat.includes('workstation')) return 1.35
+  return 1.55
+}
+
+/** Wholesale/dealer cost only — never use public retail `price` when retailPrice is set. */
+function getProductWholesaleCost (product) {
   if (!product) return null
-  const raw = product.baseCost ?? product.wholesaleCost ?? product.cost ?? product.price
+  const raw = product.wholesalePrice ?? product.baseCost ?? product.wholesaleCost ?? product.cost
   if (raw == null || raw === '') return null
   const numeric = Number(raw)
   if (!Number.isFinite(numeric) || numeric <= 0) return null
   return numeric
 }
 
-// STRICT ENFORCEMENT: Variable Retail Markup Script Engine Block
+function getProductBaseCost (product) {
+  return getProductWholesaleCost(product)
+}
+
 function calculateTargetRetailPrice (product) {
   if (!product || !product.baseCost) return '0.00'
-
-  const catLower = (product.category || '').toLowerCase()
-  let markup = 1.55 // Default 55% markup for home audio systems (MSRP: $1,394.45)
-
-  if (catLower.includes('computer') || catLower.includes('workstation')) {
-    markup = 1.35 // 35% markup for computing nodes (MSRP: $2,023.65)
-  } else if (catLower.includes('marine') || catLower.includes('power')) {
-    markup = 1.65 // 65% premium markup for element-proof marine gear (MSRP: $411.35)
-  }
-
+  const markup = resolveCategoryMarkup(product.category, product.name)
   return (product.baseCost * markup).toFixed(2)
 }
 
+/** Public storefront price — MAP-safe retail only, never raw wholesale. */
 function getProductPrice (product) {
   if (!product) return null
-  const baseCost = getProductBaseCost(product)
-  if (baseCost != null) {
+  const retailRaw = product.retailPrice ?? product.msrp
+  if (retailRaw != null && retailRaw !== '') {
+    const retail = Number(retailRaw)
+    if (Number.isFinite(retail) && retail > 0) return retail
+  }
+  const wholesale = getProductWholesaleCost(product)
+  if (wholesale != null) {
     const calculated = Number(calculateTargetRetailPrice({
-      baseCost,
+      baseCost: wholesale,
       category: getProductSegment(product),
+      name: getProductName(product),
     }))
     if (Number.isFinite(calculated) && calculated > 0) return calculated
   }
-  const raw = product.retailPrice ?? product.msrp
-  if (raw == null || raw === '') return null
-  const numeric = Number(raw)
-  if (!Number.isFinite(numeric) || numeric <= 0) return null
-  return numeric
+  return null
 }
 
 function formatPrice (product) {
@@ -507,15 +536,30 @@ function petraImageUrl (sku) {
   return `${PETRA_IMAGE_CDN}/600x600/${String(sku).toUpperCase()}.jpg`
 }
 
+function isPetraDistributorSku (product) {
+  if (!product) return false
+  if (String(product.id || '').startsWith('petra-')) return true
+  return Boolean(String(product.vendorSku || '').trim())
+}
+
+function resolveProductImage (product) {
+  if (!product) return ''
+  const localImage = String(product.image || '').trim()
+  if (localImage.startsWith('/')) return localImage
+  const fromCatalog = fixPetraImageUrl(product.image)
+  if (fromCatalog) return fromCatalog
+  if (isPetraDistributorSku(product)) {
+    return petraImageUrl(product.sku || product.vendorSku)
+  }
+  return ''
+}
+
 function hasCatalogImage (product) {
-  return Boolean(fixPetraImageUrl(product?.image) || petraImageUrl(getProductSku(product)))
+  return Boolean(resolveProductImage(product))
 }
 
 function getProductImage (product) {
-  if (!product) return ''
-  const fromCatalog = fixPetraImageUrl(product.image)
-  if (fromCatalog) return fromCatalog
-  return petraImageUrl(product.sku || product.vendorSku)
+  return resolveProductImage(product)
 }
 
 const LANE_MATCHERS = {
@@ -563,11 +607,39 @@ const currentProduct = computed(() =>
   catalogProducts.value.find((p) => getProductId(p) === selectedProductId.value) || null,
 )
 
+const searchResultProducts = computed(() => {
+  const q = catalogSearchQuery.value.trim().toLowerCase()
+  if (!q || q.length < 2) return []
+  return catalogProducts.value.filter((product) => {
+    const haystack = [
+      getProductName(product),
+      getProductSku(product),
+      getProductSegment(product),
+      product.brand,
+      product.description,
+    ].filter(Boolean).join(' ').toLowerCase()
+    return haystack.includes(q)
+  })
+})
+
 const categoryListProducts = computed(() => {
+  if (viewMode.value === 'search') {
+    return searchResultProducts.value
+  }
   if (!selectedCategoryLabel.value) return []
   const group = catalogGroups.value.find((g) => g.label === selectedCategoryLabel.value)
   return group?.items || []
 })
+
+function runCatalogSearch () {
+  const q = catalogSearchQuery.value.trim()
+  if (q.length < 2) return
+  selectedCategoryLabel.value = ''
+  selectedProductId.value = ''
+  catalogMenuOpen.value = false
+  expandedCategory.value = ''
+  viewMode.value = 'search'
+}
 
 function pushTile (tiles, seen, product) {
   const productId = getProductId(product)
@@ -587,7 +659,7 @@ function pushTile (tiles, seen, product) {
 function buildLaneTiles (deptKey, perLane = 28) {
   const tiles = []
   const seen = new Set()
-  const withImages = catalogProducts.value.filter((product) => getProductImage(product))
+  const withImages = catalogProducts.value.filter((product) => hasCatalogImage(product))
   const deptProducts = withImages.filter((product) => laneMatchesProduct(deptKey, product))
 
   for (const product of deptProducts) {
@@ -670,6 +742,7 @@ function onCategoryImageError (event, product) {
 function backToShowroom () {
   selectedProductId.value = ''
   selectedCategoryLabel.value = ''
+  catalogSearchQuery.value = ''
   catalogMenuOpen.value = false
   expandedCategory.value = ''
   viewMode.value = 'showroom'
@@ -684,6 +757,11 @@ function getIconForProduct (product) {
 }
 
 function resetToHome () {
+  selectedProductId.value = ''
+  if (catalogSearchQuery.value.trim().length >= 2) {
+    viewMode.value = 'search'
+    return
+  }
   if (selectedCategoryLabel.value) {
     viewMode.value = 'category'
     return
@@ -890,6 +968,63 @@ async function handleBuyNow () {
   line-height: 1.45;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.5);
+}
+
+.portal-nav__search {
+  display: flex;
+  align-items: stretch;
+  width: min(100%, 22rem);
+  margin-top: 0.15rem;
+  border-radius: 0.45rem;
+  overflow: hidden;
+  border: 1px solid rgba(211, 47, 47, 0.45);
+  background: rgba(0, 0, 0, 0.35);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
+
+.portal-nav__search-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.portal-nav__search-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 0.68rem;
+  padding: 0.45rem 0.55rem;
+  outline: none;
+}
+
+.portal-nav__search-input::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.portal-nav__search-btn {
+  flex-shrink: 0;
+  border: none;
+  background: linear-gradient(135deg, var(--portal-red) 0%, #8b1a1a 100%);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.45rem 0.7rem;
+  cursor: pointer;
+}
+
+.portal-nav__search-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .portal-catalog-picker {

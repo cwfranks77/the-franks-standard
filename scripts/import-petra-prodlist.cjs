@@ -14,55 +14,79 @@ const DEFAULT_CSV = path.join(process.env.USERPROFILE || '', 'Downloads', 'prodl
 const OUT_DIR = path.join(ROOT, 'public', 'catalog')
 const OUT_FILE = path.join(OUT_DIR, 'petra-products.json')
 
+/** Category markup — must stay aligned with pages/index.vue retail engine. */
+function resolveCategoryMarkup (category, name) {
+  const cat = String(category || '').toLowerCase()
+  const label = String(name || '').toLowerCase()
+  if (cat.includes('marine') || label.includes('marine')) return 2.10
+  if (cat.includes('car') || label.includes('car audio') || label.includes('subwoofer') || label.includes('amplifier')) return 1.55
+  if (cat.includes('home') || label.includes('receiver') || label.includes('soundbar') || label.includes('theater')) return 1.70
+  if (cat.includes('accessory') || label.includes('cable') || label.includes('mount') || label.includes('adapter')) return 2.50
+  if (cat.includes('electronics') || cat.includes('computer') || cat.includes('workstation')) return 1.35
+  return 1.55
+}
+
+function buildBcCatalogItem (item) {
+  const wholesale = Number(item.wholesalePrice)
+  const markup = resolveCategoryMarkup(item.category, item.name)
+  const retailPrice = Number((wholesale * markup).toFixed(2))
+  return {
+    id: item.id,
+    sku: item.sku,
+    name: item.name,
+    wholesalePrice: wholesale,
+    retailPrice,
+    price: retailPrice,
+    category: item.category,
+    brand: item.brand,
+    description: item.description,
+    image: item.image,
+    available: item.available ?? 99,
+    inStock: item.inStock ?? true,
+  }
+}
+
 const BC_AUDIO_ITEMS = [
-  {
+  buildBcCatalogItem({
     id: 'taramps-smart3',
     sku: 'TARAMPS-SMART3',
     name: 'Taramps SMART 3 Bass Monoblock Amplifier - 3000W RMS',
-    price: 289.99,
+    wholesalePrice: 289.99,
     category: 'Amplifiers',
     brand: 'Taramps',
     description: 'Multi-impedance technology delivering 3000 Watts True RMS power across 1 to 2 Ohms. Premium competition power output.',
-    image: '',
-    available: 99,
-    inStock: true,
-  },
-  {
+    image: '/img/bc-catalog/amplifier.svg',
+  }),
+  buildBcCatalogItem({
     id: 'sundown-sa12',
     sku: 'SUNDOWN-SA12',
     name: 'Sundown Audio SA-12 V.2 1000W RMS Competition Subwoofer',
-    price: 349.99,
+    wholesalePrice: 349.99,
     category: 'Subwoofers',
     brand: 'Sundown Audio',
     description: 'Legendary competition grade 12-inch subwoofer. Dual 4-Ohm, 1000 Watts RMS with massive excursion clearance.',
-    image: '',
-    available: 99,
-    inStock: true,
-  },
-  {
+    image: '/img/bc-catalog/subwoofer.svg',
+  }),
+  buildBcCatalogItem({
     id: 'rockford-p3',
     sku: 'ROCKFORD-P3',
     name: 'Rockford Fosgate Punch P3 Dual 12" Loaded Enclosure',
-    price: 499.99,
+    wholesalePrice: 499.99,
     category: 'Subwoofers',
     brand: 'Rockford Fosgate',
     description: 'Classic Punch hard-hitting bass. Dual 12-inch loaded vented enclosure wired to a clean 1-Ohm load.',
-    image: '',
-    available: 99,
-    inStock: true,
-  },
-  {
+    image: '/img/bc-catalog/enclosure.svg',
+  }),
+  buildBcCatalogItem({
     id: 'home-soundbar',
     sku: 'BC-HOME-SOUNDBAR',
     name: 'Premium 5.1 Home Theater Wireless Surround Soundbar System',
-    price: 399.99,
+    wholesalePrice: 399.99,
     category: 'Home Audio',
     brand: 'B&C Performance Audio',
     description: 'High-fidelity home audio wireless soundbar with dedicated 10-inch subwoofer and rear satellite speakers.',
-    image: '',
-    available: 99,
-    inStock: true,
-  },
+    image: '/img/bc-catalog/soundbar.svg',
+  }),
 ]
 
 function parseArgs () {
@@ -166,37 +190,8 @@ function loadPetraRows (csvPath) {
       CATEGORY: pickCategory(cols, headers),
     }
 
-    // ---------------------------
-    // CATEGORY-BASED MARKUP ENGINE
-    // ---------------------------
     const wholesale = Number(product.PRICE) || 0
-    let markup = 1.55 // default
-
-    const name = (product.NAME || '').toLowerCase()
-    const category = (product.CATEGORY || '').toLowerCase()
-
-    // Marine Audio
-    if (category.includes('marine') || name.includes('marine')) {
-      markup = 2.10
-    }
-    // Car Audio
-    else if (category.includes('car') || name.includes('car audio') || name.includes('subwoofer') || name.includes('amplifier')) {
-      markup = 1.55
-    }
-    // Home Audio / Home Theater
-    else if (category.includes('home') || name.includes('receiver') || name.includes('soundbar') || name.includes('theater')) {
-      markup = 1.70
-    }
-    // Accessories / Cables / Mounts
-    else if (category.includes('accessory') || name.includes('cable') || name.includes('mount') || name.includes('adapter')) {
-      markup = 2.50
-    }
-    // Electronics / Computers
-    else if (category.includes('electronics') || category.includes('computer')) {
-      markup = 1.35
-    }
-
-    // Final retail price
+    const markup = resolveCategoryMarkup(product.CATEGORY, product.NAME)
     product.retailPrice = Number((wholesale * markup).toFixed(2))
 
     seen.add(id)
