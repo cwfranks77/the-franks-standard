@@ -27,7 +27,7 @@ jobs:
       - name: Ensure B&C SEO table exists (direct SQL)
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-        run: npx supabase@latest db execute --file scripts/ensure-bc-site-marketing-table.sql --linked
+        run: npx supabase@latest db query --file scripts/ensure-bc-site-marketing-table.sql --linked
 
       - name: Push pending SQL migrations (best effort)
         continue-on-error: true
