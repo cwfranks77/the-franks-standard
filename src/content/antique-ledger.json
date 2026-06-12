@@ -1,0 +1,10 @@
+[
+  {
+    "id": "antique-01",
+    "title": "Vintage Cast Iron Mechanical Bank",
+    "purchase_price": 45.00,
+    "sale_price": 175.00,
+    "collected_sales_tax": 7.79,
+    "income_tax_reserve": 32.50
+  }
+]

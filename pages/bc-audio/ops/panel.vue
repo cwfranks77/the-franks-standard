@@ -2,6 +2,7 @@
 import { BC_BRAND } from '~/utils/bcBrand.js'
 import { getBcSupport } from '~/utils/bcSupport.js'
 import metaDefaults from '~/content/meta-config.json'
+import seedAntiqueLedger from '~/src/content/antique-ledger.json'
 
 definePageMeta({
   layout: 'bc-audio',
@@ -18,35 +19,57 @@ const orders = ref([])
 const ordersLoading = ref(false)
 const ordersError = ref('')
 
-const seo = ref({
+const BC_SEO_DEFAULTS = {
   title: metaDefaults.title,
   description: metaDefaults.description,
-  image: metaDefaults.image,
-  parentCompany: metaDefaults.parentCompany || 'The Franks Standard LLC',
-})
+  image: 'https://www.bcpoweraudio.com/img/hero-showcase-v2.svg',
+  parentCompany: 'B&C Performance Audio LLC',
+  url: 'https://www.bcpoweraudio.com',
+}
+
+const seo = ref({ ...BC_SEO_DEFAULTS })
 const seoLoading = ref(false)
 const seoSaving = ref(false)
 const seoMessage = ref('')
 const seoError = ref('')
+const seoInfo = ref('')
+
+function opsErrorMessage (e, fallback) {
+  const data = e?.data
+  if (data && typeof data === 'object') {
+    return String(data.error || data.statusMessage || fallback)
+  }
+  return String(e?.message || fallback)
+}
 
 const tabs = [
   { id: 'store', label: 'Store & products' },
   { id: 'seo', label: 'SEO & homepage text' },
   { id: 'theme', label: 'Colors & theme' },
   { id: 'orders', label: 'Orders' },
+  { id: 'owner', label: 'Owner backend' },
   { id: 'tools', label: 'Fix problems' },
 ]
 
 async function loadSeo () {
   seoLoading.value = true
   seoError.value = ''
+  seoInfo.value = ''
+  seo.value = { ...BC_SEO_DEFAULTS }
   try {
     const data = await opsFetch('/api/ops/site-content', { query: { keys: 'bcMeta' } })
-    if (data?.bcMeta) {
+    if (data?.bcMeta && typeof data.bcMeta === 'object') {
       seo.value = { ...seo.value, ...data.bcMeta }
     }
   } catch (e) {
-    seoError.value = e?.data?.statusMessage || 'Could not load SEO settings.'
+    const msg = opsErrorMessage(e, 'Could not load SEO settings.')
+    if (/unauthorized|expired/i.test(msg)) {
+      seoError.value = 'Session expired — tap the B&C logo 5×, unlock, then open this tab again.'
+    } else if (/not configured|supabase/i.test(msg)) {
+      seoInfo.value = 'Cloud save is offline — you can still edit below. Changes apply after backend is connected.'
+    } else {
+      seoInfo.value = `Using defaults on this page (${msg}). Edit below and save when connected.`
+    }
   } finally {
     seoLoading.value = false
   }
@@ -63,7 +86,7 @@ async function saveSeo () {
     })
     seoMessage.value = 'SEO saved — search engines and social previews update after the next deploy/cache refresh.'
   } catch (e) {
-    seoError.value = e?.data?.statusMessage || 'Save failed.'
+    seoError.value = opsErrorMessage(e, 'Save failed.')
   } finally {
     seoSaving.value = false
   }
@@ -108,6 +131,7 @@ function clearSiteCache () {
 watch(tab, (t) => {
   if (t === 'orders') loadOrders()
   if (t === 'seo') loadSeo()
+  if (t === 'owner') loadAntiqueLedger()
 })
 
 // STRICT ENFORCEMENT: Private Owner Ledger — state & methods only
@@ -184,14 +208,146 @@ function buildStaticCatalogFromProducts (products) {
   return staticCatalog
 }
 
-// STRICT ENFORCEMENT: Internal Audit Tool to Verify Correct Markup Rules Against Base Wholesaler Costs
+// Calculate retail markups — owner backend (matches scripts/calculate-retail-markups.ps1 tiers)
+const RETAIL_MARKUP_TIERS = [
+  { key: 'computer', label: 'Computers & Workstations', multiplier: 1.35, margin: '35%' },
+  { key: 'audio', label: 'Home Theater & Audio', multiplier: 1.55, margin: '55%' },
+  { key: 'marine', label: 'Marine & Powersports', multiplier: 1.65, margin: '65%' },
+]
+
+const markupDemoBaselines = [
+  { tierKey: 'computer', label: 'Laptop / workstation line', wholesale: 1499 },
+  { tierKey: 'audio', label: 'Receiver / amplifier line', wholesale: 899.64 },
+  { tierKey: 'marine', label: 'Marine speaker line', wholesale: 249.3 },
+]
+
+const pricingAuditRunning = ref(false)
+const pricingAuditSummary = ref(null)
+const pricingAuditLines = ref([])
+
+function formatMoney (value) {
+  const n = Number(value)
+  if (!Number.isFinite(n)) return '$0.00'
+  return `$${n.toFixed(2)}`
+}
+
+function demoRetailPrice (baseline) {
+  const tier = RETAIL_MARKUP_TIERS.find((t) => t.key === baseline.tierKey)
+  if (!tier) return '0.00'
+  return (baseline.wholesale * tier.multiplier).toFixed(2)
+}
+
+// Antique inventory ledger — owner backend (matches scripts/run-ledger-audit.ps1)
+const antiqueLedger = ref([])
+const antiqueLedgerLoading = ref(false)
+const antiqueLedgerSaving = ref(false)
+const antiqueLedgerMessage = ref('')
+const antiqueLedgerError = ref('')
+const newAntiqueItem = ref({
+  title: '',
+  purchase_price: '',
+  sale_price: '',
+  collected_sales_tax: '',
+  income_tax_reserve: '',
+})
+
+const antiqueLedgerTotals = computed(() => {
+  let totalCost = 0
+  let totalSales = 0
+  let totalTax = 0
+  let totalReserve = 0
+  for (const item of antiqueLedger.value) {
+    totalCost += Number(item.purchase_price) || 0
+    totalSales += Number(item.sale_price) || 0
+    totalTax += Number(item.collected_sales_tax) || 0
+    totalReserve += Number(item.income_tax_reserve) || 0
+  }
+  return {
+    totalCost,
+    totalSales,
+    totalTax,
+    totalReserve,
+    netProfit: totalSales - totalCost,
+  }
+})
+
+function normalizeAntiqueRows (raw) {
+  if (Array.isArray(raw?.items) && raw.items.length) return raw.items
+  if (Array.isArray(raw) && raw.length) return raw
+  return [...seedAntiqueLedger]
+}
+
+async function loadAntiqueLedger () {
+  antiqueLedgerLoading.value = true
+  antiqueLedgerError.value = ''
+  antiqueLedgerMessage.value = ''
+  try {
+    const data = await opsFetch('/api/ops/site-content', { query: { keys: 'antiqueLedger' } })
+    antiqueLedger.value = normalizeAntiqueRows(data?.antiqueLedger)
+  } catch (e) {
+    antiqueLedger.value = [...seedAntiqueLedger]
+    antiqueLedgerError.value = opsErrorMessage(e, 'Could not load saved ledger — showing local copy.')
+  } finally {
+    antiqueLedgerLoading.value = false
+  }
+}
+
+async function saveAntiqueLedger () {
+  antiqueLedgerSaving.value = true
+  antiqueLedgerMessage.value = ''
+  antiqueLedgerError.value = ''
+  try {
+    await opsFetch('/api/ops/site-content', {
+      method: 'PUT',
+      body: { contentKey: 'antiqueLedger', payload: { items: antiqueLedger.value } },
+    })
+    antiqueLedgerMessage.value = 'Antique ledger saved — apps and backend tools can read this via owner API key antiqueLedger.'
+  } catch (e) {
+    antiqueLedgerError.value = opsErrorMessage(e, 'Save failed.')
+  } finally {
+    antiqueLedgerSaving.value = false
+  }
+}
+
+function addAntiqueLedgerItem () {
+  const title = String(newAntiqueItem.value.title || '').trim()
+  const purchase = Number(newAntiqueItem.value.purchase_price)
+  const sale = Number(newAntiqueItem.value.sale_price)
+  if (!title || !Number.isFinite(purchase) || !Number.isFinite(sale)) return
+  antiqueLedger.value.unshift({
+    id: `antique-${Date.now()}`,
+    title,
+    purchase_price: purchase,
+    sale_price: sale,
+    collected_sales_tax: Number(newAntiqueItem.value.collected_sales_tax) || 0,
+    income_tax_reserve: Number(newAntiqueItem.value.income_tax_reserve) || 0,
+  })
+  newAntiqueItem.value = {
+    title: '',
+    purchase_price: '',
+    sale_price: '',
+    collected_sales_tax: '',
+    income_tax_reserve: '',
+  }
+}
+
+function removeAntiqueLedgerItem (id) {
+  antiqueLedger.value = antiqueLedger.value.filter((row) => row.id !== id)
+}
+
+// Internal audit tool — verify markup rules against wholesaler catalog (wholesale hidden on storefront)
 async function verifyPortalPricingAudit () {
+  pricingAuditRunning.value = true
+  pricingAuditSummary.value = null
+  pricingAuditLines.value = []
+
   let catalogRows = []
   try {
     const data = await $fetch('/catalog/petra-products.json', { retry: 2 })
     catalogRows = Array.isArray(data?.products) ? data.products : []
   } catch {
-    alert('[❌] PRICING AUDIT ABORTED: Could not load active catalog dataset.')
+    pricingAuditLines.value = ['[❌] PRICING AUDIT ABORTED: Could not load active catalog dataset.']
+    pricingAuditRunning.value = false
     return
   }
 
@@ -216,25 +372,29 @@ async function verifyPortalPricingAudit () {
 
       if (computedRetail === expectedRetail) {
         totalPassed++
-        auditLog.push(`[✓] PASS: SKU ${sku} (${tier.label}) verified perfectly at $${computedRetail}. Wholesale cost hidden.`)
+        auditLog.push(`[✓] PASS: SKU ${sku} (${tier.label}) verified at $${computedRetail}. Wholesale hidden.`)
       } else {
         totalFailed++
-        auditLog.push(`[❌] FAIL: SKU ${sku} pricing mismatch detected! Computed: $${computedRetail} | Expected: $${expectedRetail}`)
+        auditLog.push(`[❌] FAIL: SKU ${sku} mismatch — computed $${computedRetail}, expected $${expectedRetail}`)
       }
     } else {
       auditLog.push(`[!] WARNING: SKU ${sku} belongs to an unmapped tier category.`)
     }
   })
 
-  alert(
-    `=== MASTER PORTAL PRICING AUDIT COMPLETE ===\n\n`
-    + `Total Assets Audited: ${Object.keys(staticCatalog).length}\n`
-    + `Passed Protection Scans: ${totalPassed}\n`
-    + `Failed Deviations: ${totalFailed}\n\n`
-    + `-----------------------------------------\n`
-    + auditLog.join('\n'),
-  )
+  pricingAuditSummary.value = {
+    total: Object.keys(staticCatalog).length,
+    passed: totalPassed,
+    failed: totalFailed,
+  }
+  pricingAuditLines.value = auditLog
+  pricingAuditRunning.value = false
 }
+
+onMounted(() => {
+  if (tab.value === 'seo') loadSeo()
+  if (tab.value === 'owner') loadAntiqueLedger()
+})
 
 useSeoMeta({
   title: `B&C Owner Console — ${BC_BRAND.full}`,
@@ -278,12 +438,14 @@ useSeoMeta({
       <h2>Search &amp; social (Google, Facebook)</h2>
       <p class="bc-panel__note">Title and description shown in Google results and when someone shares your link.</p>
       <p v-if="seoError" class="bc-alert bc-alert--err">{{ seoError }}</p>
+      <p v-if="seoInfo" class="bc-alert bc-alert--info">{{ seoInfo }}</p>
       <p v-if="seoMessage" class="bc-alert bc-alert--ok">{{ seoMessage }}</p>
       <div v-if="seoLoading" class="bc-muted">Loading…</div>
       <template v-else>
         <div class="bc-form-stack">
           <label>Page title<input v-model="seo.title" class="input" type="text"></label>
           <label>Description<textarea v-model="seo.description" class="input bc-textarea" rows="3" /></label>
+          <label>Canonical site URL<input v-model="seo.url" class="input" type="url"></label>
           <label>Share image URL<input v-model="seo.image" class="input" type="url"></label>
           <label>Parent company line<input v-model="seo.parentCompany" class="input" type="text"></label>
         </div>
@@ -362,6 +524,154 @@ useSeoMeta({
       </div>
     </section>
 
+  <!-- OWNER BACKEND -->
+    <section v-show="tab === 'owner'" class="bc-panel__section">
+      <h2>Owner backend tools</h2>
+      <p class="bc-panel__note">Private tools for pricing rules and antique inventory — not shown to shoppers. Wholesale costs stay hidden on the public store.</p>
+
+      <div class="bc-owner-block">
+        <h3>Calculate retail markups</h3>
+        <p class="bc-panel__note">Category profit tiers: computers 35%, audio 55%, marine 65%. Demo lines match your enforcement script.</p>
+        <div class="bc-markup-grid">
+          <div v-for="tier in RETAIL_MARKUP_TIERS" :key="tier.key" class="bc-markup-tier">
+            <strong>{{ tier.label }}</strong>
+            <span class="bc-muted">Margin {{ tier.margin }}</span>
+          </div>
+        </div>
+        <div class="bc-orders-table-wrap">
+          <table class="bc-orders-table">
+            <thead>
+              <tr>
+                <th>Product line</th>
+                <th>Tier</th>
+                <th>Wholesale (owner only)</th>
+                <th>Protected retail</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="row in markupDemoBaselines" :key="row.label">
+                <td>{{ row.label }}</td>
+                <td>{{ RETAIL_MARKUP_TIERS.find((t) => t.key === row.tierKey)?.label }}</td>
+                <td class="bc-muted">{{ formatMoney(row.wholesale) }}</td>
+                <td><strong>{{ formatMoney(demoRetailPrice(row)) }}</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="bc-panel__actions">
+          <button type="button" class="btn btn-primary btn-sm" :disabled="pricingAuditRunning" @click="verifyPortalPricingAudit">
+            {{ pricingAuditRunning ? 'Auditing catalog…' : 'Run catalog pricing audit' }}
+          </button>
+        </div>
+        <p v-if="pricingAuditSummary" class="bc-alert bc-alert--ok">
+          Audited {{ pricingAuditSummary.total }} SKUs — {{ pricingAuditSummary.passed }} passed, {{ pricingAuditSummary.failed }} failed.
+        </p>
+        <pre v-if="pricingAuditLines.length" class="bc-audit-log">{{ pricingAuditLines.join('\n') }}</pre>
+      </div>
+
+      <div class="bc-owner-block">
+        <h3>Antique inventory ledger</h3>
+        <p class="bc-panel__note">Tracks cost, sale, sales tax, and income reserve per antique item. Save syncs to backend for apps and other owner tools.</p>
+        <p v-if="antiqueLedgerError" class="bc-alert bc-alert--err">{{ antiqueLedgerError }}</p>
+        <p v-if="antiqueLedgerMessage" class="bc-alert bc-alert--ok">{{ antiqueLedgerMessage }}</p>
+        <p v-if="antiqueLedgerLoading" class="bc-muted">Loading ledger…</p>
+        <template v-else>
+          <div class="bc-orders-table-wrap">
+            <table class="bc-orders-table">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Cost</th>
+                  <th>Sold</th>
+                  <th>Profit</th>
+                  <th>Sales tax</th>
+                  <th>Income reserve</th>
+                  <th />
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="item in antiqueLedger" :key="item.id">
+                  <td><input v-model="item.title" class="input bc-cell-input" type="text" aria-label="Item title"></td>
+                  <td><input v-model.number="item.purchase_price" class="input bc-cell-input" type="number" step="0.01" min="0" aria-label="Purchase cost"></td>
+                  <td><input v-model.number="item.sale_price" class="input bc-cell-input" type="number" step="0.01" min="0" aria-label="Sale price"></td>
+                  <td>{{ formatMoney((Number(item.sale_price) || 0) - (Number(item.purchase_price) || 0)) }}</td>
+                  <td><input v-model.number="item.collected_sales_tax" class="input bc-cell-input" type="number" step="0.01" min="0" aria-label="Sales tax"></td>
+                  <td><input v-model.number="item.income_tax_reserve" class="input bc-cell-input" type="number" step="0.01" min="0" aria-label="Income reserve"></td>
+                  <td>
+                    <button type="button" class="btn btn-outline btn-sm" @click="removeAntiqueLedgerItem(item.id)">Remove</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="bc-ledger-summary">
+            <div><span class="bc-muted">Total investment</span><strong>{{ formatMoney(antiqueLedgerTotals.totalCost) }}</strong></div>
+            <div><span class="bc-muted">Gross revenue</span><strong>{{ formatMoney(antiqueLedgerTotals.totalSales) }}</strong></div>
+            <div><span class="bc-muted">Net profit</span><strong>{{ formatMoney(antiqueLedgerTotals.netProfit) }}</strong></div>
+            <div><span class="bc-muted">Sales tax liability</span><strong>{{ formatMoney(antiqueLedgerTotals.totalTax) }}</strong></div>
+            <div><span class="bc-muted">Income reserve</span><strong>{{ formatMoney(antiqueLedgerTotals.totalReserve) }}</strong></div>
+          </div>
+          <div class="bc-form-stack bc-antique-form">
+            <label>Item title<input v-model="newAntiqueItem.title" class="input" type="text"></label>
+            <label>Purchase cost<input v-model="newAntiqueItem.purchase_price" class="input" type="number" step="0.01" min="0"></label>
+            <label>Sale price<input v-model="newAntiqueItem.sale_price" class="input" type="number" step="0.01" min="0"></label>
+            <label>Collected sales tax<input v-model="newAntiqueItem.collected_sales_tax" class="input" type="number" step="0.01" min="0"></label>
+            <label>Income tax reserve<input v-model="newAntiqueItem.income_tax_reserve" class="input" type="number" step="0.01" min="0"></label>
+          </div>
+          <div class="bc-panel__actions">
+            <button type="button" class="btn btn-outline btn-sm" @click="addAntiqueLedgerItem">Add item</button>
+            <button type="button" class="btn btn-primary btn-sm" :disabled="antiqueLedgerSaving" @click="saveAntiqueLedger">
+              {{ antiqueLedgerSaving ? 'Saving…' : 'Save ledger to backend' }}
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" @click="loadAntiqueLedger">Reload</button>
+          </div>
+        </template>
+      </div>
+
+      <div class="bc-owner-block">
+        <h3>Private transaction ledger</h3>
+        <p class="bc-panel__note">Stripe, tax reserve, and wholesaler clearing — unlock with your founder bypass key.</p>
+        <template v-if="!ledgerUnlocked">
+          <label class="bc-bypass-label">
+            Bypass key
+            <input v-model="bypassKeyInput" class="input" type="password" autocomplete="off" @keyup.enter="verifyBypassKey">
+          </label>
+          <button type="button" class="btn btn-primary btn-sm" @click="verifyBypassKey">Unlock ledger</button>
+        </template>
+        <template v-else>
+          <div class="bc-orders-table-wrap">
+            <table class="bc-orders-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Account</th>
+                  <th>Description</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(tx, idx) in ledgerTransactions" :key="idx">
+                  <td class="bc-muted small">{{ tx.date }}</td>
+                  <td>{{ tx.account }}</td>
+                  <td>{{ tx.desc }}</td>
+                  <td :class="tx.isCredit ? 'bc-credit' : 'bc-debit'">{{ tx.amount }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="bc-form-stack bc-antique-form">
+            <label>Account<input v-model="newTx.account" class="input" type="text"></label>
+            <label>Description<input v-model="newTx.desc" class="input" type="text"></label>
+            <label>Amount<input v-model="newTx.amount" class="input" type="number" step="0.01" min="0"></label>
+          </div>
+          <div class="bc-panel__actions">
+            <button type="button" class="btn btn-outline btn-sm" @click="postTransaction(true)">Post credit</button>
+            <button type="button" class="btn btn-outline btn-sm" @click="postTransaction(false)">Post debit</button>
+          </div>
+        </template>
+      </div>
+    </section>
+
   <!-- TOOLS -->
     <section v-show="tab === 'tools'" class="bc-panel__section">
       <h2>Fix problems</h2>
@@ -407,6 +717,8 @@ useSeoMeta({
 .bc-alert { padding: 10px 12px; border-radius: 8px; margin: 10px 0; font-size: 0.88rem; }
 .bc-alert--err { background: rgba(211,47,47,0.15); color: #ff8a80; }
 .bc-alert--ok { background: rgba(74,222,128,0.1); color: #4ade80; }
+.bc-alert--info { background: rgba(96,165,250,0.12); color: #93c5fd; }
+.bc-cell-input { width: 100%; min-width: 72px; padding: 6px 8px; font-size: 0.85rem; }
 .bc-panel__presets { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
 .bc-preset {
   padding: 8px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15);
@@ -424,4 +736,28 @@ useSeoMeta({
 .bc-orders-table th { color: #9ca3af; font-size: 0.72rem; text-transform: uppercase; }
 .bc-status { text-transform: capitalize; color: #ff5252; font-weight: 600; }
 .bc-tools-list { margin: 0 0 16px; padding-left: 1.2rem; color: #b8bcc6; line-height: 1.6; font-size: 0.9rem; }
+.bc-owner-block {
+  margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid rgba(255,255,255,0.08);
+}
+.bc-owner-block:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+.bc-owner-block h3 { font-size: 0.95rem; color: #f5f5f7; margin: 0 0 8px; }
+.bc-markup-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; margin-bottom: 12px; }
+.bc-markup-tier {
+  padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);
+  background: #0a0a0c; display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem;
+}
+.bc-audit-log {
+  margin: 10px 0 0; padding: 12px; border-radius: 8px; background: #0a0a0c;
+  border: 1px solid rgba(255,255,255,0.08); color: #b8bcc6; font-size: 0.72rem;
+  max-height: 220px; overflow: auto; white-space: pre-wrap;
+}
+.bc-ledger-summary {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px;
+  margin: 12px 0; padding: 12px; border-radius: 8px; background: rgba(211,47,47,0.08);
+}
+.bc-ledger-summary div { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; }
+.bc-antique-form { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+.bc-bypass-label { display: flex; flex-direction: column; gap: 6px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: #9ca3af; max-width: 280px; margin-bottom: 10px; }
+.bc-credit { color: #4ade80; font-weight: 700; }
+.bc-debit { color: #ff8a80; font-weight: 700; }
 </style>

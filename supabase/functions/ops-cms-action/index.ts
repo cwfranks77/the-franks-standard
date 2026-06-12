@@ -8,8 +8,22 @@ const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.g
 const DEFAULT_BC_META = {
   title: 'B&C Performance Audio LLC | Competition Subwoofers & Car Audio Amplifiers',
   description: 'Shop competition subwoofers, monoblock amplifiers, Sundown, Kicker, Rockford Fosgate, and Taramps from B&C Performance Audio LLC.',
-  image: 'https://www.bcpoweraudio.com/franks-pavilion.png',
-  parentCompany: 'The Franks Standard LLC',
+  image: 'https://www.bcpoweraudio.com/img/hero-showcase-v2.svg',
+  parentCompany: 'B&C Performance Audio LLC',
+  url: 'https://www.bcpoweraudio.com',
+}
+
+const DEFAULT_ANTIQUE_LEDGER = {
+  items: [
+    {
+      id: 'antique-01',
+      title: 'Vintage Cast Iron Mechanical Bank',
+      purchase_price: 45,
+      sale_price: 175,
+      collected_sales_tax: 7.79,
+      income_tax_reserve: 32.5,
+    },
+  ],
 }
 
 const DEFAULT_BC_THEME = {
@@ -45,7 +59,11 @@ Deno.serve(async (req) => {
 
   if (action === 'get_site_content') {
     const keysRaw = body.keys ? String(body.keys).split(',').map((k) => k.trim()).filter(Boolean) : []
-    const defaults: Record<string, unknown> = { bcMeta: DEFAULT_BC_META, bcTheme: DEFAULT_BC_THEME }
+    const defaults: Record<string, unknown> = {
+      bcMeta: DEFAULT_BC_META,
+      bcTheme: DEFAULT_BC_THEME,
+      antiqueLedger: DEFAULT_ANTIQUE_LEDGER,
+    }
     const wanted = keysRaw.length ? keysRaw : Object.keys(defaults)
     const out: Record<string, unknown> = {}
     for (const key of wanted) out[key] = defaults[key] ?? {}
@@ -57,7 +75,16 @@ Deno.serve(async (req) => {
 
     if (error) return json({ error: error.message }, 500)
     for (const row of data || []) {
-      out[row.content_key] = { ...(defaults[row.content_key] as object || {}), ...(row.payload || {}) }
+      const key = row.content_key
+      const base = (defaults[key] as Record<string, unknown>) || {}
+      const payload = (row.payload || {}) as Record<string, unknown>
+      if (key === 'antiqueLedger') {
+        out.antiqueLedger = {
+          items: Array.isArray(payload.items) ? payload.items : (base.items as unknown[]) || [],
+        }
+        continue
+      }
+      out[key] = { ...base, ...payload }
     }
     return json(out)
   }

@@ -25,8 +25,22 @@ export function getServiceSupabase (): SupabaseClient | null {
 const DEFAULT_BC_META = {
   title: 'B&C Performance Audio LLC | Competition Subwoofers & Car Audio Amplifiers',
   description: 'Shop competition subwoofers, monoblock amplifiers, Sundown, Kicker, Rockford Fosgate, and Taramps from B&C Performance Audio LLC — Louisiana checkout with dropship fulfillment.',
-  image: 'https://www.bcpoweraudio.com/franks-pavilion.png',
-  parentCompany: 'The Franks Standard LLC',
+  image: 'https://www.bcpoweraudio.com/img/hero-showcase-v2.svg',
+  parentCompany: 'B&C Performance Audio LLC',
+  url: 'https://www.bcpoweraudio.com',
+}
+
+const DEFAULT_ANTIQUE_LEDGER = {
+  items: [
+    {
+      id: 'antique-01',
+      title: 'Vintage Cast Iron Mechanical Bank',
+      purchase_price: 45,
+      sale_price: 175,
+      collected_sales_tax: 7.79,
+      income_tax_reserve: 32.5,
+    },
+  ],
 }
 
 const DEFAULT_BC_THEME = {
@@ -43,6 +57,7 @@ export async function fetchSiteMarketing (keys?: string[]) {
     ads: DEFAULT_ADS,
     bcMeta: DEFAULT_BC_META,
     bcTheme: DEFAULT_BC_THEME,
+    antiqueLedger: DEFAULT_ANTIQUE_LEDGER,
   }
   const wanted = keys?.length ? keys : Object.keys(defaults)
   const out: Record<string, unknown> = {}
@@ -61,7 +76,16 @@ export async function fetchSiteMarketing (keys?: string[]) {
   if (error) return out
 
   for (const row of data || []) {
-    out[row.content_key] = { ...(defaults[row.content_key] as object || {}), ...(row.payload || {}) }
+    const key = row.content_key
+    const base = (defaults[key] as Record<string, unknown>) || {}
+    const payload = (row.payload || {}) as Record<string, unknown>
+    if (key === 'antiqueLedger') {
+      out.antiqueLedger = {
+        items: Array.isArray(payload.items) ? payload.items : (base.items as unknown[]) || [],
+      }
+      continue
+    }
+    out[key] = { ...base, ...payload }
   }
   return out
 }
