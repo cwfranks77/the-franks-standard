@@ -1,5 +1,5 @@
--- Idempotent: B&C owner panel SEO / social settings storage.
--- Safe to run multiple times (Supabase SQL editor or: supabase db execute).
+-- Idempotent: B&C owner panel storage (SEO, antique ledger, theme).
+-- Safe to run multiple times (Supabase SQL editor or: supabase db query --linked).
 
 create table if not exists public.site_marketing_content (
   content_key text primary key,
@@ -27,3 +27,24 @@ values (
   }'::jsonb
 )
 on conflict (content_key) do nothing;
+
+insert into public.site_marketing_content (content_key, payload)
+values (
+  'antiqueLedger',
+  '{
+    "items": [
+      {
+        "id": "antique-01",
+        "title": "Vintage Cast Iron Mechanical Bank",
+        "purchase_price": 45,
+        "sale_price": 175,
+        "collected_sales_tax": 7.79,
+        "income_tax_reserve": 32.5
+      }
+    ]
+  }'::jsonb
+)
+on conflict (content_key) do nothing;
+
+-- Refresh PostgREST schema cache after DDL (fixes "schema cache" errors on first deploy).
+notify pgrst, 'reload schema';

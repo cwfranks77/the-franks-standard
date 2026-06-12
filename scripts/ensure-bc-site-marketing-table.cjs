@@ -26,4 +26,4 @@ run(['link', '--project-ref', PROJECT_REF])
 console.log('Applying', path.basename(SQL_FILE))
 run(['db', 'query', '--file', SQL_FILE, '--linked'])
 
-console.log('Done — refresh the B&C owner SEO tab and click Save SEO.')
+console.log('Done — refresh the B&C owner panel (SEO + antique ledger) and click Save.')

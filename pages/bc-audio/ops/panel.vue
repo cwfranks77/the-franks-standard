@@ -301,6 +301,20 @@ function normalizeAntiqueRows (raw) {
   return [...seedAntiqueLedger]
 }
 
+function antiqueLedgerFriendlyError (e, fallback) {
+  const msg = opsErrorMessage(e, fallback)
+  if (/site_marketing_content|schema cache|owner_storage_not_ready/i.test(msg)) {
+    return 'Cloud storage is still starting. Wait 2 minutes, click Reload, then Save again.'
+  }
+  if (/unauthorized|expired/i.test(msg)) {
+    return 'Owner password expired — tap the B&C logo 5×, unlock, then try again.'
+  }
+  if (/not configured|supabase/i.test(msg)) {
+    return 'Cloud save could not reach Supabase. Check deploy secrets, then try again in a few minutes.'
+  }
+  return msg
+}
+
 async function loadAntiqueLedger () {
   antiqueLedgerLoading.value = true
   antiqueLedgerError.value = ''
@@ -310,7 +324,12 @@ async function loadAntiqueLedger () {
     antiqueLedger.value = normalizeAntiqueRows(data?.antiqueLedger)
   } catch (e) {
     antiqueLedger.value = [...seedAntiqueLedger]
-    antiqueLedgerError.value = opsErrorMessage(e, 'Could not load saved ledger — showing local copy.')
+    const msg = opsErrorMessage(e, '')
+    if (/site_marketing_content|schema cache|owner_storage_not_ready/i.test(msg)) {
+      antiqueLedgerMessage.value = 'Showing starter ledger — tap Save after unlock to sync to cloud.'
+    } else {
+      antiqueLedgerError.value = antiqueLedgerFriendlyError(e, 'Could not load saved ledger — showing local copy.')
+    }
   } finally {
     antiqueLedgerLoading.value = false
   }
@@ -320,6 +339,11 @@ async function saveAntiqueLedger () {
   antiqueLedgerSaving.value = true
   antiqueLedgerMessage.value = ''
   antiqueLedgerError.value = ''
+  if (!getStoredOpsPhrase()) {
+    antiqueLedgerError.value = 'Owner password needed — tap the B&C logo 5×, unlock, then click Save ledger to backend.'
+    antiqueLedgerSaving.value = false
+    return
+  }
   try {
     await opsFetch('/api/ops/site-content', {
       method: 'PUT',
@@ -327,7 +351,7 @@ async function saveAntiqueLedger () {
     })
     antiqueLedgerMessage.value = 'Antique ledger saved — apps and backend tools can read this via owner API key antiqueLedger.'
   } catch (e) {
-    antiqueLedgerError.value = opsErrorMessage(e, 'Save failed.')
+    antiqueLedgerError.value = antiqueLedgerFriendlyError(e, 'Save failed.')
   } finally {
     antiqueLedgerSaving.value = false
   }

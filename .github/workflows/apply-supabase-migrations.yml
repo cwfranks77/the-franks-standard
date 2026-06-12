@@ -24,7 +24,7 @@ jobs:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         run: npx supabase@latest link --project-ref rochesyrxiyrxhzmkuwk
 
-      - name: Ensure B&C SEO table exists (direct SQL)
+      - name: Ensure owner CMS table exists (SEO + antique ledger)
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         run: npx supabase@latest db query --file scripts/ensure-bc-site-marketing-table.sql --linked

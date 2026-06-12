@@ -34,6 +34,12 @@ const DEFAULT_BC_THEME = {
   bgCard: '#16161c',
 }
 
+function isSiteMarketingTableMissing (error: { message?: string } | null): boolean {
+  const msg = String(error?.message || '').toLowerCase()
+  return msg.includes('site_marketing_content') &&
+    (msg.includes('schema cache') || msg.includes('does not exist') || msg.includes('pgrst'))
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405)
@@ -73,7 +79,7 @@ Deno.serve(async (req) => {
       .select('content_key, payload')
       .in('content_key', wanted)
 
-    if (error) return json({ error: error.message }, 500)
+    if (error && !isSiteMarketingTableMissing(error)) return json({ error: error.message }, 500)
     for (const row of data || []) {
       const key = row.content_key
       const base = (defaults[key] as Record<string, unknown>) || {}
@@ -100,7 +106,15 @@ Deno.serve(async (req) => {
       payload,
       updated_at: new Date().toISOString(),
     }, { onConflict: 'content_key' })
-    if (error) return json({ error: error.message }, 500)
+    if (error) {
+      if (isSiteMarketingTableMissing(error)) {
+        return json({
+          error: 'owner_storage_not_ready',
+          hint: 'Cloud storage is still starting. Wait 2 minutes, click Reload, then Save again.',
+        }, 503)
+      }
+      return json({ error: error.message }, 500)
+    }
     return json({ ok: true, contentKey })
   }
 
