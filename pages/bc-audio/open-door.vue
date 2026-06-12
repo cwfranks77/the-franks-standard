@@ -74,7 +74,7 @@ useSeoMeta({
 </template>
 
 <style scoped>
-.bc-od { padding: 2.5rem 1.25rem 4rem; }
+.bc-od { padding: 2.85rem 1.25rem 4rem; }
 .bc-od__inner { max-width: 720px; margin: 0 auto; }
 .bc-od__eyebrow {
   font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;

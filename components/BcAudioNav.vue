@@ -110,7 +110,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 .bc-nav__inner {
   max-width: 80rem;
   margin: 0 auto;
-  padding: 0 1.25rem;
+  padding: 3px 1.25rem 0;
   min-height: 64px;
   display: flex;
   align-items: center;
@@ -126,6 +126,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   text-decoration: none;
   color: #f5f5f7;
   flex-shrink: 0;
+  transform: translateY(-2px);
 }
 .bc-nav__brand:hover { color: #ff5252; }
 .bc-nav__logo {
