@@ -27,7 +27,13 @@ const AUDIO_CATEGORIES = new Set([
 ])
 
 const NON_AUDIO_NAME_RE =
-  /\b(laptop|computer|monitor|keyboard|mouse|printer|router|network switch|tablet|iphone|android phone|phone case|screen protector|drill|wrench|hammer|refrigerator|microwave|coffee maker|toaster|blender|vacuum|lawn mower|grill|fishing rod|tent|mattress|office chair|desk chair)\b/i
+  /\b(laptop|computer|monitor|keyboard|mouse|printer|router|network switch|tablet|iphone|android phone|phone case|screen protector|drill|wrench|hammer|refrigerator|microwave|coffee maker|toaster|blender|vacuum|lawn mower|grill|fishing rod|tent|mattress|office chair|desk chair|gps|navigator|navigation|drivesmart|drive\s*\d{2}|dash\s*cam|backup\s*cam|rearview|friction\s*mount|magnetic\s*mnt|wall\s*dog|garage\s*door|data-bus|cat5\/6|hdmi\s*ext|video\s*ext|ir\s*kit|terminal\s*cup)\b/i
+
+const CAR_AUDIO_RE =
+  /\b(car audio|speaker|subwoofer|amplifier|amp\b|receiver|stereo|head unit|tweeter|wiring harness|equalizer|monoblock|component|coaxial|soundbar|bluetooth|marine audio|powersport)\b/i
+
+const CUSTOM_INSTALL_AUDIO_RE =
+  /\b(speaker|subwoofer|amplifier|audio|in-wall|in-ceiling|sound|stereo|receiver|surround)\b/i
 
 const BLUETOOTH_SPEAKER_RE =
   /\b(bluetooth|bt\b|wireless speaker|portable speaker|soundbar|boom\s*box|boombox|smart speaker)\b/i
@@ -62,6 +68,14 @@ export function isBcAudioProduct (product) {
 
   if (cat === 'Cables & Interconnects') {
     return AUDIO_CABLE_RE.test(text)
+  }
+
+  if (cat === 'Automotive Electronics') {
+    return CAR_AUDIO_RE.test(text)
+  }
+
+  if (cat === 'Custom Install') {
+    return CUSTOM_INSTALL_AUDIO_RE.test(text)
   }
 
   return true

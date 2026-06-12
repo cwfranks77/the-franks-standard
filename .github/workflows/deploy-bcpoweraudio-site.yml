@@ -15,6 +15,7 @@ on:
       - 'public/img/pictures/**'
       - 'package.json'
       - 'composables/useBcProductCatalog.js'
+      - 'utils/bcAudioOnlyCatalog.js'
       - 'utils/bcProductImage.js'
       - 'scripts/import-petra-prodlist.cjs'
       - 'scripts/deploy-ai-voice-agent.cjs'

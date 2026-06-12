@@ -74,7 +74,15 @@
 
     <nav class="portal-nav">
       <button type="button" class="portal-nav__brand" @click="onBrandOrLogoClick">
-        <div class="portal-nav__logo">B&amp;C</div>
+        <img
+          src="/img/bc-logo-primary.png?v=20260612"
+          alt="B&amp;C Performance Audio"
+          class="portal-nav__logo-img"
+          width="260"
+          height="60"
+          decoding="async"
+          fetchpriority="high"
+        >
       </button>
 
       <div class="portal-nav__headline">
@@ -332,6 +340,11 @@ import { BC_BRAND } from '~/utils/bcBrand.js'
 import { getBcSupport } from '~/utils/bcSupport.js'
 import { buildSocialLinks } from '~/utils/siteSocial.js'
 import { getPublicSupabaseKey, getPublicSupabaseUrl } from '~/utils/publicSupabase.js'
+import {
+  bcAudioDepartmentIcon,
+  bcAudioDepartmentKey,
+  filterBcAudioProducts,
+} from '~/utils/bcAudioOnlyCatalog.js'
 
 definePageMeta({ layout: false, pageTransition: false })
 
@@ -342,28 +355,36 @@ const { meta: siteMeta } = useBcSiteMeta()
 
 const SHOWCASE_LANE_DEFS = [
   {
-    deptKey: 'computers',
+    deptKey: 'home',
     laneIndex: 0,
-    icon: '💻',
-    title: 'Computers & Workstations',
-    badge: '',
-    description: 'Enterprise laptops, workstations, servers, and computing accessories authorized for wholesale distribution.',
-  },
-  {
-    deptKey: 'theater',
-    laneIndex: 1,
-    icon: '📺',
-    title: 'Home Theater & Audio',
+    icon: '🔊',
+    title: 'Home Audio',
     badge: 'SURROUND AUDIO MATRIX',
-    description: 'Receivers, speakers, amplifiers, and cinema-grade audio from authorized competition and theater lines.',
+    description: 'Receivers, speakers, amplifiers, and home theater from authorized competition lines.',
   },
   {
-    deptKey: 'marine',
+    deptKey: 'car',
+    laneIndex: 1,
+    icon: '🚗',
+    title: 'Car Audio',
+    badge: 'COMPETITION OUTPUT',
+    description: 'Amplifiers, subwoofers, speakers, and install gear for automotive sound systems.',
+  },
+  {
+    deptKey: 'powersports',
     laneIndex: 2,
     icon: '⚓',
-    title: 'Marine & Powersports',
+    title: 'Powersports & Marine Audio',
     badge: 'ELEMENT-PROOF OUTPUT',
-    description: 'Marine electronics and element-proof speakers built for high-output offshore and trail environments.',
+    description: 'Marine and powersports audio built for high-output offshore and trail environments.',
+  },
+  {
+    deptKey: 'bluetooth',
+    laneIndex: 3,
+    icon: '📶',
+    title: 'Bluetooth & Portable',
+    badge: 'WIRELESS',
+    description: 'Portable Bluetooth speakers and wireless audio for on-the-go listening.',
   },
 ]
 
@@ -388,7 +409,8 @@ async function refreshCatalog () {
   catalogError.value = null
   try {
     const data = await $fetch('/catalog/petra-products.json', { retry: 2 })
-    catalogProducts.value = Array.isArray(data?.products) ? data.products : []
+    const rows = Array.isArray(data?.products) ? data.products : []
+    catalogProducts.value = filterBcAudioProducts(rows)
     if (!catalogProducts.value.length) {
       throw new Error('Catalog returned no products.')
     }
@@ -471,7 +493,6 @@ function resolveCategoryMarkup (category, name) {
   if (cat.includes('car') || label.includes('car audio') || label.includes('subwoofer') || label.includes('amplifier')) return 1.55
   if (cat.includes('home') || label.includes('receiver') || label.includes('soundbar') || label.includes('theater')) return 1.70
   if (cat.includes('accessory') || label.includes('cable') || label.includes('mount') || label.includes('adapter')) return 2.50
-  if (cat.includes('electronics') || cat.includes('computer') || cat.includes('workstation')) return 1.35
   return 1.55
 }
 
@@ -569,30 +590,12 @@ function getProductImage (product) {
   return resolveProductImage(product)
 }
 
-const LANE_MATCHERS = {
-  computers: /computer|workstation|server|laptop|network|storage|tablet|pc\b|monitor/i,
-  theater: /theater|audio|speaker|amplifier|subwoofer|receiver|sound|home|cinema|av\b|headphone|turntable/i,
-  marine: /marine|boat|water|offshore|powersport|nautical|trolling/i,
-}
-
 function laneMatchesProduct (deptKey, product) {
-  const segment = getProductSegment(product)
-  if (LANE_MATCHERS[deptKey]?.test(segment)) return true
   return getDeptKey(product) === deptKey
 }
 
 function getDeptKey (product) {
-  const segment = getProductSegment(product).toLowerCase()
-  if (segment.includes('computer') || segment.includes('workstation') || segment.includes('server') || segment.includes('laptop')) {
-    return 'computers'
-  }
-  if (segment.includes('theater') || segment.includes('audio') || segment.includes('speaker') || segment.includes('home') || segment.includes('cinema') || segment.includes('amplifier')) {
-    return 'theater'
-  }
-  if (segment.includes('marine') || segment.includes('boat') || segment.includes('water') || segment.includes('offshore') || segment.includes('powersport')) {
-    return 'marine'
-  }
-  return null
+  return bcAudioDepartmentKey(product)
 }
 
 const catalogGroups = computed(() => {
@@ -674,7 +677,7 @@ function buildLaneTiles (deptKey, perLane = 28) {
     if (tiles.length >= perLane) return tiles
   }
 
-  const laneIndex = { computers: 0, theater: 1, marine: 2 }[deptKey] ?? 0
+  const laneIndex = SHOWCASE_LANE_DEFS.find((lane) => lane.deptKey === deptKey)?.laneIndex ?? 0
   for (let i = 0; i < withImages.length && tiles.length < perLane; i++) {
     pushTile(tiles, seen, withImages[(i + laneIndex * 41) % withImages.length])
   }
@@ -756,11 +759,7 @@ function backToShowroom () {
 }
 
 function getIconForProduct (product) {
-  const dept = getDeptKey(product)
-  if (dept === 'computers') return '💻'
-  if (dept === 'theater') return '📺'
-  if (dept === 'marine') return '⚓'
-  return '🛒'
+  return bcAudioDepartmentIcon(getDeptKey(product) || '')
 }
 
 function resetToHome () {
@@ -938,19 +937,12 @@ async function handleBuyNow () {
   text-align: left;
 }
 
-.portal-nav__logo {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 900;
-  font-size: 0.72rem;
-  color: #fff;
-  background: linear-gradient(135deg, var(--portal-red) 0%, var(--portal-charcoal) 100%);
-  border: 1px solid rgba(211, 47, 47, 0.35);
-  box-shadow: 0 4px 14px rgba(211, 47, 47, 0.25);
+.portal-nav__logo-img {
+  display: block;
+  width: auto;
+  max-width: min(260px, 58vw);
+  height: 56px;
+  object-fit: contain;
 }
 
 .portal-nav__title {
