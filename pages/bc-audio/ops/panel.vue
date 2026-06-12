@@ -3,7 +3,7 @@ import { BC_BRAND } from '~/utils/bcBrand.js'
 import { getBcSupport } from '~/utils/bcSupport.js'
 import { BC_META_DEFAULTS } from '~/utils/bcMetaDefaults.js'
 import seedAntiqueLedger from '~/src/content/antique-ledger.json'
-import { verifyOpsPhraseBrowser } from '~/utils/opsClientAuth'
+import { getStoredOpsPhrase, verifyOpsPhraseBrowser } from '~/utils/opsClientAuth'
 
 definePageMeta({
   layout: 'bc-audio',
@@ -52,19 +52,15 @@ async function loadSeo () {
   seoInfo.value = ''
   seo.value = { ...BC_SEO_DEFAULTS }
   try {
-    const data = await opsFetch('/api/ops/site-content', { query: { keys: 'bcMeta' } })
+    const data = await fetchBcPublicSiteContent(['bcMeta'])
     if (data?.bcMeta && typeof data.bcMeta === 'object') {
       seo.value = { ...seo.value, ...data.bcMeta }
     }
-  } catch (e) {
-    const msg = opsErrorMessage(e, 'Could not load SEO settings.')
-    if (/unauthorized|expired/i.test(msg)) {
-      seoError.value = 'Session expired — tap the B&C logo 5×, unlock, then open this tab again.'
-    } else if (/not configured|supabase/i.test(msg)) {
-      seoInfo.value = 'Cloud save is offline — you can still edit below. Changes apply after backend is connected.'
-    } else {
-      seoInfo.value = `Using defaults on this page (${msg}). Edit below and save when connected.`
+    if (!getStoredOpsPhrase()) {
+      seoInfo.value = 'Settings loaded. Tap the B&C logo 5× and unlock once before Save if you restarted your browser.'
     }
+  } catch (e) {
+    seoInfo.value = `Using built-in defaults (${opsErrorMessage(e, 'could not read cloud copy')}). You can still edit and save.`
   } finally {
     seoLoading.value = false
   }
@@ -74,14 +70,26 @@ async function saveSeo () {
   seoSaving.value = true
   seoMessage.value = ''
   seoError.value = ''
+  if (!getStoredOpsPhrase()) {
+    seoError.value = 'Owner password needed — tap the B&C logo 5×, unlock, then click Save SEO again.'
+    seoSaving.value = false
+    return
+  }
   try {
     await opsFetch('/api/ops/site-content', {
       method: 'PUT',
       body: { contentKey: 'bcMeta', payload: seo.value },
     })
-    seoMessage.value = 'SEO saved — search engines and social previews update after the next deploy/cache refresh.'
+    seoMessage.value = 'Saved to cloud — Google and Facebook previews update within a minute. Refresh the storefront to see changes.'
   } catch (e) {
-    seoError.value = opsErrorMessage(e, 'Save failed.')
+    const msg = opsErrorMessage(e, 'Save failed.')
+    if (/unauthorized|expired/i.test(msg)) {
+      seoError.value = 'Owner password expired — tap the B&C logo 5×, unlock, then save again.'
+    } else if (/not configured|supabase/i.test(msg)) {
+      seoError.value = 'Cloud save could not reach Supabase. Check GitHub secrets NUXT_PUBLIC_SUPABASE_URL and NUXT_PUBLIC_SUPABASE_KEY, then redeploy.'
+    } else {
+      seoError.value = msg
+    }
   } finally {
     seoSaving.value = false
   }

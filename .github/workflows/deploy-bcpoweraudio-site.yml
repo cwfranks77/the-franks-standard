@@ -45,6 +45,7 @@ on:
       - 'utils/publicSupabase.js'
       - 'plugins/ops-error-capture.client.ts'
       - 'utils/opsClientAuth.js'
+      - 'composables/useBcPublicSiteContent.ts'
       - 'utils/sha256Browser.js'
       - 'supabase/functions/ops-cms-action/**'
       - 'utils/bcSeo.js'
