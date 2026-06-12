@@ -27,6 +27,8 @@ export function toSpeechText (text: string): string {
     .replace(/\*\*/g, '')
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
     .replace(/[#*_`]/g, '')
+    .replace(/[—–]/g, ',')
+    .replace(/[^\x20-\x7E]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()
     .slice(0, 1200)
