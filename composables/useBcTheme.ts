@@ -54,7 +54,7 @@ export function useBcTheme () {
 
   async function loadPublishedTheme () {
     try {
-      const data = await $fetch('/api/public/site-content', { query: { keys: 'bcTheme' } })
+      const data = await fetchBcPublicSiteContent(['bcTheme'])
       const published = data?.bcTheme as Partial<BcThemeState> | undefined
       if (published?.accent) {
         theme.value = { ...defaults, ...published }

@@ -1,7 +1,7 @@
 <script setup>
 import { BC_BRAND } from '~/utils/bcBrand.js'
 import { getBcSupport } from '~/utils/bcSupport.js'
-import metaDefaults from '~/content/meta-config.json'
+import { BC_META_DEFAULTS } from '~/utils/bcMetaDefaults.js'
 import seedAntiqueLedger from '~/src/content/antique-ledger.json'
 
 definePageMeta({
@@ -19,13 +19,7 @@ const orders = ref([])
 const ordersLoading = ref(false)
 const ordersError = ref('')
 
-const BC_SEO_DEFAULTS = {
-  title: metaDefaults.title,
-  description: metaDefaults.description,
-  image: 'https://www.bcpoweraudio.com/img/hero-showcase-v2.svg',
-  parentCompany: 'B&C Performance Audio LLC',
-  url: 'https://www.bcpoweraudio.com',
-}
+const BC_SEO_DEFAULTS = { ...BC_META_DEFAULTS }
 
 const seo = ref({ ...BC_SEO_DEFAULTS })
 const seoLoading = ref(false)

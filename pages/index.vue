@@ -298,7 +298,19 @@
     </main>
 
     <footer class="portal-footer">
-      <p>B&amp;C Performance Audio — Authorized Distribution Hub</p>
+      <p>{{ siteMeta.parentCompany }} — Competition car audio megastore</p>
+      <div v-if="socialLinks.length" class="portal-footer__social">
+        <a
+          v-for="link in socialLinks"
+          :key="link.id"
+          :href="link.url"
+          class="portal-footer__social-link"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {{ link.label }}
+        </a>
+      </div>
     </footer>
 
     <OperatorUnlockModal
@@ -317,13 +329,15 @@
 
 <script setup>
 import { BC_BRAND } from '~/utils/bcBrand.js'
-import { BC_LEGAL_NAME } from '~/utils/bcSeo.js'
 import { getBcSupport } from '~/utils/bcSupport.js'
+import { buildSocialLinks } from '~/utils/siteSocial.js'
 
 definePageMeta({ layout: false })
 
 const config = useRuntimeConfig()
 const support = computed(() => getBcSupport(config))
+const socialLinks = computed(() => buildSocialLinks(config.public))
+const { meta: siteMeta } = useBcSiteMeta()
 
 const SHOWCASE_LANE_DEFS = [
   {
@@ -386,7 +400,6 @@ async function refreshCatalog () {
 }
 
 onMounted(() => {
-  document.title = BC_LEGAL_NAME
   refreshCatalog()
   document.addEventListener('click', onDocumentClick)
 })
@@ -420,14 +433,7 @@ const {
 } = useOpsLogoKnock()
 
 useHead({
-  title: BC_LEGAL_NAME,
-  titleTemplate: () => BC_LEGAL_NAME,
   meta: [
-    { key: 'description', name: 'description', content: `${BC_LEGAL_NAME} — authorized wholesale distribution portal.` },
-    { key: 'og:title', property: 'og:title', content: BC_LEGAL_NAME },
-    { key: 'og:description', property: 'og:description', content: `${BC_LEGAL_NAME} — authorized wholesale distribution portal.` },
-    { key: 'twitter:title', name: 'twitter:title', content: BC_LEGAL_NAME },
-    { key: 'twitter:description', name: 'twitter:description', content: `${BC_LEGAL_NAME} — authorized wholesale distribution portal.` },
     { key: 'apple-mobile-web-app-title', name: 'apple-mobile-web-app-title', content: BC_BRAND.short },
   ],
 })
@@ -1709,6 +1715,27 @@ async function handleBuyNow () {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: #737373;
+}
+
+.portal-footer__social {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.65rem 1rem;
+  margin-top: 1rem;
+}
+
+.portal-footer__social-link {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #d32f2f;
+  text-decoration: none;
+}
+
+.portal-footer__social-link:hover {
+  color: #ff5252;
 }
 
 .portal-fade {
