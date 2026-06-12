@@ -1,5 +1,6 @@
 import { filterBcAudioProducts } from '~/utils/bcAudioOnlyCatalog.js'
 import { bcPlaceholderImageForProduct, resolveBcProductImage } from '~/utils/bcProductImage.js'
+import { bcProductShelfCategory } from '~/utils/bcProductShelfCategory.js'
 
 /**
  * Load B&C product rows at runtime from /catalog/petra-products.json.
@@ -19,7 +20,7 @@ export function useBcProductCatalog () {
     products.value.map((item) => ({
       id: item.id,
       name: item.name,
-      category: item.category,
+      category: bcProductShelfCategory(item),
       brand: item.brand || item.category,
       image: resolveBcProductImage(item),
       fallbackImage: bcPlaceholderImageForProduct(item),
@@ -37,7 +38,7 @@ export function useBcProductCatalog () {
     return {
       id: hit.id,
       name: hit.name,
-      category: hit.category,
+      category: bcProductShelfCategory(hit),
       brand: hit.brand || hit.category,
       image: resolveBcProductImage(hit),
       fallbackImage: bcPlaceholderImageForProduct(hit),

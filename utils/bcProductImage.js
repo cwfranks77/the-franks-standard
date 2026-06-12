@@ -75,18 +75,21 @@ export function bcPlaceholderImageForProduct (product) {
   return BC_PLACEHOLDER_IMAGES.speaker
 }
 
-/** Best display image for a B&C catalog row: local SVG, fixed Petra URL, or description placeholder. */
+/** Best display image for a B&C catalog row: Petra CDN by SKU, then fixed remote URL, then local/placeholder SVG. */
 export function resolveBcProductImage (product) {
   if (!product) return PLACEHOLDER
 
-  const localImage = String(product.image || '').trim()
-  if (localImage.startsWith('/')) return localImage
+  const raw = String(product.image || '').trim()
 
-  const fixedRemote = fixPetraImageUrl(product.image)
-  if (fixedRemote) return fixedRemote
+  if (/^https?:\/\//i.test(raw)) {
+    const fixedRemote = fixPetraImageUrl(raw)
+    if (fixedRemote) return fixedRemote
+  }
 
   const fromSku = petraImageUrlFromSku(product.sku || product.vendorSku)
   if (fromSku) return fromSku
+
+  if (raw.startsWith('/')) return raw
 
   return bcPlaceholderImageForProduct(product)
 }

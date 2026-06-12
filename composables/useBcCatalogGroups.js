@@ -1,18 +1,9 @@
 /**
- * Group Petra catalog rows by category for nav menus and filters.
+ * Group Petra catalog rows by shelf category for nav menus and filters.
  */
-const PINNED_CATEGORIES = [
-  'Home Audio',
-  'Home Audio & Theater',
-  'Amplifiers',
-  'Subwoofers',
-  'Speakers, Subwoofers & Accessories',
-  'Automotive Electronics',
-  'Marine Electronics',
-  'Portable Audio & Video',
-  'Cables, Connectors & Wiring Harnesses',
-  'Custom Install',
-]
+import { BC_SHELF_CATEGORIES } from '~/utils/bcProductShelfCategory.js'
+
+const PINNED_CATEGORIES = BC_SHELF_CATEGORIES
 
 const MAX_MENU_CATEGORIES = 12
 

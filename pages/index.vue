@@ -273,7 +273,7 @@
             </div>
 
             <div class="portal-detail__body">
-              <span class="portal-detail__dept">{{ getProductSegment(currentProduct) }}</span>
+              <span class="portal-detail__dept">{{ getProductListCategory(currentProduct) }}</span>
               <h2 class="portal-detail__name">{{ getProductName(currentProduct) }}</h2>
               <p class="portal-detail__sku">MODEL SKU: {{ getProductSku(currentProduct) }}</p>
 
@@ -345,6 +345,13 @@ import {
   bcAudioDepartmentKey,
   filterBcAudioProducts,
 } from '~/utils/bcAudioOnlyCatalog.js'
+import {
+  bcPlaceholderImageForProduct,
+  fixPetraImageUrl,
+  petraImageUrlFromSku,
+  resolveBcProductImage,
+} from '~/utils/bcProductImage.js'
+import { bcProductShelfCategory } from '~/utils/bcProductShelfCategory.js'
 
 definePageMeta({ layout: false, pageTransition: false })
 
@@ -400,8 +407,6 @@ const checkoutBusy = ref(false)
 const catalogProducts = ref([])
 const catalogPending = ref(true)
 const catalogError = ref(null)
-const PETRA_IMAGE_CDN = 'https://s3.us-east-2.amazonaws.com/petraimages.com'
-const BROKEN_PETRA_IMAGE_HOST = /https?:\/\/petraimages\.com\.s3\.amazonaws\.com/i
 const SCROLL_IMAGE_FALLBACK = '/img/hero-showcase-v2.svg'
 
 async function refreshCatalog () {
@@ -542,52 +547,16 @@ function formatPrice (product) {
   return `$${numeric.toFixed(2)}`
 }
 
-function normalizeImageUrl (raw) {
-  const value = String(raw || '').trim()
-  if (!value.startsWith('http')) return ''
-  return value.replace(/^http:\/\//i, 'https://')
-}
-
-/** Petra catalog URLs use a host that fails browser SSL — rewrite to the working S3 path. */
-function fixPetraImageUrl (raw) {
-  const value = normalizeImageUrl(raw)
-  if (!value) return ''
-  if (BROKEN_PETRA_IMAGE_HOST.test(value)) {
-    const path = value.replace(BROKEN_PETRA_IMAGE_HOST, '')
-    return `${PETRA_IMAGE_CDN}${path.startsWith('/') ? path : `/${path}`}`
-  }
-  return value
-}
-
-function petraImageUrl (sku) {
-  if (!sku || sku === 'N/A') return ''
-  return `${PETRA_IMAGE_CDN}/600x600/${String(sku).toUpperCase()}.jpg`
-}
-
-function isPetraDistributorSku (product) {
-  if (!product) return false
-  if (String(product.id || '').startsWith('petra-')) return true
-  return Boolean(String(product.vendorSku || '').trim())
-}
-
-function resolveProductImage (product) {
-  if (!product) return ''
-  const localImage = String(product.image || '').trim()
-  if (localImage.startsWith('/')) return localImage
-  const fromCatalog = fixPetraImageUrl(product.image)
-  if (fromCatalog) return fromCatalog
-  if (isPetraDistributorSku(product)) {
-    return petraImageUrl(product.sku || product.vendorSku)
-  }
-  return ''
+function getProductListCategory (product) {
+  return bcProductShelfCategory(product)
 }
 
 function hasCatalogImage (product) {
-  return Boolean(resolveProductImage(product))
+  return Boolean(resolveBcProductImage(product))
 }
 
 function getProductImage (product) {
-  return resolveProductImage(product)
+  return resolveBcProductImage(product)
 }
 
 function laneMatchesProduct (deptKey, product) {
@@ -601,7 +570,7 @@ function getDeptKey (product) {
 const catalogGroups = computed(() => {
   const map = new Map()
   for (const product of catalogProducts.value) {
-    const label = getProductSegment(product)
+    const label = getProductListCategory(product)
     if (!map.has(label)) map.set(label, [])
     map.get(label).push(product)
   }
@@ -624,7 +593,7 @@ const searchResultProducts = computed(() => {
     const haystack = [
       getProductName(product),
       getProductSku(product),
-      getProductSegment(product),
+      getProductListCategory(product),
       product.brand,
       product.description,
     ].filter(Boolean).join(' ').toLowerCase()
@@ -695,7 +664,7 @@ const showcaseLanes = computed(() =>
 function onScrollImageError (event, tile) {
   const img = event?.target
   if (!img || !tile) return
-  const fixed = fixPetraImageUrl(tile.url) || petraImageUrl(tile.sku)
+  const fixed = fixPetraImageUrl(tile.url) || petraImageUrlFromSku(tile.sku)
   if (fixed && img.src !== fixed) {
     img.src = fixed
     return
@@ -713,14 +682,15 @@ function onDetailImageError (event, product) {
     img.src = fixed
     return
   }
-  img.src = SCROLL_IMAGE_FALLBACK
+  const fallback = bcPlaceholderImageForProduct(product)
+  if (img.src !== fallback) img.src = fallback
 }
 
 function openProductFromTile (tile) {
   if (!tile?.productId) return
   const product = catalogProducts.value.find((p) => getProductId(p) === tile.productId)
   if (product) {
-    selectedCategoryLabel.value = getProductSegment(product)
+    selectedCategoryLabel.value = getProductListCategory(product)
   }
   selectedProductId.value = tile.productId
   viewMode.value = 'detail'
@@ -732,7 +702,7 @@ function toggleCategory (label) {
 
 function selectProductFromMenu (product, categoryLabel) {
   if (!product) return
-  selectedCategoryLabel.value = categoryLabel || getProductSegment(product)
+  selectedCategoryLabel.value = categoryLabel || getProductListCategory(product)
   selectedProductId.value = getProductId(product)
   catalogMenuOpen.value = false
   expandedCategory.value = ''
