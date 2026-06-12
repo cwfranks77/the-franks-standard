@@ -1,4 +1,6 @@
 import Stripe from 'stripe'
+import { checkoutReturnUrls, resolveCheckoutBaseUrl } from '~/utils/bcCheckout.js'
+import { resolveBcCheckoutWholesale } from '../../utils/petraWholesaleLookup.js'
 
 const PLATFORM_FEE_PERCENT = 0.035 // 3.5% estimated Stripe + platform fee matrix
 const LA_TAX_RATE = 0.0445 // 4.45% Louisiana state sales tax rate
@@ -35,13 +37,13 @@ export default defineEventHandler(async (event) => {
   const productName = String(body?.productName || body?.name || '').trim()
   const customerEmail = String(body?.customerEmail || '').trim()
   const retailPrice = body?.retailPrice
-  const wholesaleCost = body?.wholesaleCost
   const orderId = String(body?.orderId || '').trim() || makeOrderId()
+  const wholesaleCost = resolveBcCheckoutWholesale(body ?? {})
 
   if (!productName || !customerEmail || retailPrice == null || wholesaleCost == null) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'productName, customerEmail, retailPrice, and wholesaleCost are required.',
+      statusMessage: 'productName, customerEmail, retailPrice, and a known product SKU are required.',
     })
   }
 
@@ -65,7 +67,9 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Split math invalid for this product.' })
   }
 
-  const siteUrl = String(config.public?.siteUrl || 'https://thefranksstandard.com').replace(/\/$/, '')
+  const envSiteUrl = String(config.public?.siteUrl || 'https://thefranksstandard.com').replace(/\/$/, '')
+  const baseUrl = resolveCheckoutBaseUrl(body?.siteUrl, envSiteUrl)
+  const { successPath, cancelPath } = checkoutReturnUrls(baseUrl)
 
   const useConnect = connectDestinationReady(distributorAccountId)
   console.log(`\n[STRIPE] Processing checkout for Order #${orderId} (${useConnect ? 'Connect split' : 'direct platform'})`)
@@ -73,7 +77,6 @@ export default defineEventHandler(async (event) => {
   console.log(` -> Processing fee estimate: $${(processingFeeCents / 100).toFixed(2)}`)
 
   const stripe = new Stripe(secretKey)
-  const cancelPath = siteUrl.includes('bcpoweraudio.com') ? '/bc-audio?cancelled=1' : '/shop?cancelled=1'
 
   try {
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
@@ -91,8 +94,8 @@ export default defineEventHandler(async (event) => {
       }],
       mode: 'payment',
       customer_email: customerEmail,
-      success_url: `${siteUrl}/order/success?order=${encodeURIComponent(orderId)}&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${siteUrl}${cancelPath}`,
+      success_url: `${baseUrl}${successPath}?order=${encodeURIComponent(orderId)}&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}${cancelPath}`,
       metadata: {
         orderId,
         productName,
@@ -122,14 +125,6 @@ export default defineEventHandler(async (event) => {
       url: session.url,
       orderId,
       sessionId: session.id,
-      totals: {
-        retailCents,
-        laTaxCents,
-        totalCustomerGrossCents,
-        wholesaleCents,
-        applicationFeeAmount,
-        processingFeeCents,
-      },
     }
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Stripe checkout failed'

@@ -202,16 +202,15 @@ const handleStripeExpress = async (product: any) => {
   checkoutBusy.value = true
   checkoutSku.value = getProductSku(product)
   try {
-    const wholesaleCost = Math.round(retailPrice * 0.7 * 100) / 100
     const checkout = await createBcLiveCheckout({
       productId: getProductId(product),
       productName: getProductName(product),
       productSku: getProductSku(product),
       customerEmail,
       customerZip,
-      shippingAddress: `${customerName} — B&C wholesale order`,
+      shippingAddress: `${customerName} — B&C order`,
       retailPrice,
-      wholesaleCost,
+      siteUrl: String(config.public.siteUrl || '').replace(/\/$/, ''),
     })
 
     if (checkout?.url) {

@@ -18,7 +18,6 @@ const form = ref({
 const isSubmitting = ref(false)
 const statusMessage = ref('')
 const statusError = ref(false)
-const ledger = ref(null)
 
 async function createBcLiveCheckout (body) {
   try {
@@ -56,32 +55,29 @@ async function submitOrder () {
   isSubmitting.value = true
   statusMessage.value = ''
   statusError.value = false
-  ledger.value = null
+
+  const config = useRuntimeConfig()
+  const retailPrice = props.product.retailPrice ?? props.product.price
+  if (retailPrice == null) {
+    statusError.value = true
+    statusMessage.value = 'This product has no price available for checkout.'
+    isSubmitting.value = false
+    return
+  }
 
   const checkoutBody = {
     productId: props.product.id,
     productName: props.product.name,
     customerEmail: form.value.customerEmail.trim(),
-    retailPrice: props.product.retailPrice,
-    wholesaleCost: props.product.wholesaleCost,
+    retailPrice,
     customerZip: form.value.customerZip.trim(),
     shippingAddress: `${form.value.customerName.trim()} — ${form.value.shippingAddress.trim()}`,
-    productSku: props.product.id,
+    productSku: props.product.sku || props.product.id,
+    siteUrl: String(config.public.siteUrl || '').replace(/\/$/, ''),
   }
 
   try {
     const checkout = await createBcLiveCheckout(checkoutBody)
-
-    if (checkout?.totals) {
-      ledger.value = {
-        subtotal: checkout.totals.retailCents,
-        taxAmount: checkout.totals.laTaxCents,
-        taxRatePercentage: '4.45',
-        amountToChargeCustomer: checkout.totals.totalCustomerGrossCents,
-        applicationFeeAmount: checkout.totals.applicationFeeAmount,
-        transferToDistributor: checkout.totals.wholesaleCents,
-      }
-    }
 
     if (checkout?.url) {
       statusMessage.value = 'Redirecting to secure Stripe checkout…'
@@ -103,10 +99,10 @@ async function submitOrder () {
 <template>
   <div class="bc-order">
     <header class="bc-order__head">
-      <p class="bc-order__eyebrow">Dropship order</p>
-      <h2 class="bc-order__title">{{ BC_BRAND.short }} fulfillment form</h2>
+      <p class="bc-order__eyebrow">Secure checkout</p>
+      <h2 class="bc-order__title">{{ BC_BRAND.short }} order form</h2>
       <p class="bc-order__sub">
-        Live Stripe Connect checkout — Louisiana tax, wholesale distributor payout, and your margin split automatically.
+        Live Stripe checkout — sales tax and fulfillment handled automatically after payment.
       </p>
     </header>
 
@@ -132,7 +128,7 @@ async function submitOrder () {
         </div>
         <div class="bc-order__row">
           <div class="bc-order__field">
-            <label for="bc-zip">Ship-to ZIP (LA tax)</label>
+            <label for="bc-zip">Ship-to ZIP</label>
             <input id="bc-zip" v-model="form.customerZip" type="text" required maxlength="10" placeholder="70801">
           </div>
         </div>
@@ -149,15 +145,6 @@ async function submitOrder () {
       <p v-if="statusMessage" class="bc-order__status" :class="{ 'bc-order__status--err': statusError }">
         {{ statusMessage }}
       </p>
-
-      <div v-if="ledger" class="bc-order__ledger">
-        <p class="bc-order__ledger-title">{{ BC_BRAND.short }} split ledger</p>
-        <div class="bc-order__ledger-row"><span>Subtotal</span><span>${{ (ledger.subtotal / 100).toFixed(2) }}</span></div>
-        <div class="bc-order__ledger-row"><span>LA tax ({{ ledger.taxRatePercentage }}%)</span><span>${{ (ledger.taxAmount / 100).toFixed(2) }}</span></div>
-        <div class="bc-order__ledger-row bc-order__ledger-row--strong"><span>Customer charged</span><span>${{ (ledger.amountToChargeCustomer / 100).toFixed(2) }}</span></div>
-        <div class="bc-order__ledger-row bc-order__ledger-row--red"><span>{{ BC_BRAND.short }} net profit</span><span>${{ (ledger.applicationFeeAmount / 100).toFixed(2) }}</span></div>
-        <div class="bc-order__ledger-row"><span>Distributor transfer</span><span>${{ (ledger.transferToDistributor / 100).toFixed(2) }}</span></div>
-      </div>
     </template>
   </div>
 </template>
@@ -262,29 +249,4 @@ async function submitOrder () {
   line-height: 1.4;
 }
 .bc-order__status--err { color: #fca5a5; }
-
-.bc-order__ledger {
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  font-family: ui-monospace, monospace;
-  font-size: 0.75rem;
-}
-.bc-order__ledger-title {
-  font-weight: 800;
-  color: #ff5252;
-  margin: 0 0 8px;
-  font-family: inherit;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.65rem;
-}
-.bc-order__ledger-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 4px 0;
-  color: #9ca3af;
-}
-.bc-order__ledger-row--strong { color: #f5f5f7; font-weight: 800; }
-.bc-order__ledger-row--red { color: #ff5252; }
 </style>

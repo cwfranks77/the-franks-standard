@@ -790,16 +790,15 @@ async function handleBuyNow () {
   checkoutBusy.value = true
   try {
     const config = useRuntimeConfig()
-    const wholesaleCost = getProductBaseCost(product) ?? Math.round(retailPrice * 0.7 * 100) / 100
     const body = {
       productId: getProductId(product),
       productName: getProductName(product),
       productSku: getProductSku(product),
       customerEmail,
       customerZip,
-      shippingAddress: `${customerName} — B&C wholesale order`,
+      shippingAddress: `${customerName} — B&C order`,
       retailPrice,
-      wholesaleCost,
+      siteUrl: String(config.public.siteUrl || '').replace(/\/$/, ''),
     }
 
     let checkout

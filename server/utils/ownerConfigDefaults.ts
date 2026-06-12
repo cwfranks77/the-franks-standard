@@ -119,7 +119,6 @@ export function catalogRowToGridItem (row: Record<string, unknown>, store?: Reco
     name: row.name,
     tagline: row.tagline,
     retailPrice: retail,
-    wholesaleCost: Number(row.wholesale_cost ?? row.wholesaleCost ?? 0),
     category: row.category,
     badge: row.badge,
     image: row.image,

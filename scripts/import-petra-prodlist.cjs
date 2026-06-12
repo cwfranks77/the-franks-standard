@@ -34,7 +34,6 @@ function buildBcCatalogItem (item) {
     id: item.id,
     sku: item.sku,
     name: item.name,
-    wholesalePrice: wholesale,
     retailPrice,
     price: retailPrice,
     category: item.category,
@@ -43,6 +42,7 @@ function buildBcCatalogItem (item) {
     image: item.image,
     available: item.available ?? 99,
     inStock: item.inStock ?? true,
+    _wholesale: wholesale,
   }
 }
 
@@ -200,7 +200,6 @@ function loadPetraRows (csvPath) {
       sku: petraSku,
       vendorSku: String(cols[headers['VENDOR SKU']] || '').trim(),
       name: shortDesc,
-      wholesalePrice: wholesale,
       retailPrice: product.retailPrice,
       price: product.retailPrice,
       category: product.CATEGORY,
@@ -209,6 +208,7 @@ function loadPetraRows (csvPath) {
       image,
       available,
       inStock: available > 0,
+      _wholesale: wholesale,
     })
   }
 
@@ -227,7 +227,34 @@ function main () {
   }
 
   const petraProducts = loadPetraRows(csvPath)
-  const products = [...BC_AUDIO_ITEMS, ...petraProducts]
+  const built = [...BC_AUDIO_ITEMS, ...petraProducts]
+  const wholesaleMap = {}
+  const products = built.map((row) => {
+    const w = Number(row._wholesale)
+    const sku = String(row.sku || '').trim()
+    const id = String(row.id || '').trim()
+    if (Number.isFinite(w) && w > 0) {
+      if (sku) {
+        wholesaleMap[sku.toUpperCase()] = w
+        wholesaleMap[sku] = w
+      }
+      if (id) {
+        wholesaleMap[id.toLowerCase()] = w
+        wholesaleMap[id] = w
+      }
+    }
+    const { _wholesale, ...publicRow } = row
+    return publicRow
+  })
+
+  const mapJson = JSON.stringify(wholesaleMap)
+  fs.mkdirSync(path.join(ROOT, 'data'), { recursive: true })
+  fs.writeFileSync(path.join(ROOT, 'data', 'petra-wholesale-by-sku.json'), mapJson, 'utf8')
+  fs.writeFileSync(
+    path.join(ROOT, 'supabase', 'functions', '_shared', 'petraWholesaleBySku.json'),
+    mapJson,
+    'utf8',
+  )
 
   fs.mkdirSync(OUT_DIR, { recursive: true })
   const payload = {
@@ -236,6 +263,7 @@ function main () {
     imageHost: 'https://petraimages.com.s3.amazonaws.com',
     imagePolicy: 'external-only',
     count: products.length,
+    wholesalePolicy: 'server-only',
     products,
   }
 

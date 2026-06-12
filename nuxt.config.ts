@@ -20,6 +20,7 @@ const bcPrerenderRoutes = bcPrimarySite
       '/',
       '/bc-audio/catalog',
       '/bc-audio/open-door',
+      '/bc-audio/order-success',
       '/bc-audio/sms-consent',
     ]
   : []
