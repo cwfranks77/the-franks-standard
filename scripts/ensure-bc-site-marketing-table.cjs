@@ -24,6 +24,6 @@ console.log('Linking Supabase project', PROJECT_REF)
 run(['link', '--project-ref', PROJECT_REF])
 
 console.log('Applying', path.basename(SQL_FILE))
-run(['db', 'execute', '--file', SQL_FILE, '--linked'])
+run(['db', 'query', '--file', SQL_FILE, '--linked'])
 
 console.log('Done — refresh the B&C owner SEO tab and click Save SEO.')
