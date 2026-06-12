@@ -9,6 +9,7 @@ export default defineNuxtPlugin({
       document.getElementById('fss-static-boot-hide')?.remove()
     }
     if (import.meta.client) {
+      nuxtApp.hook('app:created', clear)
       nuxtApp.hook('app:mounted', clear)
     }
   },

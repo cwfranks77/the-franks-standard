@@ -59,6 +59,8 @@ on:
       - 'components/BcProductCatalogGrid.vue'
       - 'scripts/patch-gh-pages-spa.cjs'
       - 'scripts/inject-spa-fallback.cjs'
+      - 'scripts/patch-gh-pages-spa.cjs'
+      - 'plugins/0.remove-static-fallback.client.ts'
       - 'scripts/configure-bcpoweraudio-github-pages.cjs'
       - 'nuxt.config.ts'
       - '.github/workflows/deploy-bcpoweraudio-site.yml'

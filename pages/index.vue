@@ -115,11 +115,11 @@
           <button type="button" class="portal-catalog-retry" @click="refreshCatalog">Try again</button>
         </p>
 
-        <p v-else-if="catalogPending" class="portal-catalog-loading">
+        <p v-else-if="catalogPending" class="portal-catalog-loading" aria-live="polite">
           Loading live catalog…
         </p>
 
-        <div v-else class="portal-scroll-stack">
+        <div class="portal-scroll-stack" :class="{ 'portal-scroll-stack--pending': catalogPending }">
           <section
             v-for="lane in showcaseLanes"
             :key="lane.deptKey"
@@ -333,7 +333,7 @@ import { getBcSupport } from '~/utils/bcSupport.js'
 import { buildSocialLinks } from '~/utils/siteSocial.js'
 import { getPublicSupabaseKey, getPublicSupabaseUrl } from '~/utils/publicSupabase.js'
 
-definePageMeta({ layout: false })
+definePageMeta({ layout: false, pageTransition: false })
 
 const config = useRuntimeConfig()
 const support = computed(() => getBcSupport(config))
@@ -1347,6 +1347,12 @@ async function handleBuyNow () {
   text-align: center;
   font-size: 0.85rem;
   color: var(--portal-muted);
+  margin: 0 0 0.75rem;
+}
+
+.portal-scroll-stack--pending {
+  opacity: 0.55;
+  pointer-events: none;
 }
 
 .portal-catalog-error {

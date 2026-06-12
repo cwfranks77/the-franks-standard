@@ -55,11 +55,8 @@ const SHARED_FOOTER = `
 // Boot HTML stays visible until Nuxt mounts (see plugins/0.remove-static-fallback.client.ts).
 const EARLY_HIDE_SCRIPT = ''
 
-const BC_BOOT_VISIBLE = BC_PRIMARY_SITE
-  ? `html,body{margin:0;background:#0a0a0a}
-#fss-static-boot{position:fixed;inset:0;z-index:9999;min-height:100vh;overflow:auto;color:#f5f5f5;background:#0a0a0a;padding:1rem 1.25rem 2rem}
-.fss-static-aur{background:radial-gradient(ellipse 80% 50% at 0% 0%,rgba(211,47,47,.22) 0%,transparent 50%),radial-gradient(ellipse 60% 40% at 100% 10%,rgba(255,82,82,.12) 0%,transparent 45%),linear-gradient(180deg,#0a0a0a 0%,#141414 100%)}`
-  : `/* Hidden from view — HTML stays in page source for crawlers */
+// SEO fallback HTML stays in the document for crawlers — never show the old splash on screen.
+const BC_BOOT_VISIBLE = `html,body{margin:0;background:#0a0a0a}
 #fss-static-boot{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;pointer-events:none!important;opacity:0!important}
 #fss-static-boot a{pointer-events:none!important}`
 
