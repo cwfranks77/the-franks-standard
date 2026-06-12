@@ -3,6 +3,7 @@ import { BC_BRAND } from '~/utils/bcBrand.js'
 import { getBcSupport } from '~/utils/bcSupport.js'
 import { BC_META_DEFAULTS } from '~/utils/bcMetaDefaults.js'
 import seedAntiqueLedger from '~/src/content/antique-ledger.json'
+import { verifyOpsPhraseBrowser } from '~/utils/opsClientAuth'
 
 definePageMeta({
   layout: 'bc-audio',
@@ -11,7 +12,7 @@ definePageMeta({
 
 const config = useRuntimeConfig()
 const support = computed(() => getBcSupport(config))
-const { revoke } = useOpsSession()
+const { isAuthed, revoke } = useOpsSession()
 const { theme, applyPreset, patch, resetTheme, publishTheme, presets, themeSaving, themeMessage } = useBcTheme()
 
 const tab = ref('store')
@@ -128,9 +129,10 @@ watch(tab, (t) => {
   if (t === 'owner') loadAntiqueLedger()
 })
 
-// STRICT ENFORCEMENT: Private Owner Ledger — state & methods only
+// Private owner ledger — unlocked when you are already signed into this panel.
 const ledgerUnlocked = ref(false)
-const bypassKeyInput = ref('')
+const ledgerUnlockError = ref('')
+const ownerPhraseInput = ref('')
 const newTx = ref({ account: '', desc: '', amount: '' })
 const ledgerTransactions = ref([
   { date: '2026-06-11 14:22', account: 'STRIPE-REVENUE', desc: 'PETRA-DEN-4K9CH Consumer Invoice Settlement', amount: '+$1,394.45', isCredit: true },
@@ -138,14 +140,34 @@ const ledgerTransactions = ref([
   { date: '2026-06-11 11:30', account: 'MERCURY-BANK', desc: 'Petra Distribution Wholesaler Ledger Clearing', amount: '-$899.60', isCredit: false },
 ])
 
-function verifyBypassKey () {
-  if (bypassKeyInput.value.toUpperCase() === 'CFLM-LIFETIME-FOUNDER-PASS-2026') {
+watch(isAuthed, (signedIn) => {
+  if (signedIn) ledgerUnlocked.value = true
+}, { immediate: true })
+
+async function verifyLedgerUnlock () {
+  ledgerUnlockError.value = ''
+  if (isAuthed.value) {
     ledgerUnlocked.value = true
-    bypassKeyInput.value = ''
-  } else {
-    alert('[❌] SECURITY REJECTION: Invalid private administrative override signature token.')
-    bypassKeyInput.value = ''
+    ownerPhraseInput.value = ''
+    return
   }
+  const raw = ownerPhraseInput.value.trim()
+  if (!raw) {
+    ledgerUnlockError.value = 'Enter your owner password — the same phrase you type after tapping the B&C logo 5 times.'
+    return
+  }
+  const expectedHash = String(config.public?.opsAccessKeyHash || '').trim().toLowerCase()
+  if (!expectedHash) {
+    ledgerUnlockError.value = 'Owner password is not set on this build. Add NUXT_PUBLIC_OPS_ACCESS_KEY in GitHub Actions and redeploy.'
+    return
+  }
+  if (await verifyOpsPhraseBrowser(raw, expectedHash)) {
+    ledgerUnlocked.value = true
+    ownerPhraseInput.value = ''
+    return
+  }
+  ledgerUnlockError.value = 'That password did not match. Use the same owner phrase as the logo unlock (capitals do not matter).'
+  ownerPhraseInput.value = ''
 }
 
 function postTransaction (isCredit) {
@@ -624,13 +646,14 @@ useSeoMeta({
 
       <div class="bc-owner-block">
         <h3>Private transaction ledger</h3>
-        <p class="bc-panel__note">Stripe, tax reserve, and wholesaler clearing — unlock with your founder bypass key.</p>
+        <p class="bc-panel__note">Stripe, tax reserve, and wholesaler clearing. Unlocks automatically when you are signed into this owner panel.</p>
         <template v-if="!ledgerUnlocked">
+          <p v-if="ledgerUnlockError" class="bc-alert bc-alert--err">{{ ledgerUnlockError }}</p>
           <label class="bc-bypass-label">
-            Bypass key
-            <input v-model="bypassKeyInput" class="input" type="password" autocomplete="off" @keyup.enter="verifyBypassKey">
+            Owner password
+            <input v-model="ownerPhraseInput" class="input" type="password" autocomplete="off" placeholder="Same as logo unlock" @keyup.enter="verifyLedgerUnlock">
           </label>
-          <button type="button" class="btn btn-primary btn-sm" @click="verifyBypassKey">Unlock ledger</button>
+          <button type="button" class="btn btn-primary btn-sm" @click="verifyLedgerUnlock">Unlock ledger</button>
         </template>
         <template v-else>
           <div class="bc-orders-table-wrap">
