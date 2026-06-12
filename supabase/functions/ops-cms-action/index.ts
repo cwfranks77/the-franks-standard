@@ -26,6 +26,35 @@ const DEFAULT_ANTIQUE_LEDGER = {
   ],
 }
 
+const DEFAULT_PRIVATE_TXN_LEDGER = {
+  transactions: [
+    {
+      id: 'tx-demo-stripe-1',
+      date: '2026-06-11 14:22',
+      account: 'STRIPE-REVENUE',
+      desc: 'PETRA-DEN-4K9CH Consumer Invoice Settlement',
+      amount: '+$1,394.45',
+      isCredit: true,
+    },
+    {
+      id: 'tx-demo-tax-1',
+      date: '2026-06-11 09:15',
+      account: 'LA-TAX-RESERVE',
+      desc: 'Quarterly State Sales Tax Allocation Escrow',
+      amount: '-$240.10',
+      isCredit: false,
+    },
+    {
+      id: 'tx-demo-wholesale-1',
+      date: '2026-06-11 11:30',
+      account: 'MERCURY-BANK',
+      desc: 'Petra Distribution Wholesaler Ledger Clearing',
+      amount: '-$899.60',
+      isCredit: false,
+    },
+  ],
+}
+
 const DEFAULT_BC_THEME = {
   presetId: 'classic-red',
   accent: '#d32f2f',
@@ -69,6 +98,7 @@ Deno.serve(async (req) => {
       bcMeta: DEFAULT_BC_META,
       bcTheme: DEFAULT_BC_THEME,
       antiqueLedger: DEFAULT_ANTIQUE_LEDGER,
+      privateTxnLedger: DEFAULT_PRIVATE_TXN_LEDGER,
     }
     const wanted = keysRaw.length ? keysRaw : Object.keys(defaults)
     const out: Record<string, unknown> = {}
@@ -87,6 +117,14 @@ Deno.serve(async (req) => {
       if (key === 'antiqueLedger') {
         out.antiqueLedger = {
           items: Array.isArray(payload.items) ? payload.items : (base.items as unknown[]) || [],
+        }
+        continue
+      }
+      if (key === 'privateTxnLedger') {
+        out.privateTxnLedger = {
+          transactions: Array.isArray(payload.transactions)
+            ? payload.transactions
+            : (base.transactions as unknown[]) || [],
         }
         continue
       }

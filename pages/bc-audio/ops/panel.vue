@@ -3,6 +3,7 @@ import { BC_BRAND } from '~/utils/bcBrand.js'
 import { getBcSupport } from '~/utils/bcSupport.js'
 import { BC_META_DEFAULTS } from '~/utils/bcMetaDefaults.js'
 import seedAntiqueLedger from '~/src/content/antique-ledger.json'
+import { DEFAULT_PRIVATE_TXN_LEDGER } from '~/utils/privateTxnLedgerDefaults.js'
 import { getStoredOpsPhrase, verifyOpsPhraseBrowser } from '~/utils/opsClientAuth'
 
 definePageMeta({
@@ -134,7 +135,10 @@ function clearSiteCache () {
 watch(tab, (t) => {
   if (t === 'orders') loadOrders()
   if (t === 'seo') loadSeo()
-  if (t === 'owner') loadAntiqueLedger()
+  if (t === 'owner') {
+    loadAntiqueLedger()
+    loadPrivateTxnLedger()
+  }
 })
 
 // Private owner ledger — unlocked when you are already signed into this panel.
@@ -142,11 +146,11 @@ const ledgerUnlocked = ref(false)
 const ledgerUnlockError = ref('')
 const ownerPhraseInput = ref('')
 const newTx = ref({ account: '', desc: '', amount: '' })
-const ledgerTransactions = ref([
-  { date: '2026-06-11 14:22', account: 'STRIPE-REVENUE', desc: 'PETRA-DEN-4K9CH Consumer Invoice Settlement', amount: '+$1,394.45', isCredit: true },
-  { date: '2026-06-11 09:15', account: 'LA-TAX-RESERVE', desc: 'Quarterly State Sales Tax Allocation Escrow', amount: '-$240.10', isCredit: false },
-  { date: '2026-06-11 11:30', account: 'MERCURY-BANK', desc: 'Petra Distribution Wholesaler Ledger Clearing', amount: '-$899.60', isCredit: false },
-])
+const ledgerTransactions = ref([])
+const privateTxnLedgerLoading = ref(false)
+const privateTxnLedgerSaving = ref(false)
+const privateTxnLedgerMessage = ref('')
+const privateTxnLedgerError = ref('')
 
 watch(isAuthed, (signedIn) => {
   if (signedIn) ledgerUnlocked.value = true
@@ -178,10 +182,62 @@ async function verifyLedgerUnlock () {
   ownerPhraseInput.value = ''
 }
 
+function normalizePrivateTxnRows (raw) {
+  const rows = raw?.transactions
+  if (Array.isArray(rows) && rows.length) return rows
+  return [...DEFAULT_PRIVATE_TXN_LEDGER.transactions]
+}
+
+async function loadPrivateTxnLedger () {
+  privateTxnLedgerLoading.value = true
+  privateTxnLedgerError.value = ''
+  privateTxnLedgerMessage.value = ''
+  try {
+    const data = await opsFetch('/api/ops/site-content', { query: { keys: 'privateTxnLedger' } })
+    ledgerTransactions.value = normalizePrivateTxnRows(data?.privateTxnLedger)
+  } catch (e) {
+    ledgerTransactions.value = [...DEFAULT_PRIVATE_TXN_LEDGER.transactions]
+    const msg = opsErrorMessage(e, '')
+    if (/site_marketing_content|schema cache|owner_storage_not_ready/i.test(msg)) {
+      privateTxnLedgerMessage.value = 'Showing starter ledger — tap Save after unlock to sync to cloud.'
+    } else {
+      privateTxnLedgerError.value = ownerCloudFriendlyError(e, 'Could not load saved ledger — showing local copy.')
+    }
+  } finally {
+    privateTxnLedgerLoading.value = false
+  }
+}
+
+async function savePrivateTxnLedger () {
+  privateTxnLedgerSaving.value = true
+  privateTxnLedgerMessage.value = ''
+  privateTxnLedgerError.value = ''
+  if (!getStoredOpsPhrase()) {
+    privateTxnLedgerError.value = 'Owner password needed — tap the B&C logo 5×, unlock, then click Save ledger to backend.'
+    privateTxnLedgerSaving.value = false
+    return
+  }
+  try {
+    await opsFetch('/api/ops/site-content', {
+      method: 'PUT',
+      body: {
+        contentKey: 'privateTxnLedger',
+        payload: { transactions: ledgerTransactions.value },
+      },
+    })
+    privateTxnLedgerMessage.value = 'Private ledger saved — Stripe, tax, and wholesaler rows stay after refresh.'
+  } catch (e) {
+    privateTxnLedgerError.value = ownerCloudFriendlyError(e, 'Save failed.')
+  } finally {
+    privateTxnLedgerSaving.value = false
+  }
+}
+
 function postTransaction (isCredit) {
   if (!newTx.value.account || !newTx.value.amount) return
   const formattedAmt = `${isCredit ? '+' : '-'}$${parseFloat(newTx.value.amount).toFixed(2)}`
   ledgerTransactions.value.unshift({
+    id: `tx-${Date.now()}`,
     date: new Date().toISOString().replace('T', ' ').substring(0, 16),
     account: newTx.value.account.toUpperCase(),
     desc: newTx.value.desc || 'Manual Administrative Post',
@@ -189,6 +245,7 @@ function postTransaction (isCredit) {
     isCredit,
   })
   newTx.value = { account: '', desc: '', amount: '' }
+  privateTxnLedgerMessage.value = 'Row added — click Save ledger to backend to keep it after refresh.'
 }
 
 function calculateTargetRetailPrice (product) {
@@ -301,7 +358,7 @@ function normalizeAntiqueRows (raw) {
   return [...seedAntiqueLedger]
 }
 
-function antiqueLedgerFriendlyError (e, fallback) {
+function ownerCloudFriendlyError (e, fallback) {
   const msg = opsErrorMessage(e, fallback)
   if (/site_marketing_content|schema cache|owner_storage_not_ready/i.test(msg)) {
     return 'Cloud storage is still starting. Wait 2 minutes, click Reload, then Save again.'
@@ -328,7 +385,7 @@ async function loadAntiqueLedger () {
     if (/site_marketing_content|schema cache|owner_storage_not_ready/i.test(msg)) {
       antiqueLedgerMessage.value = 'Showing starter ledger — tap Save after unlock to sync to cloud.'
     } else {
-      antiqueLedgerError.value = antiqueLedgerFriendlyError(e, 'Could not load saved ledger — showing local copy.')
+      antiqueLedgerError.value = ownerCloudFriendlyError(e, 'Could not load saved ledger — showing local copy.')
     }
   } finally {
     antiqueLedgerLoading.value = false
@@ -351,7 +408,7 @@ async function saveAntiqueLedger () {
     })
     antiqueLedgerMessage.value = 'Antique ledger saved — apps and backend tools can read this via owner API key antiqueLedger.'
   } catch (e) {
-    antiqueLedgerError.value = antiqueLedgerFriendlyError(e, 'Save failed.')
+    antiqueLedgerError.value = ownerCloudFriendlyError(e, 'Save failed.')
   } finally {
     antiqueLedgerSaving.value = false
   }
@@ -441,7 +498,10 @@ async function verifyPortalPricingAudit () {
 
 onMounted(() => {
   if (tab.value === 'seo') loadSeo()
-  if (tab.value === 'owner') loadAntiqueLedger()
+  if (tab.value === 'owner') {
+    loadAntiqueLedger()
+    loadPrivateTxnLedger()
+  }
 })
 
 useSeoMeta({
@@ -678,7 +738,10 @@ useSeoMeta({
 
       <div class="bc-owner-block">
         <h3>Private transaction ledger</h3>
-        <p class="bc-panel__note">Stripe, tax reserve, and wholesaler clearing. Unlocks automatically when you are signed into this owner panel.</p>
+        <p class="bc-panel__note">Stripe, tax reserve, and wholesaler clearing. Unlocks automatically when you are signed into this owner panel. Save syncs to cloud so rows stay after refresh.</p>
+        <p v-if="privateTxnLedgerError" class="bc-alert bc-alert--err">{{ privateTxnLedgerError }}</p>
+        <p v-if="privateTxnLedgerMessage" class="bc-alert bc-alert--ok">{{ privateTxnLedgerMessage }}</p>
+        <p v-if="privateTxnLedgerLoading" class="bc-muted">Loading ledger…</p>
         <template v-if="!ledgerUnlocked">
           <p v-if="ledgerUnlockError" class="bc-alert bc-alert--err">{{ ledgerUnlockError }}</p>
           <label class="bc-bypass-label">
@@ -699,7 +762,7 @@ useSeoMeta({
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(tx, idx) in ledgerTransactions" :key="idx">
+                <tr v-for="tx in ledgerTransactions" :key="tx.id || `${tx.date}-${tx.account}`">
                   <td class="bc-muted small">{{ tx.date }}</td>
                   <td>{{ tx.account }}</td>
                   <td>{{ tx.desc }}</td>
@@ -709,13 +772,17 @@ useSeoMeta({
             </table>
           </div>
           <div class="bc-form-stack bc-antique-form">
-            <label>Account<input v-model="newTx.account" class="input" type="text"></label>
-            <label>Description<input v-model="newTx.desc" class="input" type="text"></label>
-            <label>Amount<input v-model="newTx.amount" class="input" type="number" step="0.01" min="0"></label>
+            <label>Account<input v-model="newTx.account" class="input" type="text" placeholder="STRIPE-REVENUE"></label>
+            <label>Description<input v-model="newTx.desc" class="input" type="text" placeholder="Invoice or transfer note"></label>
+            <label>Amount ($)<input v-model="newTx.amount" class="input" type="number" step="0.01" min="0" placeholder="0.00"></label>
           </div>
           <div class="bc-panel__actions">
-            <button type="button" class="btn btn-outline btn-sm" @click="postTransaction(true)">Post credit</button>
-            <button type="button" class="btn btn-outline btn-sm" @click="postTransaction(false)">Post debit</button>
+            <button type="button" class="btn btn-outline btn-sm" @click="postTransaction(true)">Post credit (+)</button>
+            <button type="button" class="btn btn-outline btn-sm" @click="postTransaction(false)">Post debit (−)</button>
+            <button type="button" class="btn btn-primary btn-sm" :disabled="privateTxnLedgerSaving" @click="savePrivateTxnLedger">
+              {{ privateTxnLedgerSaving ? 'Saving…' : 'Save ledger to backend' }}
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" @click="loadPrivateTxnLedger">Reload</button>
           </div>
         </template>
       </div>
