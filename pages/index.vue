@@ -79,7 +79,11 @@
 
       <div class="portal-nav__headline">
         <h1 class="portal-nav__title">B&amp;C PERFORMANCE AUDIO LLC</h1>
-        <a href="tel:1-866-319-8547" class="portal-nav__phone">1-866-319-8547</a>
+        <p class="portal-nav__owner">Owner {{ support.ownerName }}</p>
+        <a :href="`tel:${support.phoneTel}`" class="portal-nav__phone">{{ support.phoneDisplay }}</a>
+        <p class="portal-nav__policy">
+          Open-door policy: the owner is available anytime for customer questions and issues.
+        </p>
       </div>
 
       <div class="portal-nav__balance" aria-hidden="true" />
@@ -295,8 +299,12 @@
 <script setup>
 import { BC_BRAND } from '~/utils/bcBrand.js'
 import { BC_LEGAL_NAME } from '~/utils/bcSeo.js'
+import { getBcSupport } from '~/utils/bcSupport.js'
 
 definePageMeta({ layout: false })
+
+const config = useRuntimeConfig()
+const support = computed(() => getBcSupport(config))
 
 const SHOWCASE_LANE_DEFS = [
   {
@@ -865,6 +873,23 @@ async function handleBuyNow () {
   font-size: clamp(0.82rem, 2.5vw, 1.05rem);
   font-weight: 900;
   letter-spacing: 0.02em;
+}
+
+.portal-nav__owner {
+  margin: 0;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.72);
+  letter-spacing: 0.04em;
+}
+
+.portal-nav__policy {
+  margin: 0;
+  max-width: 20rem;
+  font-size: 0.58rem;
+  line-height: 1.45;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .portal-catalog-picker {

@@ -15,10 +15,10 @@ const path = require('node:path')
 const SITE_URL = (process.env.NUXT_PUBLIC_SITE_URL || 'https://thefranksstandard.com').replace(/\/$/, '')
 const BC_PRIMARY_SITE = /bcpoweraudio\.com/i.test(SITE_URL)
 const PHONE_DISPLAY = BC_PRIMARY_SITE
-  ? (process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_PHONE || '1-866-319-8547')
+  ? (process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_PHONE || '(833) 322-8439')
   : (process.env.NUXT_PUBLIC_CUSTOMER_SERVICE_PHONE || '(877) 837-0527')
 const PHONE_TEL = BC_PRIMARY_SITE
-  ? (process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL || '+18663198547')
+  ? (process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL || '+18333228439')
   : ('+1' + PHONE_DISPLAY.replace(/\D+/g, '').replace(/^1/, ''))
 const SUPPORT_EMAIL = BC_PRIMARY_SITE
   ? (process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_EMAIL || 'bc-audio@bcpoweraudio.com')
