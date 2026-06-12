@@ -1,11 +1,23 @@
 /**
- * B&C Performance Audio LLC — inbound voice IVR (Twilio webhook).
- * Isolated from The Franks Standard marketplace voice flows.
+ * B&C Performance Audio LLC — AI phone assistant (Twilio webhook).
  */
+import {
+  decodeHistory,
+  encodeHistory,
+  getBcVoiceReply,
+  wantsOwnerTransfer,
+  type VoiceTurn,
+} from '../_shared/bcVoiceAi.ts'
+
 const SUPABASE_URL = (Deno.env.get('SUPABASE_URL') ?? '').replace(/\/$/, '')
-const ACTION_URL = `${SUPABASE_URL}/functions/v1/bc-voice-inbound`
+const BASE_URL = `${SUPABASE_URL}/functions/v1/bc-voice-inbound`
 const OWNER_PHONE = (Deno.env.get('BC_VOICE_OWNER_PHONE') ?? Deno.env.get('PRIVATE_OWNER_CELL_PHONE') ?? '').trim()
 const BC_CALLER_ID = (Deno.env.get('TWILIO_BC_CALLER_ID') ?? '+18337224147').trim()
+
+const SPEECH_HINTS = [
+  'order', 'shipping', 'tracking', 'refund', 'return', 'damaged',
+  'subwoofer', 'amplifier', 'install', 'wiring', 'owner', 'price', 'checkout',
+].join(', ')
 
 function xmlEscape (value: string) {
   return value
@@ -25,65 +37,79 @@ function say (text: string) {
   return `<Say voice="Polly.Joanna">${xmlEscape(text)}</Say>`
 }
 
-async function readDigits (req: Request) {
-  const contentType = req.headers.get('content-type') ?? ''
-  if (req.method === 'GET') {
-    return new URL(req.url).searchParams.get('Digits')?.trim() ?? ''
+function dialOwner () {
+  if (!OWNER_PHONE) {
+    return say('The owner is unavailable right now. Please try again in a few minutes. Goodbye.')
   }
-  if (!contentType.includes('application/x-www-form-urlencoded')) {
-    return ''
+  return `${say('Connecting you to the owner now. Please hold.')}<Dial timeout="40" callerId="${xmlEscape(BC_CALLER_ID)}">${xmlEscape(OWNER_PHONE)}</Dial>${say('The owner could not be reached. Please call back or visit b c power audio dot com. Goodbye.')}`
+}
+
+function gatherAi (actionUrl: string, prompt: string) {
+  return `<Gather input="speech dtmf" numDigits="1" action="${xmlEscape(actionUrl)}" method="POST" speechTimeout="auto" timeout="14" hints="${xmlEscape(SPEECH_HINTS)}">${say(prompt)}</Gather>${say('I did not hear a response. Call back anytime. Goodbye.')}`
+}
+
+async function readTwilioForm (req: Request) {
+  const url = new URL(req.url)
+  if (req.method === 'GET') {
+    return {
+      digits: url.searchParams.get('Digits')?.trim() ?? '',
+      speech: url.searchParams.get('SpeechResult')?.trim() ?? '',
+      history: decodeHistory(url.searchParams.get('h')),
+      turn: Number(url.searchParams.get('t') ?? '0') || 0,
+    }
   }
   const form = await req.formData()
-  return String(form.get('Digits') ?? '').trim()
+  return {
+    digits: String(form.get('Digits') ?? '').trim(),
+    speech: String(form.get('SpeechResult') ?? '').trim(),
+    history: decodeHistory(url.searchParams.get('h')),
+    turn: Number(url.searchParams.get('t') ?? '0') || 0,
+  }
+}
+
+function nextActionUrl (history: VoiceTurn[], turn: number) {
+  const q = new URLSearchParams()
+  const encoded = encodeHistory(history)
+  if (encoded) q.set('h', encoded)
+  q.set('t', String(turn))
+  return `${BASE_URL}?${q.toString()}`
 }
 
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response('ok')
-  }
+  if (req.method === 'OPTIONS') return new Response('ok')
   if (req.method !== 'POST' && req.method !== 'GET') {
     return new Response('method not allowed', { status: 405 })
   }
 
-  const digits = await readDigits(req)
+  const { digits, speech, history, turn } = await readTwilioForm(req)
 
-  if (!digits) {
-    return twiml(
-      `<Gather numDigits="1" action="${xmlEscape(ACTION_URL)}" method="POST" timeout="12">${
-        say(
-          'Thank you for calling B and C Performance Audio, competition car audio and subwoofers. ' +
-          'Press 1 for orders or shipping. Press 2 for product help. Press 0 to reach the owner.',
-        )
-      }</Gather>${say('We did not receive your selection. Goodbye.')}`,
-    )
+  if (wantsOwnerTransfer(speech, digits)) {
+    return twiml(dialOwner())
   }
 
-  if (digits === '0') {
-    if (!OWNER_PHONE) {
-      return twiml(
-        say('The owner is unavailable right now. Please email bc audio at the franks standard dot com. Goodbye.'),
-      )
-    }
-    return twiml(
-      `${say('Connecting you to the owner now.')}<Dial timeout="35" callerId="${xmlEscape(BC_CALLER_ID)}">${xmlEscape(OWNER_PHONE)}</Dial>${say('The owner could not be reached. Please try again later or visit b c power audio dot com. Goodbye.')}`,
-    )
+  if (!speech && !digits && turn === 0) {
+    const welcome =
+      'Thank you for calling B and C Performance Audio. I am your AI assistant for orders, shipping, product fit, returns, and install help. ' +
+      'Tell me what you need, or press zero anytime to speak with the owner, Charles Franks.'
+    return twiml(gatherAi(nextActionUrl([], 1), welcome))
   }
 
-  if (digits === '1') {
-    return twiml(
-      say(
-        'For order and shipping help, visit b c power audio dot com or email bc audio at the franks standard dot com. Goodbye.',
-      ),
-    )
+  const utterance = speech || (digits && digits !== '0' ? `option ${digits}` : '')
+  if (!utterance) {
+    return twiml(gatherAi(nextActionUrl(history, turn + 1), 'Sorry, I missed that. What can I help you with?'))
   }
 
-  if (digits === '2') {
-    return twiml(
-      say('Browse our competition audio catalog at b c power audio dot com. Goodbye.'),
-    )
+  const { reply, connectOwner } = await getBcVoiceReply(utterance, history, turn)
+  if (connectOwner) {
+    return twiml(dialOwner())
   }
 
-  return twiml(
-    `${say('That is not a valid option.')}<Redirect method="POST">${xmlEscape(ACTION_URL)}</Redirect>`,
-  )
+  const newHistory: VoiceTurn[] = [
+    ...history,
+    { role: 'user', content: utterance },
+    { role: 'assistant', content: reply },
+  ]
+
+  const followUp = `${reply} Anything else I can help with? Or press zero for the owner.`
+  return twiml(gatherAi(nextActionUrl(newHistory, turn + 1), followUp))
 })
