@@ -1,3 +1,5 @@
+import { filterBcAudioProducts } from '~/utils/bcAudioOnlyCatalog.js'
+
 /**
  * Load B&C product rows at runtime from /catalog/petra-products.json.
  * Keeps large catalogs and remote image URLs out of the JS bundle.
@@ -10,7 +12,7 @@ export function useBcProductCatalog () {
     retry: 2,
   })
 
-  const products = computed(() => data.value?.products || [])
+  const products = computed(() => filterBcAudioProducts(data.value?.products || []))
 
   const megastoreItems = computed(() =>
     products.value.map((item) => ({

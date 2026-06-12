@@ -2,16 +2,16 @@
  * Group Petra catalog rows by category for nav menus and filters.
  */
 const PINNED_CATEGORIES = [
+  'Home Audio',
+  'Home Audio & Theater',
   'Amplifiers',
   'Subwoofers',
   'Speakers, Subwoofers & Accessories',
   'Automotive Electronics',
-  'Car Safety & Security',
-  'Home Audio',
-  'Home Audio & Theater',
   'Marine Electronics',
   'Portable Audio & Video',
-  'Musical Equipment',
+  'Cables, Connectors & Wiring Harnesses',
+  'Custom Install',
 ]
 
 const MAX_MENU_CATEGORIES = 12

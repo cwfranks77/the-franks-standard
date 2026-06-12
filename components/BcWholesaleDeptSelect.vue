@@ -1,12 +1,24 @@
 <script setup>
+import { BC_AUDIO_DEPARTMENTS } from '~/utils/bcAudioOnlyCatalog.js'
+
 const route = useRoute()
 
 const departments = [
-  { key: 'showroom', label: 'Wholesale catalog departments', category: '' },
-  { key: 'computers', label: 'Computers & Workstations', category: 'Computers & Computer Accessories' },
-  { key: 'home-theater', label: 'Home Theater & Audio', category: 'Home Audio & Theater' },
-  { key: 'marine', label: 'Marine & Powersports', category: 'Marine Electronics' },
+  { key: 'showroom', label: 'All audio departments', category: '' },
+  ...BC_AUDIO_DEPARTMENTS.filter((d) => d.key !== 'all').map((d) => ({
+    key: d.query,
+    label: d.label.replace(/^[^\s]+\s/, ''),
+    category: departmentCategory(d.key),
+  })),
 ]
+
+function departmentCategory (key) {
+  if (key === 'home') return 'Home Audio & Theater'
+  if (key === 'car') return 'Automotive Electronics'
+  if (key === 'powersports') return 'Marine Electronics'
+  if (key === 'bluetooth') return 'Portable Audio & Video'
+  return ''
+}
 
 const selected = computed({
   get () {
@@ -36,7 +48,7 @@ function onPick (event) {
 
 <template>
   <label class="bc-dept">
-    <span class="bc-dept__sr">Wholesale catalog department</span>
+    <span class="bc-dept__sr">Audio department</span>
     <select
       :value="selected"
       class="bc-dept__select"

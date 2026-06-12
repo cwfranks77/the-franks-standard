@@ -8,17 +8,18 @@ import { BC_BRAND } from '~/utils/bcBrand.js'
 import { BC_LEGAL_NAME } from '~/utils/bcSeo.js'
 import { getBcSupport } from '~/utils/bcSupport.js'
 import { getPublicSupabaseKey, getPublicSupabaseUrl } from '~/utils/publicSupabase.js'
+import {
+  BC_AUDIO_DEPARTMENTS,
+  bcAudioDepartmentIcon,
+  bcAudioDepartmentKey,
+  bcAudioDepartmentLabel,
+} from '~/utils/bcAudioOnlyCatalog.js'
 
 definePageMeta({ layout: 'bc-audio' })
 
 const GRID_LIMIT = 24
 
-const DEPARTMENTS = [
-  { key: 'all', label: '📂 ALL AUTHORIZED WHOLESALE DEPARTMENTS', query: 'showroom' },
-  { key: 'computers', label: '💻 Computers & Workstations', query: 'computers' },
-  { key: 'theater', label: '📺 Home Theater & Audio', query: 'home-theater' },
-  { key: 'marine', label: '⚓ Marine & Powersports', query: 'marine' },
-] as const
+const DEPARTMENTS = BC_AUDIO_DEPARTMENTS
 
 type DeptKey = (typeof DEPARTMENTS)[number]['key']
 
@@ -124,32 +125,17 @@ const getProductImage = (product: any) => {
 }
 
 function getDeptKey (product: any): DeptKey | null {
-  const segment = getProductSegment(product).toLowerCase()
-  if (segment.includes('computer') || segment.includes('workstation') || segment.includes('server') || segment.includes('laptop')) {
-    return 'computers'
-  }
-  if (segment.includes('theater') || segment.includes('audio') || segment.includes('speaker') || segment.includes('home') || segment.includes('cinema')) {
-    return 'theater'
-  }
-  if (segment.includes('marine') || segment.includes('boat') || segment.includes('water') || segment.includes('offshore') || segment.includes('powersport')) {
-    return 'marine'
-  }
-  return null
+  const key = bcAudioDepartmentKey(product)
+  if (!key || key === 'all') return null
+  return key as DeptKey
 }
 
 function getDeptLabel (key: DeptKey | null) {
-  if (key === 'computers') return 'Computers & Workstations'
-  if (key === 'theater') return 'Home Theater & Audio'
-  if (key === 'marine') return 'Marine Sound Systems'
-  return 'Authorized Wholesale'
+  if (!key || key === 'all') return 'Authorized Audio'
+  return bcAudioDepartmentLabel(key)
 }
 
-const getIconForDept = (key: DeptKey | null) => {
-  if (key === 'computers') return '💻'
-  if (key === 'theater') return '📺'
-  if (key === 'marine') return '⚓'
-  return '🛒'
-}
+const getIconForDept = (key: DeptKey | null) => bcAudioDepartmentIcon(key || '')
 
 const catalogInDept = computed(() =>
   products.value.filter((p) => getDeptKey(p) !== null),
@@ -256,7 +242,7 @@ const isCheckoutBusy = (product: any) =>
 
     <div class="bc-home__gate">
       <div class="bc-home__gate-inner">
-        <label class="bc-home__gate-label" for="bc-dept-filter">Wholesale departments</label>
+        <label class="bc-home__gate-label" for="bc-dept-filter">Audio departments</label>
         <select
           id="bc-dept-filter"
           v-model="selectedCategory"
@@ -278,9 +264,9 @@ const isCheckoutBusy = (product: any) =>
 
     <main class="bc-home__main">
       <div class="bc-home__hero bc-fade-in">
-        <h2 class="bc-home__title">High-Capacity Inventory Grid Matrix</h2>
+        <h2 class="bc-home__title">Competition Audio Inventory</h2>
         <p class="bc-home__lede">
-          Filter active enterprise hardware lines using the wholesale department dropdown above.
+          Home audio, car audio, powersports audio, and Bluetooth speakers — filter by department above.
         </p>
       </div>
 
