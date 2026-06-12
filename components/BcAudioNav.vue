@@ -37,8 +37,14 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
         class="bc-nav__brand"
         @click="(e) => { closeAll(); onBrandKnock?.(e) }"
       >
-        <span class="bc-nav__logo">B<span class="bc-nav__amp">&</span>C</span>
-        <span class="bc-nav__name">Performance Audio</span>
+        <img
+          src="/img/bc-logo-primary.png"
+          alt="B&amp;C Performance Audio"
+          class="bc-nav__logo-img"
+          width="240"
+          height="56"
+          decoding="async"
+        >
       </NuxtLink>
 
       <div class="bc-nav__actions">
@@ -129,23 +135,12 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   transform: translateY(-2px);
 }
 .bc-nav__brand:hover { color: #ff5252; }
-.bc-nav__logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
-  font-weight: 900;
-  font-size: 0.95rem;
-  box-shadow: 0 0 20px rgba(211, 47, 47, 0.35);
-}
-.bc-nav__amp { color: #fff; }
-.bc-nav__name {
-  font-weight: 800;
-  font-size: 0.95rem;
-  letter-spacing: 0.02em;
+.bc-nav__logo-img {
+  display: block;
+  width: auto;
+  max-width: min(240px, 58vw);
+  height: 48px;
+  object-fit: contain;
 }
 .bc-nav__actions {
   display: flex;
