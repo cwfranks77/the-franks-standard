@@ -1,0 +1,32 @@
+[
+  {
+    "asset_id": "tfs-ant-901",
+    "item_name": "19th-Century Mahogany Church Pulpit",
+    "asking_price": 450.00,
+    "actual_sold_price": 425.00,
+    "status": "SOLD",
+    "entity_type": "Non-Profit (Church)",
+    "tracking_metric": "Building & Maintenance Fund",
+    "tax_or_tithe_amount": 42.50
+  },
+  {
+    "asset_id": "bc-aud-702",
+    "item_name": "Premium High-Output Sanctuary Speaker Array",
+    "asking_price": 1200.00,
+    "actual_sold_price": 1050.00,
+    "status": "SOLD",
+    "entity_type": "Retail LLC (B&C Audio)",
+    "tracking_metric": "Cost of Goods Sold (COGS)",
+    "tax_or_tithe_amount": 46.73
+  },
+  {
+    "asset_id": "tfs-mkt-103",
+    "item_name": "General Marketplace Retail Asset Listing",
+    "asking_price": 250.00,
+    "actual_sold_price": 0.00,
+    "status": "AVAILABLE_INVENTORY",
+    "entity_type": "Holding Company (TFS)",
+    "tracking_metric": "Gross Margin Buffer",
+    "tax_or_tithe_amount": 0.00
+  }
+]
