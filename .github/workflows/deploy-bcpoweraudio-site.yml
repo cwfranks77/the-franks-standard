@@ -8,6 +8,7 @@ on:
     paths:
       - 'pages/bc-audio/**'
       - 'pages/index.vue'
+      - 'components/BcAudioStorefrontHome.vue'
       - 'content/**'
       - 'src/content/**'
       - 'public/catalog/**'
