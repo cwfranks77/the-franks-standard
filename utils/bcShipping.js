@@ -1,25 +1,24 @@
 /**
- * B&C Performance Audio — customer-facing shipping estimates (dropship / distributor).
+ * B&C Performance Audio — customer-facing fulfillment and shipping copy.
  * Update here to keep product, checkout, and thank-you pages in sync.
  */
 export const BC_SHIPPING = Object.freeze({
   /** One-line badge for product cards */
-  shortLine: 'Est. delivery: 7–14 business days · usually sooner',
-  headline: 'Estimated delivery',
+  shortLine: 'Ships within 1–3 business days after payment clears',
+  headline: 'Fulfillment timeline',
   summary:
-    'Allow 7–14 business days after checkout in case of postal delays — most orders arrive sooner.',
-  usuallySooner: 'Most orders arrive sooner than the window above.',
-  processingLabel: 'Order processing',
-  processingDays: '1–3 business days after payment confirms',
-  transitLabel: 'Transit',
-  transitDays: '5–11 business days after ship (continental U.S.)',
-  details: [
-    '1–3 business days to confirm payment and release your order to our authorized distributor.',
-    'We quote 7–14 business days total to allow for postal delays — most deliveries land sooner.',
-    'Tracking is emailed when your package leaves the distributor.',
-  ],
+    'Orders are released for shipment within 1–3 business days after payment successfully clears.',
+  deliveryEstimate:
+    'Estimated delivery is 7–14 business days after shipment (continental U.S.), allowing for carrier transit; most orders arrive sooner.',
+  paymentLabel: 'Payment verification',
+  paymentWindow: '1–3 business days',
+  fulfillmentLabel: 'Shipment',
+  fulfillmentNote:
+    'Your item ships once payment has cleared and the order is released to our authorized distributor.',
   checkoutNote:
-    'You are charged at secure checkout. Fulfillment begins after payment is confirmed — not before.',
+    'Payment is collected at secure checkout. Fulfillment begins only after your payment has cleared.',
   successLead:
-    'Your order is queued for distributor fulfillment. Allow 7–14 business days for delivery in case of postal delays — most orders arrive sooner.',
+    'Your payment was received. Orders typically ship within 1–3 business days after payment clears.',
+  successDelivery:
+    'Estimated delivery is 7–14 business days after shipment, allowing for carrier transit; most orders arrive sooner.',
 })

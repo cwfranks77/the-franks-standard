@@ -38,12 +38,8 @@ useSeoMeta({
         <h2>What happens next</h2>
         <ul class="bc-os__list">
           <li>A receipt was sent to the email you entered at checkout.</li>
-          <li>Our distributor node is notified to pick and ship your unit.</li>
-          <li>
-            <strong>Shipping estimate:</strong> {{ BC_SHIPPING.summary }}
-            Processing: {{ BC_SHIPPING.processingDays }}.
-            Transit: {{ BC_SHIPPING.transitDays }}.
-          </li>
+          <li>{{ BC_SHIPPING.summary }}</li>
+          <li>{{ BC_SHIPPING.successDelivery }}</li>
           <li>Questions? Call <a :href="`tel:${support.phoneTel}`">{{ support.phoneDisplay }}</a> or email
             <a :href="`mailto:${support.email}`">{{ support.email }}</a>.
           </li>

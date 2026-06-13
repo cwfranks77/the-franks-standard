@@ -66,6 +66,8 @@ on:
       - 'pages/bc-audio/product/**'
       - 'components/BcProductCatalogGrid.vue'
       - 'components/BcDropshipOrderForm.vue'
+      - 'components/BcShippingEstimate.vue'
+      - 'utils/bcShipping.js'
       - 'utils/bcCheckout.js'
       - 'scripts/patch-gh-pages-spa.cjs'
       - 'scripts/inject-spa-fallback.cjs'

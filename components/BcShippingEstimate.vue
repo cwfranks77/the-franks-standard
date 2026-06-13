@@ -7,7 +7,7 @@ defineProps({
 </script>
 
 <template>
-  <div class="bc-ship" :class="{ 'bc-ship--compact': compact }" role="note" aria-label="Shipping estimate">
+  <div class="bc-ship" :class="{ 'bc-ship--compact': compact }" role="note" aria-label="Fulfillment and shipping timeline">
     <template v-if="compact">
       <span class="bc-ship__icon" aria-hidden="true">📦</span>
       <span class="bc-ship__compact-text">{{ BC_SHIPPING.shortLine }}</span>
@@ -15,17 +15,17 @@ defineProps({
     <template v-else>
       <p class="bc-ship__title">{{ BC_SHIPPING.headline }}</p>
       <p class="bc-ship__summary">{{ BC_SHIPPING.summary }}</p>
-      <p class="bc-ship__sooner">{{ BC_SHIPPING.usuallySooner }}</p>
       <dl class="bc-ship__grid">
         <div class="bc-ship__row">
-          <dt>{{ BC_SHIPPING.processingLabel }}</dt>
-          <dd>{{ BC_SHIPPING.processingDays }}</dd>
+          <dt>{{ BC_SHIPPING.paymentLabel }}</dt>
+          <dd>{{ BC_SHIPPING.paymentWindow }}</dd>
         </div>
         <div class="bc-ship__row">
-          <dt>{{ BC_SHIPPING.transitLabel }}</dt>
-          <dd>{{ BC_SHIPPING.transitDays }}</dd>
+          <dt>{{ BC_SHIPPING.fulfillmentLabel }}</dt>
+          <dd>{{ BC_SHIPPING.fulfillmentNote }}</dd>
         </div>
       </dl>
+      <p class="bc-ship__delivery">{{ BC_SHIPPING.deliveryEstimate }}</p>
       <p class="bc-ship__note">{{ BC_SHIPPING.checkoutNote }}</p>
     </template>
   </div>
@@ -75,18 +75,10 @@ defineProps({
 }
 
 .bc-ship__summary {
-  margin: 0 0 6px;
+  margin: 0 0 10px;
   font-size: 0.84rem;
   line-height: 1.45;
   color: #e8eaed;
-  font-weight: 600;
-}
-
-.bc-ship__sooner {
-  margin: 0 0 10px;
-  font-size: 0.78rem;
-  line-height: 1.4;
-  color: #9ca3af;
   font-weight: 600;
 }
 
@@ -98,9 +90,9 @@ defineProps({
 
 .bc-ship__row {
   display: grid;
-  grid-template-columns: minmax(0, 7.5rem) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 6.5rem) minmax(0, 1fr);
   gap: 8px;
-  align-items: baseline;
+  align-items: start;
 }
 
 .bc-ship__row dt {
@@ -117,6 +109,14 @@ defineProps({
   font-size: 0.8rem;
   color: #c4c8d0;
   line-height: 1.4;
+}
+
+.bc-ship__delivery {
+  margin: 0 0 10px;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: #9ca3af;
+  font-weight: 600;
 }
 
 .bc-ship__note {
