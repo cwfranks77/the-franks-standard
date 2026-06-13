@@ -1,1780 +1,703 @@
 <template>
-  <div class="portal-root bc-audio-theme">
-    <div class="portal-ribbon">
-      <span class="portal-ribbon__left">🔊 B&amp;C PERFORMANCE AUDIO — AUTHORIZED DISTRIBUTION CENTER</span>
-      <span class="portal-ribbon__right">Sovereign Dealer Network</span>
-    </div>
-
-    <ClientOnly>
-      <div ref="catalogPickerRef" class="portal-catalog-picker portal-catalog-picker--corner">
-        <button
-          type="button"
-          class="portal-catalog-picker__trigger"
-          :disabled="catalogPending"
-          :aria-expanded="catalogMenuOpen"
-          aria-label="Open product catalog menu"
-          @click="catalogMenuOpen = !catalogMenuOpen"
-        >
-          <span class="portal-catalog-picker__icon" aria-hidden="true">
-            <span class="portal-catalog-picker__line" />
-            <span class="portal-catalog-picker__line" />
-            <span class="portal-catalog-picker__line" />
-            <span class="portal-catalog-picker__line" />
-          </span>
-        </button>
-
-        <div v-if="catalogMenuOpen && catalogReady" class="portal-catalog-picker__panel">
-          <div
-            v-for="group in catalogGroups"
-            :key="group.label"
-            class="portal-catalog-picker__group"
-          >
-            <button
-              type="button"
-              class="portal-catalog-picker__category"
-              @click="toggleCategory(group.label)"
-            >
-              <span class="portal-catalog-picker__category-name">{{ group.label }}</span>
-              <span class="portal-catalog-picker__count">{{ group.items.length }}</span>
-              <span class="portal-catalog-picker__caret" aria-hidden="true">{{ expandedCategory === group.label ? '▾' : '▸' }}</span>
-            </button>
-            <div
-              v-if="expandedCategory === group.label"
-              class="portal-catalog-picker__products"
-            >
-              <button
-                v-for="product in group.items"
-                :key="getProductId(product)"
-                type="button"
-                class="portal-catalog-picker__product"
-                @click="selectProductFromMenu(product, group.label)"
-              >
-                {{ getProductName(product) }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <template #fallback>
-        <button
-          type="button"
-          class="portal-catalog-picker__trigger portal-catalog-picker__trigger--corner"
-          disabled
-          aria-label="Loading catalog menu"
-        >
-          <span class="portal-catalog-picker__icon" aria-hidden="true">
-            <span class="portal-catalog-picker__line" />
-            <span class="portal-catalog-picker__line" />
-            <span class="portal-catalog-picker__line" />
-            <span class="portal-catalog-picker__line" />
-          </span>
-        </button>
-      </template>
-    </ClientOnly>
-
-    <nav class="portal-nav">
-      <button type="button" class="portal-nav__brand" @click="onBrandOrLogoClick">
-        <img
-          src="/img/bc-logo-primary.png?v=20260612"
-          alt="B&amp;C Performance Audio"
-          class="portal-nav__logo-img"
-          width="260"
-          height="60"
-          decoding="async"
-          fetchpriority="high"
-        >
-      </button>
-
-      <div class="portal-nav__headline">
-        <h1 class="portal-nav__title">B&amp;C PERFORMANCE AUDIO LLC</h1>
-        <p class="portal-nav__owner">Owner {{ support.ownerName }}</p>
-        <a :href="`tel:${support.phoneTel}`" class="portal-nav__phone">{{ support.phoneDisplay }}</a>
-        <p class="portal-nav__policy">
-          Open-door policy: the owner is available anytime for customer questions and issues.
-        </p>
-        <form class="portal-nav__search" role="search" @submit.prevent="runCatalogSearch">
-          <label class="portal-nav__search-label" for="portal-catalog-search">Search catalog</label>
-          <input
-            id="portal-catalog-search"
-            v-model="catalogSearchQuery"
-            type="search"
-            class="portal-nav__search-input"
-            placeholder="Search products, brands, or SKU..."
-            autocomplete="off"
-            :disabled="catalogPending"
-          >
-          <button type="submit" class="portal-nav__search-btn" :disabled="catalogPending || catalogSearchQuery.trim().length < 2">
-            Search
-          </button>
-        </form>
+  <div class="franks-marketplace-home">
+    <!-- 1. AMAZON-STYLE UTILITY HEADER -->
+    <header class="amazon-header-nav">
+      <div class="logo-box">
+        <NuxtLink to="/" class="logo-link" @click="onBrandOrLogoClick">
+          <h1 class="main-title">THE FRANKS <span class="accent-red">STANDARD</span></h1>
+        </NuxtLink>
+        <span v-if="isOwner" class="owner-pill">Owner</span>
       </div>
 
-      <div class="portal-nav__balance" aria-hidden="true" />
+      <form class="amazon-search-bar" @submit.prevent="submitSearch">
+        <select v-model="searchDepartment" class="dept-dropdown" aria-label="Department Selection">
+          <option value="">All Departments</option>
+          <option v-for="dept in departments" :key="dept.value" :value="dept.value">
+            {{ dept.label }}
+          </option>
+        </select>
+        <input
+          v-model="searchText"
+          type="search"
+          placeholder="Search verified merchant listings, items, or build components..."
+          class="search-input"
+          aria-label="Search marketplace"
+        />
+        <button type="submit" class="search-btn" aria-label="Run Search">Search</button>
+      </form>
+
+      <div class="nav-right-slots">
+        <NuxtLink :to="accountTo" class="user-slot nav-slot-link">
+          <small>{{ isSignedIn ? 'Hello' : 'Hello, sign in' }}</small>
+          <strong>Account &amp; Lists</strong>
+        </NuxtLink>
+        <NuxtLink :to="ordersTo" class="orders-slot nav-slot-link">
+          <small>Returns</small>
+          <strong>&amp; Orders</strong>
+        </NuxtLink>
+        <NuxtLink to="/browse" class="cart-slot nav-slot-link">
+          <span class="cart-icon" aria-hidden="true">Cart</span>
+          <strong>Cart</strong>
+        </NuxtLink>
+      </div>
+    </header>
+
+    <!-- 2. EBAY-STYLE HORIZONTAL SUB-NAV BAR -->
+    <nav class="ebay-sub-bar" aria-label="Marketplace departments">
+      <ul>
+        <li><NuxtLink to="/browse" class="sub-link">All Deals</NuxtLink></li>
+        <li><NuxtLink to="/stores" class="sub-link">Brand Directory</NuxtLink></li>
+        <li><NuxtLink to="/support" class="sub-link">Merchant Support</NuxtLink></li>
+        <li class="featured-bc-tab">
+          <NuxtLink to="/bc-audio">{{ BC_BRAND.full }} Portal</NuxtLink>
+        </li>
+      </ul>
     </nav>
 
-    <main class="portal-main">
-      <div v-if="viewMode === 'showroom'" class="portal-fade">
-        <div class="portal-hero">
-          <h2 class="portal-hero__title">Authorized Dealer Distribution Network</h2>
+    <!-- 3. COMPLIANCE & LEGAL SAFETY SHIELD BAR -->
+    <div class="compliance-trust-strip" role="status">
+      <span><strong>Platform:</strong> Marketplace facilitator · seller proof on collectibles</span>
+      <span><strong>Tax:</strong> Louisiana facilitator protocol where applicable</span>
+      <span><strong>Payments:</strong> Stripe escrow &amp; Connect split checkout</span>
+    </div>
+
+    <!-- 4. MAIN PROMO ROW -->
+    <main class="homepage-content">
+      <section class="hero-promo-grid">
+        <div class="promo-card audio-showcase">
+          <h2>{{ BC_BRAND.full }}</h2>
+          <p class="card-tagline">Competition bass enclosures &amp; amplifier setups</p>
+          <div class="image-placeholder-box audio-box">
+            <span class="sync-alert">Independent merchant store · dropship checkout</span>
+          </div>
+          <NuxtLink to="/bc-audio" class="btn-action-red">Enter Audio Showroom</NuxtLink>
         </div>
 
-        <p v-if="catalogError" class="portal-catalog-error" role="alert">
-          Catalog could not load.
-          <button type="button" class="portal-catalog-retry" @click="refreshCatalog">Try again</button>
-        </p>
-
-        <p v-else-if="catalogPending" class="portal-catalog-loading" aria-live="polite">
-          Loading live catalog…
-        </p>
-
-        <div class="portal-scroll-stack" :class="{ 'portal-scroll-stack--pending': catalogPending }">
-          <section
-            v-for="lane in showcaseLanes"
-            v-show="lane.tiles.length"
-            :key="lane.deptKey"
-            class="portal-showcase"
-          >
-            <header class="portal-showcase__head">
-              <div class="portal-showcase__icon" aria-hidden="true">{{ lane.icon }}</div>
-              <div>
-                <span v-if="lane.badge" class="portal-showcase__badge">{{ lane.badge }}</span>
-                <h3 class="portal-showcase__title">{{ lane.title }}</h3>
-                <p class="portal-showcase__desc">{{ lane.description }}</p>
-              </div>
-            </header>
-
-            <div
-              class="portal-scroll"
-              :class="`portal-scroll--lane-${lane.laneIndex}`"
-              :aria-label="`${lane.title} catalog images`"
-            >
-              <div class="portal-scroll__fade portal-scroll__fade--left" />
-              <div class="portal-scroll__fade portal-scroll__fade--right" />
-              <div class="portal-scroll__track">
-                <div class="portal-scroll__row">
-                  <figure
-                    v-for="(tile, i) in lane.tiles"
-                    :key="`a-${lane.deptKey}-${i}-${tile.productId}`"
-                    class="portal-scroll__cell"
-                    role="button"
-                    tabindex="0"
-                    @click="openProductFromTile(tile)"
-                    @keydown.enter="openProductFromTile(tile)"
-                  >
-                    <div class="portal-scroll__img-wrap">
-                      <img
-                        :src="tile.url"
-                        :alt="tile.alt"
-                        class="portal-scroll__img"
-                        loading="eager"
-                        decoding="async"
-                        referrerpolicy="no-referrer"
-                        @error="onScrollImageError($event, tile)"
-                      >
-                    </div>
-                  </figure>
-                </div>
-                <div class="portal-scroll__row" aria-hidden="true">
-                  <figure
-                    v-for="(tile, i) in lane.tiles"
-                    :key="`b-${lane.deptKey}-${i}-${tile.productId}`"
-                    class="portal-scroll__cell"
-                    aria-hidden="true"
-                  >
-                    <div class="portal-scroll__img-wrap">
-                      <img
-                        :src="tile.url"
-                        :alt="tile.alt"
-                        class="portal-scroll__img"
-                        loading="eager"
-                        decoding="async"
-                        @error="onScrollImageError($event, tile)"
-                      >
-                    </div>
-                  </figure>
-                </div>
-              </div>
-            </div>
-          </section>
+        <div class="promo-card vintage-showcase">
+          <h2>The Franks Standard</h2>
+          <p class="card-tagline">Verified historical assets &amp; fine collectibles</p>
+          <div class="image-placeholder-box vintage-box">
+            <span>Multi-vendor floor · COA-backed listings</span>
+          </div>
+          <NuxtLink to="/browse?limited=1" class="btn-action-dark">Explore Curated Vault</NuxtLink>
         </div>
-      </div>
 
-      <div v-else-if="viewMode === 'category' || viewMode === 'search'" class="portal-category portal-fade">
-        <button type="button" class="portal-detail__back" @click="backToShowroom">
-          ← Return to Master Showroom
-        </button>
+        <div class="promo-card seller-showcase">
+          <h2>Launch Your Storefront</h2>
+          <p class="card-tagline">List on the floor with seller-backed proof and escrow checkout.</p>
+          <ul class="benefit-list">
+            <li>Verified seller onboarding</li>
+            <li>Tax-aware checkout flows</li>
+            <li>Marketplace policy protection</li>
+          </ul>
+          <NuxtLink to="/sell/start" class="btn-action-green">Register as a Seller</NuxtLink>
+        </div>
+      </section>
 
-        <header class="portal-category__head">
-          <span class="portal-category__eyebrow">{{ viewMode === 'search' ? 'Catalog search' : 'Category catalog' }}</span>
-          <h2 class="portal-category__title">
-            {{ viewMode === 'search' ? `Results for “${catalogSearchQuery.trim()}”` : selectedCategoryLabel }}
-          </h2>
-          <p class="portal-category__meta">
-            {{ categoryListProducts.length }} items — select one for full details
-          </p>
-        </header>
-
-        <div class="portal-category__grid">
+      <!-- 5. EBAY-STYLE PRODUCT CARD ROWS -->
+      <section class="deal-listings-shelf">
+        <h3 class="shelf-title">Trending Marketplace Deal Matrix</h3>
+        <p v-if="shelfLoading" class="shelf-status">Loading live listings…</p>
+        <div v-else-if="shelfItems.length" class="product-cards-grid">
           <article
-            v-for="product in categoryListProducts"
-            :key="getProductId(product)"
-            class="portal-category__card"
-            :class="{ 'portal-category__card--active': getProductId(product) === selectedProductId }"
-            role="button"
-            tabindex="0"
-            @click="openProductFromCategory(product)"
-            @keydown.enter="openProductFromCategory(product)"
+            v-for="item in shelfItems"
+            :key="item.id"
+            class="marketplace-card"
           >
-            <div class="portal-category__img-wrap">
+            <div class="card-visual">
               <img
-                v-if="getProductImage(product)"
-                :src="getProductImage(product)"
-                :alt="getProductName(product)"
-                class="portal-category__img"
+                v-if="item.image"
+                :src="item.image"
+                :alt="item.title"
+                class="card-img"
                 loading="lazy"
-                decoding="async"
-                referrerpolicy="no-referrer"
-                @error="onCategoryImageError($event, product)"
-              >
-              <div v-else class="portal-category__img-fallback">
-                {{ getIconForProduct(product) }}
-              </div>
+                @error="onCardImgError($event, item)"
+              />
+              <span v-else class="card-emoji" aria-hidden="true">{{ item.isBcSeller ? '🔊' : '📦' }}</span>
             </div>
-            <div class="portal-category__body">
-              <h3 class="portal-category__name">{{ getProductName(product) }}</h3>
-              <p class="portal-category__sku">SKU: {{ getProductSku(product) }}</p>
-              <p class="portal-category__price">{{ formatPrice(product) }}</p>
+            <div class="card-info">
+              <h4>{{ item.title }}</h4>
+              <p class="seller-badge">
+                Seller:
+                <span :class="{ 'badge-red': item.isBcSeller }">{{ item.seller }}</span>
+              </p>
+              <div class="price-row">
+                {{ item.priceLabel }}
+                <span class="free-shipping">View listing</span>
+              </div>
+              <NuxtLink :to="item.to" class="btn-card-checkout">View Item Details</NuxtLink>
             </div>
           </article>
         </div>
-      </div>
-
-      <div v-else class="portal-detail portal-fade">
-        <button type="button" class="portal-detail__back" @click="resetToHome">
-          {{ selectedCategoryLabel ? '← Back to category list' : '← Return to Master Showroom' }}
-        </button>
-
-        <article v-if="currentProduct" class="portal-detail__card">
-          <div class="portal-detail__grid">
-            <div class="portal-detail__media">
-              <img
-                v-if="getProductImage(currentProduct)"
-                :src="getProductImage(currentProduct)"
-                :alt="getProductName(currentProduct)"
-                class="portal-detail__img"
-                loading="lazy"
-                @error="onDetailImageError($event, currentProduct)"
-              >
-              <template v-else>
-                <div class="portal-detail__media-overlay" />
-                <span class="portal-detail__icon">{{ getIconForProduct(currentProduct) }}</span>
-              </template>
-              <div class="portal-detail__media-badge">
-                <p>✓ AUTHORIZED RETAIL MANIFEST ASSET</p>
-              </div>
-            </div>
-
-            <div class="portal-detail__body">
-              <span class="portal-detail__dept">{{ getProductListCategory(currentProduct) }}</span>
-              <h2 class="portal-detail__name">{{ getProductName(currentProduct) }}</h2>
-              <p class="portal-detail__sku">MODEL SKU: {{ getProductSku(currentProduct) }}</p>
-
-              <div class="portal-detail__desc">
-                <p>{{ getProductDescription(currentProduct) }}</p>
-              </div>
-
-              <div class="portal-detail__price-row">
-                <span class="portal-detail__price-label">Markup Retail Price</span>
-                <span class="portal-detail__price">{{ formatPrice(currentProduct) }}</span>
-              </div>
-
-              <BcShippingEstimate />
-
-              <BcCheckoutTermsAgreement v-model="checkoutTermsAccepted" />
-
-              <div class="portal-detail__actions">
-                <button type="button" class="portal-btn portal-btn--cart" @click="handleAddToCart">
-                  Add to Cart
-                </button>
-                <button
-                  type="button"
-                  class="portal-btn portal-btn--buy"
-                  :disabled="checkoutBusy || !checkoutTermsAccepted"
-                  @click="handleBuyNow"
-                >
-                  {{ checkoutBusy ? 'Starting checkout…' : 'Buy It Now' }}
-                </button>
-              </div>
-            </div>
-          </div>
-        </article>
-      </div>
+        <p v-else class="shelf-status">
+          No live listings yet.
+          <NuxtLink to="/browse">Browse the marketplace</NuxtLink>
+          or
+          <NuxtLink to="/sell/start">list an item</NuxtLink>.
+        </p>
+        <div v-if="shelfItems.length" class="shelf-foot">
+          <NuxtLink to="/browse" class="btn-action-dark shelf-more">View all marketplace listings</NuxtLink>
+        </div>
+      </section>
     </main>
 
-    <footer class="portal-footer">
-      <p>{{ siteMeta.parentCompany }} — Competition car audio megastore</p>
-      <div v-if="socialLinks.length" class="portal-footer__social">
-        <a
-          v-for="link in socialLinks"
-          :key="link.id"
-          :href="link.url"
-          class="portal-footer__social-link"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {{ link.label }}
-        </a>
-      </div>
-    </footer>
+    <MarketplaceLandingFooter />
 
-    <OperatorUnlockModal
-      :open="opModalOpen"
-      :phrase="opPhrase"
-      :error="opError"
-      :submitting="opSubmitting"
-      :key-configured="keyConfigured"
-      :is-dev="isDev"
-      @update:phrase="opPhrase = $event"
-      @close="closeOpModal"
-      @submit="submitOpModal"
-    />
+    <Teleport to="body">
+      <div
+        v-if="opModalOpen"
+        class="op-modal-backdrop"
+        @click.self="closeOpModal"
+      >
+        <div class="op-modal" role="dialog" aria-modal="true" aria-label="Operator unlock">
+          <h2 class="op-modal-h">Operator access</h2>
+          <form @submit.prevent="submitOpModal">
+            <div v-if="!keyConfigured" class="op-warn" role="alert">
+              Add <code>NUXT_PUBLIC_OPS_ACCESS_KEY</code> in <code>.env</code>, then rebuild.
+            </div>
+            <template v-else>
+              <label class="label" for="op-phrase">Access key</label>
+              <input
+                id="op-phrase"
+                v-model="opPhrase"
+                class="input op-input"
+                type="password"
+                autocomplete="off"
+              />
+            </template>
+            <p v-if="opError" class="op-err" role="alert">{{ opError }}</p>
+            <div class="op-modal-actions">
+              <button type="button" class="btn-action-dark" @click="closeOpModal">Cancel</button>
+              <button type="submit" class="btn-action-red" :disabled="!keyConfigured || opSubmitting">
+                {{ opSubmitting ? 'Checking…' : 'Unlock' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </Teleport>
+
+    <NuxtLink v-if="isOwner" to="/sell/start" class="owner-sell-fab" title="Create a listing (free)">
+      + Sell
+    </NuxtLink>
   </div>
 </template>
 
 <script setup>
 import { BC_BRAND } from '~/utils/bcBrand.js'
-import { getBcSupport } from '~/utils/bcSupport.js'
-import { buildSocialLinks } from '~/utils/siteSocial.js'
-import { getPublicSupabaseKey, getPublicSupabaseUrl } from '~/utils/publicSupabase.js'
-import {
-  bcAudioDepartmentIcon,
-  bcAudioDepartmentKey,
-  filterBcAudioProducts,
-} from '~/utils/bcAudioOnlyCatalog.js'
-import {
-  bcPlaceholderImageForProduct,
-  fixPetraImageUrl,
-  petraImageUrlFromSku,
-  resolveBcProductImage,
-} from '~/utils/bcProductImage.js'
-import { bcProductShelfCategory } from '~/utils/bcProductShelfCategory.js'
 
-definePageMeta({ layout: false, pageTransition: false })
+useSeoMeta({
+  title: 'The Franks Standard Core Marketplace Network',
+  description: 'High-density multi-vendor e-commerce network.',
+})
 
-const config = useRuntimeConfig()
-const support = computed(() => getBcSupport(config))
-const socialLinks = computed(() => buildSocialLinks(config.public))
-const { meta: siteMeta } = useBcSiteMeta()
+const router = useRouter()
+const route = useRoute()
+const { isOwner } = useOwnerMode()
+const { isSignedIn } = useAuthNav()
 
-const SHOWCASE_LANE_DEFS = [
-  {
-    deptKey: 'home',
-    laneIndex: 0,
-    icon: '🔊',
-    title: 'Home Audio',
-    badge: 'SURROUND AUDIO MATRIX',
-    description: 'Receivers, speakers, amplifiers, and home theater from authorized competition lines.',
-  },
-  {
-    deptKey: 'car',
-    laneIndex: 1,
-    icon: '🚗',
-    title: 'Car Audio',
-    badge: 'COMPETITION OUTPUT',
-    description: 'Amplifiers, subwoofers, speakers, and install gear for automotive sound systems.',
-  },
-  {
-    deptKey: 'powersports',
-    laneIndex: 2,
-    icon: '⚓',
-    title: 'Powersports & Marine Audio',
-    badge: 'ELEMENT-PROOF OUTPUT',
-    description: 'Marine and powersports audio built for high-output offshore and trail environments.',
-  },
-  {
-    deptKey: 'bluetooth',
-    laneIndex: 3,
-    icon: '📶',
-    title: 'Bluetooth & Portable',
-    badge: 'WIRELESS',
-    description: 'Portable Bluetooth speakers and wireless audio for on-the-go listening.',
-  },
+const searchText = ref('')
+const searchDepartment = ref('')
+const shelfLoading = ref(true)
+const marketplaceRows = ref([])
+
+const departments = [
+  { value: 'Performance Car Audio', label: 'Performance Car Audio' },
+  { value: 'Vintage Restorations', label: 'Vintage Restorations' },
+  { value: 'Workspace Tuning', label: 'Workspace Tuning' },
+  { value: 'Collectibles', label: 'Collectibles & COA' },
+  { value: 'Sporting Goods', label: 'Sporting Goods' },
 ]
 
-const viewMode = ref('showroom')
-const selectedProductId = ref('')
-const selectedCategoryLabel = ref('')
-const catalogMenuOpen = ref(false)
-const expandedCategory = ref('')
-const catalogSearchQuery = ref('')
-const catalogPickerRef = ref(null)
-const checkoutBusy = ref(false)
-const checkoutTermsAccepted = ref(false)
+const accountTo = computed(() => (isSignedIn.value ? '/dashboard' : '/auth/login?next=/dashboard'))
+const ordersTo = computed(() => (isSignedIn.value ? '/dashboard' : '/auth/login?next=/dashboard'))
 
-const catalogProducts = ref([])
-const catalogPending = ref(true)
-const catalogError = ref(null)
-const SCROLL_IMAGE_FALLBACK = '/img/hero-showcase-v2.svg'
+const shelfItems = computed(() => marketplaceRows.value.slice(0, 16))
 
-async function refreshCatalog () {
-  catalogPending.value = true
-  catalogError.value = null
+const LISTING_SELECT =
+  'id, title, price, image_paths, category, seller:profiles!listings_seller_id_fkey(full_name)'
+
+async function loadMarketplaceShelf () {
+  if (!import.meta.client) {
+    shelfLoading.value = false
+    return
+  }
+  shelfLoading.value = true
   try {
-    const data = await $fetch('/catalog/petra-products.json', { retry: 2 })
-    const rows = Array.isArray(data?.products) ? data.products : []
-    catalogProducts.value = filterBcAudioProducts(rows)
-    if (!catalogProducts.value.length) {
-      throw new Error('Catalog returned no products.')
-    }
-  } catch (err) {
-    catalogError.value = err
-    catalogProducts.value = []
-  } finally {
-    catalogPending.value = false
-  }
-}
+    const supabase = useSupabaseClient()
+    const { publicUrlForPath } = useListingImageUrl()
+    const { data, error } = await supabase
+      .from('listings')
+      .select(LISTING_SELECT)
+      .eq('status', 'published')
+      .order('created_at', { ascending: false })
+      .limit(16)
 
-onMounted(() => {
-  refreshCatalog()
-  document.addEventListener('click', onDocumentClick)
-})
-
-onUnmounted(() => {
-  document.removeEventListener('click', onDocumentClick)
-})
-
-function onDocumentClick (event) {
-  const root = catalogPickerRef.value
-  if (!root || !catalogMenuOpen.value) return
-  if (!root.contains(event.target)) {
-    catalogMenuOpen.value = false
-  }
-}
-
-const catalogReady = computed(() =>
-  !catalogPending.value && !catalogError.value && catalogProducts.value.length > 0,
-)
-
-const {
-  isDev,
-  opModalOpen,
-  opPhrase,
-  opError,
-  opSubmitting,
-  keyConfigured,
-  onBrandOrLogoClick,
-  closeOpModal,
-  submitOpModal,
-} = useOpsLogoKnock()
-
-useHead({
-  meta: [
-    { key: 'apple-mobile-web-app-title', name: 'apple-mobile-web-app-title', content: BC_BRAND.short },
-  ],
-})
-
-function getProductId (product) {
-  if (!product) return ''
-  return String(product.id || product.sku || product.vendorSku || product.code || product.slug || product.name || '')
-}
-
-function getProductName (product) {
-  if (!product) return 'Unnamed product'
-  return product.name || product.title || 'Unnamed product'
-}
-
-function getProductSku (product) {
-  if (!product) return 'N/A'
-  return product.sku || product.vendorSku || 'N/A'
-}
-
-function getProductSegment (product) {
-  if (!product) return 'Uncategorized'
-  return product.category || product.productClass || 'Uncategorized'
-}
-
-function getProductDescription (product) {
-  if (!product) return 'No specifications available.'
-  return product.description || product.longDesc || product.specs || 'No specifications available.'
-}
-
-function resolveCategoryMarkup (category, name) {
-  const cat = String(category || '').toLowerCase()
-  const label = String(name || '').toLowerCase()
-  if (cat.includes('marine') || label.includes('marine')) return 2.10
-  if (cat.includes('car') || label.includes('car audio') || label.includes('subwoofer') || label.includes('amplifier')) return 1.55
-  if (cat.includes('home') || label.includes('receiver') || label.includes('soundbar') || label.includes('theater')) return 1.70
-  if (cat.includes('accessory') || label.includes('cable') || label.includes('mount') || label.includes('adapter')) return 2.50
-  return 1.55
-}
-
-/** Wholesale/dealer cost only — never use public retail `price` when retailPrice is set. */
-function getProductWholesaleCost (product) {
-  if (!product) return null
-  const raw = product.wholesalePrice ?? product.baseCost ?? product.wholesaleCost ?? product.cost
-  if (raw == null || raw === '') return null
-  const numeric = Number(raw)
-  if (!Number.isFinite(numeric) || numeric <= 0) return null
-  return numeric
-}
-
-function getProductBaseCost (product) {
-  return getProductWholesaleCost(product)
-}
-
-function calculateTargetRetailPrice (product) {
-  if (!product || !product.baseCost) return '0.00'
-  const markup = resolveCategoryMarkup(product.category, product.name)
-  return (product.baseCost * markup).toFixed(2)
-}
-
-/** Public storefront price — MAP-safe retail only, never raw wholesale. */
-function getProductPrice (product) {
-  if (!product) return null
-  const retailRaw = product.retailPrice ?? product.msrp
-  if (retailRaw != null && retailRaw !== '') {
-    const retail = Number(retailRaw)
-    if (Number.isFinite(retail) && retail > 0) return retail
-  }
-  const wholesale = getProductWholesaleCost(product)
-  if (wholesale != null) {
-    const calculated = Number(calculateTargetRetailPrice({
-      baseCost: wholesale,
-      category: getProductSegment(product),
-      name: getProductName(product),
-    }))
-    if (Number.isFinite(calculated) && calculated > 0) return calculated
-  }
-  return null
-}
-
-function formatPrice (product) {
-  const numeric = getProductPrice(product)
-  if (numeric == null) return 'Contact for pricing'
-  return `$${numeric.toFixed(2)}`
-}
-
-function getProductListCategory (product) {
-  return bcProductShelfCategory(product)
-}
-
-function hasCatalogImage (product) {
-  return Boolean(resolveBcProductImage(product))
-}
-
-function getProductImage (product) {
-  return resolveBcProductImage(product)
-}
-
-function laneMatchesProduct (deptKey, product) {
-  return getDeptKey(product) === deptKey
-}
-
-function getDeptKey (product) {
-  return bcAudioDepartmentKey(product)
-}
-
-const catalogGroups = computed(() => {
-  const map = new Map()
-  for (const product of catalogProducts.value) {
-    const label = getProductListCategory(product)
-    if (!map.has(label)) map.set(label, [])
-    map.get(label).push(product)
-  }
-  return [...map.entries()]
-    .sort((a, b) => a[0].localeCompare(b[0]))
-    .map(([label, items]) => ({
-      label,
-      items: items.sort((a, b) => getProductName(a).localeCompare(getProductName(b))),
-    }))
-})
-
-const currentProduct = computed(() =>
-  catalogProducts.value.find((p) => getProductId(p) === selectedProductId.value) || null,
-)
-
-const searchResultProducts = computed(() => {
-  const q = catalogSearchQuery.value.trim().toLowerCase()
-  if (!q || q.length < 2) return []
-  return catalogProducts.value.filter((product) => {
-    const haystack = [
-      getProductName(product),
-      getProductSku(product),
-      getProductListCategory(product),
-      product.brand,
-      product.description,
-    ].filter(Boolean).join(' ').toLowerCase()
-    return haystack.includes(q)
-  })
-})
-
-const categoryListProducts = computed(() => {
-  if (viewMode.value === 'search') {
-    return searchResultProducts.value
-  }
-  if (!selectedCategoryLabel.value) return []
-  const group = catalogGroups.value.find((g) => g.label === selectedCategoryLabel.value)
-  return group?.items || []
-})
-
-function runCatalogSearch () {
-  const q = catalogSearchQuery.value.trim()
-  if (q.length < 2) return
-  selectedCategoryLabel.value = ''
-  selectedProductId.value = ''
-  catalogMenuOpen.value = false
-  expandedCategory.value = ''
-  viewMode.value = 'search'
-}
-
-function pushTile (tiles, seen, product) {
-  const productId = getProductId(product)
-  if (!productId || seen.has(productId)) return
-  const url = getProductImage(product)
-  if (!url) return
-  seen.add(productId)
-  tiles.push({
-    productId,
-    url,
-    fallbackUrl: bcPlaceholderImageForProduct(product),
-    alt: getProductName(product),
-    sku: getProductSku(product),
-    triedSkuFallback: false,
-  })
-}
-
-function buildLaneTiles (deptKey, perLane = 28) {
-  const tiles = []
-  const seen = new Set()
-  const deptProducts = catalogProducts.value
-    .filter((product) => laneMatchesProduct(deptKey, product) && hasCatalogImage(product))
-    .sort((a, b) => {
-      const aUrl = getProductImage(a)
-      const bUrl = getProductImage(b)
-      const aPhoto = aUrl.includes('amazonaws.com') ? 1 : 0
-      const bPhoto = bUrl.includes('amazonaws.com') ? 1 : 0
-      return bPhoto - aPhoto
-    })
-
-  for (const product of deptProducts) {
-    pushTile(tiles, seen, product)
-    if (tiles.length >= perLane) break
-  }
-
-  return tiles
-}
-
-const showcaseLanes = computed(() =>
-  SHOWCASE_LANE_DEFS.map((lane) => ({
-    ...lane,
-    tiles: buildLaneTiles(lane.deptKey),
-  })),
-)
-
-function onScrollImageError (event, tile) {
-  const img = event?.target
-  if (!img || !tile) return
-  if (!tile.triedSkuFallback) {
-    tile.triedSkuFallback = true
-    const fixed = fixPetraImageUrl(tile.url) || petraImageUrlFromSku(tile.sku)
-    if (fixed && img.src !== fixed) {
-      img.src = fixed
-      return
-    }
-  }
-  const fallback = tile.fallbackUrl || SCROLL_IMAGE_FALLBACK
-  if (img.src !== fallback) img.src = fallback
-}
-
-function onDetailImageError (event, product) {
-  const img = event?.target
-  if (!img || !product) return
-  const fixed = getProductImage(product)
-  if (fixed && img.src !== fixed) {
-    img.src = fixed
-    return
-  }
-  const fallback = bcPlaceholderImageForProduct(product)
-  if (img.src !== fallback) img.src = fallback
-}
-
-function openProductFromTile (tile) {
-  if (!tile?.productId) return
-  const product = catalogProducts.value.find((p) => getProductId(p) === tile.productId)
-  if (product) {
-    selectedCategoryLabel.value = getProductListCategory(product)
-  }
-  selectedProductId.value = tile.productId
-  viewMode.value = 'detail'
-}
-
-function toggleCategory (label) {
-  expandedCategory.value = expandedCategory.value === label ? '' : label
-}
-
-function selectProductFromMenu (product, categoryLabel) {
-  if (!product) return
-  selectedCategoryLabel.value = categoryLabel || getProductListCategory(product)
-  selectedProductId.value = getProductId(product)
-  catalogMenuOpen.value = false
-  expandedCategory.value = ''
-  viewMode.value = 'category'
-}
-
-function openProductFromCategory (product) {
-  if (!product) return
-  selectedProductId.value = getProductId(product)
-  viewMode.value = 'detail'
-}
-
-function onCategoryImageError (event, product) {
-  onDetailImageError(event, product)
-}
-
-function backToShowroom () {
-  selectedProductId.value = ''
-  selectedCategoryLabel.value = ''
-  catalogSearchQuery.value = ''
-  catalogMenuOpen.value = false
-  expandedCategory.value = ''
-  viewMode.value = 'showroom'
-}
-
-function getIconForProduct (product) {
-  return bcAudioDepartmentIcon(getDeptKey(product) || '')
-}
-
-function resetToHome () {
-  selectedProductId.value = ''
-  if (catalogSearchQuery.value.trim().length >= 2) {
-    viewMode.value = 'search'
-    return
-  }
-  if (selectedCategoryLabel.value) {
-    viewMode.value = 'category'
-    return
-  }
-  backToShowroom()
-}
-
-const { addItem, itemCount } = useCart()
-
-function handleAddToCart () {
-  const product = currentProduct.value
-  if (!product) return
-  const price = getProductPrice(product)
-  if (price == null) {
-    alert('Contact helpdesk for pricing on this item.')
-    return
-  }
-  addItem({
-    id: getProductId(product),
-    name: getProductName(product),
-    sku: getProductSku(product),
-    price,
-    image: getProductImage(product) || undefined,
-  })
-  alert(`Added "${getProductName(product)}" to cart. (${itemCount.value} item${itemCount.value === 1 ? '' : 's'} total)`)
-}
-
-async function handleBuyNow () {
-  const product = currentProduct.value
-  if (!product || checkoutBusy.value || !checkoutTermsAccepted.value) return
-  const retailPrice = getProductPrice(product)
-  if (retailPrice == null) {
-    alert('Contact helpdesk for pricing on this item.')
-    return
-  }
-
-  const customerEmail = window.prompt('Email for your receipt:')?.trim()
-  if (!customerEmail) return
-
-  const customerZip = window.prompt('Shipping ZIP code:', '70801')?.trim() || '70801'
-  const customerName = window.prompt('Ship to name:', 'Wholesale Buyer')?.trim() || 'Wholesale Buyer'
-
-  checkoutBusy.value = true
-  try {
-    const config = useRuntimeConfig()
-    const body = {
-      productId: getProductId(product),
-      productName: getProductName(product),
-      productSku: getProductSku(product),
-      customerEmail,
-      customerZip,
-      shippingAddress: `${customerName} — B&C order`,
-      retailPrice,
-      siteUrl: String(config.public.siteUrl || '').replace(/\/$/, ''),
-    }
-
-    let checkout
-    try {
-      checkout = await $fetch('/api/checkout/live-split-payment', { method: 'POST', body })
-    } catch {
-      const supabaseUrl = getPublicSupabaseUrl(config)
-      const supabaseKey = getPublicSupabaseKey(config)
-      if (!supabaseUrl || !supabaseKey) {
-        throw new Error('Checkout is unavailable. Try again later.')
-      }
-      checkout = await $fetch(`${supabaseUrl}/functions/v1/bc-dropship-checkout`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${supabaseKey}`,
-          apikey: supabaseKey,
-        },
-        body,
+    if (!error && data?.length) {
+      marketplaceRows.value = data.map((row) => {
+        const sellerName = row.seller?.full_name || 'Marketplace seller'
+        const lowered = sellerName.toLowerCase()
+        const isBcSeller =
+          lowered.includes('b&c') ||
+          lowered.includes('b & c') ||
+          lowered.includes('bc performance')
+        return {
+          id: row.id,
+          title: row.title,
+          priceLabel: `$${Number(row.price).toLocaleString(undefined, { minimumFractionDigits: 2 })}`,
+          image: publicUrlForPath(row.image_paths?.[0]),
+          seller: sellerName,
+          isBcSeller,
+          to: `/listing/${row.id}`,
+          fallbackImage: '/logo.svg',
+        }
       })
+    } else {
+      marketplaceRows.value = []
     }
-
-    if (checkout?.url) {
-      window.location.assign(checkout.url)
-      return
-    }
-    throw new Error('No checkout URL returned.')
-  } catch (err) {
-    const message = err instanceof Error ? err.message : 'Checkout could not start.'
-    alert(message)
+  } catch {
+    marketplaceRows.value = []
   } finally {
-    checkoutBusy.value = false
+    shelfLoading.value = false
+  }
+}
+
+function onCardImgError (e, item) {
+  const el = e?.target
+  if (!el || el.dataset?.fallback) return
+  el.dataset.fallback = '1'
+  el.style.display = 'none'
+  if (item?.fallbackImage) {
+    const parent = el.parentElement
+    if (parent && !parent.querySelector('.card-emoji')) {
+      const span = document.createElement('span')
+      span.className = 'card-emoji'
+      span.textContent = item.isBcSeller ? '🔊' : '📦'
+      parent.appendChild(span)
+    }
+  }
+}
+
+function submitSearch () {
+  const query = {}
+  if (searchText.value.trim()) query.q = searchText.value.trim()
+  if (searchDepartment.value) query.category = searchDepartment.value
+  router.push({ path: '/browse', query })
+}
+
+onMounted(loadMarketplaceShelf)
+
+const opModalOpen = ref(false)
+const {
+  phrase: opPhrase,
+  error: opError,
+  submitting: opSubmitting,
+  keyConfigured,
+  submit: submitOpsPhrase,
+} = useOpsUnlock()
+let opKnockClicks = 0
+let opKnockTimer = null
+
+function onBrandOrLogoClick (e) {
+  e.preventDefault()
+  if (opKnockTimer) clearTimeout(opKnockTimer)
+  opKnockClicks += 1
+  opKnockTimer = setTimeout(() => { opKnockClicks = 0 }, 2800)
+  if (opKnockClicks >= 5) {
+    opKnockClicks = 0
+    if (opKnockTimer) clearTimeout(opKnockTimer)
+    opModalOpen.value = true
+    opError.value = ''
+  }
+}
+
+function closeOpModal () {
+  opModalOpen.value = false
+  opPhrase.value = ''
+  opError.value = ''
+}
+
+async function submitOpModal () {
+  const ok = await submitOpsPhrase()
+  if (ok) {
+    closeOpModal()
+    await router.push('/ops/panel')
   }
 }
 </script>
 
 <style scoped>
-.bc-audio-theme.portal-root {
-  --portal-red: #d32f2f;
-  --portal-red-deep: #b71c1c;
-  --portal-red-bright: #ff5252;
-  --portal-bg: #0a0a0a;
-  --portal-charcoal: #141414;
-  --portal-ink: #f5f5f5;
-  --portal-muted: #a3a3a3;
-  position: relative;
+.franks-marketplace-home {
+  background-color: #0f0f0f;
+  color: #ffffff;
   min-height: 100vh;
-  background: var(--portal-bg);
-  color: var(--portal-ink);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: Arial, sans-serif;
 }
 
-.portal-ribbon {
+.amazon-header-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background-color: #1a1a1a;
+  padding: 15px 25px;
+  border-bottom: 2px solid #2d2d2d;
+}
+.logo-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.logo-link {
+  text-decoration: none;
+  color: inherit;
+}
+.main-title {
+  font-size: 22px;
+  color: #ffffff;
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+.accent-red { color: #d32f2f; }
+.owner-pill {
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(211, 47, 47, 0.2);
+  color: #ff5252;
+  border: 1px solid rgba(211, 47, 47, 0.45);
+}
+
+.amazon-search-bar {
+  display: flex;
+  flex: 1;
+  min-width: 220px;
+  max-width: 680px;
+  margin: 0 auto;
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+.dept-dropdown {
+  background-color: #f3f3f3;
+  border: none;
+  padding: 0 15px;
+  font-size: 13px;
+  color: #333333;
+  outline: none;
+  cursor: pointer;
+  border-right: 1px solid #ddd;
+  max-width: 180px;
+}
+.search-input {
+  flex: 1;
+  border: none;
+  padding: 12px 15px;
+  font-size: 15px;
+  outline: none;
+  color: #111111;
+  min-width: 0;
+}
+.search-btn {
+  background-color: #d32f2f;
+  border: none;
+  padding: 0 20px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  color: white;
+}
+
+.nav-right-slots {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+.nav-slot-link {
+  text-decoration: none;
+  color: inherit;
+}
+.nav-right-slots small {
+  display: block;
+  color: #aaaaaa;
+  font-size: 11px;
+}
+.nav-right-slots strong {
+  display: block;
+  font-size: 14px;
+}
+.cart-slot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.cart-icon {
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ebay-sub-bar {
+  background-color: #242424;
+  padding: 10px 25px;
+  border-bottom: 3px solid #d32f2f;
+}
+.ebay-sub-bar ul {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  gap: 20px;
+  align-items: center;
+}
+.sub-link {
+  color: #cccccc;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: bold;
+}
+.sub-link:hover,
+.sub-link.router-link-active {
+  color: #ffffff;
+}
+.featured-bc-tab {
+  margin-left: auto;
+  background: #d32f2f;
+  padding: 4px 12px;
+  border-radius: 4px;
+}
+.featured-bc-tab a {
+  color: #ffffff !important;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.compliance-trust-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  justify-content: space-between;
+  background-color: #111111;
+  padding: 8px 25px;
+  font-size: 12px;
+  color: #888888;
+  border-bottom: 1px solid #222;
+}
+
+.homepage-content { padding: 30px 25px; }
+.hero-promo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+  margin-bottom: 40px;
+}
+.promo-card {
+  background-color: #1a1a1a;
+  border: 1px solid #333333;
+  border-radius: 6px;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+}
+.promo-card h2 { margin: 0 0 5px 0; font-size: 20px; }
+.card-tagline {
+  color: #aaaaaa;
+  font-size: 13px;
+  margin: 0 0 20px 0;
+  min-height: 36px;
+  line-height: 1.4;
+}
+
+.image-placeholder-box {
+  background-color: #111111;
+  border-radius: 4px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #777777;
+  padding: 15px;
+  margin-bottom: auto;
+  border: 1px dashed #444;
+}
+.audio-box { border-color: rgba(211, 47, 47, 0.45); }
+.sync-alert { font-size: 12px; color: #aaaaaa; font-weight: bold; }
+
+.btn-action-red,
+.btn-action-dark,
+.btn-action-green {
+  display: block;
+  text-align: center;
+  padding: 12px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 14px;
+  margin-top: 20px;
+  border: none;
+  cursor: pointer;
+}
+.btn-action-red { background-color: #d32f2f; color: #ffffff; }
+.btn-action-dark { background-color: #333333; color: #ffffff; }
+.btn-action-green { background-color: #2e7d32; color: #ffffff; }
+
+.benefit-list {
+  list-style: none;
+  padding: 0;
+  margin: 15px 0;
+  font-size: 12px;
+  color: #bbbbbb;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.shelf-title {
+  font-size: 19px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 10px;
+}
+.shelf-status {
+  color: #aaaaaa;
+  font-size: 14px;
+}
+.shelf-status a { color: #d32f2f; }
+.shelf-foot { margin-top: 20px; text-align: center; }
+.shelf-more { display: inline-block; margin-top: 0; }
+
+.product-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 22px;
+}
+.marketplace-card {
+  background-color: #161616;
+  border: 1px solid #2a2a2a;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.card-visual {
+  height: 150px;
+  background-color: #111111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #2a2a2a;
+  overflow: hidden;
+}
+.card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.card-emoji { font-size: 44px; }
+.card-info {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+}
+.card-info h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  min-height: 40px;
+  color: #ffffff;
+}
+.seller-badge {
+  font-size: 12px;
+  color: #aaaaaa;
+  margin: 0 0 12px 0;
+}
+.badge-red { color: #d32f2f; font-weight: bold; }
+.price-row {
+  font-size: 17px;
+  font-weight: bold;
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 0.5rem 3.5rem 0.5rem 1.5rem;
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #fff;
-  background: linear-gradient(90deg, var(--portal-red) 0%, #450a0a 50%, var(--portal-charcoal) 100%);
-  border-bottom: 1px solid rgba(211, 47, 47, 0.35);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  margin-bottom: 10px;
 }
-
-.portal-ribbon__right {
-  color: var(--portal-red-bright);
-  font-size: 0.62rem;
-  letter-spacing: 0.14em;
-  white-space: nowrap;
+.free-shipping {
+  color: #4caf50;
+  font-size: 12px;
+  font-weight: normal;
 }
-
-.portal-nav {
-  max-width: 80rem;
-  margin: 0 auto;
-  padding: 0.85rem 1.5rem;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  background: var(--portal-bg);
-}
-
-.portal-nav__headline {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
+.btn-card-checkout {
+  display: block;
   text-align: center;
-}
-
-.portal-nav__balance {
-  width: 2.5rem;
-  height: 2.5rem;
-  justify-self: end;
-}
-
-.portal-nav__brand {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-  justify-self: start;
-  border: none;
-  background: none;
-  padding: 0;
-  cursor: pointer;
-  color: inherit;
-  text-align: left;
-}
-
-.portal-nav__logo-img {
-  display: block;
-  width: auto;
-  max-width: min(260px, 58vw);
-  height: 56px;
-  object-fit: contain;
-}
-
-.portal-nav__title {
-  margin: 0;
-  font-size: clamp(0.82rem, 2.5vw, 1.05rem);
-  font-weight: 900;
-  letter-spacing: 0.02em;
-}
-
-.portal-nav__owner {
-  margin: 0;
-  font-size: 0.65rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.72);
-  letter-spacing: 0.04em;
-}
-
-.portal-nav__policy {
-  margin: 0;
-  max-width: 20rem;
-  font-size: 0.58rem;
-  line-height: 1.45;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.portal-nav__search {
-  display: flex;
-  align-items: stretch;
-  width: min(100%, 22rem);
-  margin-top: 0.15rem;
-  border-radius: 0.45rem;
-  overflow: hidden;
-  border: 1px solid rgba(211, 47, 47, 0.45);
-  background: rgba(0, 0, 0, 0.35);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
-}
-
-.portal-nav__search-label {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-.portal-nav__search-input {
-  flex: 1;
-  min-width: 0;
-  border: none;
-  background: transparent;
+  padding: 10px;
+  background: #d32f2f;
   color: #fff;
-  font-size: 0.68rem;
-  padding: 0.45rem 0.55rem;
-  outline: none;
-}
-
-.portal-nav__search-input::placeholder {
-  color: rgba(255, 255, 255, 0.45);
-}
-
-.portal-nav__search-btn {
-  flex-shrink: 0;
-  border: none;
-  background: linear-gradient(135deg, var(--portal-red) 0%, #8b1a1a 100%);
-  color: #fff;
-  font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  padding: 0.45rem 0.7rem;
-  cursor: pointer;
-}
-
-.portal-nav__search-btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.portal-catalog-picker {
-  position: relative;
-  flex-shrink: 0;
-}
-
-.portal-catalog-picker--corner {
-  position: fixed;
-  top: 0.35rem;
-  right: 0.35rem;
-  z-index: 60;
-}
-
-.portal-catalog-picker__trigger--corner {
-  position: fixed;
-  top: 0.35rem;
-  right: 0.35rem;
-  z-index: 60;
-}
-
-.portal-catalog-picker__trigger {
-  width: 2.75rem;
-  height: 2.75rem;
-  padding: 0.55rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.75rem;
-  border: 1px solid rgba(211, 47, 47, 0.35);
-  background: var(--portal-charcoal);
-  color: var(--portal-ink);
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-}
-
-.portal-catalog-picker__icon {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 0.22rem;
-  width: 1.15rem;
-}
-
-.portal-catalog-picker__line {
-  display: block;
-  height: 2px;
-  width: 100%;
-  border-radius: 1px;
-  background: var(--portal-ink);
-}
-
-.portal-catalog-picker__trigger:focus {
-  outline: none;
-  border-color: var(--portal-red);
-  box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.25);
-}
-
-.portal-catalog-picker__trigger:disabled {
-  opacity: 0.7;
-  cursor: wait;
-}
-
-.portal-catalog-picker__panel {
-  position: absolute;
-  top: calc(100% + 0.45rem);
-  right: 0;
-  z-index: 40;
-  width: min(22rem, 92vw);
-  max-height: min(24rem, 60vh);
-  overflow-y: auto;
-  border-radius: 0.85rem;
-  border: 1px solid rgba(211, 47, 47, 0.35);
-  background: #121212;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
-}
-
-.portal-catalog-picker__group {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.portal-catalog-picker__group:last-child {
-  border-bottom: none;
-}
-
-.portal-catalog-picker__category {
-  width: 100%;
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.7rem 0.85rem;
-  border: none;
-  background: transparent;
-  color: var(--portal-ink);
-  font-size: 0.72rem;
-  font-weight: 800;
-  text-align: left;
-  cursor: pointer;
-}
-
-.portal-catalog-picker__category:hover {
-  background: rgba(211, 47, 47, 0.1);
-}
-
-.portal-catalog-picker__category-name {
-  line-height: 1.35;
-}
-
-.portal-catalog-picker__count {
-  font-size: 0.62rem;
-  color: var(--portal-muted);
-  font-weight: 700;
-}
-
-.portal-catalog-picker__caret {
-  color: var(--portal-red-bright);
-  font-size: 0.75rem;
-}
-
-.portal-catalog-picker__products {
-  padding: 0 0.45rem 0.45rem;
-  background: rgba(0, 0, 0, 0.25);
-}
-
-.portal-catalog-picker__product {
-  display: block;
-  width: 100%;
-  padding: 0.55rem 0.65rem;
-  margin-top: 0.25rem;
-  border: none;
-  border-radius: 0.55rem;
-  background: rgba(255, 255, 255, 0.04);
-  color: #e5e5e5;
-  font-size: 0.68rem;
-  font-weight: 600;
-  text-align: left;
-  cursor: pointer;
-}
-
-.portal-catalog-picker__product:hover {
-  background: rgba(211, 47, 47, 0.18);
-  color: #fff;
-}
-
-.portal-category__head {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.portal-category__eyebrow {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 999px;
-  border: 1px solid rgba(211, 47, 47, 0.25);
-  background: rgba(211, 47, 47, 0.1);
-  color: var(--portal-red-bright);
-  font-size: 0.68rem;
-  font-weight: 900;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.portal-category__title {
-  margin: 1rem 0 0.35rem;
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  font-weight: 900;
-}
-
-.portal-category__meta {
-  margin: 0;
-  font-size: 0.82rem;
-  color: var(--portal-muted);
-}
-
-.portal-category__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
-  gap: 1rem;
-}
-
-.portal-category__card {
-  border-radius: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: var(--portal-charcoal);
-  overflow: hidden;
-  cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.portal-category__card:hover,
-.portal-category__card:focus-visible {
-  outline: none;
-  border-color: rgba(211, 47, 47, 0.45);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-}
-
-.portal-category__card--active {
-  border-color: var(--portal-red);
-  box-shadow: 0 0 0 1px rgba(211, 47, 47, 0.35);
-}
-
-.portal-category__img-wrap {
-  aspect-ratio: 1;
-  background: var(--portal-bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.portal-category__img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  padding: 0.5rem;
-}
-
-.portal-category__img-fallback {
-  font-size: 2rem;
-}
-
-.portal-category__body {
-  padding: 0.75rem;
-}
-
-.portal-category__name {
-  margin: 0;
-  font-size: 0.72rem;
-  font-weight: 800;
-  line-height: 1.35;
-}
-
-.portal-category__sku {
-  margin: 0.35rem 0 0;
-  font-size: 0.62rem;
-  color: var(--portal-muted);
-  font-family: ui-monospace, monospace;
-}
-
-.portal-category__price {
-  margin: 0.35rem 0 0;
-  font-size: 0.72rem;
-  font-weight: 800;
-  color: var(--portal-red-bright);
-}
-
-.portal-nav__phone {
-  display: inline-block;
-  padding: 0.2rem 0;
-  border: none;
-  background: none;
-  color: var(--portal-red-bright);
-  font-size: 0.72rem;
-  font-weight: 800;
-  font-family: ui-monospace, monospace;
   text-decoration: none;
-  white-space: nowrap;
+  font-size: 13px;
+  font-weight: bold;
+  border-radius: 4px;
 }
+.btn-card-checkout:hover { background: #ff5252; color: #fff; }
 
-.portal-nav__phone:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.portal-main {
-  max-width: 80rem;
-  margin: 0 auto;
-  padding: 3rem 1.5rem;
-}
-
-.portal-hero {
-  text-align: center;
-  max-width: 42rem;
-  margin: 0 auto 2.5rem;
-}
-
-.portal-hero__eyebrow {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 999px;
-  border: 1px solid rgba(211, 47, 47, 0.25);
-  background: rgba(211, 47, 47, 0.1);
-  color: var(--portal-red-bright);
-  font-size: 0.68rem;
-  font-weight: 900;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.portal-hero__title {
-  margin: 1rem 0 0;
-  font-size: clamp(1.75rem, 4vw, 2.25rem);
-  font-weight: 900;
-}
-
-.portal-hero__lede {
-  margin: 0.75rem 0 0;
-  font-size: 0.88rem;
-  line-height: 1.65;
-  color: var(--portal-muted);
-}
-
-.portal-hero__meta {
-  margin: 0.75rem 0 0;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--portal-red-bright);
-}
-
-.portal-catalog-error,
-.portal-catalog-loading {
-  text-align: center;
-  font-size: 0.85rem;
-  color: var(--portal-muted);
-  margin: 0 0 0.75rem;
-}
-
-.portal-scroll-stack--pending {
-  opacity: 0.55;
-  pointer-events: none;
-}
-
-.portal-catalog-error {
-  color: #fca5a5;
-}
-
-.portal-catalog-retry {
-  margin-left: 0.5rem;
-  border: none;
-  background: none;
-  color: var(--portal-red-bright);
-  font-weight: 700;
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-.portal-scroll-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.portal-showcase {
-  border-radius: 1.25rem;
-  border: 1px solid rgba(211, 47, 47, 0.2);
-  background: linear-gradient(180deg, rgba(23, 23, 23, 0.9) 0%, #0f0f0f 100%);
-  overflow: hidden;
-}
-
-.portal-showcase__head {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  padding: 1.25rem 1.25rem 0.85rem;
-}
-
-.portal-showcase__icon {
-  width: 3rem;
-  height: 3rem;
-  border-radius: 0.85rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.6rem;
-  background: rgba(211, 47, 47, 0.12);
-  border: 1px solid rgba(211, 47, 47, 0.25);
-  flex-shrink: 0;
-}
-
-.portal-showcase__badge {
-  display: inline-block;
-  padding: 0.2rem 0.55rem;
-  border-radius: 0.35rem;
-  background: rgba(69, 10, 10, 0.8);
-  border: 1px solid rgba(211, 47, 47, 0.25);
-  color: var(--portal-red-bright);
-  font-size: 0.58rem;
-  font-weight: 900;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.portal-showcase__title {
-  margin: 0.45rem 0 0;
-  font-size: 1.1rem;
-  font-weight: 900;
-}
-
-.portal-showcase__desc {
-  margin: 0.35rem 0 0;
-  font-size: 0.78rem;
-  line-height: 1.55;
-  color: var(--portal-muted);
-  max-width: 42rem;
-}
-
-.portal-scroll {
-  position: relative;
-  overflow: hidden;
-  padding: 0.85rem 0 1rem;
-}
-
-.portal-scroll__fade {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 4rem;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.portal-scroll__fade--left {
-  left: 0;
-  background: linear-gradient(90deg, #0f0f0f, transparent);
-}
-
-.portal-scroll__fade--right {
-  right: 0;
-  background: linear-gradient(270deg, #0f0f0f, transparent);
-}
-
-.portal-scroll__track {
-  display: flex;
-  width: max-content;
-  animation: portalScroll 50s linear infinite;
-}
-
-.portal-scroll--lane-1 .portal-scroll__track {
-  animation-duration: 58s;
-  animation-direction: reverse;
-}
-
-.portal-scroll--lane-2 .portal-scroll__track {
-  animation-duration: 66s;
-}
-
-.portal-scroll__row {
-  display: flex;
-  gap: 0.85rem;
-  padding: 0 0.5rem;
-}
-
-.portal-scroll__cell {
-  margin: 0;
-  flex: 0 0 auto;
-  width: 9.5rem;
-  border-radius: 0.85rem;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: #171717;
-  display: flex;
-  flex-direction: column;
-  cursor: pointer;
-}
-
-.portal-scroll__cell:focus-visible {
-  outline: 2px solid var(--portal-red);
-  outline-offset: 2px;
-}
-
-.portal-scroll__img-wrap {
-  height: 7.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #0a0a0a;
-}
-
-.portal-scroll__img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-}
-
-@keyframes portalScroll {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-
-.portal-detail__back {
-  border: none;
-  background: none;
-  color: var(--portal-red-bright);
-  font-size: 0.75rem;
-  font-weight: 800;
-  cursor: pointer;
-  padding: 0;
-  margin-bottom: 1.5rem;
-}
-
-.portal-detail__back:hover {
-  color: #fff;
-}
-
-.portal-detail__card {
-  max-width: 64rem;
-  margin: 0 auto;
-  padding: 2rem;
-  border-radius: 1.5rem;
-  background: rgba(23, 23, 23, 0.55);
-  border: 1px solid rgba(211, 47, 47, 0.25);
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
-}
-
-.portal-detail__grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
-  gap: 2rem;
-}
-
-.portal-detail__media {
-  position: relative;
-  min-height: 21rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 1.25rem;
-  background: var(--portal-bg);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  overflow: hidden;
-}
-
-.portal-detail__img {
-  max-width: 100%;
-  max-height: 20rem;
-  object-fit: contain;
-  z-index: 1;
-}
-
-.portal-detail__media-overlay {
-  position: absolute;
+.op-modal-backdrop {
+  position: fixed;
   inset: 0;
-  background: rgba(10, 10, 10, 0.7);
-}
-
-.portal-detail__icon {
-  position: relative;
-  z-index: 1;
-  font-size: 5rem;
-  user-select: none;
-}
-
-.portal-detail__media-badge {
-  position: absolute;
-  bottom: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.75rem;
-  background: rgba(69, 10, 10, 0.6);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(211, 47, 47, 0.25);
-}
-
-.portal-detail__media-badge p {
-  margin: 0;
-  font-size: 0.58rem;
-  font-weight: 900;
-  letter-spacing: 0.1em;
-  color: var(--portal-red-bright);
-  text-align: center;
-  white-space: nowrap;
-}
-
-.portal-detail__dept {
-  display: inline-block;
-  padding: 0.25rem 0.6rem;
-  border-radius: 0.45rem;
-  border: 1px solid rgba(211, 47, 47, 0.25);
-  background: rgba(211, 47, 47, 0.1);
-  color: var(--portal-red-bright);
-  font-size: 0.62rem;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.portal-detail__name {
-  margin: 0.6rem 0 0;
-  font-size: 1.5rem;
-  font-weight: 900;
-  line-height: 1.25;
-}
-
-.portal-detail__sku {
-  margin: 0.35rem 0 0;
-  font-family: ui-monospace, monospace;
-  font-size: 0.72rem;
-  color: #737373;
-}
-
-.portal-detail__desc {
-  margin-top: 1rem;
-  padding: 1rem;
-  border-radius: 0.85rem;
-  background: var(--portal-bg);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.portal-detail__desc p {
-  margin: 0;
-  font-size: 0.82rem;
-  line-height: 1.65;
-  color: #d4d4d4;
-}
-
-.portal-detail__price-row {
+  z-index: 10000;
   display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 1.25rem;
-}
-
-.portal-detail__price-label {
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--portal-muted);
-}
-
-.portal-detail__price {
-  font-size: 1.85rem;
-  font-weight: 900;
-  color: #34d399;
-}
-
-.portal-detail__actions {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
-  margin-top: 1.5rem;
-}
-
-.portal-btn {
-  padding: 1rem 1.25rem;
-  border-radius: 0.85rem;
-  font-size: 0.72rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background 0.15s, filter 0.15s;
-}
-
-.portal-btn:disabled {
-  opacity: 0.65;
-  cursor: wait;
-}
-
-.portal-btn--cart {
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: var(--portal-bg);
-  color: #fff;
-}
-
-.portal-btn--cart:hover:not(:disabled) {
-  background: var(--portal-charcoal);
-}
-
-.portal-btn--buy {
-  border: none;
-  background: linear-gradient(90deg, var(--portal-red) 0%, var(--portal-red-deep) 100%);
-  color: #fff;
-  box-shadow: 0 8px 24px rgba(211, 47, 47, 0.35);
-}
-
-.portal-btn--buy:hover:not(:disabled) {
-  filter: brightness(1.08);
-}
-
-.portal-footer {
-  max-width: 80rem;
-  margin: 0 auto;
-  padding: 3rem 1.5rem 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  text-align: center;
-}
-
-.portal-footer p {
-  margin: 0;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #737373;
-}
-
-.portal-footer__social {
-  display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   justify-content: center;
-  gap: 0.65rem 1rem;
-  margin-top: 1rem;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.75);
 }
+.op-modal {
+  max-width: 400px;
+  width: 100%;
+  padding: 24px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+}
+.op-modal-h { margin: 0 0 12px; font-size: 1.2rem; }
+.op-warn { font-size: 0.85rem; color: #ccc; margin-bottom: 10px; }
+.op-input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  background: #111;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 4px;
+}
+.op-err { color: #ff5252; font-size: 0.88rem; }
+.op-modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 12px; }
+.label { display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 4px; }
 
-.portal-footer__social-link {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #d32f2f;
+.owner-sell-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9000;
+  padding: 14px 20px;
+  border-radius: 999px;
+  background: #ffd814;
+  color: #0f0f0f;
+  font-weight: 800;
   text-decoration: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
 }
 
-.portal-footer__social-link:hover {
-  color: #ff5252;
-}
-
-.portal-fade {
-  animation: portalFade 0.3s ease-in-out forwards;
-}
-
-@keyframes portalFade {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@media (max-width: 768px) {
-  .portal-ribbon {
-    padding-right: 3.25rem;
-  }
-
-  .portal-ribbon__right {
-    display: none;
-  }
-
-  .portal-nav {
-    grid-template-columns: auto 1fr;
-    justify-items: center;
-  }
-
-  .portal-nav__brand {
-    justify-self: start;
-    grid-row: 1;
-    grid-column: 1;
-  }
-
-  .portal-nav__headline {
-    grid-row: 1;
-    grid-column: 1 / -1;
-    justify-self: center;
-  }
-
-  .portal-nav__balance {
-    display: none;
-  }
-
-  .portal-category__grid {
-    grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
-  }
-
-  .portal-detail__grid {
-    grid-template-columns: 1fr;
-  }
-
-  .portal-detail__actions {
-    grid-template-columns: 1fr;
-  }
-
-  .portal-scroll__cell {
-    width: 7rem;
-  }
-
-  .portal-scroll__img-wrap {
-    height: 5.5rem;
-  }
+@media (max-width: 900px) {
+  .amazon-header-nav { flex-direction: column; align-items: stretch; }
+  .amazon-search-bar { max-width: none; margin: 0; }
+  .nav-right-slots { justify-content: space-between; }
+  .featured-bc-tab { margin-left: 0; width: 100%; text-align: center; }
 }
 </style>
