@@ -43,7 +43,7 @@ watch(() => route.query.pick, applyPickFromQuery)
 useHead(() => ({
   title: `Product catalog · ${BC_BRAND.full}`,
   meta: [
-    { name: 'description', content: `Browse ${catalogItems.value.length.toLocaleString()} competition audio and dropship products from ${BC_BRAND.full}.` },
+    { name: 'description', content: `Browse ${catalogItems.value.length.toLocaleString()} competition audio products from ${BC_BRAND.full}.` },
     { name: 'keywords', content: BC_SEO_KEYWORDS },
   ],
 }))
@@ -52,7 +52,7 @@ useHead(() => ({
 <template>
   <div class="bc-catalog-page">
     <header class="bc-catalog-page__head">
-      <p class="bc-catalog-page__eyebrow">{{ BC_BRAND.short }} dropship</p>
+      <p class="bc-catalog-page__eyebrow">{{ BC_BRAND.short }} authorized catalog</p>
       <h1 class="bc-catalog-page__title">Product catalog</h1>
       <p class="bc-catalog-page__sub">
         Pick a unit from the grid — checkout form stays on the right.

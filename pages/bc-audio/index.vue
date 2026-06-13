@@ -33,6 +33,7 @@ const router = useRouter()
 const selectedCategory = ref<DeptKey>('all')
 const checkoutBusy = ref(false)
 const checkoutSku = ref('')
+const checkoutTermsAccepted = ref(false)
 const { addItem, itemCount } = useCart()
 const { products, pending: catalogPending, error: catalogError, refresh: refreshCatalog } = useBcProductCatalog()
 
@@ -187,7 +188,7 @@ const handleAddToCart = (product: any) => {
 }
 
 const handleStripeExpress = async (product: any) => {
-  if (!product || checkoutBusy.value) return
+  if (!product || checkoutBusy.value || !checkoutTermsAccepted.value) return
   const retailPrice = getProductPrice(product)
   if (retailPrice == null) {
     alert('Contact helpdesk for pricing on this item.')
@@ -271,7 +272,14 @@ const isCheckoutBusy = (product: any) =>
 
       <p v-if="catalogPending" class="bc-home__status">Loading authorized catalog…</p>
 
-      <section v-else-if="filteredProducts.length" class="bc-home__grid bc-fade-in" aria-label="Product inventory grid">
+      <BcCheckoutTermsAgreement
+        v-else-if="filteredProducts.length"
+        v-model="checkoutTermsAccepted"
+        compact
+        class="bc-home__terms"
+      />
+
+      <section v-if="!catalogPending && filteredProducts.length" class="bc-home__grid bc-fade-in" aria-label="Product inventory grid">
         <article
           v-for="product in filteredProducts"
           :key="getProductId(product)"
@@ -310,7 +318,7 @@ const isCheckoutBusy = (product: any) =>
               <button
                 type="button"
                 class="bc-home__btn bc-home__btn--buy"
-                :disabled="isCheckoutBusy(product)"
+                :disabled="isCheckoutBusy(product) || !checkoutTermsAccepted"
                 @click="handleStripeExpress(product)"
               >
                 {{ isCheckoutBusy(product) ? 'Starting…' : 'Buy It Now' }}
@@ -458,6 +466,11 @@ const isCheckoutBusy = (product: any) =>
   max-width: 80rem;
   margin: 0 auto;
   padding: 3rem 1.5rem;
+}
+
+.bc-home__terms {
+  max-width: 52rem;
+  margin: 0 auto 1.25rem;
 }
 
 .bc-home__hero {

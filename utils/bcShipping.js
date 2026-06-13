@@ -7,18 +7,30 @@ export const BC_SHIPPING = Object.freeze({
   shortLine: 'Ships within 1–3 business days after payment clears',
   headline: 'Fulfillment timeline',
   summary:
-    'Orders are released for shipment within 1–3 business days after payment successfully clears.',
+    'We release your order for shipment within 1–3 business days after your payment has fully cleared.',
+  clearanceReason:
+    'We verify that payment has cleared before shipping so every order is paid in full — avoiding declined cards, reversals, and shipments that cannot be completed.',
   deliveryEstimate:
-    'Estimated delivery is 7–14 business days after shipment (continental U.S.), allowing for carrier transit; most orders arrive sooner.',
+    'Estimated delivery is 7–14 business days after shipment (continental U.S.); most orders arrive sooner.',
   paymentLabel: 'Payment verification',
   paymentWindow: '1–3 business days',
   fulfillmentLabel: 'Shipment',
   fulfillmentNote:
-    'Your item ships once payment has cleared and the order is released to our authorized distributor.',
+    'Your order ships after payment has fully cleared and your order is confirmed.',
   checkoutNote:
-    'Payment is collected at secure checkout. Fulfillment begins only after your payment has cleared.',
+    'Payment is collected at secure checkout. Fulfillment begins after payment verification is complete.',
   successLead:
-    'Your payment was received. Orders typically ship within 1–3 business days after payment clears.',
+    'Your payment was received. We typically ship within 1–3 business days after payment clears.',
+  successClearance:
+    'We confirm your payment has cleared before releasing your order — this protects you and us from incomplete payments.',
   successDelivery:
-    'Estimated delivery is 7–14 business days after shipment, allowing for carrier transit; most orders arrive sooner.',
+    'Estimated delivery is 7–14 business days after shipment; most orders arrive sooner.',
+})
+
+export const BC_CHECKOUT_TERMS = Object.freeze({
+  title: 'Fulfillment terms',
+  summary:
+    'For your protection, we ship only after your payment has fully cleared (typically 1–3 business days). This prevents declined payments, insufficient funds, and charge reversals from affecting your order.',
+  checkboxLabel:
+    'I agree to these fulfillment terms and understand that shipment begins after my payment clears.',
 })

@@ -14,7 +14,7 @@ const sessionId = computed(() => String(route.query.session_id || '').trim())
 
 useSeoMeta({
   title: `Payment received · ${BC_BRAND.short}`,
-  description: `${BC_BRAND.full} — your Stripe payment was received. Fulfillment sync is active.`,
+  description: `${BC_BRAND.full} — your Stripe payment was received. Order confirmation and fulfillment timeline.`,
   robots: 'noindex',
 })
 </script>
@@ -39,6 +39,7 @@ useSeoMeta({
         <ul class="bc-os__list">
           <li>A receipt was sent to the email you entered at checkout.</li>
           <li>{{ BC_SHIPPING.summary }}</li>
+          <li>{{ BC_SHIPPING.successClearance }}</li>
           <li>{{ BC_SHIPPING.successDelivery }}</li>
           <li>Questions? Call <a :href="`tel:${support.phoneTel}`">{{ support.phoneDisplay }}</a> or email
             <a :href="`mailto:${support.email}`">{{ support.email }}</a>.

@@ -67,6 +67,7 @@ on:
       - 'components/BcProductCatalogGrid.vue'
       - 'components/BcDropshipOrderForm.vue'
       - 'components/BcShippingEstimate.vue'
+      - 'components/BcCheckoutTermsAgreement.vue'
       - 'utils/bcShipping.js'
       - 'utils/bcCheckout.js'
       - 'scripts/patch-gh-pages-spa.cjs'

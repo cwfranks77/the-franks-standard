@@ -290,6 +290,8 @@
 
               <BcShippingEstimate />
 
+              <BcCheckoutTermsAgreement v-model="checkoutTermsAccepted" />
+
               <div class="portal-detail__actions">
                 <button type="button" class="portal-btn portal-btn--cart" @click="handleAddToCart">
                   Add to Cart
@@ -297,7 +299,7 @@
                 <button
                   type="button"
                   class="portal-btn portal-btn--buy"
-                  :disabled="checkoutBusy"
+                  :disabled="checkoutBusy || !checkoutTermsAccepted"
                   @click="handleBuyNow"
                 >
                   {{ checkoutBusy ? 'Starting checkout…' : 'Buy It Now' }}
@@ -407,6 +409,7 @@ const expandedCategory = ref('')
 const catalogSearchQuery = ref('')
 const catalogPickerRef = ref(null)
 const checkoutBusy = ref(false)
+const checkoutTermsAccepted = ref(false)
 
 const catalogProducts = ref([])
 const catalogPending = ref(true)
@@ -776,7 +779,7 @@ function handleAddToCart () {
 
 async function handleBuyNow () {
   const product = currentProduct.value
-  if (!product || checkoutBusy.value) return
+  if (!product || checkoutBusy.value || !checkoutTermsAccepted.value) return
   const retailPrice = getProductPrice(product)
   if (retailPrice == null) {
     alert('Contact helpdesk for pricing on this item.')

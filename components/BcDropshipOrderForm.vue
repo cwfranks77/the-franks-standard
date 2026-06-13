@@ -18,6 +18,7 @@ const form = ref({
 const isSubmitting = ref(false)
 const statusMessage = ref('')
 const statusError = ref(false)
+const termsAgreed = ref(false)
 
 async function createBcLiveCheckout (body) {
   try {
@@ -46,6 +47,7 @@ const canSubmit = computed(() => {
     && form.value.customerName.trim()
     && form.value.customerZip.trim()
     && form.value.shippingAddress.trim()
+    && termsAgreed.value
     && !isSubmitting.value
 })
 
@@ -102,7 +104,7 @@ async function submitOrder () {
       <p class="bc-order__eyebrow">Secure checkout</p>
       <h2 class="bc-order__title">{{ BC_BRAND.short }} order form</h2>
       <p class="bc-order__sub">
-        Live Stripe checkout — sales tax and fulfillment handled automatically after payment.
+        Secure Stripe checkout — Louisiana sales tax calculated at payment.
       </p>
     </header>
 
@@ -138,6 +140,8 @@ async function submitOrder () {
           <label for="bc-address">Shipping address</label>
           <textarea id="bc-address" v-model="form.shippingAddress" required rows="3" placeholder="Street, city, state" />
         </div>
+
+        <BcCheckoutTermsAgreement v-model="termsAgreed" />
 
         <button type="submit" class="bc-order__submit" :disabled="!canSubmit">
           {{ isSubmitting ? 'Starting checkout…' : 'Proceed to secure checkout' }}

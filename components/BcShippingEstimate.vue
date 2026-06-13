@@ -15,6 +15,7 @@ defineProps({
     <template v-else>
       <p class="bc-ship__title">{{ BC_SHIPPING.headline }}</p>
       <p class="bc-ship__summary">{{ BC_SHIPPING.summary }}</p>
+      <p class="bc-ship__reason">{{ BC_SHIPPING.clearanceReason }}</p>
       <dl class="bc-ship__grid">
         <div class="bc-ship__row">
           <dt>{{ BC_SHIPPING.paymentLabel }}</dt>
@@ -75,11 +76,18 @@ defineProps({
 }
 
 .bc-ship__summary {
-  margin: 0 0 10px;
+  margin: 0 0 8px;
   font-size: 0.84rem;
   line-height: 1.45;
   color: #e8eaed;
   font-weight: 600;
+}
+
+.bc-ship__reason {
+  margin: 0 0 10px;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: #9ca3af;
 }
 
 .bc-ship__grid {
