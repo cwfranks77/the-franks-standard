@@ -73,6 +73,7 @@ useHead(() => ({
           ${{ Number(catalogItem.retailPrice).toFixed(2) }}
         </p>
         <p class="bc-product-page__desc">{{ catalogItem.tagline || catalogItem.description }}</p>
+        <BcShippingEstimate />
         <NuxtLink :to="buyUrl" class="bc-product-page__cta">Order this product →</NuxtLink>
         <p class="bc-product-page__legal">Sold by {{ BC_BRAND.full }} · B&amp;C Performance Audio LLC · Louisiana tax at checkout</p>
       </div>

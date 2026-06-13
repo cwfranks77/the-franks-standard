@@ -1,5 +1,6 @@
 <script setup>
 import { BC_BRAND } from '~/utils/bcBrand.js'
+import { BC_SHIPPING } from '~/utils/bcShipping.js'
 import { getBcSupport } from '~/utils/bcSupport.js'
 
 definePageMeta({ layout: 'bc-audio' })
@@ -24,7 +25,7 @@ useSeoMeta({
       <p class="bc-os__eyebrow">{{ BC_BRAND.short }} checkout</p>
       <h1>Payment received</h1>
       <p class="bc-os__lead">
-        Thank you. Stripe processed your payment securely. Your order is queued for distributor fulfillment.
+        Thank you. Stripe processed your payment securely. {{ BC_SHIPPING.successLead }}
       </p>
 
       <div v-if="orderId" class="bc-os__ref">
@@ -38,6 +39,11 @@ useSeoMeta({
         <ul class="bc-os__list">
           <li>A receipt was sent to the email you entered at checkout.</li>
           <li>Our distributor node is notified to pick and ship your unit.</li>
+          <li>
+            <strong>Shipping estimate:</strong> {{ BC_SHIPPING.summary }}
+            Processing: {{ BC_SHIPPING.processingDays }}.
+            Transit: {{ BC_SHIPPING.transitDays }}.
+          </li>
           <li>Questions? Call <a :href="`tel:${support.phoneTel}`">{{ support.phoneDisplay }}</a> or email
             <a :href="`mailto:${support.email}`">{{ support.email }}</a>.
           </li>

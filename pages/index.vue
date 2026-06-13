@@ -288,6 +288,8 @@
                 <span class="portal-detail__price">{{ formatPrice(currentProduct) }}</span>
               </div>
 
+              <BcShippingEstimate />
+
               <div class="portal-detail__actions">
                 <button type="button" class="portal-btn portal-btn--cart" @click="handleAddToCart">
                   Add to Cart

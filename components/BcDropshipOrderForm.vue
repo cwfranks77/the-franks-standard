@@ -117,6 +117,8 @@ async function submitOrder () {
         <p class="bc-order__selected-price">{{ product.formattedPrice || ('$' + product.retailPrice) }}</p>
       </div>
 
+      <BcShippingEstimate />
+
       <form class="bc-order__form" @submit.prevent="submitOrder">
         <div class="bc-order__field">
           <label for="bc-name">Full name</label>

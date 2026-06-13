@@ -5,6 +5,7 @@ Only this namespace. No Franks Standard branding in page copy.
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { BC_BRAND } from '~/utils/bcBrand.js'
+import { BC_SHIPPING } from '~/utils/bcShipping.js'
 import { BC_LEGAL_NAME } from '~/utils/bcSeo.js'
 import { getBcSupport } from '~/utils/bcSupport.js'
 import { getPublicSupabaseKey, getPublicSupabaseUrl } from '~/utils/publicSupabase.js'
@@ -301,6 +302,7 @@ const isCheckoutBusy = (product: any) =>
               <span class="bc-home__card-price-label">MSRP Retail Price</span>
               <span class="bc-home__card-price">{{ formatPrice(product) }}</span>
             </div>
+            <BcShippingEstimate compact />
             <div class="bc-home__card-actions">
               <button type="button" class="bc-home__btn bc-home__btn--cart" @click="handleAddToCart(product)">
                 Add To Cart
@@ -331,6 +333,7 @@ const isCheckoutBusy = (product: any) =>
 
     <footer class="bc-home__footer">
       <p>{{ BC_BRAND.full }} — Authorized Distribution Hub</p>
+      <p class="bc-home__footer-ship">{{ BC_SHIPPING.shortLine }}</p>
     </footer>
   </div>
 </template>
@@ -696,6 +699,15 @@ const isCheckoutBusy = (product: any) =>
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: #737373;
+}
+
+.bc-home__footer-ship {
+  margin-top: 8px !important;
+  font-size: 0.68rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: none !important;
+  color: #9ca3af !important;
 }
 
 .bc-fade-in {
