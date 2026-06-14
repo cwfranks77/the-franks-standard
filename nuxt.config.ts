@@ -13,7 +13,8 @@ const rawSite = process.env.NUXT_PUBLIC_SITE_URL
 const siteUrl = (rawSite && String(rawSite).trim())
   ? String(rawSite).replace(/\/$/, '')
   : 'https://thefranksstandard.com'
-const bcPrimarySite = isBcPowerAudioPrimarySite(siteUrl)
+const bcPrimarySite = process.env.NUXT_BC_PRIMARY_SITE === 'true'
+  || isBcPowerAudioPrimarySite(siteUrl)
 const bcSiteDescription = `${BC_LEGAL_NAME} — authorized wholesale distribution portal.`
 const franksSiteTitle = 'The Franks Standard — Marketplace Facilitator for Collectibles & Gear'
 const siteTitle = bcPrimarySite ? BC_LEGAL_NAME : franksSiteTitle

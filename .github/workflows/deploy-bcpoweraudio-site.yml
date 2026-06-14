@@ -121,6 +121,7 @@ jobs:
           NUXT_PUBLIC_SUPABASE_URL: ${{ secrets.NUXT_PUBLIC_SUPABASE_URL }}
           NUXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NUXT_PUBLIC_SUPABASE_KEY }}
           NUXT_PUBLIC_SITE_URL: https://www.bcpoweraudio.com
+          NUXT_BC_PRIMARY_SITE: 'true'
           NUXT_PUBLIC_BC_AUDIO_EXTERNAL_URL: https://www.bcpoweraudio.com
           NUXT_PUBLIC_BC_AUDIO_SUPPORT_PHONE: ${{ secrets.NUXT_PUBLIC_BC_AUDIO_SUPPORT_PHONE }}
           NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL: ${{ secrets.NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL }}
