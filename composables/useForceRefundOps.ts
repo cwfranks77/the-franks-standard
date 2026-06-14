@@ -1,5 +1,3 @@
-import { getSupabaseFunctionsBase } from '~/utils/publicSupabase.js'
-
 /**
  * Ops-initiated forced buyer refunds — calls ops-force-refund edge function.
  */
@@ -10,7 +8,8 @@ export function useForceRefundOps () {
   const lastError = ref('')
 
   function functionsBase () {
-    return getSupabaseFunctionsBase(config)
+    const url = String(config.public?.supabaseUrl || '').replace(/\/+$/, '')
+    return `${url}/functions/v1`
   }
 
   async function callRefundOps (action: string, payload: Record<string, unknown> = {}) {

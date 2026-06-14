@@ -1,5 +1,3 @@
-import { getSupabaseFunctionsBase } from '~/utils/publicSupabase.js'
-
 /**
  * Owner authenticity enforcement — calls ops-integrity-action edge function.
  */
@@ -10,7 +8,8 @@ export function useIntegrityOps () {
   const lastError = ref('')
 
   function functionsBase () {
-    return getSupabaseFunctionsBase(config)
+    const url = String(config.public?.supabaseUrl || '').replace(/\/+$/, '')
+    return `${url}/functions/v1`
   }
 
   async function callOps (action: string, payload: Record<string, unknown> = {}) {

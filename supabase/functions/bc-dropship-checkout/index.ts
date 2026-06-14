@@ -1,5 +1,3 @@
-import { checkoutReturnUrls, resolveCheckoutBaseUrl } from '../_shared/bcCheckout.ts'
-import { resolveBcCheckoutWholesale } from '../_shared/petraWholesaleLookup.ts'
 import { corsHeaders, json, siteUrl, stripeClient } from '../_shared/stripe.ts'
 
 const LA_TAX_RATE = 0.0445
@@ -26,13 +24,11 @@ Deno.serve(async (req) => {
     const productName = String(body.productName || body.name || '').trim()
     const customerEmail = String(body.customerEmail || '').trim()
     const retailPrice = body.retailPrice
-    const productSku = String(body.productSku || body.productId || '').trim()
+    const wholesaleCost = body.wholesaleCost
     const orderId = String(body.orderId || '').trim() || makeOrderId()
 
-    const wholesaleCost = resolveBcCheckoutWholesale(body)
-
     if (!productName || !customerEmail || retailPrice == null || wholesaleCost == null) {
-      return json({ error: 'missing_fields', message: 'productName, customerEmail, retailPrice, and a known product SKU are required.' }, 400)
+      return json({ error: 'missing_fields', message: 'productName, customerEmail, retailPrice, and wholesaleCost are required.' }, 400)
     }
 
     const retailCents = Math.round(parseFloat(String(retailPrice)) * 100)
@@ -57,9 +53,9 @@ Deno.serve(async (req) => {
     const distributorAccountId =
       Deno.env.get('STRIPE_DISTRIBUTOR_CONNECT_ACCOUNT_ID') || 'acct_1Distributor99X'
     const useConnect = connectDestinationReady(distributorAccountId)
-    const baseUrl = resolveCheckoutBaseUrl(body.siteUrl, siteUrl())
-    const { successPath, cancelPath } = checkoutReturnUrls(baseUrl)
+    const baseUrl = siteUrl()
     const stripe = stripeClient()
+    const cancelPath = baseUrl.includes('bcpoweraudio.com') ? '/bc-audio?cancelled=1' : '/shop?cancelled=1'
 
     const sessionParams: Record<string, unknown> = {
       payment_method_types: ['card'],
@@ -76,12 +72,12 @@ Deno.serve(async (req) => {
       }],
       mode: 'payment',
       customer_email: customerEmail,
-      success_url: `${baseUrl}${successPath}?order=${encodeURIComponent(orderId)}&session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${baseUrl}/order/success?order=${encodeURIComponent(orderId)}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}${cancelPath}`,
       metadata: {
         orderId,
         productName,
-        productSku: productSku || String(body.productSku || body.productId || ''),
+        productSku: String(body.productSku || body.productId || ''),
         customerZip: String(body.customerZip || ''),
         shippingAddress: String(body.shippingAddress || '').slice(0, 500),
         wholesaleCents: String(wholesaleCents),
@@ -105,6 +101,14 @@ Deno.serve(async (req) => {
       url: session.url,
       orderId,
       sessionId: session.id,
+      totals: {
+        retailCents,
+        laTaxCents,
+        totalCustomerGrossCents,
+        wholesaleCents,
+        applicationFeeAmount,
+        processingFeeCents: Math.round(retailCents * 0.035),
+      },
     })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Stripe checkout failed'

@@ -57,32 +57,6 @@ jobs:
             echo "Ops unlock secrets synced to Supabase Edge."
           fi
 
-      - name: Sync B&C voice owner phone to Edge
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          BC_VOICE_OWNER_PHONE: ${{ secrets.PRIVATE_OWNER_CELL_PHONE }}
-          BC_VOICE_OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: |
-          if [ -z "$SUPABASE_ACCESS_TOKEN" ]; then
-            exit 1
-          fi
-          VOICE_SECRETS=""
-          if [ -n "$BC_VOICE_OWNER_PHONE" ]; then
-            VOICE_SECRETS="BC_VOICE_OWNER_PHONE=${BC_VOICE_OWNER_PHONE} TWILIO_BC_CALLER_ID=+18337224147"
-          else
-            echo "Skip owner cell — add PRIVATE_OWNER_CELL_PHONE to GitHub Secrets for press-0 routing"
-          fi
-          if [ -n "$BC_VOICE_OPENAI_API_KEY" ]; then
-            VOICE_SECRETS="${VOICE_SECRETS} BC_VOICE_OPENAI_API_KEY=${BC_VOICE_OPENAI_API_KEY}"
-          else
-            echo "Skip OpenAI — add OPENAI_API_KEY to GitHub Secrets for full phone AI (smart fallback still runs)"
-          fi
-          if [ -n "$VOICE_SECRETS" ]; then
-            # shellcheck disable=SC2086
-            npx supabase@latest secrets set $VOICE_SECRETS --project-ref rochesyrxiyrxhzmkuwk
-            echo "B&C voice secrets synced to Supabase Edge."
-          fi
-
       - name: Set Auth Send Email hook secret on Edge
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
@@ -123,7 +97,6 @@ jobs:
           deploy ops-force-refund --no-verify-jwt
           deploy ops-integrity-action --no-verify-jwt
           deploy ops-cms-action --no-verify-jwt
-          deploy bc-voice-inbound --no-verify-jwt
           deploy ops-error-ingest --no-verify-jwt
           deploy ops-incident-action --no-verify-jwt
           deploy verify-coa-serial --no-verify-jwt

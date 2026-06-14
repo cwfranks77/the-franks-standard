@@ -85,21 +85,15 @@ export function isOpsApiUnavailable (error) {
 
 export function storeOpsPhraseForSession (phrase) {
   if (!import.meta.client) return
-  const normalized = normalizeOpsPhrase(phrase)
-  sessionStorage.setItem(OPS_PHRASE_STORAGE_KEY, normalized)
-  // Keep phrase with owner sign-in so cloud save still works after browser restart.
-  localStorage.setItem(OPS_PHRASE_STORAGE_KEY, normalized)
+  sessionStorage.setItem(OPS_PHRASE_STORAGE_KEY, normalizeOpsPhrase(phrase))
 }
 
 export function getStoredOpsPhrase () {
   if (!import.meta.client) return ''
-  return sessionStorage.getItem(OPS_PHRASE_STORAGE_KEY)
-    || localStorage.getItem(OPS_PHRASE_STORAGE_KEY)
-    || ''
+  return sessionStorage.getItem(OPS_PHRASE_STORAGE_KEY) || ''
 }
 
 export function clearStoredOpsPhrase () {
   if (!import.meta.client) return
   sessionStorage.removeItem(OPS_PHRASE_STORAGE_KEY)
-  localStorage.removeItem(OPS_PHRASE_STORAGE_KEY)
 }

@@ -1,5 +1,3 @@
-import { getSupabaseFunctionsBase } from '~/utils/publicSupabase.js'
-
 /**
  * Owner ops incidents dashboard — list, triage, resolve, test alerts.
  */
@@ -11,7 +9,8 @@ export function useOpsIncidents () {
   const incidents = ref<any[]>([])
 
   function functionsBase () {
-    return getSupabaseFunctionsBase(config)
+    const url = String(config.public?.supabaseUrl || '').replace(/\/+$/, '')
+    return `${url}/functions/v1`
   }
 
   async function callOps (action: string, payload: Record<string, unknown> = {}) {

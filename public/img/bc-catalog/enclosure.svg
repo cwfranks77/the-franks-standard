@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Loaded enclosure">
-  <rect width="600" height="600" fill="#0d0d0d"/>
-  <rect x="90" y="170" width="420" height="260" rx="12" fill="#161616" stroke="#d32f2f" stroke-width="4"/>
-  <circle cx="210" cy="300" r="72" fill="#1a1a1a" stroke="#d32f2f" stroke-width="3"/>
-  <circle cx="390" cy="300" r="72" fill="#1a1a1a" stroke="#d32f2f" stroke-width="3"/>
-  <text x="300" y="500" text-anchor="middle" fill="#d32f2f" font-family="Arial,sans-serif" font-size="28" font-weight="700">LOADED ENCLOSURE</text>
-</svg>

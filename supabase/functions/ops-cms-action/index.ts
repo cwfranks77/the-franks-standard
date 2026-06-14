@@ -8,51 +8,8 @@ const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.g
 const DEFAULT_BC_META = {
   title: 'B&C Performance Audio LLC | Competition Subwoofers & Car Audio Amplifiers',
   description: 'Shop competition subwoofers, monoblock amplifiers, Sundown, Kicker, Rockford Fosgate, and Taramps from B&C Performance Audio LLC.',
-  image: 'https://www.bcpoweraudio.com/img/hero-showcase-v2.svg',
-  parentCompany: 'B&C Performance Audio LLC',
-  url: 'https://www.bcpoweraudio.com',
-}
-
-const DEFAULT_ANTIQUE_LEDGER = {
-  items: [
-    {
-      id: 'antique-01',
-      title: 'Vintage Cast Iron Mechanical Bank',
-      purchase_price: 45,
-      sale_price: 175,
-      collected_sales_tax: 7.79,
-      income_tax_reserve: 32.5,
-    },
-  ],
-}
-
-const DEFAULT_PRIVATE_TXN_LEDGER = {
-  transactions: [
-    {
-      id: 'tx-demo-stripe-1',
-      date: '2026-06-11 14:22',
-      account: 'STRIPE-REVENUE',
-      desc: 'PETRA-DEN-4K9CH Consumer Invoice Settlement',
-      amount: '+$1,394.45',
-      isCredit: true,
-    },
-    {
-      id: 'tx-demo-tax-1',
-      date: '2026-06-11 09:15',
-      account: 'LA-TAX-RESERVE',
-      desc: 'Quarterly State Sales Tax Allocation Escrow',
-      amount: '-$240.10',
-      isCredit: false,
-    },
-    {
-      id: 'tx-demo-wholesale-1',
-      date: '2026-06-11 11:30',
-      account: 'MERCURY-BANK',
-      desc: 'Petra Distribution Wholesaler Ledger Clearing',
-      amount: '-$899.60',
-      isCredit: false,
-    },
-  ],
+  image: 'https://www.bcpoweraudio.com/franks-pavilion.png',
+  parentCompany: 'The Franks Standard LLC',
 }
 
 const DEFAULT_BC_THEME = {
@@ -61,12 +18,6 @@ const DEFAULT_BC_THEME = {
   accentBright: '#ff5252',
   bg: '#0a0a0c',
   bgCard: '#16161c',
-}
-
-function isSiteMarketingTableMissing (error: { message?: string } | null): boolean {
-  const msg = String(error?.message || '').toLowerCase()
-  return msg.includes('site_marketing_content') &&
-    (msg.includes('schema cache') || msg.includes('does not exist') || msg.includes('pgrst'))
 }
 
 Deno.serve(async (req) => {
@@ -94,12 +45,7 @@ Deno.serve(async (req) => {
 
   if (action === 'get_site_content') {
     const keysRaw = body.keys ? String(body.keys).split(',').map((k) => k.trim()).filter(Boolean) : []
-    const defaults: Record<string, unknown> = {
-      bcMeta: DEFAULT_BC_META,
-      bcTheme: DEFAULT_BC_THEME,
-      antiqueLedger: DEFAULT_ANTIQUE_LEDGER,
-      privateTxnLedger: DEFAULT_PRIVATE_TXN_LEDGER,
-    }
+    const defaults: Record<string, unknown> = { bcMeta: DEFAULT_BC_META, bcTheme: DEFAULT_BC_THEME }
     const wanted = keysRaw.length ? keysRaw : Object.keys(defaults)
     const out: Record<string, unknown> = {}
     for (const key of wanted) out[key] = defaults[key] ?? {}
@@ -109,26 +55,9 @@ Deno.serve(async (req) => {
       .select('content_key, payload')
       .in('content_key', wanted)
 
-    if (error && !isSiteMarketingTableMissing(error)) return json({ error: error.message }, 500)
+    if (error) return json({ error: error.message }, 500)
     for (const row of data || []) {
-      const key = row.content_key
-      const base = (defaults[key] as Record<string, unknown>) || {}
-      const payload = (row.payload || {}) as Record<string, unknown>
-      if (key === 'antiqueLedger') {
-        out.antiqueLedger = {
-          items: Array.isArray(payload.items) ? payload.items : (base.items as unknown[]) || [],
-        }
-        continue
-      }
-      if (key === 'privateTxnLedger') {
-        out.privateTxnLedger = {
-          transactions: Array.isArray(payload.transactions)
-            ? payload.transactions
-            : (base.transactions as unknown[]) || [],
-        }
-        continue
-      }
-      out[key] = { ...base, ...payload }
+      out[row.content_key] = { ...(defaults[row.content_key] as object || {}), ...(row.payload || {}) }
     }
     return json(out)
   }
@@ -144,15 +73,7 @@ Deno.serve(async (req) => {
       payload,
       updated_at: new Date().toISOString(),
     }, { onConflict: 'content_key' })
-    if (error) {
-      if (isSiteMarketingTableMissing(error)) {
-        return json({
-          error: 'owner_storage_not_ready',
-          hint: 'Cloud storage is still starting. Wait 2 minutes, click Reload, then Save again.',
-        }, 503)
-      }
-      return json({ error: error.message }, 500)
-    }
+    if (error) return json({ error: error.message }, 500)
     return json({ ok: true, contentKey })
   }
 

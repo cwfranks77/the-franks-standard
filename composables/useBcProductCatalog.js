@@ -1,7 +1,3 @@
-import { filterBcAudioProducts } from '~/utils/bcAudioOnlyCatalog.js'
-import { bcPlaceholderImageForProduct, resolveBcProductImage } from '~/utils/bcProductImage.js'
-import { bcProductShelfCategory } from '~/utils/bcProductShelfCategory.js'
-
 /**
  * Load B&C product rows at runtime from /catalog/petra-products.json.
  * Keeps large catalogs and remote image URLs out of the JS bundle.
@@ -14,16 +10,15 @@ export function useBcProductCatalog () {
     retry: 2,
   })
 
-  const products = computed(() => filterBcAudioProducts(data.value?.products || []))
+  const products = computed(() => data.value?.products || [])
 
   const megastoreItems = computed(() =>
     products.value.map((item) => ({
       id: item.id,
       name: item.name,
-      category: bcProductShelfCategory(item),
+      category: item.category,
       brand: item.brand || item.category,
-      image: resolveBcProductImage(item),
-      fallbackImage: bcPlaceholderImageForProduct(item),
+      image: item.image || '',
       tagline: item.description,
       retailPrice: item.price,
       badge: item.inStock === false ? 'Out of stock' : '',
@@ -38,10 +33,9 @@ export function useBcProductCatalog () {
     return {
       id: hit.id,
       name: hit.name,
-      category: bcProductShelfCategory(hit),
+      category: hit.category,
       brand: hit.brand || hit.category,
-      image: resolveBcProductImage(hit),
-      fallbackImage: bcPlaceholderImageForProduct(hit),
+      image: hit.image || '',
       tagline: hit.description,
       description: hit.description,
       retailPrice: hit.price,

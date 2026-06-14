@@ -15,10 +15,10 @@ const path = require('node:path')
 const SITE_URL = (process.env.NUXT_PUBLIC_SITE_URL || 'https://thefranksstandard.com').replace(/\/$/, '')
 const BC_PRIMARY_SITE = /bcpoweraudio\.com/i.test(SITE_URL)
 const PHONE_DISPLAY = BC_PRIMARY_SITE
-  ? (process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_PHONE || '(833) 722-4147')
+  ? (process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_PHONE || '1-866-319-8547')
   : (process.env.NUXT_PUBLIC_CUSTOMER_SERVICE_PHONE || '(877) 837-0527')
 const PHONE_TEL = BC_PRIMARY_SITE
-  ? (process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL || '+18337224147')
+  ? (process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL || '+18663198547')
   : ('+1' + PHONE_DISPLAY.replace(/\D+/g, '').replace(/^1/, ''))
 const SUPPORT_EMAIL = BC_PRIMARY_SITE
   ? (process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_EMAIL || 'bc-audio@bcpoweraudio.com')
@@ -55,8 +55,11 @@ const SHARED_FOOTER = `
 // Boot HTML stays visible until Nuxt mounts (see plugins/0.remove-static-fallback.client.ts).
 const EARLY_HIDE_SCRIPT = ''
 
-// SEO fallback HTML stays in the document for crawlers — never show the old splash on screen.
-const BC_BOOT_VISIBLE = `html,body{margin:0;background:#0a0a0a}
+const BC_BOOT_VISIBLE = BC_PRIMARY_SITE
+  ? `html,body{margin:0;background:#0a0a0a}
+#fss-static-boot{position:fixed;inset:0;z-index:9999;min-height:100vh;overflow:auto;color:#f5f5f5;background:#0a0a0a;padding:1rem 1.25rem 2rem}
+.fss-static-aur{background:radial-gradient(ellipse 80% 50% at 0% 0%,rgba(211,47,47,.22) 0%,transparent 50%),radial-gradient(ellipse 60% 40% at 100% 10%,rgba(255,82,82,.12) 0%,transparent 45%),linear-gradient(180deg,#0a0a0a 0%,#141414 100%)}`
+  : `/* Hidden from view — HTML stays in page source for crawlers */
 #fss-static-boot{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;pointer-events:none!important;opacity:0!important}
 #fss-static-boot a{pointer-events:none!important}`
 

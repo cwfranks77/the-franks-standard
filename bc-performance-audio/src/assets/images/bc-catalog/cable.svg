@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Audio cable">
-  <rect width="600" height="600" fill="#0d0d0d"/>
-  <path d="M120 300 C200 220, 260 380, 340 300 S480 220, 480 300" fill="none" stroke="#d32f2f" stroke-width="14" stroke-linecap="round"/>
-  <rect x="88" y="272" width="48" height="56" rx="10" fill="#1a1a1a" stroke="#d32f2f" stroke-width="4"/>
-  <rect x="464" y="272" width="48" height="56" rx="10" fill="#1a1a1a" stroke="#d32f2f" stroke-width="4"/>
-  <text x="300" y="500" text-anchor="middle" fill="#d32f2f" font-family="Arial,sans-serif" font-size="28" font-weight="700">AUDIO CABLE</text>
-</svg>

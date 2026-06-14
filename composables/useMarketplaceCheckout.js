@@ -11,9 +11,6 @@ const CHECKOUT_ERROR_MESSAGES = {
   invalid_listing_price: 'This listing has an invalid price.',
   order_create_failed: 'Could not start checkout (orders database). Run supabase/migrations/003_stripe_payments.sql in Supabase SQL Editor, then try again.',
   method_not_allowed: 'Checkout service error. Try again in a moment.',
-  buyer_policies_not_accepted: 'Sign the buyer agreement on this page before your first purchase.',
-  checkout_ack_required: 'Check the checkout acknowledgment box before paying.',
-  checkout_ack_record_failed: 'Checkout could not start — acknowledgment could not be saved. Try again or contact support.',
 }
 
 function friendlyCheckoutError (raw, detail) {
@@ -55,7 +52,7 @@ export function useMarketplaceCheckout () {
   const loading = ref(false)
   const error = ref('')
 
-  async function startCheckout (listingId, options = {}) {
+  async function startCheckout (listingId) {
     if (!import.meta.client) return
     loading.value = true
     error.value = ''
@@ -67,12 +64,7 @@ export function useMarketplaceCheckout () {
       }
 
       const { data, error: fnError } = await supabase.functions.invoke('create-checkout-session', {
-        body: {
-          listing_id: listingId,
-          checkout_ack_version: options.ackVersion || null,
-          checkout_ack_hash: options.ackHash || null,
-          serialized_coa_serial: options.serializedCoaSerial || null,
-        },
+        body: { listing_id: listingId },
       })
 
       if (fnError) {

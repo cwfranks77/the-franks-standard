@@ -1,7 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { assertAccountNotFrozen } from '../_shared/sellerAccountFreeze.ts'
 import { assertSellerNotOnIntegrityHold } from '../_shared/sellerIntegrityHold.ts'
-import { assertBuyerPoliciesAccepted, CURRENT_CHECKOUT_ACK_VERSION } from '../_shared/buyerPolicyAcceptance.ts'
 import { assertSellerPoliciesAccepted } from '../_shared/sellerPolicyAcceptance.ts'
 import { calcCharitySplit, calcDropshipSplit, calcFees, corsHeaders, json, siteUrl, stripeClient } from '../_shared/stripe.ts'
 import { marketplaceListingTaxOptions, stripeTaxEnabled, TAX_CODE_TANGIBLE } from '../_shared/stripeTax.ts'
@@ -32,23 +31,10 @@ Deno.serve(async (req) => {
       return json({ error: 'unauthorized' }, 401)
     }
 
-    const body = await req.json().catch(() => ({})) as {
-      listing_id?: string
-      checkout_ack_version?: string
-      checkout_ack_hash?: string
-      serialized_coa_serial?: string | null
-    }
+    const body = await req.json().catch(() => ({})) as { listing_id?: string }
     const listingId = String(body.listing_id ?? '').trim()
     if (!listingId) {
       return json({ error: 'listing_id_required' }, 400)
-    }
-
-    const checkoutAckVersion = String(body.checkout_ack_version ?? '').trim()
-    if (checkoutAckVersion !== CURRENT_CHECKOUT_ACK_VERSION) {
-      return json({
-        error: 'checkout_ack_required',
-        message: 'Check the checkout acknowledgment box on the listing page before paying.',
-      }, 400)
     }
 
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, { auth: { persistSession: false } })
@@ -58,14 +44,9 @@ Deno.serve(async (req) => {
       return json({ error: buyerFreeze.error, message: buyerFreeze.message }, 403)
     }
 
-    const buyerPolicies = await assertBuyerPoliciesAccepted(admin, user.id)
-    if (!buyerPolicies.ok) {
-      return json({ error: buyerPolicies.error, message: buyerPolicies.message }, 403)
-    }
-
     const { data: listing, error: listingError } = await admin
       .from('listings')
-      .select('id, title, price, status, seller_id, integrity_status, listing_mode, dropship_wholesale_cost, donate_proceeds, charity_key, charity_name, charity_percent, sale_type, starting_bid, current_bid, current_bidder_id, reserve_price, auction_ends_at, buy_now_price, bid_count, coa_type, coa_serial_number')
+      .select('id, title, price, status, seller_id, integrity_status, listing_mode, dropship_wholesale_cost, donate_proceeds, charity_key, charity_name, charity_percent, sale_type, starting_bid, current_bid, current_bidder_id, reserve_price, auction_ends_at, buy_now_price, bid_count')
       .eq('id', listingId)
       .eq('status', 'published')
       .maybeSingle()
@@ -248,24 +229,6 @@ Deno.serve(async (req) => {
 
     if (orderError || !order) {
       return json({ error: 'order_create_failed', detail: orderError?.message }, 500)
-    }
-
-    const listingCoaType = String((listing as { coa_type?: string }).coa_type ?? '')
-    const serializedCoaSerial = listingCoaType === 'franks_issued'
-      ? String(body.serialized_coa_serial ?? (listing as { coa_serial_number?: string }).coa_serial_number ?? '').trim() || null
-      : null
-
-    const { error: ackError } = await admin.from('buyer_order_acknowledgments').insert({
-      buyer_id: user.id,
-      listing_id: listing.id,
-      order_id: order.id,
-      ack_version: checkoutAckVersion,
-      serialized_coa_serial: serializedCoaSerial,
-      ack_text_sha256: String(body.checkout_ack_hash ?? '').trim() || null,
-    })
-    if (ackError) {
-      await admin.from('orders').update({ status: 'cancelled', escrow_status: 'none' }).eq('id', order.id)
-      return json({ error: 'checkout_ack_record_failed', detail: ackError.message }, 500)
     }
 
     if (buyNowCheckout) {
