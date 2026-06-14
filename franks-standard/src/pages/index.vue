@@ -1737,20 +1737,29 @@ async function handleBuyNow () {
   }
 
   .portal-nav {
-    grid-template-columns: auto 1fr;
+    grid-template-columns: 1fr;
     justify-items: center;
+    gap: 0.65rem;
+    padding-top: 0.65rem;
+    padding-bottom: 0.85rem;
   }
 
   .portal-nav__brand {
-    justify-self: start;
+    justify-self: center;
     grid-row: 1;
     grid-column: 1;
   }
 
+  .portal-nav__logo-img {
+    max-height: 44px;
+    height: auto;
+  }
+
   .portal-nav__headline {
-    grid-row: 1;
-    grid-column: 1 / -1;
+    grid-row: 2;
+    grid-column: 1;
     justify-self: center;
+    width: 100%;
   }
 
   .portal-nav__balance {

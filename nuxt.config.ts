@@ -87,6 +87,7 @@ const bcPagesFromProjectFolder = [
   bcPage('sms-consent.vue', '/bc-audio/sms-consent'),
   bcPage('ops/index.vue', '/bc-audio/ops'),
   bcPage('ops/panel.vue', '/bc-audio/ops/panel'),
+  bcPage('ops/marketing-automation.vue', '/bc-audio/ops/marketing-automation'),
   bcPage('product/[id].vue', '/bc-audio/product/:id'),
 ]
 

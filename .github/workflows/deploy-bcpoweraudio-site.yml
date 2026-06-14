@@ -8,6 +8,9 @@ on:
     paths:
       - 'pages/bc-audio/**'
       - 'bc-performance-audio/src/pages/**'
+      - 'bc-performance-audio/src/components/**'
+      - 'bc-performance-audio/src/utils/**'
+      - 'franks-standard/src/pages/index.vue'
       - 'pages/index.vue'
       - 'content/**'
       - 'src/content/**'

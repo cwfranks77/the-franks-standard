@@ -150,8 +150,8 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 .bc-nav__inner {
   max-width: 80rem;
   margin: 0 auto;
-  padding: 3px 1.25rem 0;
-  min-height: 64px;
+  padding: 0.5rem 1.25rem;
+  min-height: 68px;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -166,14 +166,15 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   text-decoration: none;
   color: #f5f5f7;
   flex-shrink: 0;
-  transform: translateY(-2px);
+  max-height: 52px;
 }
 .bc-nav__brand:hover { color: #ff5252; }
 .bc-nav__logo-img {
   display: block;
   width: auto;
-  max-width: min(260px, 62vw);
-  height: 56px;
+  max-width: min(220px, 58vw);
+  max-height: 48px;
+  height: auto;
   object-fit: contain;
 }
 .bc-nav__actions {

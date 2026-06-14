@@ -3,6 +3,11 @@ import { BC_BRAND } from '~/utils/bcBrand.js'
 import { getBcSupport } from '~/utils/bcSupport.js'
 import { BC_META_DEFAULTS } from '~/utils/bcMetaDefaults.js'
 import { getStoredOpsPhrase } from '~/utils/opsClientAuth'
+import {
+  BC_PLATFORM_LINKS,
+  summarizeBcOrders,
+  ordersToPrintableText,
+} from '~/utils/bcMarketingAutomation.js'
 
 definePageMeta({
   layout: 'bc-audio',
@@ -40,9 +45,12 @@ const tabs = [
   { id: 'store', label: 'Store & products' },
   { id: 'seo', label: 'SEO & homepage text' },
   { id: 'theme', label: 'Colors & theme' },
+  { id: 'activity', label: 'Sales & activity' },
   { id: 'orders', label: 'Orders' },
   { id: 'tools', label: 'Fix problems' },
 ]
+
+const orderSummary = computed(() => summarizeBcOrders(orders.value))
 
 async function loadSeo () {
   seoLoading.value = true
@@ -129,8 +137,19 @@ function clearSiteCache () {
   }
 }
 
+function printOrderSummary () {
+  if (!import.meta.client) return
+  const text = ordersToPrintableText(orderSummary.value)
+  const w = window.open('', '_blank', 'width=720,height=640')
+  if (!w) return
+  w.document.write(`<pre style="font:12px/1.5 monospace;padding:16px;white-space:pre-wrap">${text.replace(/</g, '&lt;')}</pre>`)
+  w.document.close()
+  w.focus()
+  w.print()
+}
+
 watch(tab, (t) => {
-  if (t === 'orders') loadOrders()
+  if (t === 'orders' || t === 'activity') loadOrders()
   if (t === 'seo') loadSeo()
 })
 
@@ -154,6 +173,12 @@ useSeoMeta({
       </div>
       <button type="button" class="btn btn-outline btn-sm" @click="signOut">Sign out</button>
     </header>
+
+    <div class="bc-panel__promo">
+      <NuxtLink to="/bc-audio/ops/marketing-automation" class="btn btn-primary btn-sm">
+        Marketing automation — weekly posts &amp; video ads
+      </NuxtLink>
+    </div>
 
     <nav class="bc-panel__tabs" aria-label="Owner console sections">
       <button
@@ -229,6 +254,47 @@ useSeoMeta({
       </div>
     </section>
 
+  <!-- ACTIVITY -->
+    <section v-show="tab === 'activity'" class="bc-panel__section">
+      <h2>Sales &amp; activity</h2>
+      <p class="bc-panel__note">Order totals from checkout. Bank deposits show in Stripe — match payout dates to these orders for tax filing.</p>
+      <button type="button" class="btn btn-outline btn-sm" :disabled="ordersLoading" @click="loadOrders">
+        {{ ordersLoading ? 'Loading…' : 'Refresh' }}
+      </button>
+      <p v-if="ordersError" class="bc-alert bc-alert--err">{{ ordersError }}</p>
+      <div v-if="!ordersLoading" class="bc-activity-stats">
+        <div class="bc-stat">
+          <span class="bc-stat__label">Orders</span>
+          <strong class="bc-stat__value">{{ orderSummary.count }}</strong>
+        </div>
+        <div class="bc-stat">
+          <span class="bc-stat__label">Checkout total</span>
+          <strong class="bc-stat__value">{{ orderSummary.grossDisplay }}</strong>
+        </div>
+        <div class="bc-stat">
+          <span class="bc-stat__label">25% tax reserve</span>
+          <strong class="bc-stat__value">{{ orderSummary.taxReserveDisplay }}</strong>
+        </div>
+        <div class="bc-stat">
+          <span class="bc-stat__label">After reserve</span>
+          <strong class="bc-stat__value">{{ orderSummary.operatingDisplay }}</strong>
+        </div>
+      </div>
+      <div class="bc-panel__actions">
+        <button type="button" class="btn btn-outline btn-sm" :disabled="!orders.length" @click="printOrderSummary">
+          Print tax &amp; order summary
+        </button>
+        <a :href="BC_PLATFORM_LINKS.stripe_dashboard" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">Open Stripe ↗</a>
+        <a :href="BC_PLATFORM_LINKS.stripe_payouts" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">Stripe payouts ↗</a>
+        <a :href="BC_PLATFORM_LINKS.mercury_dashboard" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">Mercury bank ↗</a>
+      </div>
+      <p class="bc-panel__note bc-muted small">
+        For Google traffic: set up Search Console at
+        <a :href="BC_PLATFORM_LINKS.search_console" target="_blank" rel="noopener noreferrer">search.google.com/search-console</a>
+        — full checklist is in Marketing automation.
+      </p>
+    </section>
+
   <!-- ORDERS -->
     <section v-show="tab === 'orders'" class="bc-panel__section">
       <h2>Recent orders</h2>
@@ -279,6 +345,7 @@ useSeoMeta({
         <button type="button" class="btn btn-outline btn-sm" @click="clearSiteCache">Clear cache &amp; reload</button>
         <NuxtLink to="/bc-audio" class="btn btn-outline btn-sm">Open storefront</NuxtLink>
         <NuxtLink to="/bc-audio/open-door" class="btn btn-outline btn-sm">Open Door page</NuxtLink>
+        <NuxtLink to="/bc-audio/ops/marketing-automation" class="btn btn-outline btn-sm">Marketing automation</NuxtLink>
       </div>
     </section>
   </div>
@@ -290,6 +357,14 @@ useSeoMeta({
 .bc-panel__eyebrow { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.14em; color: #ff5252; margin: 0 0 6px; }
 .bc-panel__head h1 { font-size: 1.6rem; margin: 0 0 8px; }
 .bc-panel__sub { color: #9ca3af; font-size: 0.92rem; margin: 0; max-width: 36rem; line-height: 1.5; }
+.bc-panel__promo { margin-bottom: 1rem; }
+.bc-activity-stats { display: flex; flex-wrap: wrap; gap: 1rem; margin: 14px 0; }
+.bc-stat {
+  padding: 12px 16px; border-radius: 10px; border: 1px solid rgba(211,47,47,0.25);
+  background: rgba(211,47,47,0.08); min-width: 120px;
+}
+.bc-stat__label { display: block; font-size: 0.72rem; text-transform: uppercase; color: #9ca3af; margin-bottom: 4px; }
+.bc-stat__value { font-size: 1.35rem; color: #ff5252; }
 .bc-panel__tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1.25rem; }
 .bc-panel__tab {
   padding: 8px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.12);
