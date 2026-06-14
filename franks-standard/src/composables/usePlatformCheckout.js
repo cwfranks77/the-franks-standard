@@ -1,0 +1,103 @@
+/** Platform fee checkout via create-platform-checkout-session (Pro, listing fee, tax smoke). */
+const PLATFORM_CHECKOUT_ERRORS = {
+  unauthorized: 'Sign in again, then try checkout.',
+  checkout_type_required: 'Checkout type missing.',
+  fee_amount_not_configured: 'Fee amount is not configured in Supabase Edge secrets.',
+  method_not_allowed: 'Checkout service error. Try again in a moment.',
+}
+
+function friendlyPlatformError (raw, detail) {
+  const code = String(raw || '').trim()
+  if (PLATFORM_CHECKOUT_ERRORS[code]) {
+    return detail ? `${PLATFORM_CHECKOUT_ERRORS[code]} (${detail})` : PLATFORM_CHECKOUT_ERRORS[code]
+  }
+  if (/tax/i.test(code)) {
+    return 'Sales tax is calculated at checkout from your billing address.'
+  }
+  return code || detail || 'Checkout could not start.'
+}
+
+async function parseFunctionError (fnError, data) {
+  if (data?.error) return friendlyPlatformError(data.error, data.detail)
+  const ctx = fnError?.context
+  if (ctx && typeof ctx.json === 'function') {
+    try {
+      const body = await ctx.json()
+      if (body?.error) return friendlyPlatformError(body.error, body.detail)
+    } catch { /* ignore */ }
+  }
+  const msg = fnError?.message || ''
+  if (msg && !/non-2xx/i.test(msg)) return msg
+  return friendlyPlatformError('checkout_failed')
+}
+
+const PAY_LINK_TO_CHECKOUT = {
+  list: 'listing_fee',
+  pro: 'pro',
+}
+
+export function usePlatformCheckout () {
+  const config = useRuntimeConfig()
+  const supabase = useSupabaseClient()
+  const router = useRouter()
+  const route = useRoute()
+  const loading = ref(false)
+  const error = ref('')
+
+  const checkoutEnabled = computed(() => String(config.public.stripeCheckoutEnabled ?? 'true') !== 'false')
+  const taxCheckoutEnabled = computed(() => String(config.public.stripeTaxCheckoutEnabled ?? 'true') !== 'false')
+
+  function usesTaxCheckout (key) {
+    if (!checkoutEnabled.value || !taxCheckoutEnabled.value) return false
+    return key === 'list' || key === 'pro'
+  }
+
+  function resolveCheckoutType (typeOrKey) {
+    const raw = String(typeOrKey || '').trim()
+    return PAY_LINK_TO_CHECKOUT[raw] || raw
+  }
+
+  async function startCheckout (typeOrKey) {
+    if (!import.meta.client) return
+    loading.value = true
+    error.value = ''
+    const checkoutType = resolveCheckoutType(typeOrKey)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        const redirect = route.fullPath || '/pay'
+        await router.push({ path: '/auth/login', query: { redirect } })
+        return
+      }
+
+      const { data, error: fnError } = await supabase.functions.invoke('create-platform-checkout-session', {
+        body: { checkout_type: checkoutType },
+      })
+
+      if (fnError) {
+        throw new Error(await parseFunctionError(fnError, data))
+      }
+      if (data?.error) {
+        throw new Error(friendlyPlatformError(data.error, data.detail))
+      }
+      if (!data?.url) {
+        throw new Error('No checkout URL returned. Confirm create-platform-checkout-session is deployed.')
+      }
+      window.location.assign(data.url)
+    } catch (e) {
+      error.value = e?.message || 'Checkout failed'
+      console.error('[platform-checkout]', error.value, e)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  return {
+    loading,
+    error,
+    checkoutEnabled,
+    taxCheckoutEnabled,
+    usesTaxCheckout,
+    startCheckout,
+  }
+}

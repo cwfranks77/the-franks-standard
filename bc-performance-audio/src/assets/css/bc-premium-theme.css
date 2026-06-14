@@ -1,0 +1,20 @@
+/*
+ * B&C Performance Audio — scoped premium theme (#d32f2f)
+ * Applies ONLY inside the bc-audio layout shell, not site-wide.
+ */
+
+.bc-audio-shell {
+  --bc-red: #d32f2f;
+  --bc-red-bright: #ff5252;
+  --bc-red-glow: rgba(211, 47, 47, 0.45);
+  --bc-bg: #0a0a0c;
+  --bc-bg-card: #16161c;
+  --bc-ink: #f5f5f7;
+  --bc-ink-soft: #b8bcc6;
+}
+
+.bc-audio-shell,
+.bc-audio-shell .bc-audio-main {
+  background: var(--bc-bg);
+  color: var(--bc-ink);
+}

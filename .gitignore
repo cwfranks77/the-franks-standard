@@ -14,6 +14,10 @@ apps/android/build
 .env.supabase-secrets
 dist
 .DS_Store
+/utils/
+/composables/
+/assets/css/
+/assets/email-campaign/
 .vercel
 franks-standard-credentials/
 .cursor/
