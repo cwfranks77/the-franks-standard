@@ -28,6 +28,19 @@ const bcPrerenderRoutes = bcPrimarySite
       '/bc-audio/sms-consent',
     ]
   : []
+const bcPrimaryPrerenderRoutes = [
+  ...bcPrerenderRoutes,
+  '/bc-audio/ops',
+  '/bc-audio/ops/panel',
+  '/bc-audio/ops/marketing-automation',
+]
+const franksPrerenderRoutes = [
+  '/ops/documents',
+  '/ops/print-pack',
+  '/ops/print-coa',
+  '/verify/coa',
+  ...bcPrerenderRoutes,
+]
 const rawOg = process.env.NUXT_PUBLIC_OG_IMAGE
 const ogImage = (rawOg && String(rawOg).trim())
   ? String(rawOg).trim()
@@ -126,13 +139,7 @@ export default defineNuxtConfig({
       '#bc-server-utils': resolve(rootDir, 'bc-performance-audio/src/server/utils'),
     },
     prerender: {
-      routes: [
-        '/ops/documents',
-        '/ops/print-pack',
-        '/ops/print-coa',
-        '/verify/coa',
-        ...bcPrerenderRoutes,
-      ],
+      routes: bcPrimarySite ? bcPrimaryPrerenderRoutes : franksPrerenderRoutes,
     },
   },
 
@@ -189,6 +196,15 @@ export default defineNuxtConfig({
       const franksRoutes = bcPrimarySite ? filterFranksPagesForBcPrimary(franksPages) : franksPages
       for (const page of franksRoutes) {
         pages.push(page)
+      }
+      if (bcPrimarySite) {
+        for (let i = pages.length - 1; i >= 0; i--) {
+          const routePath = pages[i]?.path
+          if (!routePath) continue
+          if (routePath === '/') continue
+          if (routePath === '/bc-audio' || routePath.startsWith('/bc-audio/')) continue
+          pages.splice(i, 1)
+        }
       }
     },
     'vite:extendConfig' (viteInlineConfig) {

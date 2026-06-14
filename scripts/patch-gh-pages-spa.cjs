@@ -15,7 +15,7 @@ const BC_HTTPS_UPGRADE = bcPrimarySite
   ? '<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">'
   : ''
 const BC_HOME_REDIRECT = bcPrimarySite
-  ? `<script id="bc-storefront-home">(function(){var h=location.hostname.toLowerCase(),p=location.pathname+location.search+location.hash,w='www.bcpoweraudio.com';if(location.protocol==='http:'){location.replace('https://'+(h==='bcpoweraudio.com'?w:h)+p);return}if(h==='bcpoweraudio.com'){location.replace('https://'+w+p);return}if(p==='/bc-audio'||p==='/bc-audio/')location.replace('/'+location.search+location.hash)})();</script>`
+  ? `<script id="bc-storefront-home">(function(){var h=location.hostname.toLowerCase(),p=location.pathname+location.search+location.hash,pathOnly=location.pathname||'/',w='www.bcpoweraudio.com';try{var s=sessionStorage.getItem('ghSpaRedirect');if((pathOnly==='/'||pathOnly==='/index.html')&&s&&s!=='/'&&!s.startsWith('/bc-audio'))sessionStorage.removeItem('ghSpaRedirect')}catch(e){}if(location.protocol==='http:'){location.replace('https://'+(h==='bcpoweraudio.com'?w:h)+p);return}if(h==='bcpoweraudio.com'){location.replace('https://'+w+p);return}if(p==='/bc-audio'||p==='/bc-audio/')location.replace('/'+location.search+location.hash)})();</script>`
   : ''
 /** Hide the pre-JS SEO splash immediately — real storefront replaces #__nuxt when Vue mounts. */
 const BC_INSTANT_SHELL = bcPrimarySite
