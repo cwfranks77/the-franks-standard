@@ -16,7 +16,178 @@ export const PLATFORM_LINKS = {
   facebook: 'https://www.facebook.com/',
   search_console: 'https://search.google.com/search-console',
   bing: 'https://www.bing.com/webmasters',
+  youtube_studio: 'https://studio.youtube.com/channel/UC/videos/upload?d=ud',
+  youtube_channel: 'https://www.youtube.com/',
+  google_business: 'https://business.google.com/',
+  google_ads: 'https://ads.google.com/',
+  pinterest: 'https://www.pinterest.com/pin-creation-tool/',
+  indexnow: 'https://www.indexnow.org/documentation',
+  lob_postcards: 'https://dashboard.lob.com/register',
+  lob_dashboard: 'https://dashboard.lob.com/',
+  capcut: 'https://www.capcut.com/',
+  canva_video: 'https://www.canva.com/create/videos/',
 }
+
+/** Where to register the site so Google, YouTube, and others can find you. */
+export const VISIBILITY_DESTINATIONS = [
+  {
+    id: 'google-search-console',
+    label: 'Google Search Console',
+    why: 'Tells Google your site exists and lets you request indexing.',
+    url: PLATFORM_LINKS.search_console,
+    steps: `Add property ${SITE_URL} → verify → Sitemaps → submit ${SITE_URL}/sitemap.xml → URL Inspection → Request indexing for /, /sell, /browse`,
+  },
+  {
+    id: 'bing-webmaster',
+    label: 'Bing / Yahoo search',
+    why: 'Bing powers Yahoo and Copilot search results.',
+    url: PLATFORM_LINKS.bing,
+    steps: `Import from Google or add ${SITE_URL} manually → submit same sitemap`,
+  },
+  {
+    id: 'google-business',
+    label: 'Google Business Profile',
+    why: 'Shows your business on Google Maps and local search.',
+    url: PLATFORM_LINKS.google_business,
+    steps: 'Create profile for The Franks Standard LLC · add website, phone (877) 837-0527, category Online marketplace',
+  },
+  {
+    id: 'youtube-channel',
+    label: 'YouTube channel',
+    why: 'Shorts and explainers rank in Google video results.',
+    url: PLATFORM_LINKS.youtube_channel,
+    steps: 'Create channel → About → link thefranksstandard.com → upload Shorts from AI Video Ad Builder below',
+  },
+  {
+    id: 'google-ads',
+    label: 'Google Ads',
+    why: 'Paid search when organic ranking is still building.',
+    url: PLATFORM_LINKS.google_ads,
+    steps: 'Start $10/day search campaign · keywords: authenticated sports cards, COA marketplace, sell collectibles online',
+  },
+  {
+    id: 'pinterest',
+    label: 'Pinterest',
+    why: 'Collectibles and cards photos drive referral traffic.',
+    url: PLATFORM_LINKS.pinterest,
+    steps: 'Pin listing photos and /learn articles with link back to site',
+  },
+  {
+    id: 'reddit-ads',
+    label: 'Reddit Ads',
+    why: 'Reach r/sportscards, r/coins, r/EbaySeller communities.',
+    url: 'https://ads.reddit.com/',
+    steps: 'Traffic campaign · $5/day · link to /sell or /join/founders10',
+  },
+  {
+    id: 'radio-local',
+    label: 'Local radio / podcast pitch',
+    why: 'Lake Charles / SWLA stations and hobby podcasts accept owner stories.',
+    url: 'mailto:info@thefranksstandard.com',
+    steps: 'Use the radio pitch copy below → email station program director or podcast host',
+  },
+]
+
+export const POST_VIDEO_DESTINATIONS = [
+  { id: 'youtube', label: 'YouTube Shorts / video', url: PLATFORM_LINKS.youtube_studio },
+  { id: 'tiktok', label: 'TikTok', url: PLATFORM_LINKS.tiktok },
+  { id: 'instagram', label: 'Instagram Reel', url: PLATFORM_LINKS.instagram },
+  { id: 'facebook', label: 'Facebook Page video', url: 'https://www.facebook.com/' },
+  { id: 'linkedin', label: 'LinkedIn video', url: PLATFORM_LINKS.linkedin },
+]
+
+export const POSTCARD_MAIL_COPY = `THE FRANKS STANDARD — sell where proof is required
+
+SECURITY: COA + escrow · verify COA · enforcement in writing
+LOW FEES: 4–5% by plan (3% launch) — not 13%+ stacked
+PERKS: FOUNDERS10 · HONOR26 · AI store · eBay import
+
+thefranksstandard.com/sell · (877) 837-0527
+Charles Franks · The Franks Standard LLC`
+
+export const RADIO_PITCH_COPY = `Subject: Local marketplace founder — 60-second interview pitch
+
+Hi [Program Director / Host name],
+
+I'm Charles Franks, founder of The Franks Standard — a Louisiana-based online marketplace built so collectible sellers must show proof (COA or signed guarantee) before they list.
+
+I'd love 60 seconds on your show to explain:
+• Why buyers keep asking "is this real?" — and what we changed
+• Lower seller fees (4–5%) vs stacked marketplace fees
+• Free listing for local shops moving inventory online
+
+Phone: (877) 837-0527
+Site: thefranksstandard.com
+
+Happy to call in live or send a pre-recorded 30-second clip.
+
+Thank you,
+Charles Franks`
+
+/**
+ * Builds a ready-to-film 30s ad script + caption + upload links (no paid AI API — copy into CapCut/Canva or record on phone).
+ */
+const REEL_SCRIPT_IDEES_SAFE = REEL_SCRIPT_IDEAS.map((r) => ({
+  ...r,
+  topic: r.cta === '/protection' ? 'security' : r.cta === '/how-it-works' ? 'coa' : 'fees',
+}))
+
+export const VIDEO_AD_IDEAS = REEL_SCRIPT_IDEES_SAFE
+
+export function buildVideoAdPackage (ideaIndex = 0) {
+  const idea = REEL_SCRIPT_IDEES_SAFE[ideaIndex] || REEL_SCRIPT_IDEES_SAFE[0]
+  const ctaUrl = `${SITE_URL}${idea.cta.startsWith('/') ? idea.cta : `/${idea.cta}`}`
+  const caption = buildSocialCaption({
+    platform: 'tiktok',
+    format: 'short',
+    topic: idea.topic || 'fees',
+    ctaPath: idea.cta,
+  })
+
+  const script = [
+    `[0–3s HOOK — on screen text] ${idea.hook}`,
+    `[3–12s — voiceover + B-roll] ${idea.body}`,
+    `[12–25s — show site on phone] Escrow checkout · seller proof required · ${SITE_URL}`,
+    `[25–30s CTA] Tap link · List free at ${ctaUrl}`,
+  ].join('\n')
+
+  const scenes = [
+    { sec: '0–3', visual: 'Bold text hook on dark background', audio: idea.hook },
+    { sec: '3–12', visual: 'Screen record or stock: marketplace / COA scan', audio: idea.body },
+    { sec: '12–25', visual: 'Show phone on thefranksstandard.com/sell', audio: 'Explain proof + escrow in one sentence' },
+    { sec: '25–30', visual: 'Logo + URL + phone number', audio: 'Call to action — list free today' },
+  ]
+
+  return {
+    title: idea.hook.slice(0, 80),
+    script,
+    scenes,
+    caption,
+    ctaUrl,
+    editTools: [
+      { label: 'CapCut (free edit)', url: PLATFORM_LINKS.capcut },
+      { label: 'Canva video (free tier)', url: PLATFORM_LINKS.canva_video },
+    ],
+    postLinks: POST_VIDEO_DESTINATIONS,
+  }
+}
+
+export const VISIBILITY_PROGRESS_KEY = 'franks-visibility-progress-v1'
+
+export function loadVisibilityProgress () {
+  if (!import.meta.client) return {}
+  try {
+    return JSON.parse(localStorage.getItem(VISIBILITY_PROGRESS_KEY) || '{}')
+  } catch {
+    return {}
+  }
+}
+
+export function saveVisibilityProgress (progress) {
+  if (!import.meta.client) return
+  localStorage.setItem(VISIBILITY_PROGRESS_KEY, JSON.stringify(progress))
+}
+
 
 /** One post per weekday — matches ops/social-promo weekly rhythm. */
 export const WEEKLY_SLOTS = [

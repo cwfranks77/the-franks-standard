@@ -6,7 +6,7 @@
           <p class="eyebrow">Owner toolkit</p>
           <h1>Marketing automation</h1>
           <p class="text-muted lede">
-            Your weekly social, email, and SEO plan — generated automatically. Copy each post, mark it done, and save progress to the cloud.
+            Weekly posts, get-found on Google and YouTube, AI video ad scripts, email, and mailed flyers — all in one place.
           </p>
         </div>
         <NuxtLink to="/ops/panel" class="btn btn-outline btn-sm">← Operator console</NuxtLink>
@@ -43,6 +43,67 @@
           <button type="button" class="btn btn-outline btn-sm" @click="shiftWeek(-7)">← Last week</button>
           <button type="button" class="btn btn-outline btn-sm" @click="shiftWeek(7)">Next week →</button>
         </div>
+      </section>
+
+      <section class="mauto-card">
+        <h2>Get found — Google, YouTube, and more</h2>
+        <p class="text-muted small">Check each box when done. Progress saves on this device.</p>
+        <div v-for="dest in visibilityDestinations" :key="dest.id" class="mauto-dest" :class="{ 'mauto-dest--done': visibilityProgress[dest.id] }">
+          <label class="mauto-dest-check">
+            <input v-model="visibilityProgress[dest.id]" type="checkbox" @change="persistVisibility">
+            <span>
+              <strong>{{ dest.label }}</strong>
+              <span class="text-muted small"> — {{ dest.why }}</span>
+            </span>
+          </label>
+          <p class="text-muted small mauto-dest-steps">{{ dest.steps }}</p>
+          <a :href="dest.url" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">Open ↗</a>
+        </div>
+      </section>
+
+      <section class="mauto-card">
+        <h2>AI video ad builder</h2>
+        <p class="text-muted small">
+          Picks a script automatically. Paste into CapCut or Canva (free), export MP4, then upload using the post links.
+        </p>
+        <label class="mauto-field">
+          Video idea
+          <select v-model.number="videoIdeaIndex" class="select">
+            <option v-for="(idea, i) in videoAdIdeas" :key="i" :value="i">{{ idea.hook }}</option>
+          </select>
+        </label>
+        <div class="mauto-actions">
+          <button type="button" class="btn btn-primary btn-sm" @click="copyVideoScript">{{ videoScriptCopied ? 'Copied script' : 'Copy full script' }}</button>
+          <button type="button" class="btn btn-outline btn-sm" @click="copyVideoCaption">{{ videoCaptionCopied ? 'Copied caption' : 'Copy post caption' }}</button>
+        </div>
+        <pre class="mauto-caption">{{ videoPackage.script }}</pre>
+        <h3 class="mauto-subhead">Scene list (for filming or AI edit)</h3>
+        <ul class="mauto-scene-list">
+          <li v-for="(s, i) in videoPackage.scenes" :key="i"><strong>{{ s.sec }}s</strong> — {{ s.visual }} · {{ s.audio }}</li>
+        </ul>
+        <h3 class="mauto-subhead">Edit video (free tools)</h3>
+        <div class="mauto-actions">
+          <a v-for="tool in videoPackage.editTools" :key="tool.url" :href="tool.url" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">{{ tool.label }} ↗</a>
+        </div>
+        <h3 class="mauto-subhead">Post your video here</h3>
+        <div class="mauto-actions">
+          <a v-for="link in videoPackage.postLinks" :key="link.id" :href="link.url" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">{{ link.label }} ↗</a>
+        </div>
+      </section>
+
+      <section class="mauto-card">
+        <h2>Email campaigns and mailed flyers</h2>
+        <p class="text-muted small">Email opens your mail app. Flyers use Lob (test mode is free — no mail sent until you switch to live key).</p>
+        <div class="mauto-actions">
+          <button type="button" class="btn btn-primary btn-sm" @click="openBulkEmail">Open seller email draft</button>
+          <button type="button" class="btn btn-outline btn-sm" @click="copyPostcard">{{ postcardCopied ? 'Copied' : 'Copy postcard text' }}</button>
+          <a :href="platformLinks.lob_postcards" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">Set up Lob postcards ↗</a>
+          <a :href="platformLinks.lob_dashboard" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">Lob dashboard ↗</a>
+        </div>
+        <pre class="mauto-caption">{{ postcardCopy }}</pre>
+        <h3 class="mauto-subhead">Radio / podcast pitch</h3>
+        <button type="button" class="btn btn-outline btn-sm" @click="copyRadio">{{ radioCopied ? 'Copied' : 'Copy radio pitch email' }}</button>
+        <pre class="mauto-caption">{{ radioPitch }}</pre>
       </section>
 
       <section v-if="stats.dueToday.length" class="mauto-card mauto-today">
@@ -93,7 +154,7 @@
             Their email (optional — leave blank to pick in your mail app)
             <input v-model="emailTo" class="input" type="email" placeholder="shop@example.com">
           </label>
-          <pre class="mauto-caption">{{ task.bodyTemplate.replace('{{name}}', emailName || 'there') }}</pre>
+          <pre class="mauto-caption">{{ formatEmailPreview(task.bodyTemplate) }}</pre>
         </template>
 
         <template v-else-if="task.kind === 'seo'">
@@ -125,12 +186,19 @@
 import {
   MARKETING_QUEUE_KEY,
   PLATFORM_LINKS,
+  VISIBILITY_DESTINATIONS,
+  POSTCARD_MAIL_COPY,
+  RADIO_PITCH_COPY,
+  VIDEO_AD_IDEAS,
   allPendingCaptions,
+  buildVideoAdPackage,
   generateWeeklyQueue,
   loadLocalQueue,
+  loadVisibilityProgress,
   mergeQueuePreservingProgress,
   queueStats,
   saveLocalQueue,
+  saveVisibilityProgress,
   startOfWeek,
   buildSellerOutreachMailto,
 } from '~/utils/marketingAutomation.js'
@@ -149,6 +217,18 @@ const copyState = reactive({})
 const copiedAll = ref(false)
 const emailName = ref('')
 const emailTo = ref('')
+const visibilityDestinations = VISIBILITY_DESTINATIONS
+const visibilityProgress = reactive(loadVisibilityProgress())
+const videoAdIdeas = VIDEO_AD_IDEAS
+const videoIdeaIndex = ref(0)
+const videoScriptCopied = ref(false)
+const videoCaptionCopied = ref(false)
+const postcardCopy = POSTCARD_MAIL_COPY
+const radioPitch = RADIO_PITCH_COPY
+const postcardCopied = ref(false)
+const radioCopied = ref(false)
+
+const videoPackage = computed(() => buildVideoAdPackage(videoIdeaIndex.value))
 
 const stats = computed(() => queueStats(queue.value))
 
@@ -268,12 +348,59 @@ async function copyAllPending () {
   } catch {}
 }
 
+function formatEmailPreview (body) {
+  return String(body || '').replace(/\{\{name\}\}/g, emailName.value.trim() || 'there')
+}
+
 function openEmail (task) {
   const href = buildSellerOutreachMailto({ name: emailName.value, email: emailTo.value })
   window.location.href = href
 }
 
-onMounted(loadQueue)
+function openBulkEmail () {
+  window.location.href = buildSellerOutreachMailto({ name: emailName.value, email: emailTo.value })
+}
+
+function persistVisibility () {
+  saveVisibilityProgress({ ...visibilityProgress })
+}
+
+async function copyVideoScript () {
+  try {
+    await navigator.clipboard.writeText(videoPackage.value.script)
+    videoScriptCopied.value = true
+    setTimeout(() => { videoScriptCopied.value = false }, 2500)
+  } catch {}
+}
+
+async function copyVideoCaption () {
+  try {
+    await navigator.clipboard.writeText(videoPackage.value.caption)
+    videoCaptionCopied.value = true
+    setTimeout(() => { videoCaptionCopied.value = false }, 2500)
+  } catch {}
+}
+
+async function copyPostcard () {
+  try {
+    await navigator.clipboard.writeText(postcardCopy)
+    postcardCopied.value = true
+    setTimeout(() => { postcardCopied.value = false }, 2500)
+  } catch {}
+}
+
+async function copyRadio () {
+  try {
+    await navigator.clipboard.writeText(radioPitch)
+    radioCopied.value = true
+    setTimeout(() => { radioCopied.value = false }, 2500)
+  } catch {}
+}
+
+onMounted(() => {
+  loadQueue()
+  Object.assign(visibilityProgress, loadVisibilityProgress())
+})
 </script>
 
 <style scoped>
@@ -332,6 +459,17 @@ h1 { font-size: 1.75rem; margin: 0 0 8px; }
   margin-bottom: 10px; max-width: 320px;
 }
 .mauto-checklist { margin: 0; padding-left: 1.2rem; line-height: 1.65; color: var(--stone-200); }
+.mauto-subhead { font-size: 0.92rem; color: var(--gold); margin: 16px 0 8px; }
+.mauto-dest {
+  padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.mauto-dest--done { opacity: 0.65; }
+.mauto-dest-check {
+  display: flex; gap: 10px; align-items: flex-start; cursor: pointer; margin-bottom: 6px;
+}
+.mauto-dest-check input { margin-top: 4px; }
+.mauto-dest-steps { margin: 0 0 8px 1.6rem; }
+.mauto-scene-list { margin: 0; padding-left: 1.2rem; line-height: 1.6; color: var(--stone-200); font-size: 0.88rem; }
 .mauto-cmd-table { width: 100%; font-size: 0.85rem; border-collapse: collapse; }
 .mauto-cmd-table td { padding: 8px 4px; border-bottom: 1px solid rgba(255,255,255,0.06); vertical-align: top; }
 .mt-1 { margin-top: 10px; }
