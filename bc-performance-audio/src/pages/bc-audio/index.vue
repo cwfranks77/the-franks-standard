@@ -34,8 +34,11 @@ const selectedCategory = ref<DeptKey>('all')
 const checkoutBusy = ref(false)
 const checkoutSku = ref('')
 const checkoutTermsAccepted = ref(false)
-const { addItem, itemCount } = useCart()
-const { products, pending: catalogPending, error: catalogError, refresh: refreshCatalog } = useBcProductCatalog()
+const cartAddedId = ref('')
+const checkoutNoteById = ref<Record<string, string>>({})
+let cartAddedTimer: ReturnType<typeof setTimeout> | null = null
+const { addItem } = useCart()
+const { products, pending: catalogPending, refresh: refreshCatalog } = useBcProductCatalog()
 
 onMounted(() => {
   refreshCatalog()
@@ -170,28 +173,49 @@ function onCategoryChange () {
 
 watch(() => route.query.dept, syncCategoryFromRoute)
 
+function cartBtnText (product: any) {
+  return cartAddedId.value === getProductId(product) ? 'Added' : 'Add To Cart'
+}
+
+function checkoutNote (product: any) {
+  return checkoutNoteById.value[getProductId(product)] || ''
+}
+
+function flashCartAdded (product: any) {
+  cartAddedId.value = getProductId(product)
+  if (cartAddedTimer) clearTimeout(cartAddedTimer)
+  cartAddedTimer = setTimeout(() => {
+    cartAddedId.value = ''
+    cartAddedTimer = null
+  }, 1800)
+}
+
 const handleAddToCart = (product: any) => {
   if (!product) return
+  const id = getProductId(product)
+  checkoutNoteById.value = { ...checkoutNoteById.value, [id]: '' }
   const price = getProductPrice(product)
   if (price == null) {
-    alert('Contact helpdesk for pricing on this item.')
+    checkoutNoteById.value = { ...checkoutNoteById.value, [id]: 'Call us for pricing on this item.' }
     return
   }
   addItem({
-    id: getProductId(product),
+    id,
     name: getProductName(product),
     sku: getProductSku(product),
     price,
     image: getProductImage(product) || undefined,
   })
-  alert(`Added "${getProductName(product)}" to cart. (${itemCount.value} item${itemCount.value === 1 ? '' : 's'} total)`)
+  flashCartAdded(product)
 }
 
 const handleStripeExpress = async (product: any) => {
   if (!product || checkoutBusy.value || !checkoutTermsAccepted.value) return
+  const id = getProductId(product)
+  checkoutNoteById.value = { ...checkoutNoteById.value, [id]: '' }
   const retailPrice = getProductPrice(product)
   if (retailPrice == null) {
-    alert('Contact helpdesk for pricing on this item.')
+    checkoutNoteById.value = { ...checkoutNoteById.value, [id]: 'Call us for pricing on this item.' }
     return
   }
 
@@ -221,8 +245,9 @@ const handleStripeExpress = async (product: any) => {
     }
     throw new Error('No checkout URL returned from Stripe.')
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Checkout could not start.'
-    alert(message)
+    const message = err instanceof Error ? err.message : 'Checkout could not start. Try again or call us.'
+    checkoutNoteById.value = { ...checkoutNoteById.value, [id]: message }
+    if (import.meta.dev) console.error(err)
   } finally {
     checkoutBusy.value = false
     checkoutSku.value = ''
@@ -256,10 +281,7 @@ const isCheckoutBusy = (product: any) =>
         </select>
         <a :href="`tel:${support.phoneTel}`" class="bc-home__gate-phone">{{ support.phoneDisplay }}</a>
       </div>
-      <p v-if="catalogError" class="bc-home__gate-error" role="alert">
-        Catalog could not load.
-        <button type="button" class="bc-home__gate-retry" @click="refreshCatalog">Try again</button>
-      </p>
+      <p v-if="catalogPending" class="bc-home__gate-loading visually-hidden" aria-live="polite">Loading catalog</p>
     </div>
 
     <main class="bc-home__main">
@@ -313,7 +335,7 @@ const isCheckoutBusy = (product: any) =>
             <BcShippingEstimate compact />
             <div class="bc-home__card-actions">
               <button type="button" class="bc-home__btn bc-home__btn--cart" @click="handleAddToCart(product)">
-                Add To Cart
+                {{ cartBtnText(product) }}
               </button>
               <button
                 type="button"
@@ -323,6 +345,7 @@ const isCheckoutBusy = (product: any) =>
               >
                 {{ isCheckoutBusy(product) ? 'Starting…' : 'Buy It Now' }}
               </button>
+              <p v-if="checkoutNote(product)" class="bc-home__card-note">{{ checkoutNote(product) }}</p>
             </div>
           </div>
         </article>
@@ -641,6 +664,26 @@ const isCheckoutBusy = (product: any) =>
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.5rem;
+}
+
+.bc-home__card-note {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 0.78rem;
+  color: #9ca3af;
+  line-height: 1.4;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .bc-home__btn {

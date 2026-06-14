@@ -118,12 +118,7 @@
           <h2 class="portal-hero__title">Authorized Dealer Distribution Network</h2>
         </div>
 
-        <p v-if="catalogError" class="portal-catalog-error" role="alert">
-          Catalog could not load.
-          <button type="button" class="portal-catalog-retry" @click="refreshCatalog">Try again</button>
-        </p>
-
-        <p v-else-if="catalogPending" class="portal-catalog-loading" aria-live="polite">
+        <p v-if="catalogPending" class="portal-catalog-loading visually-hidden" aria-live="polite">
           Loading live catalog…
         </p>
 
@@ -294,7 +289,7 @@
 
               <div class="portal-detail__actions">
                 <button type="button" class="portal-btn portal-btn--cart" @click="handleAddToCart">
-                  Add to Cart
+                  {{ cartBtnLabel }}
                 </button>
                 <button
                   type="button"
@@ -304,6 +299,7 @@
                 >
                   {{ checkoutBusy ? 'Starting checkout…' : 'Buy It Now' }}
                 </button>
+                <p v-if="checkoutError" class="portal-detail__inline-note">{{ checkoutError }}</p>
               </div>
             </div>
           </div>
@@ -410,6 +406,9 @@ const catalogSearchQuery = ref('')
 const catalogPickerRef = ref(null)
 const checkoutBusy = ref(false)
 const checkoutTermsAccepted = ref(false)
+const checkoutError = ref('')
+const cartBtnLabel = ref('Add to Cart')
+let cartBtnTimer = null
 
 const catalogProducts = ref([])
 const catalogPending = ref(true)
@@ -757,14 +756,24 @@ function resetToHome () {
   backToShowroom()
 }
 
-const { addItem, itemCount } = useCart()
+const { addItem } = useCart()
+
+function flashCartButton () {
+  cartBtnLabel.value = 'Added'
+  if (cartBtnTimer) clearTimeout(cartBtnTimer)
+  cartBtnTimer = setTimeout(() => {
+    cartBtnLabel.value = 'Add to Cart'
+    cartBtnTimer = null
+  }, 1800)
+}
 
 function handleAddToCart () {
   const product = currentProduct.value
   if (!product) return
+  checkoutError.value = ''
   const price = getProductPrice(product)
   if (price == null) {
-    alert('Contact helpdesk for pricing on this item.')
+    checkoutError.value = 'Call us for pricing on this item.'
     return
   }
   addItem({
@@ -774,15 +783,16 @@ function handleAddToCart () {
     price,
     image: getProductImage(product) || undefined,
   })
-  alert(`Added "${getProductName(product)}" to cart. (${itemCount.value} item${itemCount.value === 1 ? '' : 's'} total)`)
+  flashCartButton()
 }
 
 async function handleBuyNow () {
   const product = currentProduct.value
   if (!product || checkoutBusy.value || !checkoutTermsAccepted.value) return
+  checkoutError.value = ''
   const retailPrice = getProductPrice(product)
   if (retailPrice == null) {
-    alert('Contact helpdesk for pricing on this item.')
+    checkoutError.value = 'Call us for pricing on this item.'
     return
   }
 
@@ -831,8 +841,8 @@ async function handleBuyNow () {
     }
     throw new Error('No checkout URL returned.')
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Checkout could not start.'
-    alert(message)
+    checkoutError.value = err instanceof Error ? err.message : 'Checkout could not start. Try again or call us.'
+    if (import.meta.dev) console.error(err)
   } finally {
     checkoutBusy.value = false
   }
@@ -1315,12 +1325,31 @@ async function handleBuyNow () {
   color: var(--portal-red-bright);
 }
 
-.portal-catalog-error,
 .portal-catalog-loading {
   text-align: center;
   font-size: 0.85rem;
   color: var(--portal-muted);
   margin: 0 0 0.75rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.portal-detail__inline-note {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--portal-muted);
+  line-height: 1.45;
 }
 
 .portal-scroll-stack--pending {
