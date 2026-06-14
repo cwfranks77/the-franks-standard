@@ -30,6 +30,7 @@
         <div class="free-access-actions">
           <NuxtLink to="/sell/start" class="btn btn-primary btn-lg">Sell an Item (Free)</NuxtLink>
           <NuxtLink to="/sell/dropship-setup?ai=1" class="btn btn-primary btn-lg">AI Dropship Setup</NuxtLink>
+          <NuxtLink to="/ops/marketing-automation" class="btn btn-primary btn-lg">Marketing automation</NuxtLink>
           <NuxtLink to="/ops/dropship" class="btn btn-primary btn-lg">Dropship Automation</NuxtLink>
           <NuxtLink to="/ops/sellers-phone" class="btn btn-primary btn-lg">eBay sellers (phone)</NuxtLink>
           <NuxtLink to="/sell?mode=direct" class="btn btn-outline btn-lg">Direct Sale Setup</NuxtLink>
@@ -112,6 +113,7 @@
             <li><NuxtLink to="/ops/dropship"><strong>Dropship automation</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/ads"><strong>Social Media Ads</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/google-ads"><strong>Google Ads setup &amp; copy</strong></NuxtLink></li>
+            <li><NuxtLink to="/ops/marketing-automation"><strong>Marketing automation (weekly queue)</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/marketing"><strong>Marketing &amp; get found</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/influencers"><strong>Influencers &amp; affiliates</strong></NuxtLink></li>
             <li><NuxtLink to="/ops/social-promo"><strong>Social promotion</strong></NuxtLink></li>

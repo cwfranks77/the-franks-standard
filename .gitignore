@@ -16,8 +16,11 @@ dist
 .DS_Store
 /utils/
 /composables/
-/assets/css/
-/assets/email-campaign/
+/assets/*
+!/assets/.gitkeep
+/live-*
+/t-*.js
+/t-*.css
 .vercel
 franks-standard-credentials/
 .cursor/
