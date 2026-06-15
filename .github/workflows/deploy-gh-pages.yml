@@ -12,6 +12,9 @@ name: Deploy Franks Standard to GitHub Pages
 on:
   push:
     branches: [main, master]
+    paths:
+      - 'franks-standard/**'
+      - '.github/workflows/deploy-gh-pages.yml'
   workflow_dispatch:
 
 permissions:
@@ -38,33 +41,20 @@ jobs:
           cache: npm
 
       - name: Install
+        working-directory: franks-standard
         run: npm install --no-audit --no-fund
 
       - name: Generate static site
+        working-directory: franks-standard
         env:
-          NUXT_PUBLIC_SUPABASE_URL: ${{ secrets.NUXT_PUBLIC_SUPABASE_URL }}
-          NUXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NUXT_PUBLIC_SUPABASE_KEY }}
-          NUXT_PUBLIC_OPS_ACCESS_KEY: ${{ secrets.NUXT_PUBLIC_OPS_ACCESS_KEY }}
-          NUXT_PUBLIC_OPS_ACCESS_KEY_HASH: ${{ secrets.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH }}
-          NUXT_PUBLIC_PAY_LISTING_FEE_URL: ${{ secrets.NUXT_PUBLIC_PAY_LISTING_FEE_URL }}
-          NUXT_PUBLIC_PAY_PRO_SELLER_URL: ${{ secrets.NUXT_PUBLIC_PAY_PRO_SELLER_URL }}
-          NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL: ${{ secrets.NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL }}
-          NUXT_PUBLIC_PAY_DISPUTE_FEE_URL: ${{ secrets.NUXT_PUBLIC_PAY_DISPUTE_FEE_URL }}
           NUXT_PUBLIC_SITE_URL: https://thefranksstandard.com
-          NUXT_BC_PRIMARY_SITE: 'false'
-          NUXT_PUBLIC_STRIPE_CHECKOUT_ENABLED: ${{ secrets.NUXT_PUBLIC_STRIPE_CHECKOUT_ENABLED }}
-          NUXT_PUBLIC_STRIPE_TAX_CHECKOUT_ENABLED: ${{ secrets.NUXT_PUBLIC_STRIPE_TAX_CHECKOUT_ENABLED }}
-          NUXT_PUBLIC_CUSTOMER_SERVICE_PHONE: ${{ secrets.NUXT_PUBLIC_CUSTOMER_SERVICE_PHONE }}
-          NUXT_PUBLIC_OG_IMAGE: ${{ secrets.NUXT_PUBLIC_OG_IMAGE }}
-          NUXT_PUBLIC_BC_AUDIO_EXTERNAL_URL: https://www.bcpoweraudio.com
-          NUXT_PUBLIC_BC_AUDIO_SUPPORT_PHONE: ${{ secrets.NUXT_PUBLIC_BC_AUDIO_SUPPORT_PHONE }}
-          NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL: ${{ secrets.NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL }}
-        run: npm run build
+          NUXT_PUBLIC_OPS_ACCESS_KEY: ${{ secrets.NUXT_PUBLIC_OPS_ACCESS_KEY }}
+        run: npm run generate
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .output/public
+          path: franks-standard/.output/public
 
       - name: Deploy to GitHub Pages
         id: deployment

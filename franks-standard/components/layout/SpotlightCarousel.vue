@@ -22,10 +22,11 @@ const props = defineProps({
         >
           <div class="aspect-video bg-bg rounded mb-2 overflow-hidden">
             <img
-              v-if="product.images && product.images[0]"
-              :src="product.images[0]"
+              :src="product.images && product.images[0] ? product.images[0] : '/img/franks-pavilion.png'"
               :alt="product.name"
               class="w-full h-full object-cover"
+              loading="lazy"
+              decoding="async"
             />
           </div>
           <h3 class="text-sm font-medium mb-1 line-clamp-2">

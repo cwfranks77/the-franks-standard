@@ -6,9 +6,9 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "nuxt build",
+    "build": "nuxt generate && node scripts/patch-gh-pages-spa.cjs",
     "dev": "nuxt dev",
-    "generate": "nuxt generate",
+    "generate": "nuxt generate && node scripts/patch-gh-pages-spa.cjs",
     "lint": "echo \"no lint configured\""
   },
   "dependencies": {

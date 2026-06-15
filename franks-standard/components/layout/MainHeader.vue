@@ -10,9 +10,17 @@ const links = [
 <template>
   <header class="sticky top-0 z-40 bg-surface/90 backdrop-blur border-b border-border">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center gap-6">
-      <div class="font-semibold text-lg tracking-tight">
-        The Franks Standard
-      </div>
+      <NuxtLink to="/" class="flex items-center gap-3 shrink-0">
+        <img
+          src="/img/franks-pavilion.png"
+          alt="The Franks Standard"
+          class="h-10 w-10 rounded-md object-cover"
+          width="40"
+          height="40"
+          decoding="async"
+        >
+        <span class="font-semibold text-lg tracking-tight">The Franks Standard</span>
+      </NuxtLink>
       <div class="flex-1">
         <input
           type="search"

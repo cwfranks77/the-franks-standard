@@ -22,16 +22,26 @@
           </button>
         </div>
       </div>
-      <div class="bg-surface2 rounded-xl border border-border p-6">
-        <p class="text-xs uppercase tracking-wide text-textMuted mb-2">
-          Why The Franks Standard?
-        </p>
-        <ul class="space-y-2 text-sm">
-          <li>• Every item tied to a documented COA.</li>
-          <li>• No wholesale pricing, no race to the bottom.</li>
-          <li>• Owner-level logging of transactions and tax events.</li>
-          <li>• Built for serious buyers and sellers, not impulse scroll.</li>
-        </ul>
+      <div class="bg-surface2 rounded-xl border border-border overflow-hidden">
+        <img
+          src="/img/franks-pavilion.png"
+          alt="The Franks Standard marketplace pavilion"
+          class="w-full h-56 md:h-72 object-cover"
+          width="640"
+          height="480"
+          decoding="async"
+        >
+        <div class="p-6">
+          <p class="text-xs uppercase tracking-wide text-textMuted mb-2">
+            Why The Franks Standard?
+          </p>
+          <ul class="space-y-2 text-sm">
+            <li>• Every item tied to a documented COA.</li>
+            <li>• No wholesale pricing, no race to the bottom.</li>
+            <li>• Owner-level logging of transactions and tax events.</li>
+            <li>• Built for serious buyers and sellers, not impulse scroll.</li>
+          </ul>
+        </div>
       </div>
     </div>
   </section>

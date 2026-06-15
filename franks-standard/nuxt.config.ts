@@ -1,5 +1,6 @@
 // nuxt.config.ts
 export default defineNuxtConfig({
+  ssr: false,
   css: ['@/assets/css/tailwind.css'],
   modules: [],
   app: {
@@ -13,9 +14,13 @@ export default defineNuxtConfig({
       ]
     }
   },
+  nitro: {
+    preset: 'github-pages'
+  },
   runtimeConfig: {
     public: {
-      ownerKey: ''
+      ownerKey: '',
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://thefranksstandard.com'
     }
   }
 })

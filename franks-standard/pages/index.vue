@@ -1,10 +1,23 @@
+<script setup>
+const products = ref([])
+
+onMounted(async () => {
+  try {
+    products.value = await $fetch('/data/products.json')
+  } catch {
+    products.value = []
+  }
+})
+
+const featured = computed(() => products.value.filter((p) => p.featured))
+</script>
+
 <template>
-  <main class="min-h-screen flex flex-col items-center justify-center gap-3 px-6">
-    <h1 class="text-3xl font-bold tracking-tight">
-      The Franks Standard
-    </h1>
-    <p class="text-textMuted text-center max-w-md">
-      Certified, documented, no-bullshit audio &amp; performance gear.
-    </p>
-  </main>
+  <div class="min-h-screen flex flex-col bg-bg">
+    <MainHeader />
+    <HeroBanner />
+    <SpotlightCarousel :products="featured.length ? featured : products" />
+    <ProductGrid :products="products" />
+    <MainFooter />
+  </div>
 </template>
