@@ -1,1 +1,15 @@
-[]
+[
+  {
+    "id": 1,
+    "name": "Sundown SAZ-3000D",
+    "description": "Legendary Korean-built monoblock amplifier.",
+    "category": "Amplifier",
+    "featured": true,
+    "images": [],
+    "specs": {
+      "RMS": "3000W @ 1 ohm",
+      "Voltage": "12V-14.4V"
+    },
+    "coaId": 101
+  }
+]
