@@ -1,5 +1,6 @@
 /**
  * GitHub Pages SPA fallback for the standalone Franks Standard app.
+ * Keeps client-side routing; 404.html is a noindex redirect (see inject-franks-seo.cjs).
  */
 const fs = require('node:fs')
 const path = require('node:path')
@@ -14,11 +15,11 @@ if (!fs.existsSync(INDEX)) {
 }
 
 let indexHtml = fs.readFileSync(INDEX, 'utf8')
+indexHtml = indexHtml.replace(/<!--franks-seo-start-->[\s\S]*?<!--franks-seo-end-->\n?/g, '')
 if (!indexHtml.includes('gh-pages-spa-redirect')) {
   const idx = indexHtml.indexOf('<div id="__nuxt">')
   if (idx === -1) indexHtml = indexHtml.replace(/<\/head>/i, `${SPA_REDIRECT}\n</head>`)
   else indexHtml = indexHtml.slice(0, idx) + SPA_REDIRECT + indexHtml.slice(idx)
 }
 fs.writeFileSync(INDEX, indexHtml, 'utf8')
-fs.writeFileSync(path.join(ROOT, '404.html'), indexHtml, 'utf8')
-console.log('patch-gh-pages-spa: wrote 404.html from index.html')
+console.log('patch-gh-pages-spa: SPA redirect script on index.html')

@@ -1,8 +1,11 @@
 // nuxt.config.ts
 export default defineNuxtConfig({
-  ssr: false,
+  ssr: true,
   css: ['@/assets/css/tailwind.css'],
   modules: [],
+  components: {
+    dirs: [{ path: '~/components', pathPrefix: false }],
+  },
   app: {
     head: {
       title: 'The Franks Standard | Authenticity-Guaranteed Collectibles Marketplace',
@@ -10,7 +13,7 @@ export default defineNuxtConfig({
         {
           name: 'description',
           content:
-            'Proof-first collectibles marketplace — sports cards, watches, sneakers, instruments, coins, and estate finds. Every listing backed by a COA or signed guarantee. The Franks Standard LLC.'
+            'The Franks Standard LLC — authenticity-guaranteed collectibles marketplace. Sports cards, watches, sneakers, coins, and estate finds with COA-backed listings.'
         },
         { name: 'robots', content: 'index,follow' },
         { name: 'application-name', content: 'The Franks Standard' },
@@ -21,7 +24,11 @@ export default defineNuxtConfig({
     }
   },
   nitro: {
-    preset: 'github-pages'
+    preset: 'github-pages',
+    prerender: {
+      crawlLinks: false,
+      routes: ['/'],
+    },
   },
   runtimeConfig: {
     public: {

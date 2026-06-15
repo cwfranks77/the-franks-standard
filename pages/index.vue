@@ -295,33 +295,38 @@
 <script setup>
 import { BC_BRAND } from '~/utils/bcBrand.js'
 import { BC_LEGAL_NAME } from '~/utils/bcSeo.js'
+import {
+  filterBcAudioProducts,
+  bcAudioDepartmentKey,
+  bcAudioDepartmentLabel,
+} from '~/utils/bcAudioOnlyCatalog.js'
 
 definePageMeta({ layout: false })
 
 const SHOWCASE_LANE_DEFS = [
   {
-    deptKey: 'computers',
+    deptKey: 'home',
     laneIndex: 0,
-    icon: '💻',
-    title: 'Computers & Workstations',
-    badge: '',
-    description: 'Enterprise laptops, workstations, servers, and computing accessories authorized for wholesale distribution.',
+    icon: '🔊',
+    title: 'Home Audio',
+    badge: 'HOME THEATER MATRIX',
+    description: 'Receivers, speakers, amplifiers, and soundbars from authorized competition and home theater lines.',
   },
   {
-    deptKey: 'theater',
+    deptKey: 'car',
     laneIndex: 1,
-    icon: '📺',
-    title: 'Home Theater & Audio',
-    badge: 'SURROUND AUDIO MATRIX',
-    description: 'Receivers, speakers, amplifiers, and cinema-grade audio from authorized competition and theater lines.',
+    icon: '🚗',
+    title: 'Car Audio',
+    badge: 'VEHICLE OUTPUT MATRIX',
+    description: 'Speakers, subwoofers, amplifiers, and wiring for street and competition installs.',
   },
   {
-    deptKey: 'marine',
+    deptKey: 'powersports',
     laneIndex: 2,
     icon: '⚓',
-    title: 'Marine & Powersports',
+    title: 'Powersports & Marine Audio',
     badge: 'ELEMENT-PROOF OUTPUT',
-    description: 'Marine electronics and element-proof speakers built for high-output offshore and trail environments.',
+    description: 'Marine and powersports speakers and amps built for high-output trail and offshore environments.',
   },
 ]
 
@@ -345,7 +350,8 @@ async function refreshCatalog () {
   catalogError.value = null
   try {
     const data = await $fetch('/catalog/petra-products.json', { retry: 2 })
-    catalogProducts.value = Array.isArray(data?.products) ? data.products : []
+    const rows = Array.isArray(data?.products) ? data.products : []
+    catalogProducts.value = filterBcAudioProducts(rows)
     if (!catalogProducts.value.length) {
       throw new Error('Catalog returned no products.')
     }
@@ -445,9 +451,7 @@ function calculateTargetRetailPrice (product) {
   const catLower = (product.category || '').toLowerCase()
   let markup = 1.55 // Default 55% markup for home audio systems (MSRP: $1,394.45)
 
-  if (catLower.includes('computer') || catLower.includes('workstation')) {
-    markup = 1.35 // 35% markup for computing nodes (MSRP: $2,023.65)
-  } else if (catLower.includes('marine') || catLower.includes('power')) {
+  if (catLower.includes('marine') || catLower.includes('power')) {
     markup = 1.65 // 65% premium markup for element-proof marine gear (MSRP: $411.35)
   }
 
@@ -510,44 +514,30 @@ function getProductImage (product) {
   return petraImageUrl(product.sku || product.vendorSku)
 }
 
-const LANE_MATCHERS = {
-  computers: /computer|workstation|server|laptop|network|storage|tablet|pc\b|monitor/i,
-  theater: /theater|audio|speaker|amplifier|subwoofer|receiver|sound|home|cinema|av\b|headphone|turntable/i,
-  marine: /marine|boat|water|offshore|powersport|nautical|trolling/i,
-}
-
 function laneMatchesProduct (deptKey, product) {
-  const segment = getProductSegment(product)
-  if (LANE_MATCHERS[deptKey]?.test(segment)) return true
   return getDeptKey(product) === deptKey
 }
 
 function getDeptKey (product) {
-  const segment = getProductSegment(product).toLowerCase()
-  if (segment.includes('computer') || segment.includes('workstation') || segment.includes('server') || segment.includes('laptop')) {
-    return 'computers'
-  }
-  if (segment.includes('theater') || segment.includes('audio') || segment.includes('speaker') || segment.includes('home') || segment.includes('cinema') || segment.includes('amplifier')) {
-    return 'theater'
-  }
-  if (segment.includes('marine') || segment.includes('boat') || segment.includes('water') || segment.includes('offshore') || segment.includes('powersport')) {
-    return 'marine'
-  }
-  return null
+  return bcAudioDepartmentKey(product)
 }
 
+const AUDIO_MENU_ORDER = ['Home Audio', 'Car Audio', 'Powersports Audio']
+
 const catalogGroups = computed(() => {
-  const map = new Map()
+  const map = new Map(AUDIO_MENU_ORDER.map((label) => [label, []]))
   for (const product of catalogProducts.value) {
-    const label = getProductSegment(product)
+    const key = bcAudioDepartmentKey(product)
+    if (!key) continue
+    const label = bcAudioDepartmentLabel(key)
     if (!map.has(label)) map.set(label, [])
     map.get(label).push(product)
   }
-  return [...map.entries()]
-    .sort((a, b) => a[0].localeCompare(b[0]))
-    .map(([label, items]) => ({
+  return AUDIO_MENU_ORDER
+    .filter((label) => (map.get(label) || []).length > 0)
+    .map((label) => ({
       label,
-      items: items.sort((a, b) => getProductName(a).localeCompare(getProductName(b))),
+      items: map.get(label).sort((a, b) => getProductName(a).localeCompare(getProductName(b))),
     }))
 })
 
@@ -587,11 +577,6 @@ function buildLaneTiles (deptKey, perLane = 28) {
     if (tiles.length >= perLane) return tiles
   }
 
-  const laneIndex = { computers: 0, theater: 1, marine: 2 }[deptKey] ?? 0
-  for (let i = 0; i < withImages.length && tiles.length < perLane; i++) {
-    pushTile(tiles, seen, withImages[(i + laneIndex * 41) % withImages.length])
-  }
-
   return tiles
 }
 
@@ -626,11 +611,16 @@ function onDetailImageError (event, product) {
   img.src = SCROLL_IMAGE_FALLBACK
 }
 
+function categoryLabelForProduct (product) {
+  const key = bcAudioDepartmentKey(product)
+  return key ? bcAudioDepartmentLabel(key) : getProductSegment(product)
+}
+
 function openProductFromTile (tile) {
   if (!tile?.productId) return
   const product = catalogProducts.value.find((p) => getProductId(p) === tile.productId)
   if (product) {
-    selectedCategoryLabel.value = getProductSegment(product)
+    selectedCategoryLabel.value = categoryLabelForProduct(product)
   }
   selectedProductId.value = tile.productId
   viewMode.value = 'detail'
@@ -642,7 +632,7 @@ function toggleCategory (label) {
 
 function selectProductFromMenu (product, categoryLabel) {
   if (!product) return
-  selectedCategoryLabel.value = categoryLabel || getProductSegment(product)
+  selectedCategoryLabel.value = categoryLabel || categoryLabelForProduct(product)
   selectedProductId.value = getProductId(product)
   catalogMenuOpen.value = false
   expandedCategory.value = ''
@@ -669,9 +659,9 @@ function backToShowroom () {
 
 function getIconForProduct (product) {
   const dept = getDeptKey(product)
-  if (dept === 'computers') return '💻'
-  if (dept === 'theater') return '📺'
-  if (dept === 'marine') return '⚓'
+  if (dept === 'home') return '🔊'
+  if (dept === 'car') return '🚗'
+  if (dept === 'powersports') return '⚓'
   return '🛒'
 }
 

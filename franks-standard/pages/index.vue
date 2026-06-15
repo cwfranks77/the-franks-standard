@@ -1,15 +1,9 @@
 <script setup>
-const products = ref([])
-
-onMounted(async () => {
-  try {
-    products.value = await $fetch('/data/products.json')
-  } catch {
-    products.value = []
-  }
+const { data: products } = await useFetch('/data/products.json', {
+  default: () => [],
 })
 
-const featured = computed(() => products.value.filter((p) => p.featured))
+const featured = computed(() => (products.value || []).filter((p) => p.featured))
 </script>
 
 <template>

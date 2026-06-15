@@ -1,54 +1,18 @@
 /**
  * Post-generate SEO for thefranksstandard.com only.
- * - Crawler-visible Franks marketplace HTML (SPA shell is empty for Google)
- * - robots.txt + sitemap.xml
- * - Canonical, Open Graph, JSON-LD — no B&C or car-audio copy
+ * Meta tags, robots.txt (single URL), sitemap, IndexNow key — no visible body injection.
  */
 const fs = require('node:fs')
 const path = require('node:path')
+const crypto = require('node:crypto')
 
 const ROOT = path.join(__dirname, '..', '.output', 'public')
 const INDEX = path.join(ROOT, 'index.html')
 const SITE = (process.env.NUXT_PUBLIC_SITE_URL || 'https://thefranksstandard.com').replace(/\/$/, '')
-const PHONE = process.env.NUXT_PUBLIC_CUSTOMER_SERVICE_PHONE || '(877) 837-0527'
-const PHONE_TEL = '+1' + PHONE.replace(/\D+/g, '').replace(/^1/, '')
-const EMAIL = 'info@thefranksstandard.com'
 
 const TITLE = 'The Franks Standard | Authenticity-Guaranteed Collectibles Marketplace'
 const DESCRIPTION =
-  'The Franks Standard is a proof-first collectibles marketplace. Sports cards, watches, sneakers, instruments, coins, and estate finds — every listing backed by a COA or signed guarantee.'
-
-const START = '<!--franks-seo-start-->'
-const END = '<!--franks-seo-end-->'
-
-const STATIC_BLOCK = `${START}
-<div id="franks-app-loading" aria-live="polite">Loading The Franks Standard marketplace…</div>
-<div id="franks-static-seo" lang="en">
-  <header>
-    <p>The Franks Standard LLC — Authenticity-Guaranteed Marketplace</p>
-    <h1>If it is here, it is real.</h1>
-  </header>
-  <main>
-    <p>${DESCRIPTION}</p>
-    <p>Browse verified listings, sell with a Certificate of Authenticity, and buy with confidence. Louisiana-based marketplace facilitator operated by The Franks Standard LLC.</p>
-    <p>
-      <strong>Contact:</strong>
-      <a href="tel:${PHONE_TEL}">${PHONE}</a> ·
-      <a href="mailto:${EMAIL}">${EMAIL}</a>
-    </p>
-  </main>
-  <footer>
-    <p>© ${new Date().getFullYear()} The Franks Standard LLC · ${SITE.replace(/^https?:\/\//, '')}</p>
-  </footer>
-</div>
-<style id="franks-static-seo-style">
-html,body{margin:0;background:#050509;color:#f9fafb;font-family:system-ui,sans-serif}
-#__nuxt{min-height:100vh}
-#franks-static-seo{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
-#franks-app-loading{display:flex;align-items:center;justify-content:center;min-height:100vh;color:#f9fafb;font-size:1rem;letter-spacing:.02em}
-html.nuxt-ready #franks-app-loading{display:none!important}
-</style>
-${END}`
+  'The Franks Standard LLC — authenticity-guaranteed collectibles marketplace. Sports cards, watches, sneakers, coins, and estate finds with COA-backed listings.'
 
 const JSON_LD = {
   '@context': 'https://schema.org',
@@ -61,12 +25,6 @@ const JSON_LD = {
     '@type': 'Organization',
     name: 'The Franks Standard LLC',
     url: SITE,
-    contactPoint: {
-      '@type': 'ContactPoint',
-      telephone: PHONE_TEL,
-      email: EMAIL,
-      contactType: 'customer service',
-    },
   },
 }
 
@@ -102,31 +60,55 @@ function injectHead (html) {
   return out
 }
 
-function injectBody (html) {
-  if (html.includes(START)) {
-    return html.replace(new RegExp(`${START}[\\s\\S]*?${END}`), STATIC_BLOCK)
-  }
-  const idx = html.indexOf('<div id="__nuxt">')
-  if (idx === -1) return html.replace(/<\/body>/i, `${STATIC_BLOCK}\n</body>`)
-  return html.slice(0, idx) + STATIC_BLOCK + '\n' + html.slice(idx)
+function stripLegacySeoBody (html) {
+  return html.replace(/<!--franks-seo-start-->[\s\S]*?<!--franks-seo-end-->\n?/g, '')
 }
 
 function writeRobotsAndSitemap () {
   const today = new Date().toISOString().slice(0, 10)
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>${SITE}/</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>
+  <url><loc>${SITE}/</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
 </urlset>
 `
-  const robots = `User-agent: *
-Allow: /
-
+  const robots = `# The Franks Standard — one homepage only (no duplicate SPA paths)
+User-agent: *
+Allow: /$
 Disallow: /bc-audio
+Disallow: /browse
+Disallow: /sell
+Disallow: /auth
+Disallow: /ops
+Disallow: /shop
+Disallow: /stores
 
 Sitemap: ${SITE}/sitemap.xml
 `
   fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), sitemap, 'utf8')
   fs.writeFileSync(path.join(ROOT, 'robots.txt'), robots, 'utf8')
+
+  const indexNowKey = crypto.randomBytes(16).toString('hex')
+  fs.writeFileSync(path.join(ROOT, `${indexNowKey}.txt`), indexNowKey, 'utf8')
+  fs.writeFileSync(path.join(ROOT, 'indexnow-key.txt'), indexNowKey, 'utf8')
+}
+
+function write404Noindex () {
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex,nofollow">
+  <meta http-equiv="refresh" content="0;url=/">
+  <link rel="canonical" href="${SITE}/">
+  <title>Redirecting — The Franks Standard</title>
+  <script>location.replace('/')</script>
+</head>
+<body>
+  <p><a href="/">Go to The Franks Standard homepage</a></p>
+</body>
+</html>
+`
+  fs.writeFileSync(path.join(ROOT, '404.html'), html, 'utf8')
 }
 
 if (!fs.existsSync(INDEX)) {
@@ -135,17 +117,10 @@ if (!fs.existsSync(INDEX)) {
 }
 
 let html = fs.readFileSync(INDEX, 'utf8')
+html = stripLegacySeoBody(html)
 html = injectHead(html)
-html = injectBody(html)
 fs.writeFileSync(INDEX, html, 'utf8')
 
-const notFound = path.join(ROOT, '404.html')
-if (fs.existsSync(notFound)) {
-  let nf = fs.readFileSync(notFound, 'utf8')
-  nf = injectHead(nf)
-  nf = injectBody(nf)
-  fs.writeFileSync(notFound, nf, 'utf8')
-}
-
+write404Noindex()
 writeRobotsAndSitemap()
-console.log('inject-franks-seo: Franks-only meta, static crawl block, robots.txt, sitemap.xml')
+console.log('inject-franks-seo: meta, single-URL sitemap, noindex 404, robots.txt')
