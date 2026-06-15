@@ -64,6 +64,23 @@ function stripLegacySeoBody (html) {
   return html.replace(/<!--franks-seo-start-->[\s\S]*?<!--franks-seo-end-->\n?/g, '')
 }
 
+function stripBrokenTailwindInline (html) {
+  return html.replace(/<style>@tailwind[\s\S]*?<\/style>/gi, '')
+}
+
+function write200Noindex () {
+  const p200 = path.join(ROOT, '200.html')
+  if (!fs.existsSync(p200)) return
+  let html = fs.readFileSync(p200, 'utf8')
+  html = stripBrokenTailwindInline(html)
+  if (!/name=["']robots["']/i.test(html)) {
+    html = html.replace(/<head>/i, '<head>\n  <meta name="robots" content="noindex,nofollow">')
+  } else {
+    html = html.replace(/<meta name=["']robots["'][^>]*>/i, '<meta name="robots" content="noindex,nofollow">')
+  }
+  fs.writeFileSync(p200, html, 'utf8')
+}
+
 function writeRobotsAndSitemap () {
   const today = new Date().toISOString().slice(0, 10)
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
@@ -118,9 +135,11 @@ if (!fs.existsSync(INDEX)) {
 
 let html = fs.readFileSync(INDEX, 'utf8')
 html = stripLegacySeoBody(html)
+html = stripBrokenTailwindInline(html)
 html = injectHead(html)
 fs.writeFileSync(INDEX, html, 'utf8')
 
 write404Noindex()
+write200Noindex()
 writeRobotsAndSitemap()
 console.log('inject-franks-seo: meta, single-URL sitemap, noindex 404, robots.txt')

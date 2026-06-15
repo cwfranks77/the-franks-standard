@@ -1,9 +1,8 @@
 <script setup>
-const { data: products } = await useFetch('/data/products.json', {
-  default: () => [],
-})
+import productsCatalog from '~/data/products.json'
 
-const featured = computed(() => (products.value || []).filter((p) => p.featured))
+const products = ref(productsCatalog)
+const featured = computed(() => products.value.filter((p) => p.featured))
 </script>
 
 <template>

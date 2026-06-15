@@ -28,7 +28,7 @@ const links = [
           class="w-full bg-surface2 border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
         />
       </div>
-      <nav class="hidden md:flex gap-4 text-sm text-textMuted">
+      <nav class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-textMuted shrink-0">
         <NuxtLink
           v-for="link in links"
           :key="link.label"
