@@ -13,6 +13,7 @@ export default defineNuxtConfig({
             'Proof-first collectibles marketplace — sports cards, watches, sneakers, instruments, coins, and estate finds. Every listing backed by a COA or signed guarantee. The Franks Standard LLC.'
         },
         { name: 'robots', content: 'index,follow' },
+        { name: 'application-name', content: 'The Franks Standard' },
         { property: 'og:site_name', content: 'The Franks Standard' },
         { property: 'og:type', content: 'website' }
       ],

@@ -22,6 +22,7 @@ const START = '<!--franks-seo-start-->'
 const END = '<!--franks-seo-end-->'
 
 const STATIC_BLOCK = `${START}
+<div id="franks-app-loading" aria-live="polite">Loading The Franks Standard marketplace…</div>
 <div id="franks-static-seo" lang="en">
   <header>
     <p>The Franks Standard LLC — Authenticity-Guaranteed Marketplace</p>
@@ -40,7 +41,13 @@ const STATIC_BLOCK = `${START}
     <p>© ${new Date().getFullYear()} The Franks Standard LLC · ${SITE.replace(/^https?:\/\//, '')}</p>
   </footer>
 </div>
-<style>#franks-static-seo{max-width:48rem;margin:1rem auto;padding:1rem;font-family:system-ui,sans-serif;line-height:1.5;color:#111}#franks-static-seo a{color:#b45309}html.nuxt-ready #franks-static-seo{display:none}</style>
+<style id="franks-static-seo-style">
+html,body{margin:0;background:#050509;color:#f9fafb;font-family:system-ui,sans-serif}
+#__nuxt{min-height:100vh}
+#franks-static-seo{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+#franks-app-loading{display:flex;align-items:center;justify-content:center;min-height:100vh;color:#f9fafb;font-size:1rem;letter-spacing:.02em}
+html.nuxt-ready #franks-app-loading{display:none!important}
+</style>
 ${END}`
 
 const JSON_LD = {
