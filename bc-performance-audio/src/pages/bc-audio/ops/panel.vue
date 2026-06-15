@@ -19,7 +19,7 @@ const support = computed(() => getBcSupport(config))
 const { revoke } = useOpsSession()
 const { theme, applyPreset, patch, resetTheme, publishTheme, presets, themeSaving, themeMessage } = useBcTheme()
 
-const tab = ref('homepage')
+const tab = ref('inventory')
 const orders = ref([])
 const ordersLoading = ref(false)
 const ordersError = ref('')
@@ -212,10 +212,10 @@ useSeoMeta({
       <BcOpsStoreEditor />
     </section>
 
-  <!-- INVENTORY & PRICING -->
+    <!-- INVENTORY & PRICING -->
     <section v-show="tab === 'inventory'" class="bc-panel__section">
       <h2>Inventory, wholesale &amp; retail prices</h2>
-      <p class="bc-panel__note">See Petra wholesale cost, markup %, and set the retail price customers pay. Wholesale is never shown on the storefront.</p>
+      <p class="bc-panel__note">This is your real storefront inventory from Petra. The number below is how many audio products customers can browse — not the manual add-on list.</p>
       <BcOpsInventoryPricing />
     </section>
 

@@ -14,6 +14,7 @@ const loadError = ref('')
 const search = ref('')
 const rows = ref([])
 const overrides = ref({})
+const liveCatalogCount = ref(null)
 
 const filteredRows = computed(() => {
   const q = search.value.trim().toLowerCase()
@@ -48,6 +49,7 @@ async function load () {
       opsFetch('/api/ops/site-content', { query: { keys: 'bcPriceOverrides' } }),
     ])
     const catalog = filterBcAudioProducts(catalogRes?.products || [])
+    liveCatalogCount.value = catalog.length
     overrides.value = (cms?.bcPriceOverrides && typeof cms.bcPriceOverrides === 'object')
       ? { ...cms.bcPriceOverrides }
       : {}
@@ -73,6 +75,7 @@ async function searchCatalog () {
   try {
     const catalogRes = await $fetch('/catalog/petra-products.json', { retry: 2 })
     const catalog = filterBcAudioProducts(catalogRes?.products || [])
+    liveCatalogCount.value = catalog.length
     const q = search.value.trim().toLowerCase()
     const matched = q
       ? catalog.filter((p) => `${p.name} ${p.sku} ${p.category}`.toLowerCase().includes(q))
@@ -140,7 +143,8 @@ onMounted(load)
     <p v-if="loadError" class="bc-alert bc-alert--err">{{ loadError }}</p>
     <p v-if="message" class="bc-alert bc-alert--ok">{{ message }}</p>
     <p class="bc-inv-pricing__note">
-      <strong>Wholesale costs are owner-only.</strong> Shoppers see MSRP retail prices only. Edit retail to override the automatic markup.
+      <strong>{{ liveCatalogCount != null ? liveCatalogCount.toLocaleString() : '…' }} products</strong> on your live storefront.
+      Wholesale costs are owner-only — shoppers see MSRP retail only.
     </p>
     <div class="bc-inv-pricing__search">
       <input v-model="search" class="input" type="search" placeholder="Search SKU or product name…" @keyup.enter="searchCatalog">

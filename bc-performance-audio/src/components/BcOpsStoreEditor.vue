@@ -6,6 +6,7 @@ const saving = ref(false)
 const message = ref('')
 const loadError = ref('')
 const source = ref('')
+const liveCatalogCount = ref(null)
 
 const store = ref({
   id: 'bc-performance-audio',
@@ -18,6 +19,16 @@ const store = ref({
 })
 
 const items = ref([])
+
+async function loadLiveCatalogCount () {
+  try {
+    const { filterBcAudioProducts } = await import('~/utils/bcAudioOnlyCatalog.js')
+    const data = await $fetch('/catalog/petra-products.json', { retry: 2 })
+    liveCatalogCount.value = filterBcAudioProducts(data?.products || []).length
+  } catch {
+    liveCatalogCount.value = null
+  }
+}
 
 async function load () {
   loading.value = true
@@ -102,7 +113,10 @@ async function save () {
   }
 }
 
-onMounted(load)
+onMounted(() => {
+  loadLiveCatalogCount()
+  load()
+})
 
 defineExpose({ load, save })
 </script>
@@ -131,10 +145,21 @@ defineExpose({ load, save })
         <label>Accent color<input v-model="store.accent" class="input" type="color"></label>
       </div>
 
+      <p class="bc-store-editor__live-count" v-if="liveCatalogCount != null">
+        <strong>{{ liveCatalogCount.toLocaleString() }}</strong> Petra audio products are live on the homepage now.
+        Edit prices under <strong>Inventory &amp; pricing</strong>. Hide items under <strong>Hide catalog items</strong>.
+      </p>
+      <p v-else class="bc-store-editor__live-count bc-store-editor__live-count--muted">
+        Live Petra catalog loads from the wholesaler feed — use <strong>Inventory &amp; pricing</strong> to manage it.
+      </p>
+
       <div class="bc-store-editor__catalog-head">
-        <h3>Products on your storefront ({{ items.length }})</h3>
+        <h3>Manual add-on products ({{ items.length }})</h3>
         <button type="button" class="btn btn-outline btn-sm" @click="addItem">+ Add product</button>
       </div>
+      <p class="bc-store-editor__manual-note">
+        Optional extra rows you type in yourself. The main storefront uses the Petra catalog above — not this list.
+      </p>
 
       <div v-for="(item, index) in items" :key="item.item_id + index" class="bc-item-card">
         <div class="bc-item-card__head">
@@ -174,6 +199,14 @@ defineExpose({ load, save })
 
 <style scoped>
 .bc-store-editor__meta { font-size: 0.78rem; color: #7a8190; margin: 0 0 12px; }
+.bc-store-editor__live-count {
+  margin: 0 0 14px; padding: 12px 14px; border-radius: 10px;
+  background: rgba(74, 222, 128, 0.08); border: 1px solid rgba(74, 222, 128, 0.25);
+  font-size: 0.88rem; color: #b8bcc6; line-height: 1.5;
+}
+.bc-store-editor__live-count strong { color: #4ade80; }
+.bc-store-editor__live-count--muted { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); }
+.bc-store-editor__manual-note { font-size: 0.82rem; color: #7a8190; margin: 0 0 12px; line-height: 1.45; }
 .bc-store-editor__loading { color: #9ca3af; padding: 20px 0; }
 .bc-store-editor__live { margin-bottom: 16px; padding: 12px 14px; border-radius: 10px; background: rgba(211,47,47,0.1); border: 1px solid rgba(211,47,47,0.3); }
 .bc-live-toggle { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 0.9rem; cursor: pointer; }
