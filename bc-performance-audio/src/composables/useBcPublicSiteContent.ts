@@ -1,7 +1,8 @@
 import { BC_META_DEFAULTS } from '~/utils/bcMetaDefaults.js'
+import { DEFAULT_PRIVATE_TXN_LEDGER } from '~/utils/privateTxnLedgerDefaults.js'
 import { getPublicSupabaseKey, getPublicSupabaseUrl, hasPublicSupabase } from '~/utils/publicSupabase.js'
 
-type SiteContentKey = 'bcMeta' | 'bcTheme' | 'homepage' | 'ads' | 'antiqueLedger'
+type SiteContentKey = 'bcMeta' | 'bcTheme' | 'homepage' | 'ads' | 'antiqueLedger' | 'bcHiddenCatalog' | 'privateTxnLedger'
 
 const CONTENT_DEFAULTS: Record<string, unknown> = {
   bcMeta: BC_META_DEFAULTS,
@@ -12,6 +13,8 @@ const CONTENT_DEFAULTS: Record<string, unknown> = {
     bg: '#0a0a0c',
     bgCard: '#16161c',
   },
+  bcHiddenCatalog: { productIds: [] as string[] },
+  privateTxnLedger: DEFAULT_PRIVATE_TXN_LEDGER,
 }
 
 function mergeRows (keys: SiteContentKey[], rows: Array<{ content_key: string, payload: Record<string, unknown> }> | null) {
@@ -23,6 +26,18 @@ function mergeRows (keys: SiteContentKey[], rows: Array<{ content_key: string, p
     if (key === 'antiqueLedger') {
       out.antiqueLedger = {
         items: Array.isArray(payload.items) ? payload.items : [],
+      }
+      continue
+    }
+    if (key === 'bcHiddenCatalog') {
+      out.bcHiddenCatalog = {
+        productIds: Array.isArray(payload.productIds) ? payload.productIds.map(String) : [],
+      }
+      continue
+    }
+    if (key === 'privateTxnLedger') {
+      out.privateTxnLedger = {
+        transactions: Array.isArray(payload.transactions) ? payload.transactions : [],
       }
       continue
     }

@@ -43,6 +43,9 @@ function opsErrorMessage (e, fallback) {
 
 const tabs = [
   { id: 'store', label: 'Store & products' },
+  { id: 'catalog', label: 'Hide catalog items' },
+  { id: 'ledger', label: 'Transactions & tax' },
+  { id: 'monitor', label: 'Traffic & errors' },
   { id: 'seo', label: 'SEO & homepage text' },
   { id: 'theme', label: 'Colors & theme' },
   { id: 'activity', label: 'Sales & activity' },
@@ -198,6 +201,27 @@ useSeoMeta({
       <h2>Your B&amp;C megastore</h2>
       <p class="bc-panel__note">This controls the live catalog, prices, hero text, and whether the store is open or in maintenance mode.</p>
       <BcOpsStoreEditor />
+    </section>
+
+  <!-- HIDE PETRA CATALOG ITEMS -->
+    <section v-show="tab === 'catalog'" class="bc-panel__section">
+      <h2>Hide products from the website</h2>
+      <p class="bc-panel__note">Remove individual Petra items from bcpoweraudio.com without touching the wholesaler feed.</p>
+      <BcOpsHiddenCatalog />
+    </section>
+
+  <!-- PRIVATE TRANSACTION LEDGER -->
+    <section v-show="tab === 'ledger'" class="bc-panel__section">
+      <h2>Transactions &amp; tax reserve</h2>
+      <p class="bc-panel__note">Stripe revenue, 25% Louisiana tax reserve, Mercury bank, and Petra wholesale entries.</p>
+      <BcOpsPrivateLedger />
+    </section>
+
+  <!-- SITE MONITOR -->
+    <section v-show="tab === 'monitor'" class="bc-panel__section">
+      <h2>Traffic &amp; errors</h2>
+      <p class="bc-panel__note">See what broke for visitors — checkout errors, script failures, and page URLs.</p>
+      <BcOpsSiteMonitor />
     </section>
 
   <!-- SEO -->

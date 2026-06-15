@@ -1,6 +1,7 @@
 import { filterBcAudioProducts } from '~/utils/bcAudioOnlyCatalog.js'
 import { bcPlaceholderImageForProduct, resolveBcProductImage } from '~/utils/bcProductImage.js'
 import { bcProductShelfCategory } from '~/utils/bcProductShelfCategory.js'
+import { fetchBcPublicSiteContent } from '~/composables/useBcPublicSiteContent'
 
 /**
  * Load B&C product rows at runtime from /catalog/petra-products.json.
@@ -14,7 +15,26 @@ export function useBcProductCatalog () {
     retry: 2,
   })
 
-  const products = computed(() => filterBcAudioProducts(data.value?.products || []))
+  const hiddenProductIds = ref([])
+
+  async function loadHiddenIds () {
+    try {
+      const content = await fetchBcPublicSiteContent(['bcHiddenCatalog'])
+      const ids = (content?.bcHiddenCatalog as { productIds?: string[] })?.productIds
+      hiddenProductIds.value = Array.isArray(ids) ? ids.map(String) : []
+    } catch {
+      hiddenProductIds.value = []
+    }
+  }
+
+  onMounted(loadHiddenIds)
+
+  const products = computed(() => {
+    const hidden = new Set(hiddenProductIds.value)
+    return filterBcAudioProducts(data.value?.products || []).filter(
+      (p) => !hidden.has(String(p.id)),
+    )
+  })
 
   const megastoreItems = computed(() =>
     products.value.map((item) => ({
