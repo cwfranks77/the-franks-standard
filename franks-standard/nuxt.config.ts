@@ -5,13 +5,18 @@ export default defineNuxtConfig({
   modules: [],
   app: {
     head: {
-      title: 'The Franks Standard',
+      title: 'The Franks Standard | Authenticity-Guaranteed Collectibles Marketplace',
       meta: [
         {
           name: 'description',
-          content: 'Certified, documented, no-bullshit audio & performance gear.'
-        }
-      ]
+          content:
+            'Proof-first collectibles marketplace — sports cards, watches, sneakers, instruments, coins, and estate finds. Every listing backed by a COA or signed guarantee. The Franks Standard LLC.'
+        },
+        { name: 'robots', content: 'index,follow' },
+        { property: 'og:site_name', content: 'The Franks Standard' },
+        { property: 'og:type', content: 'website' }
+      ],
+      link: [{ rel: 'canonical', href: 'https://thefranksstandard.com/' }]
     }
   },
   nitro: {

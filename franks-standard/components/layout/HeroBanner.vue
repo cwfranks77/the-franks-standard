@@ -6,14 +6,14 @@
           The Franks Standard
         </h1>
         <p class="text-textMuted mb-4">
-          Certified, documented, no-bullshit audio & performance gear. Every piece backed by a clear chain of custody and proof of performance.
+          The authenticity-first collectibles marketplace. Every listing backed by a Certificate of Authenticity or signed in-platform guarantee — not hype, not fakes.
         </p>
         <div class="flex gap-3">
           <NuxtLink
             to="/browse"
             class="inline-flex items-center px-4 py-2 rounded-md bg-primary text-bg text-sm font-medium hover:bg-primary/90 transition"
           >
-            Browse certified gear
+            Browse marketplace
           </NuxtLink>
           <button
             class="inline-flex items-center px-4 py-2 rounded-md border border-border text-sm text-textMuted hover:border-primary hover:text-primary transition"
