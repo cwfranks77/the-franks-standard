@@ -4,5 +4,6 @@
 @tailwind utilities;
 
 body {
-  @apply bg-bg text-textMain;
+  background-color: #050509;
+  color: #f9fafb;
 }
