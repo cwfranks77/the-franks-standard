@@ -96,6 +96,7 @@ Disallow: /browse
 Disallow: /sell
 Disallow: /auth
 Disallow: /ops
+Disallow: /owner
 Disallow: /shop
 Disallow: /stores
 

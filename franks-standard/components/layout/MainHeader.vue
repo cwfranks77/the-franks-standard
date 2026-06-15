@@ -2,7 +2,8 @@
 const links = [
   { label: 'Browse', href: '/browse' },
   { label: 'Categories', href: '/browse' },
-  { label: 'About', href: '#' },
+  { label: 'Sell', href: '/sell' },
+  { label: 'Owner', href: '/owner' },
   { label: 'Help', href: '#' }
 ]
 </script>

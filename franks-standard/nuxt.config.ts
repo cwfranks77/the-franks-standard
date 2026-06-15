@@ -1,6 +1,20 @@
+import { createHash } from 'node:crypto'
+import { normalizeOpsPhrase } from './utils/opsPhrase'
+
+const opsKeyPlain = String(process.env.NUXT_PUBLIC_OPS_ACCESS_KEY || process.env.OWNER_SECRET_PASSPHRASE || '').trim()
+const opsKeyHashFromEnv = String(process.env.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH || '').trim().toLowerCase()
+const opsAccessKeyHash = opsKeyPlain
+  ? createHash('sha256').update(normalizeOpsPhrase(opsKeyPlain)).digest('hex')
+  : opsKeyHashFromEnv
+
+if (opsAccessKeyHash) {
+  process.env.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH = opsAccessKeyHash
+}
+
 // nuxt.config.ts
 export default defineNuxtConfig({
   ssr: true,
+  css: ['~/assets/css/main.css', '~/assets/css/marketplace-ui.css'],
   modules: ['@nuxtjs/tailwindcss'],
   tailwindcss: {
     cssPath: '~/assets/css/tailwind.css',
@@ -29,13 +43,25 @@ export default defineNuxtConfig({
   nitro: {
     preset: 'github-pages',
     prerender: {
-      crawlLinks: false,
-      routes: ['/'],
+      crawlLinks: true,
+      routes: [
+        '/',
+        '/owner',
+        '/browse',
+        '/sell',
+        '/item/cards-001',
+        '/item/watch-001',
+        '/item/sneaker-001',
+        '/item/coin-001',
+        '/item/art-001',
+        '/item/estate-001'
+      ],
+      failOnError: false
     },
   },
   runtimeConfig: {
     public: {
-      ownerKey: '',
+      opsAccessKeyHash,
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://thefranksstandard.com'
     }
   }

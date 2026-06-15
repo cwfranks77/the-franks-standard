@@ -1,0 +1,86 @@
+[
+  {
+    "id": "add-product",
+    "icon": "📦",
+    "title": "Add Product",
+    "description": "List a new collectible with name, category, and COA details.",
+    "category": "Catalog"
+  },
+  {
+    "id": "tax-reserve",
+    "icon": "🏦",
+    "title": "Tax Reserve Calculator",
+    "description": "Set aside 25% of each sale for Louisiana business income tax.",
+    "category": "Finance"
+  },
+  {
+    "id": "shipping-tax",
+    "icon": "📍",
+    "title": "Shipping Tax Calculator",
+    "description": "Sales tax from the buyer shipping zip (Louisiana Marketplace Facilitator Act 22).",
+    "category": "Finance"
+  },
+  {
+    "id": "wholesale-transfer",
+    "icon": "🚚",
+    "title": "Wholesale Transfer Tracker",
+    "description": "Log instant wholesale transfers to distributor fulfillment nodes.",
+    "category": "Finance"
+  },
+  {
+    "id": "transaction-log",
+    "icon": "📋",
+    "title": "Transaction Log",
+    "description": "Owner-level logging of sales, refunds, and tax events.",
+    "category": "Operations"
+  },
+  {
+    "id": "coa-manager",
+    "icon": "🛡️",
+    "title": "COA Manager",
+    "description": "Issue and verify floor office COA serials (FS-YYYY-NNNNNN).",
+    "category": "Trust"
+  },
+  {
+    "id": "enforcement",
+    "icon": "⚖️",
+    "title": "Enforcement Queue",
+    "description": "Review reports, forced refunds, account freezes, and COA revocations.",
+    "category": "Trust"
+  },
+  {
+    "id": "ebay-import",
+    "icon": "📥",
+    "title": "eBay CSV Import",
+    "description": "Import listings from eBay Seller Hub export files.",
+    "category": "Catalog"
+  },
+  {
+    "id": "ai-store",
+    "icon": "🤖",
+    "title": "AI Store Builder",
+    "description": "Full AI dropship setup and listing description drafts.",
+    "category": "Catalog"
+  },
+  {
+    "id": "social-ads",
+    "icon": "📣",
+    "title": "Social Ads Copy",
+    "description": "X, Facebook, Instagram, TikTok, and Telegram ad copy for campaigns.",
+    "category": "Marketing"
+  },
+  {
+    "id": "catalog-editor",
+    "icon": "✏️",
+    "title": "Catalog Editor",
+    "description": "Edit featured listings and showcase product data.",
+    "category": "Catalog"
+  },
+  {
+    "id": "site-rebuild",
+    "icon": "🔧",
+    "title": "Rebuild Site",
+    "description": "Run the Franks Standard build pipeline (generate + SEO + IndexNow).",
+    "category": "Operations"
+  }
+]
