@@ -1,0 +1,67 @@
+/** Single inbox for seller leads (matches Contact and legal pages). */
+export const SELLER_INQUIRY_EMAIL = 'info@thefranksstandard.com'
+
+const MAX_BODY_CHARS = 1700
+
+export function buildSellerApplicationMailto(): string {
+  const subject = encodeURIComponent('Apply to sell on The Franks Standard')
+  const body = [
+    'I would like to sell (or list inventory) on The Franks Standard.',
+    '',
+    'Store or business name:',
+    'Categories / what I sell:',
+    'Link to website or social (optional):',
+    'Volume or listing goal (rough is fine):',
+    'Name and best email/phone for follow-up:',
+    'Notes:',
+    '',
+    '— Sent from thefranksstandard.com/sellers',
+  ].join('\n')
+  return `mailto:${SELLER_INQUIRY_EMAIL}?subject=${subject}&body=${encodeURIComponent(body)}`
+}
+
+type ListingForm = {
+  title: string
+  description: string
+  category: string
+  price: number | null
+  condition: string
+  coaType: string
+  sellerName: string
+  guaranteeSigned: boolean
+}
+
+export function buildListingInquiryMailto(
+  form: ListingForm,
+  publicSiteOrigin?: string,
+): string {
+  const title = (form.title || 'Listing draft').trim().slice(0, 200)
+  const subject = encodeURIComponent(`Listing draft: ${title}`)
+  const lines: string[] = [
+    'Listing draft (prepare photos and COA to attach in your reply to this message):',
+    '',
+    `Title: ${form.title}`,
+    `Category: ${form.category}`,
+    `Price (USD): ${form.price != null ? String(form.price) : ''}`,
+    `Condition: ${form.condition}`,
+    '',
+    'Description:',
+    (form.description || '').trim().slice(0, 2000),
+    '',
+    'Authenticity:',
+    `Method: ${form.coaType === 'upload' ? 'COA / document to upload' : form.coaType === 'guarantee' ? 'Franks Standard guarantee (name below)' : '—'}`,
+  ]
+  if (form.coaType === 'guarantee' && form.sellerName) {
+    lines.push(`Signed name: ${form.sellerName}`, `Guarantee box checked: ${form.guaranteeSigned ? 'Yes' : 'No'}`)
+  }
+  if (publicSiteOrigin) {
+    lines.push('', `— ${publicSiteOrigin}/sell`)
+  } else {
+    lines.push('', '— Submitted from The Franks Standard /sell form')
+  }
+  let body = lines.join('\n')
+  if (body.length > MAX_BODY_CHARS) {
+    body = body.slice(0, MAX_BODY_CHARS) + '\n[Message truncated. Add details in a follow-up email.]'
+  }
+  return `mailto:${SELLER_INQUIRY_EMAIL}?subject=${subject}&body=${encodeURIComponent(body)}`
+}

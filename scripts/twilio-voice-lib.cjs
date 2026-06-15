@@ -112,14 +112,20 @@ function requireOwnerPhone () {
   return ownerE164
 }
 
-async function updateVoiceWebhook ({ phoneRow, voiceUrl, fallbackUrl, friendlyName }) {
+const BC_VOICE_INBOUND_URL = 'https://rochesyrxiyrxhzmkuwk.supabase.co/functions/v1/bc-voice-inbound'
+
+function bcVoiceInboundUrl () {
+  return process.env.BC_VOICE_INBOUND_URL || BC_VOICE_INBOUND_URL
+}
+
+async function updateVoiceWebhook ({ phoneRow, voiceUrl, fallbackUrl, friendlyName, voiceMethod = 'POST', fallbackMethod = 'POST' }) {
   const { SID } = authHeader()
   return twilioPost(`/Accounts/${SID}/IncomingPhoneNumbers/${phoneRow.sid}.json`, {
     FriendlyName: friendlyName,
     VoiceUrl: voiceUrl,
-    VoiceMethod: 'POST',
+    VoiceMethod: voiceMethod,
     VoiceFallbackUrl: fallbackUrl,
-    VoiceFallbackMethod: 'POST',
+    VoiceFallbackMethod: fallbackMethod,
   })
 }
 
@@ -132,6 +138,7 @@ async function findNumber (predicate, notFoundMessage) {
 
 module.exports = {
   FRANKS_TOLL_FREE,
+  BC_VOICE_INBOUND_URL,
   loadEnvLocal,
   requireCredentials,
   requireOwnerPhone,
@@ -139,6 +146,7 @@ module.exports = {
   twimletEcho,
   twimletForward,
   buildMenuUrl,
+  bcVoiceInboundUrl,
   listIncomingNumbers,
   updateVoiceWebhook,
   findNumber,

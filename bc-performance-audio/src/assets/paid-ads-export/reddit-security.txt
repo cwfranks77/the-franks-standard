@@ -1,0 +1,18 @@
+TITLE:
+We built a collectibles marketplace with published enforcement (COA gate, escrow, freeze policy)
+
+BODY:
+Proof before publish — not "trust me bro."
+
+✓ COA serial tied to ONE listing (verify at https://thefranksstandard.com/verify/coa)
+✓ Stripe escrow until you confirm delivery
+✓ Sellers sign policies before listing — refunds, freeze, bans in writing
+✓ Forced refund + account freeze when seller at fault refuses
+✓ Listing scan blocks Venmo/PayPal in descriptions
+
+Honest sellers get a real floor. Serious buyers get proof.
+
+https://thefranksstandard.com/protection · Rules: https://thefranksstandard.com/marketplace-policy
+
+URL:
+https://thefranksstandard.com/protection?utm_source=reddit&utm_medium=paid&utm_campaign=security

@@ -1,0 +1,44 @@
+import { SupabaseClient } from 'npm:@supabase/supabase-js@2'
+
+/** Must match utils/liabilityPolicyVersion.js LIABILITY_POLICY_VERSION */
+export const CURRENT_BUYER_POLICY_VERSION = '2026-06-12'
+export const CURRENT_CHECKOUT_ACK_VERSION = '2026-06-12'
+
+export type BuyerPolicyProfile = {
+  buyer_policies_accepted_at: string | null
+  buyer_policies_version: string | null
+  buyer_policies_signer_name?: string | null
+}
+
+export function buyerPoliciesCurrent (profile: BuyerPolicyProfile | null | undefined): boolean {
+  if (!profile?.buyer_policies_accepted_at || !profile?.buyer_policies_version) return false
+  return profile.buyer_policies_version === CURRENT_BUYER_POLICY_VERSION
+}
+
+export async function loadBuyerPolicyStatus (
+  admin: SupabaseClient,
+  buyerId: string,
+): Promise<BuyerPolicyProfile | null> {
+  const { data } = await admin
+    .from('profiles')
+    .select('buyer_policies_accepted_at, buyer_policies_version, buyer_policies_signer_name')
+    .eq('id', buyerId)
+    .maybeSingle()
+  return data as BuyerPolicyProfile | null
+}
+
+export async function assertBuyerPoliciesAccepted (
+  admin: SupabaseClient,
+  buyerId: string,
+): Promise<{ ok: true } | { ok: false; error: string; message: string }> {
+  const profile = await loadBuyerPolicyStatus(admin, buyerId)
+  if (!buyerPoliciesCurrent(profile)) {
+    return {
+      ok: false,
+      error: 'buyer_policies_not_accepted',
+      message:
+        'Complete the buyer agreement (Form C) before checkout. Open any listing and sign in — you will be prompted on first purchase.',
+    }
+  }
+  return { ok: true }
+}

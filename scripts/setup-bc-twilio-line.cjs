@@ -71,15 +71,64 @@ function formatDisplay (e164) {
   return `(${n.slice(0, 3)}) ${n.slice(3, 6)}-${n.slice(6)}`
 }
 
+function toE164 (phoneNumber) {
+  const raw = String(phoneNumber || '').trim()
+  if (raw.startsWith('+')) return raw.replace(/\s/g, '')
+  const digits = raw.replace(/\D/g, '')
+  if (digits.length === 10) return `+1${digits}`
+  if (digits.length === 11 && digits.startsWith('1')) return `+${digits}`
+  return digits ? `+${digits}` : ''
+}
+
+function patchLine (filePath, pattern, replacement) {
+  const abs = path.join(ROOT, filePath)
+  const text = fs.readFileSync(abs, 'utf8')
+  if (!pattern.test(text)) {
+    throw new Error(`Could not patch ${filePath}`)
+  }
+  fs.writeFileSync(abs, text.replace(pattern, replacement))
+}
+
+function applyBcPhoneToProject ({ display, tel, e164 }) {
+  const ledgerPath = path.join(ROOT, 'src/content/support-contacts.json')
+  const ledger = JSON.parse(fs.readFileSync(ledgerPath, 'utf8'))
+  ledger.audioDivision.phone = display
+  fs.writeFileSync(ledgerPath, `${JSON.stringify(ledger, null, 2)}\n`)
+
+  patchLine('utils/bcSupport.js', /phoneDisplay: '[^']*'/, `phoneDisplay: '${display}'`)
+  patchLine('utils/bcSupport.js', /phoneTel: '[^']*'/, `phoneTel: '${tel}'`)
+  patchLine(
+    'nuxt.config.ts',
+    /bcAudioSupportPhone: process\.env\.NUXT_PUBLIC_BC_AUDIO_SUPPORT_PHONE \|\| '[^']*'/,
+    `bcAudioSupportPhone: process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_PHONE || '${display}'`,
+  )
+  patchLine(
+    'nuxt.config.ts',
+    /bcAudioSupportTel: process\.env\.NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL \|\| '[^']*'/,
+    `bcAudioSupportTel: process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL || '${tel}'`,
+  )
+  patchLine(
+    'scripts/inject-spa-fallback.cjs',
+    /NUXT_PUBLIC_BC_AUDIO_SUPPORT_PHONE \|\| '[^']*'/,
+    `NUXT_PUBLIC_BC_AUDIO_SUPPORT_PHONE || '${display}'`,
+  )
+  patchLine(
+    'scripts/inject-spa-fallback.cjs',
+    /NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL \|\| '[^']*'/,
+    `NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL || '${tel}'`,
+  )
+
+  process.env.TWILIO_BC_PHONE_NUMBER = e164
+  console.log(`\n[OK] Project files updated for B&C line ${display}`)
+}
+
 function printSecrets (phoneNumber) {
   const display = formatDisplay(phoneNumber)
-  const tel = phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber.replace(/\D/g, '')}`
-  console.log('\n--- Add to GitHub (Settings → Secrets → Actions) ---')
+  const tel = toE164(phoneNumber)
+  console.log('\n--- GitHub Actions secrets ---')
   console.log(`NUXT_PUBLIC_BC_AUDIO_SUPPORT_PHONE=${display}`)
   console.log(`NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL=${tel}`)
-  console.log('\nThen re-run workflow "Deploy B&C to bcpoweraudio.com" in GitHub Actions.')
-  console.log('Studio flow: docs/BC-PHONE-SETUP.md section 3 (connect number to B&C flow).')
-  return { display, tel }
+  return { display, tel, e164: tel }
 }
 
 function pushGhSecrets ({ display, tel }) {
@@ -128,6 +177,30 @@ async function searchTollFree () {
   return available
 }
 
+function pickBcLineRow (rows) {
+  const bcRows = rows.filter((r) => !String(r.phone_number).includes('8778370527'))
+  if (!bcRows.length) return null
+  const bcNamed = bcRows.find((r) => /b&c|bc performance/i.test(String(r.friendly_name || '')))
+  return bcNamed || bcRows[0]
+}
+
+async function wireBcVoice (e164) {
+  process.env.TWILIO_BC_PHONE_NUMBER = e164
+  console.log('\nWiring B&C voice menu on the new line...')
+  execSync('node scripts/deploy-ai-voice-agent.cjs', { cwd: ROOT, stdio: 'inherit' })
+}
+
+async function finalizeBcLine (phoneNumber) {
+  const secrets = printSecrets(phoneNumber)
+  applyBcPhoneToProject(secrets)
+  pushGhSecrets(secrets)
+  if (args.has('--deploy-voice')) {
+    await wireBcVoice(secrets.e164)
+  }
+  console.log('\nNext: commit + push, then B&C deploy workflow updates www.bcpoweraudio.com.')
+  return secrets
+}
+
 async function buyTollFree () {
   const available = await searchTollFree()
   if (!available.length) {
@@ -141,10 +214,18 @@ async function buyTollFree () {
     FriendlyName: 'B&C Performance Audio LLC Support',
   })
   console.log(`\nPurchased: ${formatDisplay(bought.phone_number)}`)
-  const secrets = printSecrets(bought.phone_number)
-  pushGhSecrets(secrets)
-  console.log('\nNext: Twilio Console → Studio → create "B&C Performance Audio Customer Service" flow')
-  console.log('      → assign that flow to this number (see docs/BC-PHONE-SETUP.md).')
+  await finalizeBcLine(bought.phone_number)
+}
+
+async function useExistingBcLine () {
+  const rows = await listOwned()
+  const line = pickBcLineRow(rows || [])
+  if (!line) {
+    console.error('\nNo B&C line on your Twilio account (only Franks 877?). Run with --buy.')
+    process.exit(1)
+  }
+  console.log(`\nUsing existing line: ${formatDisplay(line.phone_number)}`)
+  await finalizeBcLine(line.phone_number)
 }
 
 async function main () {
@@ -174,6 +255,10 @@ Twilio credentials not found.
     await buyTollFree()
     return
   }
+  if (args.has('--use-existing')) {
+    await useExistingBcLine()
+    return
+  }
   if (args.has('--search')) {
     await searchTollFree()
     return
@@ -181,9 +266,9 @@ Twilio credentials not found.
 
   console.log(`
 Commands:
-  node scripts/setup-bc-twilio-line.cjs --search      See toll-free numbers you can buy
-  node scripts/setup-bc-twilio-line.cjs --buy         Buy one (uses your Twilio balance)
-  node scripts/setup-bc-twilio-line.cjs --buy --gh-secrets   Buy + save to GitHub Actions
+  node scripts/setup-bc-twilio-line.cjs --search
+  node scripts/setup-bc-twilio-line.cjs --buy --gh-secrets --deploy-voice
+  node scripts/setup-bc-twilio-line.cjs --use-existing --gh-secrets --deploy-voice
 `)
 }
 

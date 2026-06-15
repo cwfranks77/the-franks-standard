@@ -1,8 +1,12 @@
 import { createHash } from 'node:crypto'
-import { normalizeOpsPhrase } from './utils/opsPhrase'
-import { META_DESCRIPTION, OG_DESCRIPTION } from './utils/marketplaceFacilitatorCopy.js'
-import { isBcPowerAudioPrimarySite } from './utils/bcPrimarySite.js'
-import { BC_BRAND } from './utils/bcBrand.js'
+import { existsSync, globSync } from 'node:fs'
+import { resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { normalizeOpsPhrase } from './franks-standard/src/utils/opsPhrase'
+import { META_DESCRIPTION, OG_DESCRIPTION } from './franks-standard/src/utils/marketplaceFacilitatorCopy.js'
+import { isBcPowerAudioPrimarySite } from './bc-performance-audio/src/utils/bcPrimarySite.js'
+import { BC_BRAND } from './bc-performance-audio/src/utils/bcBrand.js'
+import { collectPagesFromDir, createProjectModuleResolver, filterFranksPagesForBcPrimary } from './config/nuxtProjectBridge.ts'
 
 const BC_LEGAL_NAME = 'B&C Performance Audio LLC'
 const rawSite = process.env.NUXT_PUBLIC_SITE_URL
@@ -20,6 +24,7 @@ const bcPrerenderRoutes = bcPrimarySite
       '/',
       '/bc-audio/catalog',
       '/bc-audio/open-door',
+      '/bc-audio/order-success',
       '/bc-audio/sms-consent',
     ]
   : []
@@ -64,6 +69,46 @@ const payListingFeeUrl = payUrl('NUXT_PUBLIC_PAY_LISTING_FEE_URL')
 const payProSellerUrl = payUrl('NUXT_PUBLIC_PAY_PRO_SELLER_URL')
 const payOrderDepositUrl = payUrl('NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL')
 
+const rootDir = fileURLToPath(new URL('.', import.meta.url))
+const franksPagesRoot = resolve(rootDir, 'franks-standard/src/pages')
+const bcPagesRoot = resolve(rootDir, 'bc-performance-audio/src/pages/bc-audio')
+const bcPluginsDir = resolve(rootDir, 'bc-performance-audio/src/plugins')
+const franksPluginsDir = resolve(rootDir, 'franks-standard/src/plugins')
+
+function bcPage (relativeFile: string, path: string) {
+  return { path, file: resolve(bcPagesRoot, relativeFile) }
+}
+
+const bcPagesFromProjectFolder = [
+  bcPage('index.vue', '/bc-audio'),
+  bcPage('catalog.vue', '/bc-audio/catalog'),
+  bcPage('open-door.vue', '/bc-audio/open-door'),
+  bcPage('order-success.vue', '/bc-audio/order-success'),
+  bcPage('sms-consent.vue', '/bc-audio/sms-consent'),
+  bcPage('ops/index.vue', '/bc-audio/ops'),
+  bcPage('ops/panel.vue', '/bc-audio/ops/panel'),
+  bcPage('ops/marketing-automation.vue', '/bc-audio/ops/marketing-automation'),
+  bcPage('product/[id].vue', '/bc-audio/product/:id'),
+]
+
+const franksNuxtPlugins = existsSync(franksPluginsDir)
+  ? [
+      resolve(franksPluginsDir, '00-register-franks-middleware.ts'),
+      ...globSync('*.{js,ts}', { cwd: franksPluginsDir })
+        .filter((file) => file !== '00-register-franks-middleware.ts')
+        .sort()
+        .map((file) => resolve(franksPluginsDir, file)),
+    ]
+  : []
+
+const bcNuxtPlugins = [
+  resolve(bcPluginsDir, '00-register-bc-middleware.ts'),
+  resolve(bcPluginsDir, 'bc-domain-host.client.js'),
+  resolve(bcPluginsDir, 'bc-https-canonical.client.js'),
+]
+
+const nuxtPlugins = [...franksNuxtPlugins, ...bcNuxtPlugins]
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
   // Off by default: the floating Nuxt DevTools bubble looks like a stray "moving blue outline" on the page in dev.
@@ -72,6 +117,14 @@ export default defineNuxtConfig({
   nitro: {
     // Vercel static hosting: use generic static preset. GitHub Pages keeps github-pages (.nojekyll, etc.).
     preset: process.env.VERCEL ? 'static' : 'github-pages',
+    scanDirs: [
+      resolve(rootDir, 'franks-standard/src/server'),
+      resolve(rootDir, 'bc-performance-audio/src/server'),
+    ],
+    alias: {
+      '#server-utils': resolve(rootDir, 'franks-standard/src/server/utils'),
+      '#bc-server-utils': resolve(rootDir, 'bc-performance-audio/src/server/utils'),
+    },
     prerender: {
       routes: [
         '/ops/documents',
@@ -113,14 +166,52 @@ export default defineNuxtConfig({
       /** Optional full B&C site (e.g. https://bcperformanceaudio.com). Marketplace still links /bc-audio for checkout. */
       bcAudioExternalUrl: (process.env.NUXT_PUBLIC_BC_AUDIO_EXTERNAL_URL || '').trim(),
       /** B&C dedicated support line (separate from Franks — see docs/BC-PHONE-SETUP.md). */
-      bcAudioSupportPhone: process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_PHONE || '(833) 322-8439',
-      bcAudioSupportTel: process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL || '+18333228439',
+      bcAudioSupportPhone: process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_PHONE || '(833) 722-4147',
+      bcAudioSupportTel: process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL || '+18337224147',
       bcAudioSupportEmail: process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_EMAIL || 'bc-audio@thefranksstandard.com',
       bcAudioOwnerName: process.env.NUXT_PUBLIC_BC_AUDIO_OWNER_NAME || 'Charles W. Franks',
+      /** Legacy aliases — prefer runtimeConfig.public.supabase.url from @nuxtjs/supabase */
+      supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '',
+      supabaseKey: process.env.NUXT_PUBLIC_SUPABASE_KEY || process.env.SUPABASE_KEY || '',
     },
   },
 
   modules: ['@nuxtjs/supabase', '@vite-pwa/nuxt'],
+
+  plugins: nuxtPlugins,
+
+  hooks: {
+    'pages:extend' (pages) {
+      for (const page of bcPagesFromProjectFolder) {
+        pages.push(page)
+      }
+      const franksPages = collectPagesFromDir(franksPagesRoot, rootDir)
+      const franksRoutes = bcPrimarySite ? filterFranksPagesForBcPrimary(franksPages) : franksPages
+      for (const page of franksRoutes) {
+        pages.push(page)
+      }
+    },
+    'vite:extendConfig' (viteInlineConfig) {
+      viteInlineConfig.plugins ||= []
+      viteInlineConfig.plugins.unshift(createProjectModuleResolver(rootDir))
+    },
+  },
+
+  imports: {
+    dirs: [
+      'franks-standard/src/composables',
+      'bc-performance-audio/src/composables',
+    ],
+  },
+
+  components: [
+    { path: '~/franks-standard/src/components', pathPrefix: false },
+    { path: '~/bc-performance-audio/src/components', pathPrefix: false },
+  ],
+
+  vite: {
+    plugins: [createProjectModuleResolver(rootDir)],
+  },
 
   routeRules: {
     ...(bcPrimarySite

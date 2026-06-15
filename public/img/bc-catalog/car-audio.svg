@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Car audio">
+  <rect width="600" height="600" fill="#0d0d0d"/>
+  <path d="M140 360 H460 L420 260 H180 Z" fill="#161616" stroke="#d32f2f" stroke-width="4"/>
+  <circle cx="220" cy="360" r="42" fill="#1a1a1a" stroke="#d32f2f" stroke-width="4"/>
+  <circle cx="380" cy="360" r="42" fill="#1a1a1a" stroke="#d32f2f" stroke-width="4"/>
+  <rect x="250" y="220" width="100" height="60" rx="10" fill="#d32f2f"/>
+  <text x="300" y="500" text-anchor="middle" fill="#d32f2f" font-family="Arial,sans-serif" font-size="28" font-weight="700">CAR AUDIO</text>
+</svg>

@@ -17,6 +17,15 @@ const BC_HTTPS_UPGRADE = bcPrimarySite
 const BC_HOME_REDIRECT = bcPrimarySite
   ? `<script id="bc-storefront-home">(function(){var h=location.hostname.toLowerCase(),p=location.pathname+location.search+location.hash,w='www.bcpoweraudio.com';if(location.protocol==='http:'){location.replace('https://'+(h==='bcpoweraudio.com'?w:h)+p);return}if(h==='bcpoweraudio.com'){location.replace('https://'+w+p);return}if(p==='/bc-audio'||p==='/bc-audio/')location.replace('/'+location.search+location.hash)})();</script>`
   : ''
+/** Hide the pre-JS SEO splash immediately — real storefront replaces #__nuxt when Vue mounts. */
+const BC_INSTANT_SHELL = bcPrimarySite
+  ? `<style id="bc-instant-shell">
+html,body{margin:0;background:#0a0a0a;color:#f5f5f5}
+#fss-static-boot,#fss-static-boot-style{display:none!important;visibility:hidden!important;height:0!important;overflow:hidden!important}
+#__nuxt{min-height:100vh;background:#0a0a0a}
+</style>
+<script id="bc-hide-static-boot">document.documentElement.classList.add('nuxt-ready')</script>`
+  : ''
 const SPA_REDIRECT = `<script id="gh-pages-spa-redirect">(function(){var p=location.pathname+location.search+location.hash;if(p!=='/'&&p!=='/index.html'){sessionStorage.setItem('ghSpaRedirect',p)}})();</script>`
 const CHUNK_RECOVERY_INLINE = `<script id="fss-chunk-recovery-inline">(function(){var k='fss-chunk-reload-v1';function go(){if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1');var u=new URL(location.href);u.searchParams.set('_cb',String(Date.now()));location.replace(u.toString())}var s=document.querySelector('script[type=module][src*="/_nuxt/"]');if(s){s.addEventListener('error',go,{once:true})}})();</script>`
 const NUXT_STORAGE_FIX = `<script id="fss-nuxt-storage-fix">(function(){try{var c=window.__NUXT__&&window.__NUXT__.config;if(c&&c.public&&c.public.supabase){var a=c.public.supabase.clientOptions&&c.public.supabase.clientOptions.auth;if(a&&a.storage&&typeof a.storage.getItem!=='function')delete a.storage}if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister()})})}if(window.caches&&caches.keys){caches.keys().then(function(ks){ks.forEach(function(k){if(/workbox|fss-/i.test(k))caches.delete(k)})})}}catch(e){}})();</script>`
@@ -31,6 +40,9 @@ function injectRedirect (html) {
   }
   if (BC_HOME_REDIRECT && !out.includes('bc-storefront-home')) {
     out = out.replace(/<head[^>]*>/i, (m) => `${m}\n${BC_HOME_REDIRECT}`)
+  }
+  if (BC_INSTANT_SHELL && !out.includes('bc-instant-shell')) {
+    out = out.replace(/<head[^>]*>/i, (m) => `${m}\n${BC_INSTANT_SHELL}`)
   }
   if (!out.includes('gh-pages-spa-redirect')) {
     const idx = out.indexOf('<div id="__nuxt">')
