@@ -1,6 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { verifyOpsKey } from '../_shared/opsAuth.ts'
 import { corsHeaders, json } from '../_shared/stripe.ts'
+import wholesaleMap from '../_shared/petraWholesaleBySku.json' with { type: 'json' }
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.get('SERVICE_ROLE_KEY') ?? ''
@@ -63,6 +64,34 @@ const DEFAULT_BC_THEME = {
   bgCard: '#16161c',
 }
 
+const DEFAULT_BC_HOMEPAGE = {
+  ribbonLeft: '🔊 B&C PERFORMANCE AUDIO — AUTHORIZED DISTRIBUTION CENTER',
+  ribbonRight: 'Sovereign Dealer Network',
+  heroTitle: 'Competition Audio Inventory',
+  heroLede: 'Home audio, car audio, and powersports audio — filter by department above.',
+}
+
+function resolveCategoryMarkup (category: string, name: string): number {
+  const cat = category.toLowerCase()
+  const label = name.toLowerCase()
+  if (cat.includes('marine') || label.includes('marine')) return 2.10
+  if (cat.includes('car') || label.includes('car audio') || label.includes('subwoofer') || label.includes('amplifier')) return 1.55
+  if (cat.includes('home') || label.includes('receiver') || label.includes('soundbar') || label.includes('theater')) return 1.70
+  if (cat.includes('accessory') || label.includes('cable') || label.includes('mount') || label.includes('adapter')) return 2.50
+  return 1.55
+}
+
+function lookupWholesale (sku: string, id: string): number | null {
+  const map = wholesaleMap as Record<string, number>
+  const keys = [sku, String(sku || '').toUpperCase(), id, String(id || '').toLowerCase()]
+  for (const k of keys) {
+    if (!k) continue
+    const hit = map[k]
+    if (hit != null && Number.isFinite(Number(hit))) return Number(hit)
+  }
+  return null
+}
+
 function isSiteMarketingTableMissing (error: { message?: string } | null): boolean {
   const msg = String(error?.message || '').toLowerCase()
   return msg.includes('site_marketing_content') &&
@@ -99,6 +128,9 @@ Deno.serve(async (req) => {
       bcTheme: DEFAULT_BC_THEME,
       antiqueLedger: DEFAULT_ANTIQUE_LEDGER,
       privateTxnLedger: DEFAULT_PRIVATE_TXN_LEDGER,
+      bcHomepage: DEFAULT_BC_HOMEPAGE,
+      bcPriceOverrides: {},
+      bcHiddenCatalog: { productIds: [] },
     }
     const wanted = keysRaw.length ? keysRaw : Object.keys(defaults)
     const out: Record<string, unknown> = {}
@@ -125,6 +157,20 @@ Deno.serve(async (req) => {
           transactions: Array.isArray(payload.transactions)
             ? payload.transactions
             : (base.transactions as unknown[]) || [],
+        }
+        continue
+      }
+      if (key === 'bcHomepage') {
+        out.bcHomepage = { ...DEFAULT_BC_HOMEPAGE, ...payload }
+        continue
+      }
+      if (key === 'bcPriceOverrides') {
+        out.bcPriceOverrides = payload && typeof payload === 'object' ? payload : {}
+        continue
+      }
+      if (key === 'bcHiddenCatalog') {
+        out.bcHiddenCatalog = {
+          productIds: Array.isArray(payload.productIds) ? payload.productIds : [],
         }
         continue
       }
@@ -230,6 +276,47 @@ Deno.serve(async (req) => {
       .limit(40)
     if (error) return json({ error: error.message }, 500)
     return json({ rows: data || [], source: 'supabase' })
+  }
+
+  if (action === 'get_bc_catalog_pricing') {
+    const items = Array.isArray(body.items) ? body.items as Record<string, unknown>[] : []
+    const { data: overrideRow } = await admin
+      .from('site_marketing_content')
+      .select('payload')
+      .eq('content_key', 'bcPriceOverrides')
+      .maybeSingle()
+    const overrides = (overrideRow?.payload || {}) as Record<string, { retailPrice?: number }>
+
+    const rows = items.map((item) => {
+      const id = String(item.id || '')
+      const sku = String(item.sku || '')
+      const name = String(item.name || '')
+      const category = String(item.category || '')
+      const listedRetail = Number(item.listedRetail)
+      const wholesale = lookupWholesale(sku, id)
+      const suggestedRetail = wholesale != null
+        ? Number((wholesale * resolveCategoryMarkup(category, name)).toFixed(2))
+        : (Number.isFinite(listedRetail) && listedRetail > 0 ? listedRetail : null)
+      const overrideRetail = overrides[id]?.retailPrice
+      const retail = overrideRetail != null
+        ? Number(overrideRetail)
+        : (Number.isFinite(listedRetail) && listedRetail > 0 ? listedRetail : suggestedRetail)
+      const markupPct = wholesale != null && retail != null && wholesale > 0
+        ? Number(((retail / wholesale - 1) * 100).toFixed(1))
+        : null
+      return {
+        id,
+        sku,
+        name,
+        category,
+        wholesale,
+        suggestedRetail,
+        listedRetail: Number.isFinite(listedRetail) ? listedRetail : null,
+        retail,
+        markupPct,
+      }
+    })
+    return json({ rows })
   }
 
   return json({ error: 'unknown_action' }, 400)

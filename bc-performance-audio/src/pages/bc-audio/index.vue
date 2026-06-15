@@ -16,6 +16,8 @@ import {
   bcAudioDepartmentLabel,
 } from '~/utils/bcAudioOnlyCatalog.js'
 import { bcPlaceholderImageForProduct, resolveBcProductImage } from '~/utils/bcProductImage.js'
+import { BC_HOMEPAGE_DEFAULTS } from '~/utils/bcRetailPricing.js'
+import { fetchBcPublicSiteContent } from '~/composables/useBcPublicSiteContent'
 
 definePageMeta({ layout: 'bc-audio' })
 
@@ -40,9 +42,21 @@ let cartAddedTimer: ReturnType<typeof setTimeout> | null = null
 const { addItem } = useCart()
 const { products, pending: catalogPending, refresh: refreshCatalog } = useBcProductCatalog()
 
+const homepageCopy = ref({ ...BC_HOMEPAGE_DEFAULTS })
+
+async function loadHomepageCopy () {
+  try {
+    const data = await fetchBcPublicSiteContent(['bcHomepage'])
+    homepageCopy.value = { ...BC_HOMEPAGE_DEFAULTS, ...(data?.bcHomepage || {}) }
+  } catch {
+    homepageCopy.value = { ...BC_HOMEPAGE_DEFAULTS }
+  }
+}
+
 onMounted(() => {
   refreshCatalog()
   syncCategoryFromRoute()
+  loadHomepageCopy()
 })
 
 useHead({
@@ -106,7 +120,7 @@ const getProductDescription = (product: any) => {
 
 const getProductPrice = (product: any) => {
   if (!product) return null
-  const raw = product.price
+  const raw = product.retailPrice ?? product.price
   if (raw == null || raw === '') return null
   const numeric = Number(raw)
   if (!Number.isFinite(numeric) || numeric <= 0) return null
@@ -261,8 +275,8 @@ const isCheckoutBusy = (product: any) =>
 <template>
   <div class="bc-home bc-audio-theme">
     <div class="bc-home__ribbon">
-      <span class="bc-home__ribbon-left">🔊 {{ BC_BRAND.full }} — AUTHORIZED DISTRIBUTION CENTER</span>
-      <span class="bc-home__ribbon-right">Sovereign Dealer Network</span>
+      <span class="bc-home__ribbon-left">{{ homepageCopy.ribbonLeft }}</span>
+      <span class="bc-home__ribbon-right">{{ homepageCopy.ribbonRight }}</span>
     </div>
 
     <div class="bc-home__gate">
@@ -286,9 +300,9 @@ const isCheckoutBusy = (product: any) =>
 
     <main class="bc-home__main">
       <div class="bc-home__hero bc-fade-in">
-        <h2 class="bc-home__title">Competition Audio Inventory</h2>
+        <h2 class="bc-home__title">{{ homepageCopy.heroTitle }}</h2>
         <p class="bc-home__lede">
-          Home audio, car audio, powersports audio, and Bluetooth speakers — filter by department above.
+          {{ homepageCopy.heroLede }}
         </p>
       </div>
 

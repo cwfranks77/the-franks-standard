@@ -66,6 +66,7 @@ on:
       - 'composables/useBcPublicSiteContent.ts'
       - 'utils/sha256Browser.js'
       - 'supabase/functions/ops-cms-action/**'
+      - 'bc-performance-audio/src/utils/bcRetailPricing.js'
       - 'utils/bcSeo.js'
       - 'utils/bcMetaDefaults.js'
       - 'utils/siteSocial.js'

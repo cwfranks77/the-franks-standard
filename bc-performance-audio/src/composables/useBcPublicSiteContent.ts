@@ -2,7 +2,7 @@ import { BC_META_DEFAULTS } from '~/utils/bcMetaDefaults.js'
 import { DEFAULT_PRIVATE_TXN_LEDGER } from '~/utils/privateTxnLedgerDefaults.js'
 import { getPublicSupabaseKey, getPublicSupabaseUrl, hasPublicSupabase } from '~/utils/publicSupabase.js'
 
-type SiteContentKey = 'bcMeta' | 'bcTheme' | 'homepage' | 'ads' | 'antiqueLedger' | 'bcHiddenCatalog' | 'privateTxnLedger'
+type SiteContentKey = 'bcMeta' | 'bcTheme' | 'homepage' | 'ads' | 'antiqueLedger' | 'bcHiddenCatalog' | 'privateTxnLedger' | 'bcHomepage' | 'bcPriceOverrides'
 
 const CONTENT_DEFAULTS: Record<string, unknown> = {
   bcMeta: BC_META_DEFAULTS,
@@ -15,6 +15,13 @@ const CONTENT_DEFAULTS: Record<string, unknown> = {
   },
   bcHiddenCatalog: { productIds: [] as string[] },
   privateTxnLedger: DEFAULT_PRIVATE_TXN_LEDGER,
+  bcHomepage: {
+    ribbonLeft: '🔊 B&C PERFORMANCE AUDIO — AUTHORIZED DISTRIBUTION CENTER',
+    ribbonRight: 'Sovereign Dealer Network',
+    heroTitle: 'Competition Audio Inventory',
+    heroLede: 'Home audio, car audio, and powersports audio — filter by department above.',
+  },
+  bcPriceOverrides: {},
 }
 
 function mergeRows (keys: SiteContentKey[], rows: Array<{ content_key: string, payload: Record<string, unknown> }> | null) {
@@ -39,6 +46,14 @@ function mergeRows (keys: SiteContentKey[], rows: Array<{ content_key: string, p
       out.privateTxnLedger = {
         transactions: Array.isArray(payload.transactions) ? payload.transactions : [],
       }
+      continue
+    }
+    if (key === 'bcHomepage') {
+      out.bcHomepage = { ...(CONTENT_DEFAULTS.bcHomepage as object), ...payload }
+      continue
+    }
+    if (key === 'bcPriceOverrides') {
+      out.bcPriceOverrides = payload && typeof payload === 'object' ? payload : {}
       continue
     }
     out[key] = { ...base, ...payload }

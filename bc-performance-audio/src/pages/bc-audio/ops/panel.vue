@@ -19,7 +19,7 @@ const support = computed(() => getBcSupport(config))
 const { revoke } = useOpsSession()
 const { theme, applyPreset, patch, resetTheme, publishTheme, presets, themeSaving, themeMessage } = useBcTheme()
 
-const tab = ref('store')
+const tab = ref('homepage')
 const orders = ref([])
 const ordersLoading = ref(false)
 const ordersError = ref('')
@@ -42,7 +42,9 @@ function opsErrorMessage (e, fallback) {
 }
 
 const tabs = [
-  { id: 'store', label: 'Store & products' },
+  { id: 'homepage', label: 'Homepage text' },
+  { id: 'store', label: 'Manual products' },
+  { id: 'inventory', label: 'Inventory & pricing' },
   { id: 'catalog', label: 'Hide catalog items' },
   { id: 'ledger', label: 'Transactions & tax' },
   { id: 'monitor', label: 'Traffic & errors' },
@@ -196,11 +198,25 @@ useSeoMeta({
       </button>
     </nav>
 
+  <!-- HOMEPAGE TEXT -->
+    <section v-show="tab === 'homepage'" class="bc-panel__section">
+      <h2>Homepage text &amp; ribbon</h2>
+      <p class="bc-panel__note">Edit the headline, intro paragraph, and top ribbon on bcpoweraudio.com. Use <strong>Colors &amp; theme</strong> for red/background colors.</p>
+      <BcOpsHomepageEditor />
+    </section>
+
   <!-- STORE & PRODUCTS -->
     <section v-show="tab === 'store'" class="bc-panel__section">
-      <h2>Your B&amp;C megastore</h2>
-      <p class="bc-panel__note">This controls the live catalog, prices, hero text, and whether the store is open or in maintenance mode.</p>
+      <h2>Manual product rows (optional)</h2>
+      <p class="bc-panel__note">Extra products you add by hand. The live Petra catalog is managed under <strong>Inventory &amp; pricing</strong>.</p>
       <BcOpsStoreEditor />
+    </section>
+
+  <!-- INVENTORY & PRICING -->
+    <section v-show="tab === 'inventory'" class="bc-panel__section">
+      <h2>Inventory, wholesale &amp; retail prices</h2>
+      <p class="bc-panel__note">See Petra wholesale cost, markup %, and set the retail price customers pay. Wholesale is never shown on the storefront.</p>
+      <BcOpsInventoryPricing />
     </section>
 
   <!-- HIDE PETRA CATALOG ITEMS -->
