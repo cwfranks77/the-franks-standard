@@ -7,7 +7,7 @@
     :error="error"
     :submitting="submitting"
     :key-configured="keyConfigured"
-    @update:phrase="phrase = $event"
+    @update:phrase="onPhraseInput"
     @close="closeModal"
     @submit="submitModal"
   />
@@ -23,4 +23,8 @@ const {
   closeModal,
   submitModal,
 } = useLogoOwnerKnock()
+
+function onPhraseInput (value) {
+  phrase.value = value
+}
 </script>

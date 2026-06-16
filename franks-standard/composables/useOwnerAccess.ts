@@ -35,7 +35,7 @@ export function useOwnerAccess () {
       })
       return true
     }
-    error.value = 'That phrase does not match. Type it exactly — capitals do not matter.'
+    error.value = 'That phrase does not match. Type it exactly — spaces become dashes, capitals do not matter.'
     return false
   }
 

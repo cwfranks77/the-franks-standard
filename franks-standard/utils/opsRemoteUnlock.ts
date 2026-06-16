@@ -1,11 +1,19 @@
 import { normalizeOpsPhrase } from '~/utils/opsPhrase'
+import { verifyOpsPhraseBrowser } from '~/utils/opsClientAuth'
 
-/** Verify owner phrase via Supabase Edge (static GitHub Pages — no hash in browser). */
+/** Verify operator phrase — hash check on static GitHub Pages, Supabase Edge as backup. */
 export async function verifyOpsPhraseRemote (phrase: string): Promise<boolean> {
   const normalized = normalizeOpsPhrase(phrase)
   if (!normalized) return false
 
   const config = useRuntimeConfig()
+  const expectedHash = String(config.public.opsAccessKeyHash || '').trim().toLowerCase()
+
+  if (expectedHash && import.meta.client) {
+    const localOk = await verifyOpsPhraseBrowser(phrase, expectedHash)
+    if (localOk) return true
+  }
+
   const base = String(config.public.supabaseUrl || '').replace(/\/$/, '')
   if (!base) return false
 

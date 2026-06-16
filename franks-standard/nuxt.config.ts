@@ -66,6 +66,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       opsUnlockAvailable,
+      /** SHA-256 of normalized phrase — safe for static unlock; never the plain phrase. */
+      opsAccessKeyHash: opsAccessKeyHash,
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://thefranksstandard.com',
       supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL || '',
       supabaseKey: process.env.NUXT_PUBLIC_SUPABASE_KEY || process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY || '',

@@ -126,6 +126,9 @@ jobs:
           deploy bc-voice-inbound --no-verify-jwt
           deploy ops-error-ingest --no-verify-jwt
           deploy ops-incident-action --no-verify-jwt
+          deploy ops-session --no-verify-jwt
+          deploy ops-owner-feed --no-verify-jwt
+          deploy platform-log-activity --no-verify-jwt
           deploy verify-coa-serial --no-verify-jwt
           deploy auth-send-email --no-verify-jwt
           # Authenticated (JWT required)
