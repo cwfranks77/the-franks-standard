@@ -147,6 +147,8 @@ function runRebuildNote() {
 
           <OwnerEmbeddedStoreBuilder v-else-if="activeTool === 'ai-store'" />
 
+          <OwnerForcedRefundPanel v-else-if="activeTool === 'forced-refund'" />
+
           <CatalogManager
             v-else-if="activeTool === 'add-product' || activeTool === 'catalog-editor'"
             :products="products"
