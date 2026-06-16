@@ -3,26 +3,24 @@ import ownerTools from '~/data/owner-tools.json'
 import productsCatalog from '~/data/products.json'
 
 useHead({
-  title: 'Owner Tools — The Franks Standard',
-  meta: [{ name: 'robots', content: 'noindex,nofollow' }]
+  title: 'Operations — The Franks Standard',
+  meta: [{ name: 'robots', content: 'noindex,nofollow' }],
 })
 
 const { unlocked, tryUnlock, lock, error, keyConfigured } = useOwnerAccess()
 const keyInput = ref('')
 const keyError = ref(false)
 const activeTool = ref('add-product')
+
+function selectTool (toolId) {
+  activeTool.value = toolId
+}
 const products = ref([...productsCatalog])
 const transactionLog = ref([
   { id: 1, type: 'sale', detail: 'Sample escrow hold — cards-001', amount: 12500, at: '2026-06-14' },
   { id: 2, type: 'tax', detail: 'LA sales tax collected — zip 70112', amount: 118.13, at: '2026-06-14' },
   { id: 3, type: 'reserve', detail: '25% income tax reserve', amount: 3125, at: '2026-06-14' }
 ])
-const coaSerial = ref('')
-const nextCoa = computed(() => {
-  const year = new Date().getFullYear()
-  const n = String(Math.floor(Math.random() * 900000) + 100000)
-  return `FS-${year}-${n}`
-})
 const wholesaleLog = ref([
   { node: 'Distributor A — cards', amount: 4500, status: 'transferred', at: '2026-06-13' },
   { node: 'Distributor B — watches', amount: 8200, status: 'pending', at: '2026-06-14' }
@@ -63,11 +61,6 @@ function addProduct(payload) {
   })
   activeTool.value = 'catalog-editor'
 }
-
-function issueCoa() {
-  coaSerial.value = nextCoa.value
-}
-
 function simulateImport() {
   importStatus.value = 'Ready — drop eBay Seller Hub CSV here (UI placeholder; wire to /sell/import in production).'
 }
@@ -78,15 +71,16 @@ function runRebuildNote() {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-bg">
-    <MainHeader />
+  <div class="marketplace-shell min-h-screen flex flex-col bg-bg text-textMain">
+    <header class="border-b border-border bg-surface px-4 py-3">
+      <NuxtLink to="/" class="text-sm text-white/90 hover:text-primary">← Back to marketplace</NuxtLink>
+    </header>
 
     <main class="flex-1 max-w-6xl mx-auto px-4 py-8 w-full">
       <div v-if="!unlocked" class="max-w-md mx-auto bg-surface2 border border-border rounded-xl p-6 mt-12">
-        <h1 class="text-xl font-semibold mb-2">Owner access</h1>
-        <p class="text-sm text-textMuted mb-4">
-          Enter your <strong>operator phrase</strong> — the same password stored as
-          <code class="text-primary">NUXT_PUBLIC_OPS_ACCESS_KEY</code> in GitHub Secrets.
+        <h1 class="text-xl font-semibold mb-2 text-white">Operator access</h1>
+        <p class="text-sm text-white/80 mb-4">
+          Enter your private operator phrase (set in GitHub Secrets, not your email password).
         </p>
         <p v-if="!keyConfigured" class="text-xs text-danger mb-3">
           This build has no phrase configured yet. Add the secret in GitHub or create a local
@@ -111,9 +105,9 @@ function runRebuildNote() {
       <template v-else>
         <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
           <div>
-            <h1 class="text-2xl font-bold">Owner tools</h1>
-            <p class="text-sm text-textMuted mt-1">
-              Charles Franks — marketplace operations, tax, catalog, and trust enforcement.
+            <h1 class="text-2xl font-bold text-white">Operations console</h1>
+            <p class="text-sm text-white/80 mt-1">
+              Tax, catalog, trust enforcement, and marketplace operations.
             </p>
           </div>
           <button
@@ -128,7 +122,7 @@ function runRebuildNote() {
         <OwnerToolsPanel
           :tools="ownerTools"
           :active-tool="activeTool"
-          @select="activeTool = $event"
+          @select="selectTool"
         >
           <header class="mb-4 pb-3 border-b border-border">
             <p class="text-xs text-textMuted uppercase tracking-wide">{{ activeMeta?.category }}</p>
@@ -177,29 +171,14 @@ function runRebuildNote() {
           </div>
 
           <div v-else-if="activeTool === 'coa-manager'" class="space-y-4 text-sm">
-            <p class="text-textMuted">Floor office COA serial tied to one listing. Buyers verify before payment.</p>
-            <button
-              type="button"
-              class="px-4 py-2 bg-primary text-bg rounded text-sm"
-              @click="issueCoa"
-            >
-              Issue new COA serial
-            </button>
-            <p v-if="coaSerial" class="font-mono text-secondary text-lg">{{ coaSerial }}</p>
+            <p class="text-white/85">Issue Franks COA serials for seller listings. Print and transfer stay locked until serial + e-signature.</p>
+            <SellerCoaWorkspace />
           </div>
 
-          <div v-else-if="activeTool === 'enforcement'" class="space-y-2 text-sm">
-            <ul class="space-y-2">
-              <li
-                v-for="row in enforcementQueue"
-                :key="row.id"
-                class="flex justify-between bg-bg border border-border rounded px-3 py-2"
-              >
-                <span>{{ row.id }} — {{ row.issue }}</span>
-                <span class="text-danger uppercase text-xs">{{ row.status }}</span>
-              </li>
-            </ul>
-          </div>
+          <EnforcementReviewPanel
+            v-else-if="activeTool === 'enforcement'"
+            :queue="enforcementQueue"
+          />
 
           <div v-else-if="activeTool === 'ebay-import'" class="space-y-3 text-sm">
             <p class="text-textMuted">Import from eBay Seller Hub CSV export.</p>
@@ -209,12 +188,20 @@ function runRebuildNote() {
             <p v-if="importStatus" class="text-secondary">{{ importStatus }}</p>
           </div>
 
-          <div v-else-if="activeTool === 'ai-store'" class="space-y-3 text-sm text-textMuted">
-            <p>AI Store Builder drafts listing copy, SEO, and dropship setup steps.</p>
-            <ul class="list-disc list-inside space-y-1">
-              <li>Generate product descriptions from photos</li>
-              <li>Suggest category and COA requirements</li>
-              <li>Full dropship onboarding checklist</li>
+          <div v-else-if="activeTool === 'ai-store'" class="space-y-4 text-sm">
+            <p class="text-textMuted">Customer-facing AI tools — same pages sellers use on the public site.</p>
+            <div class="flex flex-wrap gap-3">
+              <NuxtLink to="/store-builder" class="px-4 py-2 bg-primary text-bg rounded font-medium hover:opacity-90">
+                Open AI Store Builder
+              </NuxtLink>
+              <NuxtLink to="/sell/dropship-setup" class="px-4 py-2 border border-border rounded hover:border-primary text-textMain">
+                Dropshipping AI setup
+              </NuxtLink>
+            </div>
+            <ul class="list-disc list-inside space-y-1 text-textMuted">
+              <li>SEO pack for Google, Bing, and listing titles</li>
+              <li>Dropship supplier plan and fulfillment checklist</li>
+              <li>Progress saves on the seller&apos;s device until account sync is added</li>
             </ul>
           </div>
 
@@ -243,7 +230,5 @@ function runRebuildNote() {
         </OwnerToolsPanel>
       </template>
     </main>
-
-    <MainFooter />
   </div>
 </template>

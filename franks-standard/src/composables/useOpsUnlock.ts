@@ -1,10 +1,8 @@
 import { normalizeOpsPhrase } from '~/utils/opsPhrase'
-import {
-  storeOpsPhraseForSession,
-  verifyOpsPhraseBrowser,
-} from '~/utils/opsClientAuth'
+import { storeOpsPhraseForSession } from '~/utils/opsClientAuth'
+import { verifyOpsPhraseRemote } from '~/utils/opsRemoteUnlock'
 
-/** Owner unlock — browser hash on static GitHub Pages; server cookie in dev. */
+/** Owner unlock — phrase checked on server only (never embed hash in static HTML). */
 export function useOpsUnlock () {
   const config = useRuntimeConfig()
   const router = useRouter()
@@ -15,48 +13,26 @@ export function useOpsUnlock () {
   const submitting = ref(false)
 
   const keyConfigured = computed(
-    () => String(config.public?.opsAccessKeyHash || '').length > 0,
+    () => Boolean(config.public?.opsUnlockAvailable),
   )
 
   async function submit (): Promise<boolean> {
     error.value = ''
     if (!keyConfigured.value) {
-      error.value = 'Operator key is not configured on this build. Add NUXT_PUBLIC_OPS_ACCESS_KEY in GitHub Actions and redeploy.'
+      error.value = 'Operator unlock is not configured on this build. Set owner secrets and redeploy.'
       return false
     }
     submitting.value = true
     try {
       const raw = String(phrase.value || '').trim()
-      const expectedHash = String(config.public?.opsAccessKeyHash || '').trim().toLowerCase()
-
-      async function unlockSuccess () {
-        grant()
-        storeOpsPhraseForSession(normalizeOpsPhrase(raw))
-        phrase.value = ''
-        return true
+      if (!(await verifyOpsPhraseRemote(raw))) {
+        error.value = 'That phrase does not match your owner password. Type it exactly — capitals do not matter.'
+        return false
       }
-
-      if (await verifyOpsPhraseBrowser(raw, expectedHash)) {
-        return await unlockSuccess()
-      }
-
-      if (import.meta.dev) {
-        try {
-          await $fetch('/api/ops/session', {
-            method: 'POST',
-            body: { phrase: normalizeOpsPhrase(raw) },
-          })
-          return await unlockSuccess()
-        } catch (e: unknown) {
-          const err = e as { data?: { statusMessage?: string }; message?: string }
-          error.value = err?.data?.statusMessage || err?.message ||
-            'That phrase does not match your owner password.'
-          return false
-        }
-      }
-
-      error.value = 'That phrase does not match your owner password. Type it exactly — capitals do not matter.'
-      return false
+      grant()
+      storeOpsPhraseForSession(normalizeOpsPhrase(raw))
+      phrase.value = ''
+      return true
     } finally {
       submitting.value = false
     }

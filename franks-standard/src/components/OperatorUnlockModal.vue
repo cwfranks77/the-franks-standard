@@ -33,7 +33,7 @@ const emit = defineEmits(['update:phrase', 'close', 'submit'])
         </p>
         <form @submit.prevent="emit('submit')">
           <div v-if="!keyConfigured" class="op-warn" role="alert">
-            Add <code>NUXT_PUBLIC_OPS_ACCESS_KEY</code> in <code>.env</code> and in GitHub Actions secrets, then rebuild.
+            Add owner unlock secrets (build + Supabase <code>ops-session</code>), then rebuild and deploy.
           </div>
           <template v-else>
             <div class="form-group">

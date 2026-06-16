@@ -1,28 +1,25 @@
 import {
   clearStoredOpsPhrase,
   storeOpsPhraseForSession,
-  verifyOpsPhraseBrowser
 } from '~/utils/opsClientAuth'
+import { verifyOpsPhraseRemote } from '~/utils/opsRemoteUnlock'
 
-export function useOwnerAccess() {
+export function useOwnerAccess () {
   const config = useRuntimeConfig()
   const unlocked = useState<boolean>('owner-unlocked', () => false)
   const error = useState<string>('owner-unlock-error', () => '')
 
   const keyConfigured = computed(
-    () => String(config.public.opsAccessKeyHash || '').length > 0
+    () => Boolean(config.public.opsUnlockAvailable),
   )
 
-  async function tryUnlock(phrase: string) {
+  async function tryUnlock (phrase: string) {
     error.value = ''
     if (!keyConfigured.value) {
-      error.value = 'Operator phrase is not configured on this build. Set NUXT_PUBLIC_OPS_ACCESS_KEY in GitHub Secrets or a local .env file, then rebuild.'
+      error.value = 'Operator phrase is not configured on this build. Set owner secrets, then rebuild.'
       return false
     }
-    const ok = await verifyOpsPhraseBrowser(
-      phrase,
-      String(config.public.opsAccessKeyHash || '')
-    )
+    const ok = await verifyOpsPhraseRemote(phrase)
     if (ok) {
       unlocked.value = true
       storeOpsPhraseForSession(phrase)
@@ -32,7 +29,7 @@ export function useOwnerAccess() {
     return false
   }
 
-  function lock() {
+  function lock () {
     unlocked.value = false
     clearStoredOpsPhrase()
   }

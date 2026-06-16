@@ -6,6 +6,7 @@ const opsKeyHashFromEnv = String(process.env.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH || 
 const opsAccessKeyHash = opsKeyPlain
   ? createHash('sha256').update(normalizeOpsPhrase(opsKeyPlain)).digest('hex')
   : opsKeyHashFromEnv
+const opsUnlockAvailable = Boolean(opsAccessKeyHash)
 
 if (opsAccessKeyHash) {
   process.env.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH = opsAccessKeyHash
@@ -14,7 +15,7 @@ if (opsAccessKeyHash) {
 // nuxt.config.ts
 export default defineNuxtConfig({
   ssr: true,
-  css: ['~/assets/css/main.css', '~/assets/css/marketplace-ui.css'],
+  css: ['~/assets/css/main.css', '~/assets/css/marketplace-ui.css', '~/assets/css/marketplace-dark.css'],
   modules: ['@nuxtjs/tailwindcss'],
   tailwindcss: {
     cssPath: '~/assets/css/tailwind.css',
@@ -46,23 +47,22 @@ export default defineNuxtConfig({
       crawlLinks: true,
       routes: [
         '/',
-        '/owner',
         '/browse',
         '/sell',
-        '/item/cards-001',
-        '/item/watch-001',
-        '/item/sneaker-001',
-        '/item/coin-001',
-        '/item/art-001',
-        '/item/estate-001'
+        '/sell/start',
+        '/sell/coa',
+        '/sell/dropship-setup',
+        '/store-builder',
       ],
       failOnError: false
     },
   },
   runtimeConfig: {
     public: {
-      opsAccessKeyHash,
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://thefranksstandard.com'
+      opsUnlockAvailable,
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://thefranksstandard.com',
+      supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL || '',
+      supabaseKey: process.env.NUXT_PUBLIC_SUPABASE_KEY || process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY || '',
     }
   }
 })

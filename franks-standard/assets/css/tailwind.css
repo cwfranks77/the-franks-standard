@@ -3,7 +3,23 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  background-color: #050509;
+/* Marketplace dark shell — wins over light-theme rules in main.css */
+body:has(.bg-bg) {
+  background-color: #050509 !important;
+  color: #f9fafb !important;
+}
+
+body:has(.bg-bg)::before {
+  display: none !important;
+}
+
+.bg-bg {
+  color: #f9fafb;
+}
+
+.bg-bg h1,
+.bg-bg h2,
+.bg-bg h3,
+.bg-bg h4 {
   color: #f9fafb;
 }

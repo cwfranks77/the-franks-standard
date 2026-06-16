@@ -31,7 +31,7 @@ export function verifyOpsSessionToken (token: string | undefined, secret: string
 }
 
 export function opsSessionSecret (config: ReturnType<typeof useRuntimeConfig>): string {
-  return String(config.opsSessionSecret || config.public.opsAccessKeyHash || '')
+  return String(config.opsSessionSecret || config.opsAccessKeyHash || '')
 }
 
 export function isOpsAuthed (event: H3Event): boolean {

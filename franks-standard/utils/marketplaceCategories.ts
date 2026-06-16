@@ -1,0 +1,182 @@
+﻿/** Canonical listing / store categories — keep sell, browse, and store-builder in sync. */
+
+export const LISTING_CATEGORIES = [
+  'Sports Cards & Memorabilia',
+  'Trading Card Games (Pokemon, MTG, etc.)',
+  'Comics & Graphic Novels',
+  'Autographs & Entertainment Memorabilia',
+  'Musical Instruments',
+  'Firearms Accessories',
+  'Coins & Currency',
+  'Art & Antiques',
+  'Watches & Jewelry',
+  'Sneakers & Streetwear',
+  'Luxury Handbags & Fashion',
+  'Apparel & Clothing',
+  'Vintage Electronics & Games',
+  'Consumer Electronics',
+  'Toys & Action Figures',
+  'Books & Manuscripts',
+  'Photography & Film Gear',
+  'Tools & Workshop Equipment',
+  'Appliances & Home Improvement',
+  'Furniture & Home Decor',
+  'Home & Estate Collectibles',
+  'Garden, Patio & Outdoor Living',
+  'Sporting Goods & Outdoors',
+  'Automotive Parts & Accessories',
+  'Pet Supplies',
+  'Beauty & Personal Care',
+  'Health & Wellness',
+  'Baby, Kids & Family',
+  'Food & Gourmet (shelf-stable)',
+  'Office & School Supplies',
+  'Craft, Hobby & Maker Supplies',
+  'Wholesale & Bulk Lots',
+  'General Merchandise',
+  'General Store',
+  'Other (describe in listing)',
+] as const
+
+export type ListingCategory = (typeof LISTING_CATEGORIES)[number]
+
+/** General retail — accurate listing required; COA / signed guarantee not required. */
+export const NON_COLLECTIBLE_CATEGORIES: readonly ListingCategory[] = [
+  'Consumer Electronics',
+  'Tools & Workshop Equipment',
+  'Appliances & Home Improvement',
+  'Furniture & Home Decor',
+  'Garden, Patio & Outdoor Living',
+  'Sporting Goods & Outdoors',
+  'Automotive Parts & Accessories',
+  'Pet Supplies',
+  'Beauty & Personal Care',
+  'Health & Wellness',
+  'Baby, Kids & Family',
+  'Food & Gourmet (shelf-stable)',
+  'Office & School Supplies',
+  'Craft, Hobby & Maker Supplies',
+  'Apparel & Clothing',
+  'General Merchandise',
+  'General Store',
+  'Firearms Accessories',
+] as const
+
+/** Words in title/description that mean “this is a collectible” even if category is general merch. */
+export const COLLECTIBLE_INTENT_RE =
+  /\b(collectible|collectables|antique|antiques|vintage|graded|slabbed|slab|psa|bgs|sgc|pcgs|ngc|pmg|autograph|signed by|memorabilia|rookie card|trading card|sports card|pokemon|charizard|mtg|magic the gathering|comic book|key issue|first edition|coin|currency|numismatic|bullion|morgan dollar|silver eagle|estate find|provenance|certificate of authenticity|\bcoa\b|authenticity cert|game used|game-worn|1\/1|one of one|limited edition print|original pressing|sealed wax|factory sealed hobby)\b/i
+
+export function textSuggestsCollectible (
+  title?: string | null,
+  description?: string | null,
+): boolean {
+  const text = `${title || ''} ${description || ''}`.trim()
+  if (text.length < 4) return false
+  return COLLECTIBLE_INTENT_RE.test(text)
+}
+
+/** Category alone (import flows, quick checks). */
+export function categoryRequiresCoa (category: string | null | undefined): boolean {
+  const c = String(category || '').trim()
+  if (!c) return false
+  if ((NON_COLLECTIBLE_CATEGORIES as readonly string[]).includes(c)) return false
+  if (c === 'Other (describe in listing)') return false
+  return true
+}
+
+/** Full sell-flow rule: category + title/description keywords. */
+export function listingRequiresCoa (
+  category: string | null | undefined,
+  title?: string | null,
+  description?: string | null,
+): boolean {
+  const c = String(category || '').trim()
+  if (!c) return false
+  if ((NON_COLLECTIBLE_CATEGORIES as readonly string[]).includes(c)) {
+    return textSuggestsCollectible(title, description)
+  }
+  if (c === 'Other (describe in listing)') {
+    return textSuggestsCollectible(title, description)
+  }
+  return true
+}
+
+export const CATEGORY_CATALOG: { icon: string; name: ListingCategory; desc: string }[] = [
+  { icon: '🏆', name: 'Sports Cards & Memorabilia', desc: 'Graded cards, signed jerseys, game-used gear' },
+  { icon: '🃏', name: 'Trading Card Games (Pokemon, MTG, etc.)', desc: 'Sealed product, graded singles, tournament staples' },
+  { icon: '📚', name: 'Comics & Graphic Novels', desc: 'Key issues, slabs, signed editions' },
+  { icon: '✍️', name: 'Autographs & Entertainment Memorabilia', desc: 'Signed photos, props, concert and film collectibles' },
+  { icon: '🎸', name: 'Musical Instruments', desc: 'Vintage guitars, amps, pro audio equipment' },
+  { icon: '🔧', name: 'Firearms Accessories', desc: 'Parts, optics, triggers — no ATF-reportable items' },
+  { icon: '🪙', name: 'Coins & Currency', desc: 'Rare coins, bullion, graded numismatics' },
+  { icon: '🎨', name: 'Art & Antiques', desc: 'Original artwork, vintage collectibles, estate pieces' },
+  { icon: '⌚', name: 'Watches & Jewelry', desc: 'Luxury watches, certified gems' },
+  { icon: '👟', name: 'Sneakers & Streetwear', desc: 'Authenticated kicks, limited drops' },
+  { icon: '👜', name: 'Luxury Handbags & Fashion', desc: 'Designer bags, apparel, accessories with proof' },
+  { icon: '👕', name: 'Apparel & Clothing', desc: 'Streetwear, vintage wear, branded apparel with clear condition notes' },
+  { icon: '🎮', name: 'Vintage Electronics & Games', desc: 'Rare consoles, sealed software, retro tech' },
+  { icon: '📱', name: 'Consumer Electronics', desc: 'Phones, tablets, audio, and gadgets — working condition documented' },
+  { icon: '🧸', name: 'Toys & Action Figures', desc: 'Vintage toys, sealed boxes, graded figures' },
+  { icon: '📖', name: 'Books & Manuscripts', desc: 'First editions, signed copies, ephemera' },
+  { icon: '📷', name: 'Photography & Film Gear', desc: 'Cameras, lenses, cinema and studio equipment' },
+  { icon: '🛠️', name: 'Tools & Workshop Equipment', desc: 'Pro tools, vintage machines, specialty gear' },
+  { icon: '🔌', name: 'Appliances & Home Improvement', desc: 'Major appliances, fixtures, renovation gear' },
+  { icon: '🛋️', name: 'Furniture & Home Decor', desc: 'Furniture, lighting, decor with honest condition grading' },
+  { icon: '🏠', name: 'Home & Estate Collectibles', desc: 'Decor, glassware, estate finds with documentation' },
+  { icon: '🌿', name: 'Garden, Patio & Outdoor Living', desc: 'Patio, garden tools, outdoor furniture and decor' },
+  { icon: '⛺', name: 'Sporting Goods & Outdoors', desc: 'Camping, fishing, team sports, outdoor equipment' },
+  { icon: '🚗', name: 'Automotive Parts & Accessories', desc: 'Parts, wheels, car audio, detailing — not whole vehicles' },
+  { icon: '🐾', name: 'Pet Supplies', desc: 'Beds, gear, premium pet products with clear descriptions' },
+  { icon: '💄', name: 'Beauty & Personal Care', desc: 'Sealed beauty, fragrance, grooming — authenticity where applicable' },
+  { icon: '💪', name: 'Health & Wellness', desc: 'Fitness gear, wellness products — comply with listing rules' },
+  { icon: '👶', name: 'Baby, Kids & Family', desc: 'Gear, clothing, family products — safety and condition noted' },
+  { icon: '🍯', name: 'Food & Gourmet (shelf-stable)', desc: 'Sealed shelf-stable gourmet — no perishable cold-chain items' },
+  { icon: '📎', name: 'Office & School Supplies', desc: 'Supplies, organizers, tech accessories for work and school' },
+  { icon: '🧵', name: 'Craft, Hobby & Maker Supplies', desc: 'Fabric, kits, maker tools, hobby inventory' },
+  { icon: '📦', name: 'Wholesale & Bulk Lots', desc: 'Multi-unit lots, pallet-style inventory with clear manifests' },
+  { icon: '🛒', name: 'General Merchandise', desc: 'Variety retail, mixed SKUs, gifts, home goods, everyday products' },
+  { icon: '🏪', name: 'General Store', desc: 'Multi-category shop — general retail across several product lines' },
+  { icon: '✨', name: 'Other (describe in listing)', desc: 'Specialty inventory — explain in your listing copy' },
+]
+
+export const STORE_CATEGORY_TAGLINES: Partial<Record<ListingCategory, string>> = {
+  'Sports Cards & Memorabilia': 'Authenticated cards and memorabilia. Every piece has proof.',
+  'Trading Card Games (Pokemon, MTG, etc.)': 'Verified TCG singles and sealed product. Play and collect with confidence.',
+  'Comics & Graphic Novels': 'Key issues and slabs with provenance. Story-worthy inventory only.',
+  'Autographs & Entertainment Memorabilia': 'Signed pieces and show memorabilia backed by proof.',
+  'Musical Instruments': 'Verified instruments for serious musicians. Play with confidence.',
+  'Firearms Accessories': 'Quality parts and optics. Every item as described.',
+  'Coins & Currency': 'Graded coins and certified currency. Real value, real proof.',
+  'Art & Antiques': 'Provenance-backed art and antiques. The real deal only.',
+  'Watches & Jewelry': 'Certified timepieces and fine jewelry. Authenticity guaranteed.',
+  'Sneakers & Streetwear': 'Authenticated kicks and drops. No fakes, no exceptions.',
+  'Luxury Handbags & Fashion': 'Designer fashion with documentation. Wear and resell with proof.',
+  'Apparel & Clothing': 'Honest condition notes on every garment — trust before checkout.',
+  'Vintage Electronics & Games': 'Verified retro tech and sealed games. Collector grade.',
+  'Consumer Electronics': 'Working gear, clearly graded — no mystery defects.',
+  'Toys & Action Figures': 'Vintage and modern collectibles with clear condition notes.',
+  'Books & Manuscripts': 'First editions and signed works. Bibliophile-grade listings.',
+  'Photography & Film Gear': 'Working glass and bodies, honestly graded and described.',
+  'Tools & Workshop Equipment': 'Pro-grade tools for makers who need the real thing.',
+  'Appliances & Home Improvement': 'Major items described accurately — function and cosmetic grade clear.',
+  'Furniture & Home Decor': 'Pieces described with dimensions, wear, and delivery expectations.',
+  'Home & Estate Collectibles': 'Estate pieces with story and proof where it matters.',
+  'Garden, Patio & Outdoor Living': 'Outdoor goods listed with real photos and condition.',
+  'Sporting Goods & Outdoors': 'Gear for players and adventurers — as-described condition.',
+  'Automotive Parts & Accessories': 'Fitment and condition documented for every part.',
+  'Pet Supplies': 'Quality pet gear from sellers who stand behind their listings.',
+  'Beauty & Personal Care': 'Sealed products with clear batch and condition notes.',
+  'Health & Wellness': 'Wellness inventory with transparent descriptions.',
+  'Baby, Kids & Family': 'Family essentials with safety and condition front and center.',
+  'Food & Gourmet (shelf-stable)': 'Sealed gourmet goods — honest labeling and dating.',
+  'Office & School Supplies': 'Work and school essentials, fairly priced and described.',
+  'Craft, Hobby & Maker Supplies': 'Maker inventory with clear quantity and condition.',
+  'Wholesale & Bulk Lots': 'Bulk lots with manifests buyers can trust.',
+  'General Merchandise': 'Everyday goods and variety retail — clear descriptions and honest condition notes.',
+  'General Store': 'Your one-stop shop on The Franks Standard — multiple categories, one trusted seller.',
+  'Other (describe in listing)': 'Specialty inventory with clear authenticity standards.',
+}
+
+export function categoryListForAi (): string {
+  return CATEGORY_CATALOG.map((c) => `• ${c.icon} ${c.name}`).join('\n')
+}

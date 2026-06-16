@@ -31,7 +31,7 @@
     "id": "transaction-log",
     "icon": "📋",
     "title": "Transaction Log",
-    "description": "Owner-level logging of sales, refunds, and tax events.",
+    "description": "Platform logging of sales, refunds, and tax events.",
     "category": "Operations"
   },
   {
@@ -44,8 +44,8 @@
   {
     "id": "enforcement",
     "icon": "⚖️",
-    "title": "Enforcement Queue",
-    "description": "Review reports, forced refunds, account freezes, and COA revocations.",
+    "title": "Refund & Counterfeit Review",
+    "description": "Select a case to review reports, approve forced refunds, freezes, and COA revocations.",
     "category": "Trust"
   },
   {

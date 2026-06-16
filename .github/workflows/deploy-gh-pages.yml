@@ -41,19 +41,21 @@ jobs:
           cache: npm
 
       - name: Install
-        working-directory: franks-standard
+        working-directory: franks-standard/franks-standard
         run: npm install --no-audit --no-fund
 
       - name: Generate static site
-        working-directory: franks-standard
+        working-directory: franks-standard/franks-standard
         env:
           NUXT_PUBLIC_SITE_URL: https://thefranksstandard.com
           NUXT_PUBLIC_OPS_ACCESS_KEY: ${{ secrets.NUXT_PUBLIC_OPS_ACCESS_KEY }}
+          NUXT_PUBLIC_SUPABASE_URL: ${{ secrets.NUXT_PUBLIC_SUPABASE_URL }}
+          NUXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NUXT_PUBLIC_SUPABASE_KEY }}
         run: npm run generate
 
       - name: Ping Bing IndexNow (single homepage URL)
         continue-on-error: true
-        working-directory: franks-standard
+        working-directory: franks-standard/franks-standard
         env:
           NUXT_PUBLIC_SITE_URL: https://thefranksstandard.com
         run: node scripts/ping-indexnow.cjs
@@ -61,7 +63,7 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: franks-standard/.output/public
+          path: franks-standard/franks-standard/.output/public
 
       - name: Deploy to GitHub Pages
         id: deployment

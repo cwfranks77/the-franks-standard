@@ -16,7 +16,7 @@ const departments = [
 <template>
   <section class="max-w-6xl mx-auto px-4 pb-4">
     <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
-      <h2 class="text-sm font-semibold text-textMuted uppercase tracking-wide">
+      <h2 class="text-sm font-semibold text-white uppercase tracking-wide">
         Shop by department
       </h2>
       <NuxtLink to="/browse" class="text-xs text-primary hover:underline">
@@ -39,7 +39,7 @@ const departments = [
             decoding="async"
           />
         </div>
-        <p class="text-[0.7rem] font-medium text-center mt-1.5 line-clamp-2 group-hover:text-primary transition">
+        <p class="text-[0.7rem] font-medium text-center mt-1.5 line-clamp-2 text-white group-hover:text-primary transition">
           {{ dept.label }}
         </p>
       </NuxtLink>

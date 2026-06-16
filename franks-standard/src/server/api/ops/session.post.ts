@@ -4,7 +4,7 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const phrase = String(body?.phrase || '')
   const config = useRuntimeConfig()
-  const expectedHash = String(config.public.opsAccessKeyHash || '')
+  const expectedHash = String(config.opsAccessKeyHash || '')
 
   if (!expectedHash) {
     throw createError({ statusCode: 503, statusMessage: 'Operator key not configured on this build.' })

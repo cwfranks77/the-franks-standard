@@ -1025,3 +1025,22 @@ label {
 @media (prefers-reduced-motion: reduce) {
   .animate-float-slow { animation: none; }
 }
+
+/* Dark marketplace pages (Tailwind shell) — keep text readable on black backgrounds */
+body:has(.bg-bg) {
+  background: #050509 !important;
+  color: #f9fafb !important;
+}
+body:has(.bg-bg)::before {
+  display: none !important;
+}
+.bg-bg h1,
+.bg-bg h2,
+.bg-bg h3,
+.bg-bg h4,
+.bg-bg p,
+.bg-bg li,
+.bg-bg label,
+.bg-bg span:not([class*="text-"]) {
+  color: #f9fafb;
+}
