@@ -1,9 +1,65 @@
 [
   {
-    "id": "add-product",
+    "id": "site-activity",
+    "icon": "📡",
+    "title": "Site Activity Monitor",
+    "description": "Signed-in account activity with IP, names, and action type. Anonymous viewers are not named.",
+    "category": "Operations"
+  },
+  {
+    "id": "transaction-log",
+    "icon": "💳",
+    "title": "Financial Transactions",
+    "description": "All platform sales, escrow, refunds, and payment events — no personal emails shown.",
+    "category": "Operations"
+  },
+  {
+    "id": "message-monitor",
+    "icon": "💬",
+    "title": "Message Monitor",
+    "description": "On-platform buyer–seller messages. Blocks email, phone, and off-platform contact.",
+    "category": "Operations"
+  },
+  {
+    "id": "privacy-enforcement",
+    "icon": "🔒",
+    "title": "Privacy & On-Platform Rules",
+    "description": "How contact info is blocked and why profiles hide personal data.",
+    "category": "Trust"
+  },
+  {
+    "id": "contact-inbox",
+    "icon": "📬",
+    "title": "Contact Inbox",
+    "description": "Public contact form submissions — operator eyes only.",
+    "category": "Operations"
+  },
+  {
+    "id": "dropship-builder",
     "icon": "📦",
+    "title": "Dropshipping AI Store Builder",
+    "description": "Full AI dropship wizard embedded in the operator console.",
+    "category": "Catalog"
+  },
+  {
+    "id": "ai-store",
+    "icon": "🤖",
+    "title": "AI Store Builder",
+    "description": "SEO, listing templates, and search-engine pack — embedded here.",
+    "category": "Catalog"
+  },
+  {
+    "id": "add-product",
+    "icon": "➕",
     "title": "Add Product",
     "description": "List a new collectible with name, category, and COA details.",
+    "category": "Catalog"
+  },
+  {
+    "id": "catalog-editor",
+    "icon": "✏️",
+    "title": "Catalog Editor",
+    "description": "Edit featured listings and showcase product data.",
     "category": "Catalog"
   },
   {
@@ -28,13 +84,6 @@
     "category": "Finance"
   },
   {
-    "id": "transaction-log",
-    "icon": "📋",
-    "title": "Transaction Log",
-    "description": "Platform logging of sales, refunds, and tax events.",
-    "category": "Operations"
-  },
-  {
     "id": "coa-manager",
     "icon": "🛡️",
     "title": "COA Manager",
@@ -56,25 +105,11 @@
     "category": "Catalog"
   },
   {
-    "id": "ai-store",
-    "icon": "🤖",
-    "title": "AI Store Builder",
-    "description": "Full AI dropship setup and listing description drafts.",
-    "category": "Catalog"
-  },
-  {
     "id": "social-ads",
     "icon": "📣",
     "title": "Social Ads Copy",
     "description": "X, Facebook, Instagram, TikTok, and Telegram ad copy for campaigns.",
     "category": "Marketing"
-  },
-  {
-    "id": "catalog-editor",
-    "icon": "✏️",
-    "title": "Catalog Editor",
-    "description": "Edit featured listings and showcase product data.",
-    "category": "Catalog"
   },
   {
     "id": "site-rebuild",

@@ -10,7 +10,7 @@ useHead({
 const { unlocked, tryUnlock, lock, error, keyConfigured } = useOwnerAccess()
 const keyInput = ref('')
 const keyError = ref(false)
-const activeTool = ref('add-product')
+const activeTool = ref('site-activity')
 
 function selectTool (toolId) {
   activeTool.value = toolId
@@ -133,8 +133,22 @@ function runRebuildNote() {
             <p class="text-sm text-textMuted mt-1">{{ activeMeta?.description }}</p>
           </header>
 
+          <OwnerActivityMonitor v-if="activeTool === 'site-activity'" />
+
+          <OwnerTransactionLedger v-else-if="activeTool === 'transaction-log'" />
+
+          <OwnerMessageMonitor v-else-if="activeTool === 'message-monitor'" />
+
+          <OwnerPrivacyEnforcement v-else-if="activeTool === 'privacy-enforcement'" />
+
+          <OwnerContactInbox v-else-if="activeTool === 'contact-inbox'" />
+
+          <OwnerEmbeddedDropshipBuilder v-else-if="activeTool === 'dropship-builder'" />
+
+          <OwnerEmbeddedStoreBuilder v-else-if="activeTool === 'ai-store'" />
+
           <CatalogManager
-            v-if="activeTool === 'add-product' || activeTool === 'catalog-editor'"
+            v-else-if="activeTool === 'add-product' || activeTool === 'catalog-editor'"
             :products="products"
             @add="addProduct"
           />
@@ -157,19 +171,6 @@ function runRebuildNote() {
             </ul>
           </div>
 
-          <div v-else-if="activeTool === 'transaction-log'" class="space-y-2 text-sm">
-            <ul class="space-y-2 max-h-64 overflow-y-auto">
-              <li
-                v-for="row in transactionLog"
-                :key="row.id"
-                class="flex flex-wrap justify-between gap-2 bg-bg border border-border rounded px-3 py-2"
-              >
-                <span><span class="text-primary uppercase text-xs">{{ row.type }}</span> — {{ row.detail }}</span>
-                <span class="text-textMuted">{{ row.at }}<template v-if="row.amount"> · ${{ row.amount.toLocaleString() }}</template></span>
-              </li>
-            </ul>
-          </div>
-
           <div v-else-if="activeTool === 'coa-manager'" class="space-y-4 text-sm">
             <p class="text-white/85">Issue Franks COA serials for seller listings. Print and transfer stay locked until serial + e-signature.</p>
             <SellerCoaWorkspace />
@@ -186,23 +187,6 @@ function runRebuildNote() {
               Choose CSV file
             </button>
             <p v-if="importStatus" class="text-secondary">{{ importStatus }}</p>
-          </div>
-
-          <div v-else-if="activeTool === 'ai-store'" class="space-y-4 text-sm">
-            <p class="text-textMuted">Customer-facing AI tools — same pages sellers use on the public site.</p>
-            <div class="flex flex-wrap gap-3">
-              <NuxtLink to="/store-builder" class="px-4 py-2 bg-primary text-bg rounded font-medium hover:opacity-90">
-                Open AI Store Builder
-              </NuxtLink>
-              <NuxtLink to="/sell/dropship-setup" class="px-4 py-2 border border-border rounded hover:border-primary text-textMain">
-                Dropshipping AI setup
-              </NuxtLink>
-            </div>
-            <ul class="list-disc list-inside space-y-1 text-textMuted">
-              <li>SEO pack for Google, Bing, and listing titles</li>
-              <li>Dropship supplier plan and fulfillment checklist</li>
-              <li>Progress saves on the seller&apos;s device until account sync is added</li>
-            </ul>
           </div>
 
           <div v-else-if="activeTool === 'social-ads'" class="space-y-3 text-sm">

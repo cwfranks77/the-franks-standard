@@ -3,6 +3,7 @@ import {
   storeOpsPhraseForSession,
 } from '~/utils/opsClientAuth'
 import { verifyOpsPhraseRemote } from '~/utils/opsRemoteUnlock'
+import { appendLocalActivity } from '~/utils/platformActivity'
 
 export function useOwnerAccess () {
   const config = useRuntimeConfig()
@@ -23,6 +24,15 @@ export function useOwnerAccess () {
     if (ok) {
       unlocked.value = true
       storeOpsPhraseForSession(phrase)
+      appendLocalActivity({
+        user_id: 'operator',
+        user_display_name: 'Operator',
+        ip_address: 'browser-session',
+        user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
+        action: 'Operator console unlocked',
+        action_category: 'owner',
+        metadata: {},
+      })
       return true
     }
     error.value = 'That phrase does not match. Type it exactly — capitals do not matter.'

@@ -83,3 +83,12 @@ export function clearStoredOpsPhrase () {
   sessionStorage.removeItem(OPS_PHRASE_STORAGE_KEY)
   localStorage.removeItem(OPS_PHRASE_STORAGE_KEY)
 }
+
+export function getStoredOpsPhrase () {
+  if (!import.meta.client) return ''
+  return (
+    sessionStorage.getItem(OPS_PHRASE_STORAGE_KEY)
+    || localStorage.getItem(OPS_PHRASE_STORAGE_KEY)
+    || ''
+  )
+}
