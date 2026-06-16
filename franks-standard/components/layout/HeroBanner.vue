@@ -1,3 +1,7 @@
+<script setup>
+const { onLogoKnock } = useLogoOwnerKnock()
+</script>
+
 <template>
   <section class="max-w-6xl mx-auto px-4 py-10">
     <div class="grid md:grid-cols-2 gap-8 items-center">
@@ -24,14 +28,22 @@
         </div>
       </div>
       <div class="bg-surface2 rounded-xl border border-border overflow-hidden">
-        <img
-          src="/img/franks-pavilion.png"
-          alt="The Franks Standard marketplace pavilion"
-          class="w-full h-56 md:h-72 object-cover"
-          width="640"
-          height="480"
-          decoding="async"
+        <button
+          type="button"
+          class="block w-full p-0 border-0 bg-transparent cursor-pointer touch-manipulation"
+          aria-label="Marketplace pavilion — tap five times for operator access"
+          @click="onLogoKnock"
         >
+          <img
+            src="/img/franks-pavilion.png"
+            alt="The Franks Standard marketplace pavilion"
+            class="w-full h-56 md:h-72 object-cover pointer-events-none select-none"
+            width="640"
+            height="480"
+            decoding="async"
+            draggable="false"
+          >
+        </button>
         <div class="p-6">
           <p class="text-xs uppercase tracking-wide text-white/80 mb-2">
             Why The Franks Standard?

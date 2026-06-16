@@ -22,15 +22,16 @@ const emit = defineEmits(['update:phrase', 'close', 'submit'])
         role="dialog"
         aria-modal="true"
         aria-label="Operator unlock"
+        @click.stop
       >
         <h2 class="text-lg font-bold text-white mb-2">Operator access</h2>
         <p class="text-sm text-white/80 mb-4">
           Enter your private operator phrase. This is not your email login password.
         </p>
         <p v-if="!keyConfigured" class="text-sm text-amber-300 mb-4" role="alert">
-          Operator unlock is not configured on this build yet.
+          Operator unlock is not configured on this build yet. Add your phrase in GitHub Secrets, then redeploy.
         </p>
-        <form v-else @submit.prevent="emit('submit')">
+        <form v-if="keyConfigured" @submit.prevent="emit('submit')">
           <label class="block text-sm font-medium text-white mb-1" for="operator-phrase">Operator phrase</label>
           <input
             id="operator-phrase"
@@ -42,23 +43,25 @@ const emit = defineEmits(['update:phrase', 'close', 'submit'])
             @input="emit('update:phrase', $event.target.value)"
           />
           <p v-if="error" class="text-sm text-red-300 mb-3" role="alert">{{ error }}</p>
-          <div class="flex justify-end gap-2">
-            <button
-              type="button"
-              class="px-3 py-2 text-sm rounded-md border border-border text-white/90 hover:border-primary"
-              @click="emit('close')"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              class="px-3 py-2 text-sm rounded-md bg-primary text-bg font-medium hover:bg-primary/90 disabled:opacity-50"
-              :disabled="submitting"
-            >
-              {{ submitting ? 'Checking…' : 'Unlock' }}
-            </button>
-          </div>
         </form>
+        <div class="flex justify-end gap-2 mt-2">
+          <button
+            type="button"
+            class="px-3 py-2 text-sm rounded-md border border-border text-white/90 hover:border-primary"
+            @click="emit('close')"
+          >
+            Cancel
+          </button>
+          <button
+            v-if="keyConfigured"
+            type="button"
+            class="px-3 py-2 text-sm rounded-md bg-primary text-bg font-medium hover:bg-primary/90 disabled:opacity-50"
+            :disabled="submitting"
+            @click="emit('submit')"
+          >
+            {{ submitting ? 'Checking…' : 'Unlock' }}
+          </button>
+        </div>
       </div>
     </div>
   </Teleport>

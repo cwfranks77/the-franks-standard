@@ -2,23 +2,40 @@
 export function useLogoOwnerKnock () {
   const router = useRouter()
   const modalOpen = useState('owner-knock-modal', () => false)
-  const phrase = ref('')
+  const knockCount = useState('owner-logo-knock-count', () => 0)
+  const phrase = useState('owner-knock-phrase', () => '')
   const submitting = ref(false)
   const { tryUnlock, error, keyConfigured } = useOwnerAccess()
 
-  let clicks = 0
-  let timer: ReturnType<typeof setTimeout> | null = null
+  let knockTimer: ReturnType<typeof setTimeout> | null = null
+
+  function resetKnockWindow () {
+    if (knockTimer) clearTimeout(knockTimer)
+    knockTimer = setTimeout(() => {
+      knockCount.value = 0
+      knockTimer = null
+    }, 2800)
+  }
 
   function onLogoKnock (event?: Event) {
+    event?.preventDefault()
     event?.stopPropagation()
-    if (timer) clearTimeout(timer)
-    clicks += 1
-    timer = setTimeout(() => { clicks = 0 }, 2800)
-    if (clicks >= 5) {
-      clicks = 0
-      if (timer) clearTimeout(timer)
+
+    resetKnockWindow()
+    knockCount.value += 1
+
+    if (knockCount.value >= 5) {
+      knockCount.value = 0
+      if (knockTimer) {
+        clearTimeout(knockTimer)
+        knockTimer = null
+      }
       phrase.value = ''
-      modalOpen.value = true
+      error.value = ''
+      // Defer modal so the same tap cannot hit the overlay and instantly close it.
+      nextTick(() => {
+        modalOpen.value = true
+      })
     }
   }
 
@@ -44,6 +61,7 @@ export function useLogoOwnerKnock () {
     submitting,
     keyConfigured,
     error,
+    knockCount,
     onLogoKnock,
     closeModal,
     submitModal,
