@@ -10,11 +10,7 @@ useHead({
 const { unlocked, tryUnlock, lock, error, keyConfigured } = useOwnerAccess()
 const keyInput = ref('')
 const keyError = ref(false)
-const activeTool = ref('site-activity')
-
-function selectTool (toolId) {
-  activeTool.value = toolId
-}
+const selectedTool = ref('site-activity')
 const products = ref([...productsCatalog])
 const transactionLog = ref([
   { id: 1, type: 'sale', detail: 'Sample escrow hold — cards-001', amount: 12500, at: '2026-06-14' },
@@ -32,7 +28,20 @@ const enforcementQueue = ref([
 const importStatus = ref('')
 const rebuildStatus = ref('')
 
-const activeMeta = computed(() => ownerTools.find((t) => t.id === activeTool.value))
+const activeMeta = computed(() => ownerTools.find((t) => t.id === selectedTool.value))
+
+function selectTool (toolId) {
+  selectedTool.value = toolId
+  if (!import.meta.client) return
+  nextTick(() => {
+    document.getElementById('owner-tool-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  })
+}
+
+onMounted(() => {
+  const knock = useState('owner-knock-modal', () => false)
+  knock.value = false
+})
 
 function submitKey() {
   keyError.value = false
@@ -59,7 +68,7 @@ function addProduct(payload) {
     amount: 0,
     at: new Date().toISOString().slice(0, 10)
   })
-  activeTool.value = 'catalog-editor'
+  selectedTool.value = 'catalog-editor'
 }
 function simulateImport() {
   importStatus.value = 'Ready — drop eBay Seller Hub CSV here (UI placeholder; wire to /sell/import in production).'
@@ -120,8 +129,8 @@ function runRebuildNote() {
         </div>
 
         <OwnerToolsPanel
+          v-model:active-tool="selectedTool"
           :tools="ownerTools"
-          :active-tool="activeTool"
           @select="selectTool"
         >
           <header class="mb-4 pb-3 border-b border-border">
@@ -133,41 +142,41 @@ function runRebuildNote() {
             <p class="text-sm text-textMuted mt-1">{{ activeMeta?.description }}</p>
           </header>
 
-          <OwnerActivityMonitor v-if="activeTool === 'site-activity'" />
+          <OwnerActivityMonitor v-if="selectedTool === 'site-activity'" />
 
-          <OwnerTransactionLedger v-else-if="activeTool === 'transaction-log'" />
+          <OwnerTransactionLedger v-else-if="selectedTool === 'transaction-log'" />
 
-          <OwnerMessageMonitor v-else-if="activeTool === 'message-monitor'" />
+          <OwnerMessageMonitor v-else-if="selectedTool === 'message-monitor'" />
 
-          <OwnerPrivacyEnforcement v-else-if="activeTool === 'privacy-enforcement'" />
+          <OwnerPrivacyEnforcement v-else-if="selectedTool === 'privacy-enforcement'" />
 
-          <OwnerContactInbox v-else-if="activeTool === 'contact-inbox'" />
+          <OwnerContactInbox v-else-if="selectedTool === 'contact-inbox'" />
 
-          <OwnerEmbeddedDropshipBuilder v-else-if="activeTool === 'dropship-builder'" />
+          <OwnerEmbeddedDropshipBuilder v-else-if="selectedTool === 'dropship-builder'" />
 
-          <OwnerEmbeddedStoreBuilder v-else-if="activeTool === 'ai-store'" />
+          <OwnerEmbeddedStoreBuilder v-else-if="selectedTool === 'ai-store'" />
 
-          <OwnerForcedRefundPanel v-else-if="activeTool === 'forced-refund'" />
+          <OwnerForcedRefundPanel v-else-if="selectedTool === 'forced-refund'" />
 
-          <OwnerListingControl v-else-if="activeTool === 'listing-control'" />
+          <OwnerListingControl v-else-if="selectedTool === 'listing-control'" />
 
-          <OwnerComplianceMonitor v-else-if="activeTool === 'compliance-monitor'" />
+          <OwnerComplianceMonitor v-else-if="selectedTool === 'compliance-monitor'" />
 
-          <OwnerSiteMonitor v-else-if="activeTool === 'site-monitor'" />
+          <OwnerSiteMonitor v-else-if="selectedTool === 'site-monitor'" />
 
-          <OwnerTaxAutoLedger v-else-if="activeTool === 'tax-auto-ledger'" />
+          <OwnerTaxAutoLedger v-else-if="selectedTool === 'tax-auto-ledger'" />
 
           <CatalogManager
-            v-else-if="activeTool === 'add-product' || activeTool === 'catalog-editor'"
+            v-else-if="selectedTool === 'add-product' || selectedTool === 'catalog-editor'"
             :products="products"
             @add="addProduct"
           />
 
-          <TaxReserveCalculator v-else-if="activeTool === 'tax-reserve'" />
+          <TaxReserveCalculator v-else-if="selectedTool === 'tax-reserve'" />
 
-          <ShippingTaxCalculator v-else-if="activeTool === 'shipping-tax'" />
+          <ShippingTaxCalculator v-else-if="selectedTool === 'shipping-tax'" />
 
-          <div v-else-if="activeTool === 'wholesale-transfer'" class="space-y-3 text-sm">
+          <div v-else-if="selectedTool === 'wholesale-transfer'" class="space-y-3 text-sm">
             <p class="text-textMuted">Instant wholesale transfers to fulfillment nodes after each sale.</p>
             <ul class="space-y-2">
               <li
@@ -181,17 +190,17 @@ function runRebuildNote() {
             </ul>
           </div>
 
-          <div v-else-if="activeTool === 'coa-manager'" class="space-y-4 text-sm">
+          <div v-else-if="selectedTool === 'coa-manager'" class="space-y-4 text-sm">
             <p class="text-white/85">Issue Franks COA serials for seller listings. Print and transfer stay locked until serial + e-signature.</p>
             <SellerCoaWorkspace />
           </div>
 
           <EnforcementReviewPanel
-            v-else-if="activeTool === 'enforcement'"
+            v-else-if="selectedTool === 'enforcement'"
             :queue="enforcementQueue"
           />
 
-          <div v-else-if="activeTool === 'ebay-import'" class="space-y-3 text-sm">
+          <div v-else-if="selectedTool === 'ebay-import'" class="space-y-3 text-sm">
             <p class="text-textMuted">Import from eBay Seller Hub CSV export.</p>
             <button type="button" class="px-4 py-2 border border-border rounded hover:border-primary" @click="simulateImport">
               Choose CSV file
@@ -199,7 +208,7 @@ function runRebuildNote() {
             <p v-if="importStatus" class="text-secondary">{{ importStatus }}</p>
           </div>
 
-          <div v-else-if="activeTool === 'social-ads'" class="space-y-3 text-sm">
+          <div v-else-if="selectedTool === 'social-ads'" class="space-y-3 text-sm">
             <p class="text-textMuted">Campaign copy lives in <code class="text-primary">assets/SOCIAL_MEDIA_ADS.md</code></p>
             <ul class="list-disc list-inside space-y-1 text-textMuted">
               <li>Security stack ads (COA, escrow, enforcement)</li>
@@ -208,7 +217,7 @@ function runRebuildNote() {
             </ul>
           </div>
 
-          <div v-else-if="activeTool === 'site-rebuild'" class="space-y-3 text-sm">
+          <div v-else-if="selectedTool === 'site-rebuild'" class="space-y-3 text-sm">
             <p class="text-textMuted">Uses today&apos;s revised build scripts in order:</p>
             <ol class="list-decimal list-inside space-y-1 text-textMuted">
               <li><code>nuxt generate</code></li>
@@ -220,6 +229,10 @@ function runRebuildNote() {
               Show build command
             </button>
             <p v-if="rebuildStatus" class="text-xs font-mono bg-bg border border-border rounded p-2">{{ rebuildStatus }}</p>
+          </div>
+
+          <div v-else class="text-sm text-white/60">
+            Pick a tool from the menu on the left (or above on mobile).
           </div>
         </OwnerToolsPanel>
       </template>

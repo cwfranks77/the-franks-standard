@@ -45,6 +45,13 @@ export function useLogoOwnerKnock () {
     error.value = ''
   }
 
+  if (import.meta.client) {
+    const router = useRouter()
+    router.afterEach((to) => {
+      if (to.path.startsWith('/owner')) modalOpen.value = false
+    })
+  }
+
   async function submitModal () {
     submitting.value = true
     const ok = await tryUnlock(phrase.value)

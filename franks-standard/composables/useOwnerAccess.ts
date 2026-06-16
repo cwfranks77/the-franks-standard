@@ -1,5 +1,6 @@
 import {
   clearStoredOpsPhrase,
+  getStoredOpsPhrase,
   storeOpsPhraseForSession,
 } from '~/utils/opsClientAuth'
 import { verifyOpsPhraseRemote } from '~/utils/opsRemoteUnlock'
@@ -13,6 +14,15 @@ export function useOwnerAccess () {
   const keyConfigured = computed(
     () => Boolean(config.public.opsUnlockAvailable),
   )
+
+  function restoreSessionIfPossible () {
+    if (!import.meta.client || unlocked.value) return
+    if (getStoredOpsPhrase()) unlocked.value = true
+  }
+
+  if (import.meta.client) {
+    onMounted(restoreSessionIfPossible)
+  }
 
   async function tryUnlock (phrase: string) {
     error.value = ''
