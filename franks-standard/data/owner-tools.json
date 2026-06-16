@@ -91,6 +91,34 @@
     "category": "Trust"
   },
   {
+    "id": "listing-control",
+    "icon": "🗑️",
+    "title": "Listing Control",
+    "description": "Remove, suspend, or flag counterfeit listings. Auto-freeze sellers on confirmed counterfeit.",
+    "category": "Trust"
+  },
+  {
+    "id": "compliance-monitor",
+    "icon": "🛡️",
+    "title": "Compliance Monitor",
+    "description": "Keyword, contact-info, COA gate, and image filename scans. Auto-scan all published listings.",
+    "category": "Trust"
+  },
+  {
+    "id": "site-monitor",
+    "icon": "📟",
+    "title": "Site Monitor & Auto-Fix",
+    "description": "Policy infractions, JavaScript errors, and automated integrity scans without manual steps.",
+    "category": "Operations"
+  },
+  {
+    "id": "tax-auto-ledger",
+    "icon": "📊",
+    "title": "Tax & Transaction Auto-Ledger",
+    "description": "Automatic 25% income reserve and LA sales tax estimates on every recorded transaction.",
+    "category": "Finance"
+  },
+  {
     "id": "coa-manager",
     "icon": "🛡️",
     "title": "COA Manager",

@@ -149,6 +149,14 @@ function runRebuildNote() {
 
           <OwnerForcedRefundPanel v-else-if="activeTool === 'forced-refund'" />
 
+          <OwnerListingControl v-else-if="activeTool === 'listing-control'" />
+
+          <OwnerComplianceMonitor v-else-if="activeTool === 'compliance-monitor'" />
+
+          <OwnerSiteMonitor v-else-if="activeTool === 'site-monitor'" />
+
+          <OwnerTaxAutoLedger v-else-if="activeTool === 'tax-auto-ledger'" />
+
           <CatalogManager
             v-else-if="activeTool === 'add-product' || activeTool === 'catalog-editor'"
             :products="products"
