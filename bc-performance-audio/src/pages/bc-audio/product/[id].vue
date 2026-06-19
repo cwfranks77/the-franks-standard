@@ -27,6 +27,32 @@ watch([catalogItem, catalogPending], () => {
 
 const buyUrl = computed(() => `/bc-audio/catalog?pick=${encodeURIComponent(productId.value)}`)
 
+const { addItem, hasItem } = useCart()
+const justAdded = ref(false)
+let addedTimer = null
+
+const showGoToCart = computed(() => {
+  if (!catalogItem.value) return false
+  return justAdded.value || hasItem(productId.value)
+})
+
+function handleAddToCart () {
+  const item = catalogItem.value
+  if (!item) return
+  const price = Number(item.retailPrice ?? item.price)
+  if (!Number.isFinite(price) || price <= 0) return
+  addItem({
+    id: productId.value,
+    name: item.name,
+    sku: item.sku || productId.value,
+    price,
+    image: item.image || undefined,
+  })
+  justAdded.value = true
+  if (addedTimer) clearTimeout(addedTimer)
+  addedTimer = setTimeout(() => { justAdded.value = false }, 8000)
+}
+
 useSeoMeta({
   title: () => (catalogItem.value ? bcProductSeoTitle(catalogItem.value.name) : 'Product'),
   description: () => catalogItem.value?.tagline || catalogItem.value?.description || `${BC_BRAND.full} competition car audio.`,
@@ -74,7 +100,19 @@ useHead(() => ({
         </p>
         <p class="bc-product-page__desc">{{ catalogItem.tagline || catalogItem.description }}</p>
         <BcShippingEstimate />
-        <NuxtLink :to="buyUrl" class="bc-product-page__cta">Order this product →</NuxtLink>
+        <div class="bc-product-page__actions">
+          <button type="button" class="bc-product-page__btn bc-product-page__btn--cart" @click="handleAddToCart">
+            Add to Cart
+          </button>
+          <NuxtLink :to="buyUrl" class="bc-product-page__btn bc-product-page__btn--buy">Buy It Now</NuxtLink>
+          <NuxtLink
+            v-if="showGoToCart"
+            to="/bc-audio/cart"
+            class="bc-product-page__btn bc-product-page__btn--goto"
+          >
+            Go to Cart →
+          </NuxtLink>
+        </div>
         <p class="bc-product-page__legal">Sold by {{ BC_BRAND.full }} · B&amp;C Performance Audio LLC · Louisiana tax at checkout</p>
       </div>
     </div>
@@ -95,10 +133,38 @@ useHead(() => ({
 .bc-product-page h1 { font-size: 1.6rem; margin: 0 0 12px; line-height: 1.25; }
 .bc-product-page__price { font-size: 1.5rem; font-weight: 800; color: #ffd814; margin: 0 0 12px; }
 .bc-product-page__desc { color: #b8bcc6; line-height: 1.6; margin: 0 0 20px; }
-.bc-product-page__cta {
-  display: inline-block; padding: 14px 22px; border-radius: 10px;
-  background: linear-gradient(135deg, #d32f2f, #b71c1c); color: #fff;
-  font-weight: 800; text-decoration: none;
+.bc-product-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.bc-product-page__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 22px;
+  border-radius: 10px;
+  font-weight: 800;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+}
+.bc-product-page__btn--cart {
+  background: #0a0a0c;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.bc-product-page__btn--buy {
+  background: linear-gradient(135deg, #d32f2f, #b71c1c);
+  color: #fff;
+}
+.bc-product-page__btn--goto {
+  flex: 1 1 100%;
+  background: rgba(211, 47, 47, 0.12);
+  color: #ff5252;
+  border: 1px solid #d32f2f;
 }
 .bc-product-page__legal { font-size: 0.78rem; color: #7a8190; margin-top: 16px; }
 </style>

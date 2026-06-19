@@ -9,7 +9,44 @@ const props = defineProps({
 const emit = defineEmits(['success', 'error'])
 
 const { canPurchase, accountsRequired, isLoggedIn, isPending } = useBcCustomerAccount()
+const { addItem, hasItem } = useCart()
 const route = useRoute()
+
+const justAdded = ref(false)
+let addedTimer = null
+
+const showGoToCart = computed(() => {
+  if (!props.product?.id) return false
+  return justAdded.value || hasItem(String(props.product.id))
+})
+
+function getRetailPrice () {
+  const raw = props.product?.retailPrice ?? props.product?.price
+  const numeric = Number(raw)
+  return Number.isFinite(numeric) && numeric > 0 ? numeric : null
+}
+
+function handleAddToCart () {
+  if (!props.product) return
+  const price = getRetailPrice()
+  if (price == null) {
+    statusError.value = true
+    statusMessage.value = 'Call us for pricing on this item.'
+    return
+  }
+  statusError.value = false
+  statusMessage.value = ''
+  addItem({
+    id: String(props.product.id),
+    name: props.product.name,
+    sku: props.product.sku || props.product.id,
+    price,
+    image: props.product.image || undefined,
+  })
+  justAdded.value = true
+  if (addedTimer) clearTimeout(addedTimer)
+  addedTimer = setTimeout(() => { justAdded.value = false }, 8000)
+}
 
 const form = ref({
   customerName: '',
@@ -139,6 +176,19 @@ async function submitOrder () {
 
       <BcShippingEstimate />
 
+      <div class="bc-order__quick-actions">
+        <button type="button" class="bc-order__btn bc-order__btn--cart" @click="handleAddToCart">
+          Add to Cart
+        </button>
+        <NuxtLink
+          v-if="showGoToCart"
+          to="/bc-audio/cart"
+          class="bc-order__btn bc-order__btn--goto"
+        >
+          Go to Cart →
+        </NuxtLink>
+      </div>
+
       <form class="bc-order__form" @submit.prevent="submitOrder">
         <div class="bc-order__field">
           <label for="bc-name">Full name</label>
@@ -162,7 +212,7 @@ async function submitOrder () {
         <BcCheckoutTermsAgreement v-model="termsAgreed" />
 
         <button type="submit" class="bc-order__submit" :disabled="!canSubmit">
-          {{ isSubmitting ? 'Starting checkout…' : 'Proceed to secure checkout' }}
+          {{ isSubmitting ? 'Starting checkout…' : 'Buy It Now — secure checkout' }}
         </button>
       </form>
 
@@ -229,6 +279,38 @@ async function submitOrder () {
 }
 .bc-order__selected-name { font-weight: 800; margin: 0; font-size: 0.9rem; color: #f5f5f7; }
 .bc-order__selected-price { margin: 6px 0 0; color: #ff5252; font-weight: 900; font-size: 1.1rem; }
+
+.bc-order__quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+.bc-order__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 16px;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  cursor: pointer;
+}
+.bc-order__btn--cart {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: #0a0a0c;
+  color: #f5f5f7;
+}
+.bc-order__btn--cart:hover { background: #171717; }
+.bc-order__btn--goto {
+  border: 1px solid #d32f2f;
+  background: rgba(211, 47, 47, 0.12);
+  color: #ff5252;
+}
+.bc-order__btn--goto:hover { background: rgba(211, 47, 47, 0.22); }
 
 .bc-order__form { display: flex; flex-direction: column; gap: 12px; }
 .bc-order__row { display: grid; grid-template-columns: 1fr; gap: 12px; }

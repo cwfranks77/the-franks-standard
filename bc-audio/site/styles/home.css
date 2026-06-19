@@ -17,3 +17,16 @@ a { color:inherit; }
 .trust ul { list-style:none; padding:0; max-width:500px; margin:0 auto; }
 .trust li { margin:8px 0; color:#CCCCCC; }
 .bc-footer { padding:20px; text-align:center; font-size:0.85rem; color:#777777; border-top:1px solid #1F1F1F; }
+
+.bc-header nav { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
+.cart-icon {
+  order: -1;
+  margin-right: 8px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid #D72638;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.cart-icon:hover { background: rgba(215, 38, 56, 0.15); }

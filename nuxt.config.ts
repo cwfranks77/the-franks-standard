@@ -58,6 +58,7 @@ const bcPrerenderRoutes = bcPrimarySite
   ? [
       '/',
       '/bc-audio/catalog',
+      '/bc-audio/cart',
       '/bc-audio/open-door',
       '/bc-audio/account',
       '/bc-audio/order-success',
@@ -117,6 +118,7 @@ function bcPage (relativeFile: string, path: string) {
 const bcPagesFromProjectFolder = [
   bcPage('index.vue', '/bc-audio'),
   bcPage('catalog.vue', '/bc-audio/catalog'),
+  bcPage('cart.vue', '/bc-audio/cart'),
   bcPage('open-door.vue', '/bc-audio/open-door'),
   bcPage('order-success.vue', '/bc-audio/order-success'),
   bcPage('sms-consent.vue', '/bc-audio/sms-consent'),

@@ -63,8 +63,26 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
         >
       </NuxtLink>
 
-      <!-- Mobile: cart + hamburger -->
+      <!-- Cart sits directly left of Products / department dropdowns -->
       <div class="bc-nav__actions">
+        <NuxtLink
+          to="/bc-audio/cart"
+          class="bc-nav__cart bc-nav__cart--desktop"
+          aria-label="View cart"
+          @click="closeAll"
+        >
+          <svg class="bc-nav__cart-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path
+              fill="currentColor"
+              d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zM7.16 14h9.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 21.05 5H5.21L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7.42l.74-1z"
+            />
+          </svg>
+          <span v-if="itemCount > 0" class="bc-nav__cart-badge">{{ itemCount > 99 ? '99+' : itemCount }}</span>
+        </NuxtLink>
+        <div class="bc-nav__menu-tools bc-nav__menu-tools--desktop">
+          <BcCatalogNavMenu class="bc-nav__catalog-menu" @close="closeAll" />
+          <BcWholesaleDeptSelect class="bc-nav__dept-in-menu" @click="closeAll" />
+        </div>
         <NuxtLink
           to="/bc-audio/cart"
           class="bc-nav__cart bc-nav__cart--mobile"
@@ -85,26 +103,10 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
       </div>
 
       <nav class="bc-nav__links" :class="{ open: menuOpen }">
-        <div class="bc-nav__tools-row">
-          <NuxtLink
-            to="/bc-audio/cart"
-            class="bc-nav__cart bc-nav__cart--desktop"
-            aria-label="View cart"
-            @click="closeAll"
-          >
-            <svg class="bc-nav__cart-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path
-                fill="currentColor"
-                d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zM7.16 14h9.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 21.05 5H5.21L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7.42l.74-1z"
-              />
-            </svg>
-            <span v-if="itemCount > 0" class="bc-nav__cart-badge">{{ itemCount > 99 ? '99+' : itemCount }}</span>
-          </NuxtLink>
-          <!-- Catalog + department dropdowns -->
-          <div class="bc-nav__menu-tools">
-            <BcCatalogNavMenu class="bc-nav__catalog-menu" @close="closeAll" />
-            <BcWholesaleDeptSelect class="bc-nav__dept-in-menu" @click="closeAll" />
-          </div>
+        <!-- Mobile only: catalog + department inside expanded menu -->
+        <div class="bc-nav__menu-tools bc-nav__menu-tools--mobile">
+          <BcCatalogNavMenu class="bc-nav__catalog-menu" @close="closeAll" />
+          <BcWholesaleDeptSelect class="bc-nav__dept-in-menu" @click="closeAll" />
         </div>
 
         <div ref="storesRoot" class="bc-nav__stores">
@@ -223,13 +225,17 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   gap: 10px;
   margin-left: auto;
   flex-shrink: 0;
+  flex-wrap: nowrap;
 }
-.bc-nav__tools-row {
+.bc-nav__menu-tools {
   display: flex;
   align-items: center;
+  flex-wrap: nowrap;
   flex-shrink: 0;
-  gap: 10px;
+  gap: 8px;
 }
+.bc-nav__menu-tools--mobile { display: none; }
+.bc-nav__menu-tools--desktop { display: flex; }
 .bc-nav__cart {
   position: relative;
   display: inline-flex;
@@ -275,13 +281,6 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 }
 .bc-nav__cart--mobile { display: none; }
 .bc-nav__cart--desktop { display: inline-flex; }
-.bc-nav__menu-tools {
-  display: flex;
-  align-items: center;
-  flex-wrap: nowrap;
-  flex-shrink: 0;
-  gap: 8px;
-}
 .bc-nav__dept-in-menu :deep(.bc-dept__select) {
   max-width: 14rem;
 }
@@ -388,7 +387,10 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   }
   .bc-nav__actions {
     order: 3;
-    margin-left: 0;
+    margin-left: 12px;
+    display: flex;
+  }
+  .bc-nav__toggle {
     display: none;
   }
   .bc-nav__links {
@@ -398,25 +400,17 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
     margin-left: auto;
     display: flex !important;
     min-width: 0;
-  }
-  .bc-nav__tools-row {
-    margin-right: 6px;
-  }
-  .bc-nav__menu-tools {
-    margin-right: 4px;
+    flex-wrap: nowrap;
+    gap: 6px;
   }
 }
 @media (max-width: 768px) {
   .bc-nav__toggle { display: flex; }
   .bc-nav__cart--mobile { display: inline-flex; }
   .bc-nav__cart--desktop { display: none; }
-  .bc-nav__tools-row {
-    width: 100%;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-  }
-  .bc-nav__menu-tools {
+  .bc-nav__menu-tools--desktop { display: none; }
+  .bc-nav__menu-tools--mobile {
+    display: flex;
     flex-direction: column;
     align-items: stretch;
     width: 100%;
