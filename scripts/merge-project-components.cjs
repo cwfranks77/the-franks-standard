@@ -33,4 +33,11 @@ for (const sourceDir of sourceDirs) {
   copyDir(sourceDir, targetDir)
 }
 
+// Never let stale root-build copies overwrite newer bc-performance-audio components.
+const bcNav = path.join(rootDir, 'bc-performance-audio', 'src', 'components', 'BcAudioNav.vue')
+const mergedNav = path.join(targetDir, 'BcAudioNav.vue')
+if (fs.existsSync(bcNav)) {
+  fs.copyFileSync(bcNav, mergedNav)
+}
+
 console.log('[merge-project-components] synced components to', targetDir)

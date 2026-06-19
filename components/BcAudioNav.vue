@@ -1,18 +1,34 @@
 <script setup>
 import { SHOP_STORES } from '~/utils/dropshipCatalogs.js'
 import { getBcExternalSiteUrl } from '~/utils/bcExternalSite.js'
-import { getBcSupport } from '~/utils/bcSupport.js'
+import { franksMarketplacePath } from '~/utils/franksMarketplaceUrl.js'
+import { getBcCartPath, getBcSupport } from '~/utils/bcSupport.js'
 
 const config = useRuntimeConfig()
+const cartPath = computed(() => getBcCartPath(config))
 const bcExternalUrl = computed(() => getBcExternalSiteUrl(config))
+const franksStoresUrl = computed(() => franksMarketplacePath(config, '/stores'))
+const franksHomeUrl = computed(() => franksMarketplacePath(config, '/'))
 const support = computed(() => getBcSupport(config))
 const onBrandKnock = inject('opsLogoKnock', null)
+
+const { isLoggedIn, isApproved, canPurchase } = useBcCustomerAccount()
+const { itemCount } = useCart()
 
 const menuOpen = ref(false)
 const storesOpen = ref(false)
 const storesRoot = ref(null)
 
 const partnerStores = SHOP_STORES.filter((s) => s.id !== 'store-directory')
+
+function storeHref (store) {
+  if (store.id === 'bc-performance-audio') return store.path
+  return franksMarketplacePath(config, store.path)
+}
+
+function isExternalStore (store) {
+  return store.id !== 'bc-performance-audio'
+}
 
 function closeAll () {
   menuOpen.value = false
@@ -37,20 +53,65 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
         class="bc-nav__brand"
         @click="(e) => { closeAll(); onBrandKnock?.(e) }"
       >
-        <span class="bc-nav__logo">B<span class="bc-nav__amp">&</span>C</span>
-        <span class="bc-nav__name">Performance Audio</span>
+        <img
+          src="/img/bc-logo-primary.png?v=20260612"
+          alt="B&amp;C Performance Audio"
+          class="bc-nav__logo-img"
+          width="260"
+          height="60"
+          decoding="async"
+          fetchpriority="high"
+        >
       </NuxtLink>
 
+      <!-- Cart sits directly left of Products / department dropdowns -->
       <div class="bc-nav__actions">
-        <BcWholesaleDeptSelect class="bc-nav__dept" />
-        <BcCatalogNavMenu @close="closeAll" />
-
+        <NuxtLink
+          :to="cartPath"
+          class="bc-nav__cart bc-nav__cart--desktop"
+          aria-label="View your cart"
+          title="View your cart"
+          @click="closeAll"
+        >
+          <svg class="bc-nav__cart-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path
+              fill="currentColor"
+              d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zM7.16 14h9.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 21.05 5H5.21L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7.42l.74-1z"
+            />
+          </svg>
+          <span v-if="itemCount > 0" class="bc-nav__cart-badge">{{ itemCount > 99 ? '99+' : itemCount }}</span>
+        </NuxtLink>
+        <div class="bc-nav__menu-tools bc-nav__menu-tools--desktop">
+          <BcCatalogNavMenu class="bc-nav__catalog-menu" @close="closeAll" />
+          <BcWholesaleDeptSelect class="bc-nav__dept-in-menu" @click="closeAll" />
+        </div>
+        <NuxtLink
+          :to="cartPath"
+          class="bc-nav__cart bc-nav__cart--mobile"
+          aria-label="View your cart"
+          title="View your cart"
+          @click="closeAll"
+        >
+          <svg class="bc-nav__cart-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path
+              fill="currentColor"
+              d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zM7.16 14h9.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 21.05 5H5.21L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7.42l.74-1z"
+            />
+          </svg>
+          <span v-if="itemCount > 0" class="bc-nav__cart-badge">{{ itemCount > 99 ? '99+' : itemCount }}</span>
+        </NuxtLink>
         <button type="button" class="bc-nav__toggle" aria-label="Menu" @click="menuOpen = !menuOpen">
           <span /><span /><span />
         </button>
       </div>
 
       <nav class="bc-nav__links" :class="{ open: menuOpen }">
+        <!-- Mobile only: catalog + department inside expanded menu -->
+        <div class="bc-nav__menu-tools bc-nav__menu-tools--mobile">
+          <BcCatalogNavMenu class="bc-nav__catalog-menu" @close="closeAll" />
+          <BcWholesaleDeptSelect class="bc-nav__dept-in-menu" @click="closeAll" />
+        </div>
+
         <div ref="storesRoot" class="bc-nav__stores">
           <button
             type="button"
@@ -62,26 +123,50 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
             <span class="bc-nav__chev" />
           </button>
           <div v-show="storesOpen" class="bc-nav__stores-panel">
-            <NuxtLink
-              v-for="store in partnerStores"
-              :key="store.id"
-              :to="store.path"
-              class="bc-nav__stores-item"
-              @click="closeAll"
-            >
-              <span class="bc-nav__stores-dot" :style="{ background: store.accent }" />
-              <span>
-                <strong>{{ store.name }}</strong>
-                <small>{{ store.tagline }}</small>
-              </span>
-            </NuxtLink>
-            <NuxtLink to="/stores" class="bc-nav__stores-all" @click="closeAll">All stores on The Franks Standard →</NuxtLink>
+            <template v-for="store in partnerStores" :key="store.id">
+              <a
+                v-if="isExternalStore(store)"
+                :href="storeHref(store)"
+                class="bc-nav__stores-item"
+                target="_blank"
+                rel="noopener noreferrer"
+                @click="closeAll"
+              >
+                <span class="bc-nav__stores-dot" :style="{ background: store.accent }" />
+                <span>
+                  <strong>{{ store.name }}</strong>
+                  <small>{{ store.tagline }}</small>
+                </span>
+              </a>
+              <NuxtLink
+                v-else
+                :to="storeHref(store)"
+                class="bc-nav__stores-item"
+                @click="closeAll"
+              >
+                <span class="bc-nav__stores-dot" :style="{ background: store.accent }" />
+                <span>
+                  <strong>{{ store.name }}</strong>
+                  <small>{{ store.tagline }}</small>
+                </span>
+              </NuxtLink>
+            </template>
+            <a :href="franksStoresUrl" class="bc-nav__stores-all" target="_blank" rel="noopener noreferrer" @click="closeAll">All stores on The Franks Standard ↗</a>
           </div>
         </div>
-        <BcWholesaleDeptSelect class="bc-nav__dept-mobile" @click="closeAll" />
+
         <NuxtLink to="/bc-audio/catalog" class="bc-nav__link bc-nav__link--catalog" @click="closeAll">Full catalog</NuxtLink>
+        <NuxtLink to="/bc-audio/account" class="bc-nav__link bc-nav__link--account" @click="closeAll">
+          {{ isLoggedIn ? (isApproved ? 'My account' : 'Account (pending)') : 'Sign in / Register' }}
+        </NuxtLink>
         <NuxtLink to="/bc-audio/open-door" class="bc-nav__link bc-nav__link--door" @click="closeAll">Open Door</NuxtLink>
-        <NuxtLink to="/" class="bc-nav__link bc-nav__link--muted" @click="closeAll">The Franks Standard</NuxtLink>
+        <a
+          :href="franksHomeUrl"
+          class="bc-nav__link bc-nav__link--muted"
+          target="_blank"
+          rel="noopener noreferrer"
+          @click="closeAll"
+        >The Franks Standard ↗</a>
         <a
           v-if="bcExternalUrl"
           :href="bcExternalUrl"
@@ -110,8 +195,8 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 .bc-nav__inner {
   max-width: 80rem;
   margin: 0 auto;
-  padding: 0 1.25rem;
-  min-height: 64px;
+  padding: 0.5rem 1.25rem;
+  min-height: 68px;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -126,35 +211,83 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   text-decoration: none;
   color: #f5f5f7;
   flex-shrink: 0;
+  max-height: 52px;
 }
 .bc-nav__brand:hover { color: #ff5252; }
-.bc-nav__logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
-  font-weight: 900;
-  font-size: 0.95rem;
-  box-shadow: 0 0 20px rgba(211, 47, 47, 0.35);
-}
-.bc-nav__amp { color: #fff; }
-.bc-nav__name {
-  font-weight: 800;
-  font-size: 0.95rem;
-  letter-spacing: 0.02em;
+.bc-nav__logo-img {
+  display: block;
+  width: auto;
+  max-width: min(220px, 58vw);
+  max-height: 48px;
+  height: auto;
+  object-fit: contain;
 }
 .bc-nav__actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   margin-left: auto;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+  position: relative;
+  z-index: 5;
 }
-.bc-nav__dept { display: none; }
-@media (min-width: 900px) {
-  .bc-nav__dept { display: block; }
+.bc-nav__menu-tools {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  gap: 8px;
+}
+.bc-nav__menu-tools--mobile { display: none; }
+.bc-nav__menu-tools--desktop { display: flex; }
+.bc-nav__cart {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #121216;
+  color: #f5f5f7;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  z-index: 1;
+}
+.bc-nav__cart:hover {
+  background: rgba(211, 47, 47, 0.14);
+  color: #ff5252;
+  border-color: rgba(211, 47, 47, 0.45);
+}
+.bc-nav__cart-icon {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+.bc-nav__cart-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #d32f2f;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  line-height: 18px;
+  text-align: center;
+  border: 2px solid #0a0a0c;
+  pointer-events: none;
+}
+.bc-nav__cart--mobile { display: none; }
+.bc-nav__cart--desktop { display: inline-flex; }
+.bc-nav__dept-in-menu :deep(.bc-dept__select) {
+  max-width: 14rem;
 }
 .bc-nav__links {
   display: flex;
@@ -174,6 +307,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 }
 .bc-nav__link:hover { background: rgba(211, 47, 47, 0.12); color: #ff5252; }
 .bc-nav__link--catalog { color: #ffd814; }
+.bc-nav__link--account { color: #f5f5f7; border: 1px solid rgba(255,255,255,0.15); }
 .bc-nav__link--muted { color: #9ca3af; }
 .bc-nav__link--external { color: #ffd814; }
 .bc-nav__link--external:hover { color: #fff; background: rgba(255, 216, 20, 0.12); }
@@ -186,20 +320,20 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   gap: 8px;
   padding: 8px 14px;
   border-radius: 8px;
-  border: 1px solid rgba(211, 47, 47, 0.5);
-  background: rgba(211, 47, 47, 0.12);
-  color: #ff5252;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #121216;
+  color: #f5f5f7;
   font: inherit;
   font-size: 0.85rem;
   font-weight: 800;
   cursor: pointer;
 }
-.bc-nav__stores-btn:hover { background: rgba(211, 47, 47, 0.22); }
+.bc-nav__stores-btn:hover { background: rgba(211, 47, 47, 0.12); color: #ff5252; }
 .bc-nav__chev {
   width: 0; height: 0;
   border-left: 4px solid transparent;
   border-right: 4px solid transparent;
-  border-top: 5px solid #ff5252;
+  border-top: 5px solid currentColor;
 }
 .bc-nav__stores-panel {
   position: absolute;
@@ -258,20 +392,37 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   }
   .bc-nav__actions {
     order: 3;
-    margin-left: 0;
+    margin-left: 12px;
+    display: flex;
+  }
+  .bc-nav__toggle {
+    display: none;
   }
   .bc-nav__links {
     order: 2;
     flex: 1;
     justify-content: flex-end;
     margin-left: auto;
+    display: flex !important;
+    min-width: 0;
+    flex-wrap: nowrap;
+    gap: 6px;
   }
 }
 @media (max-width: 768px) {
   .bc-nav__toggle { display: flex; }
-  .bc-nav__dept { display: none; }
-  .bc-nav__dept-mobile { display: block; width: 100%; }
-  .bc-nav__dept-mobile :deep(.bc-dept__select) { width: 100%; max-width: none; }
+  .bc-nav__cart--mobile { display: inline-flex; }
+  .bc-nav__cart--desktop { display: none; }
+  .bc-nav__menu-tools--desktop { display: none; }
+  .bc-nav__menu-tools--mobile {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .bc-nav__dept-in-menu :deep(.bc-dept__select) { width: 100%; max-width: none; }
   .bc-nav__links {
     display: none;
     width: 100%;
@@ -284,8 +435,5 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   }
   .bc-nav__links.open { display: flex; }
   .bc-nav__stores-panel { position: static; margin-top: 8px; width: 100%; }
-}
-@media (min-width: 769px) {
-  .bc-nav__dept-mobile { display: none; }
 }
 </style>

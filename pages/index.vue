@@ -6,7 +6,22 @@
     </div>
 
     <ClientOnly>
-      <div ref="catalogPickerRef" class="portal-catalog-picker portal-catalog-picker--corner">
+      <div class="portal-top-actions">
+        <NuxtLink
+          :to="cartPath"
+          class="portal-cart-btn"
+          aria-label="View your cart"
+          title="View your cart"
+        >
+          <svg class="portal-cart-btn__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path
+              fill="currentColor"
+              d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zM7.16 14h9.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 21.05 5H5.21L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7.42l.74-1z"
+            />
+          </svg>
+          <span v-if="itemCount > 0" class="portal-cart-btn__badge">{{ itemCount > 99 ? '99+' : itemCount }}</span>
+        </NuxtLink>
+        <div ref="catalogPickerRef" class="portal-catalog-picker portal-catalog-picker--corner">
         <button
           type="button"
           class="portal-catalog-picker__trigger"
@@ -54,21 +69,32 @@
             </div>
           </div>
         </div>
+        </div>
       </div>
       <template #fallback>
-        <button
-          type="button"
-          class="portal-catalog-picker__trigger portal-catalog-picker__trigger--corner"
-          disabled
-          aria-label="Loading catalog menu"
-        >
+        <div class="portal-top-actions">
+          <NuxtLink :to="cartPath" class="portal-cart-btn" aria-label="View your cart" title="View your cart">
+            <svg class="portal-cart-btn__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path
+                fill="currentColor"
+                d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zM7.16 14h9.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 21.05 5H5.21L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7.42l.74-1z"
+              />
+            </svg>
+          </NuxtLink>
+          <button
+            type="button"
+            class="portal-catalog-picker__trigger"
+            disabled
+            aria-label="Loading catalog menu"
+          >
           <span class="portal-catalog-picker__icon" aria-hidden="true">
             <span class="portal-catalog-picker__line" />
             <span class="portal-catalog-picker__line" />
             <span class="portal-catalog-picker__line" />
             <span class="portal-catalog-picker__line" />
           </span>
-        </button>
+          </button>
+        </div>
       </template>
     </ClientOnly>
 
@@ -82,7 +108,20 @@
         <a href="tel:1-866-319-8547" class="portal-nav__phone">1-866-319-8547</a>
       </div>
 
-      <div class="portal-nav__balance" aria-hidden="true" />
+      <NuxtLink
+        :to="cartPath"
+        class="portal-nav__cart"
+        aria-label="View your cart"
+        title="View your cart"
+      >
+        <svg class="portal-nav__cart-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path
+            fill="currentColor"
+            d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zM7.16 14h9.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 21.05 5H5.21L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7.42l.74-1z"
+          />
+        </svg>
+        <span v-if="itemCount > 0" class="portal-nav__cart-badge">{{ itemCount > 99 ? '99+' : itemCount }}</span>
+      </NuxtLink>
     </nav>
 
     <main class="portal-main">
@@ -259,6 +298,13 @@
                 <button type="button" class="portal-btn portal-btn--cart" @click="handleAddToCart">
                   Add to Cart
                 </button>
+                <NuxtLink
+                  v-if="showGoToCart"
+                  :to="cartPath"
+                  class="portal-btn portal-btn--goto-cart"
+                >
+                  Go to Cart →
+                </NuxtLink>
                 <button
                   type="button"
                   class="portal-btn portal-btn--buy"
@@ -295,6 +341,7 @@
 <script setup>
 import { BC_BRAND } from '~/utils/bcBrand.js'
 import { BC_LEGAL_NAME } from '~/utils/bcSeo.js'
+import { getBcCartPath } from '~/utils/bcSupport.js'
 import {
   filterBcAudioProducts,
   bcAudioDepartmentKey,
@@ -302,6 +349,12 @@ import {
 } from '~/utils/bcAudioOnlyCatalog.js'
 
 definePageMeta({ layout: false })
+
+const config = useRuntimeConfig()
+const cartPath = computed(() => getBcCartPath(config))
+const { addItem, itemCount, hasItem } = useCart()
+const cartJustAdded = ref(false)
+let cartAddedTimer = null
 
 const SHOWCASE_LANE_DEFS = [
   {
@@ -545,6 +598,12 @@ const currentProduct = computed(() =>
   catalogProducts.value.find((p) => getProductId(p) === selectedProductId.value) || null,
 )
 
+const showGoToCart = computed(() => {
+  const product = currentProduct.value
+  if (!product) return false
+  return cartJustAdded.value || hasItem(getProductId(product))
+})
+
 const categoryListProducts = computed(() => {
   if (!selectedCategoryLabel.value) return []
   const group = catalogGroups.value.find((g) => g.label === selectedCategoryLabel.value)
@@ -673,8 +732,6 @@ function resetToHome () {
   backToShowroom()
 }
 
-const { addItem, itemCount } = useCart()
-
 function handleAddToCart () {
   const product = currentProduct.value
   if (!product) return
@@ -690,7 +747,9 @@ function handleAddToCart () {
     price,
     image: getProductImage(product) || undefined,
   })
-  alert(`Added "${getProductName(product)}" to cart. (${itemCount.value} item${itemCount.value === 1 ? '' : 's'} total)`)
+  cartJustAdded.value = true
+  if (cartAddedTimer) clearTimeout(cartAddedTimer)
+  cartAddedTimer = setTimeout(() => { cartJustAdded.value = false }, 8000)
 }
 
 async function handleBuyNow () {
@@ -816,10 +875,84 @@ async function handleBuyNow () {
   text-align: center;
 }
 
-.portal-nav__balance {
-  width: 2.5rem;
-  height: 2.5rem;
+.portal-top-actions {
+  position: fixed;
+  top: 0.35rem;
+  right: 0.35rem;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.portal-cart-btn,
+.portal-nav__cart {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(211, 47, 47, 0.35);
+  background: var(--portal-charcoal);
+  color: var(--portal-ink);
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.portal-cart-btn:hover,
+.portal-nav__cart:hover {
+  background: rgba(211, 47, 47, 0.14);
+  color: #ff5252;
+  border-color: rgba(211, 47, 47, 0.55);
+}
+
+.portal-cart-btn__icon,
+.portal-nav__cart-icon {
+  width: 1.35rem;
+  height: 1.35rem;
+  display: block;
+}
+
+.portal-cart-btn__badge,
+.portal-nav__cart-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #d32f2f;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  line-height: 18px;
+  text-align: center;
+  border: 2px solid #0a0a0c;
+  pointer-events: none;
+}
+
+.portal-nav__cart {
   justify-self: end;
+}
+
+@media (min-width: 900px) {
+  .portal-nav__cart {
+    display: inline-flex;
+  }
+
+  .portal-top-actions .portal-cart-btn {
+    display: none;
+  }
+}
+
+@media (max-width: 899px) {
+  .portal-nav__cart {
+    display: none;
+  }
 }
 
 .portal-nav__brand {
@@ -863,17 +996,15 @@ async function handleBuyNow () {
 }
 
 .portal-catalog-picker--corner {
-  position: fixed;
-  top: 0.35rem;
-  right: 0.35rem;
-  z-index: 60;
+  position: relative;
+  top: auto;
+  right: auto;
 }
 
 .portal-catalog-picker__trigger--corner {
-  position: fixed;
-  top: 0.35rem;
-  right: 0.35rem;
-  z-index: 60;
+  position: relative;
+  top: auto;
+  right: auto;
 }
 
 .portal-catalog-picker__trigger {
@@ -1511,6 +1642,20 @@ async function handleBuyNow () {
 
 .portal-btn--cart:hover:not(:disabled) {
   background: var(--portal-charcoal);
+}
+
+.portal-btn--goto-cart {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border: 1px solid rgba(211, 47, 47, 0.45);
+  background: rgba(211, 47, 47, 0.12);
+  color: #ff5252;
+}
+
+.portal-btn--goto-cart:hover {
+  background: rgba(211, 47, 47, 0.22);
 }
 
 .portal-btn--buy {
