@@ -12,6 +12,7 @@ const support = computed(() => getBcSupport(config))
 const onBrandKnock = inject('opsLogoKnock', null)
 
 const { isLoggedIn, isApproved, canPurchase } = useBcCustomerAccount()
+const { itemCount } = useCart()
 
 const menuOpen = ref(false)
 const storesOpen = ref(false)
@@ -62,18 +63,48 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
         >
       </NuxtLink>
 
-      <!-- Mobile: hamburger only — no red dropdown beside it -->
+      <!-- Mobile: cart + hamburger -->
       <div class="bc-nav__actions">
+        <NuxtLink
+          to="/bc-audio/cart"
+          class="bc-nav__cart bc-nav__cart--mobile"
+          aria-label="View cart"
+          @click="closeAll"
+        >
+          <svg class="bc-nav__cart-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path
+              fill="currentColor"
+              d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zM7.16 14h9.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 21.05 5H5.21L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7.42l.74-1z"
+            />
+          </svg>
+          <span v-if="itemCount > 0" class="bc-nav__cart-badge">{{ itemCount > 99 ? '99+' : itemCount }}</span>
+        </NuxtLink>
         <button type="button" class="bc-nav__toggle" aria-label="Menu" @click="menuOpen = !menuOpen">
           <span /><span /><span />
         </button>
       </div>
 
       <nav class="bc-nav__links" :class="{ open: menuOpen }">
-        <!-- Catalog + department live inside the menu, not beside the hamburger -->
-        <div class="bc-nav__menu-tools">
-          <BcCatalogNavMenu class="bc-nav__catalog-menu" @close="closeAll" />
-          <BcWholesaleDeptSelect class="bc-nav__dept-in-menu" @click="closeAll" />
+        <div class="bc-nav__tools-row">
+          <NuxtLink
+            to="/bc-audio/cart"
+            class="bc-nav__cart bc-nav__cart--desktop"
+            aria-label="View cart"
+            @click="closeAll"
+          >
+            <svg class="bc-nav__cart-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path
+                fill="currentColor"
+                d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zM7.16 14h9.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 21.05 5H5.21L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7.42l.74-1z"
+              />
+            </svg>
+            <span v-if="itemCount > 0" class="bc-nav__cart-badge">{{ itemCount > 99 ? '99+' : itemCount }}</span>
+          </NuxtLink>
+          <!-- Catalog + department dropdowns -->
+          <div class="bc-nav__menu-tools">
+            <BcCatalogNavMenu class="bc-nav__catalog-menu" @close="closeAll" />
+            <BcWholesaleDeptSelect class="bc-nav__dept-in-menu" @click="closeAll" />
+          </div>
         </div>
 
         <div ref="storesRoot" class="bc-nav__stores">
@@ -189,13 +220,66 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 .bc-nav__actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   margin-left: auto;
+  flex-shrink: 0;
 }
+.bc-nav__tools-row {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 10px;
+}
+.bc-nav__cart {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #121216;
+  color: #f5f5f7;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  z-index: 1;
+}
+.bc-nav__cart:hover {
+  background: rgba(211, 47, 47, 0.14);
+  color: #ff5252;
+  border-color: rgba(211, 47, 47, 0.45);
+}
+.bc-nav__cart-icon {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+.bc-nav__cart-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #d32f2f;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  line-height: 18px;
+  text-align: center;
+  border: 2px solid #0a0a0c;
+  pointer-events: none;
+}
+.bc-nav__cart--mobile { display: none; }
+.bc-nav__cart--desktop { display: inline-flex; }
 .bc-nav__menu-tools {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
   gap: 8px;
 }
 .bc-nav__dept-in-menu :deep(.bc-dept__select) {
@@ -313,6 +397,10 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
     justify-content: flex-end;
     margin-left: auto;
     display: flex !important;
+    min-width: 0;
+  }
+  .bc-nav__tools-row {
+    margin-right: 6px;
   }
   .bc-nav__menu-tools {
     margin-right: 4px;
@@ -320,6 +408,14 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 }
 @media (max-width: 768px) {
   .bc-nav__toggle { display: flex; }
+  .bc-nav__cart--mobile { display: inline-flex; }
+  .bc-nav__cart--desktop { display: none; }
+  .bc-nav__tools-row {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
   .bc-nav__menu-tools {
     flex-direction: column;
     align-items: stretch;

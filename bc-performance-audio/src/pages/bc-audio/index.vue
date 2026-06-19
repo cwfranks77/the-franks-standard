@@ -365,6 +365,13 @@ const isCheckoutBusy = (product: any) =>
               <button type="button" class="bc-home__btn bc-home__btn--cart" @click="handleAddToCart(product)">
                 {{ cartBtnText(product) }}
               </button>
+              <NuxtLink
+                v-if="cartAddedId === getProductId(product)"
+                to="/bc-audio/cart"
+                class="bc-home__btn bc-home__btn--goto-cart"
+              >
+                Go to Cart →
+              </NuxtLink>
               <button
                 type="button"
                 class="bc-home__btn bc-home__btn--buy"
@@ -728,6 +735,21 @@ const isCheckoutBusy = (product: any) =>
 .bc-home__btn:disabled {
   opacity: 0.65;
   cursor: wait;
+}
+
+.bc-home__btn--goto-cart {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border: 1px solid #d32f2f;
+  background: rgba(211, 47, 47, 0.12);
+  color: #ff5252;
+}
+
+.bc-home__btn--goto-cart:hover {
+  background: rgba(211, 47, 47, 0.22);
 }
 
 .bc-home__btn--cart {
