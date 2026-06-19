@@ -1,0 +1,17 @@
+Subject: Shipment not received for Order {orderId}
+
+Hi {buyerName},
+
+We're sorry you haven't received your order {orderId}. We've opened a non-shipment dispute and asked the seller to provide tracking within 72 hours.
+
+If the seller cannot provide valid tracking, we will issue a full refund under our buyer protection policy.
+
+Order details:
+- Item: {title}
+- Ordered: {orderDate}
+- Amount: ${amount}
+
+We'll update you within 72 hours.
+
+Thanks,
+BC Audio Support

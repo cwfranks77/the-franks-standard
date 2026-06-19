@@ -29,6 +29,7 @@ type DeptKey = (typeof DEPARTMENTS)[number]['key']
 
 const config = useRuntimeConfig()
 const support = computed(() => getBcSupport(config))
+const { canPurchase, accountsRequired, isLoggedIn, isPending } = useBcCustomerAccount()
 const route = useRoute()
 const router = useRouter()
 
@@ -225,6 +226,19 @@ const handleAddToCart = (product: any) => {
 
 const handleStripeExpress = async (product: any) => {
   if (!product || checkoutBusy.value || !checkoutTermsAccepted.value) return
+
+  if (accountsRequired.value && !canPurchase.value) {
+    const id = getProductId(product)
+    checkoutNoteById.value = {
+      ...checkoutNoteById.value,
+      [id]: isLoggedIn.value && isPending.value
+        ? 'Account pending owner approval — you cannot checkout yet.'
+        : 'Create an account and get owner approval before checkout.',
+    }
+    await navigateTo({ path: '/bc-audio/account', query: { redirect: route.fullPath } })
+    return
+  }
+
   const id = getProductId(product)
   checkoutNoteById.value = { ...checkoutNoteById.value, [id]: '' }
   const retailPrice = getProductPrice(product)

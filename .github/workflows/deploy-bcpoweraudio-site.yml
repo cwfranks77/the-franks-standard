@@ -85,6 +85,26 @@ on:
       - 'scripts/patch-gh-pages-spa.cjs'
       - 'scripts/inject-spa-fallback.cjs'
       - 'scripts/merge-project-layouts.cjs'
+      - 'scripts/merge-project-components.cjs'
+      - 'scripts/merge-project-middleware.cjs'
+      - 'scripts/restore-nuxt-franks-public-assets.cjs'
+      - 'composables/useBcCustomerAccount.ts'
+      - 'bc-performance-audio/src/composables/useBcCustomerAccount.ts'
+      - 'components/BcOpsDashboard.vue'
+      - 'components/BcOpsCustomerAccounts.vue'
+      - 'components/BcOpsAppSettings.vue'
+      - 'components/BcOpsActivityFeed.vue'
+      - 'components/BcOpsDisputes.vue'
+      - 'components/BcOpsAuctions.vue'
+      - 'components/BcOpsPayouts.vue'
+      - 'pages/bc-audio/account.vue'
+      - 'bc-performance-audio/src/pages/bc-audio/account.vue'
+      - 'assets/**'
+      - 'bc-performance-audio/src/assets/**'
+      - '.env.bc-owner.example'
+      - 'scripts/bc-combine-sql.cjs'
+      - 'scripts/bc-verify-project.cjs'
+      - 'scripts/run-bc-owner-jobs.cjs'
       - 'scripts/restore-nuxt-bc-links.cjs'
       - 'scripts/restore-nuxt-bc-public-assets.cjs'
       - 'plugins/0.remove-static-fallback.client.ts'
@@ -129,6 +149,7 @@ jobs:
           NUXT_PUBLIC_BC_AUDIO_SUPPORT_EMAIL: bc-audio@thefranksstandard.com
           NUXT_PUBLIC_OPS_ACCESS_KEY: ${{ secrets.NUXT_PUBLIC_OPS_ACCESS_KEY }}
           NUXT_PUBLIC_OPS_ACCESS_KEY_HASH: ${{ secrets.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH }}
+          NUXT_PUBLIC_BC_ACCOUNTS_REQUIRED: 'true'
           NUXT_PUBLIC_PAY_LISTING_FEE_URL: ${{ secrets.NUXT_PUBLIC_PAY_LISTING_FEE_URL }}
           NUXT_PUBLIC_PAY_PRO_SELLER_URL: ${{ secrets.NUXT_PUBLIC_PAY_PRO_SELLER_URL }}
           NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL: ${{ secrets.NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL }}

@@ -250,8 +250,10 @@ function main () {
   const mapJson = JSON.stringify(wholesaleMap)
   fs.mkdirSync(path.join(ROOT, 'data'), { recursive: true })
   fs.writeFileSync(path.join(ROOT, 'data', 'petra-wholesale-by-sku.json'), mapJson, 'utf8')
+  const sharedDir = path.join(ROOT, 'supabase', 'functions', '_shared')
+  fs.mkdirSync(sharedDir, { recursive: true })
   fs.writeFileSync(
-    path.join(ROOT, 'supabase', 'functions', '_shared', 'petraWholesaleBySku.json'),
+    path.join(sharedDir, 'petraWholesaleBySku.json'),
     mapJson,
     'utf8',
   )
@@ -277,13 +279,17 @@ function main () {
     inStockCount: products.filter((p) => p.inStock).length,
     updatedAt: payload.generatedAt,
   }
+  const contentDir = path.join(ROOT, 'content')
+  const srcContentDir = path.join(ROOT, 'src', 'content')
+  fs.mkdirSync(contentDir, { recursive: true })
+  fs.mkdirSync(srcContentDir, { recursive: true })
   fs.writeFileSync(
-    path.join(ROOT, 'content', 'products.json'),
+    path.join(contentDir, 'products.json'),
     `${JSON.stringify(catalogIndex, null, 2)}\n`,
     'utf8',
   )
   fs.writeFileSync(
-    path.join(ROOT, 'src', 'content', 'products.json'),
+    path.join(srcContentDir, 'products.json'),
     `${JSON.stringify(catalogIndex, null, 2)}\n`,
     'utf8',
   )

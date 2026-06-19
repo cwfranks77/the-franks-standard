@@ -1,0 +1,10 @@
+Subject: Payment due for Auction {auctionId}
+
+Hi {bidderName},
+
+You won auction {auctionId} for {itemTitle} with a bid of ${amount}. Please complete payment within 48 hours using this link: {paymentLink}.
+
+If payment is not received, the item will be relisted and penalties may apply.
+
+Thanks,
+BC Audio

@@ -1,6 +1,8 @@
 import { filterBcAudioProducts } from '~/utils/bcAudioOnlyCatalog.js'
 import { bcPlaceholderImageForProduct, resolveBcProductImage } from '~/utils/bcProductImage.js'
 import { bcProductShelfCategory } from '~/utils/bcProductShelfCategory.js'
+import { fetchBcPublicSiteContent } from '~/composables/useBcPublicSiteContent'
+import { withCustomerRetailOnly } from '~/utils/bcRetailPricing.js'
 
 /**
  * Load B&C product rows at runtime from /catalog/petra-products.json.
@@ -14,7 +16,31 @@ export function useBcProductCatalog () {
     retry: 2,
   })
 
-  const products = computed(() => filterBcAudioProducts(data.value?.products || []))
+  const hiddenProductIds = ref([])
+  const priceOverrides = ref({})
+
+  async function loadOwnerCatalogRules () {
+    try {
+      const content = await fetchBcPublicSiteContent(['bcHiddenCatalog', 'bcPriceOverrides'])
+      const ids = content?.bcHiddenCatalog?.productIds
+      hiddenProductIds.value = Array.isArray(ids) ? ids.map(String) : []
+      priceOverrides.value = (content?.bcPriceOverrides && typeof content.bcPriceOverrides === 'object')
+        ? content.bcPriceOverrides
+        : {}
+    } catch {
+      hiddenProductIds.value = []
+      priceOverrides.value = {}
+    }
+  }
+
+  onMounted(loadOwnerCatalogRules)
+
+  const products = computed(() => {
+    const hidden = new Set(hiddenProductIds.value)
+    return filterBcAudioProducts(data.value?.products || [])
+      .filter((p) => !hidden.has(String(p.id)))
+      .map((p) => withCustomerRetailOnly(p, priceOverrides.value))
+  })
 
   const megastoreItems = computed(() =>
     products.value.map((item) => ({
@@ -25,7 +51,7 @@ export function useBcProductCatalog () {
       image: resolveBcProductImage(item),
       fallbackImage: bcPlaceholderImageForProduct(item),
       tagline: item.description,
-      retailPrice: item.price,
+      retailPrice: item.retailPrice ?? item.price,
       badge: item.inStock === false ? 'Out of stock' : '',
       inStock: item.inStock !== false,
       specs: [],
@@ -44,7 +70,7 @@ export function useBcProductCatalog () {
       fallbackImage: bcPlaceholderImageForProduct(hit),
       tagline: hit.description,
       description: hit.description,
-      retailPrice: hit.price,
+      retailPrice: hit.retailPrice ?? hit.price,
       inStock: hit.inStock !== false,
     }
   }

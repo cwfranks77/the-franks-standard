@@ -2,8 +2,29 @@ import { createHash } from 'node:crypto'
 import { existsSync, globSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { normalizeOpsPhrase } from './franks-standard/src/utils/opsPhrase'
-import { META_DESCRIPTION, OG_DESCRIPTION } from './franks-standard/src/utils/marketplaceFacilitatorCopy.js'
+
+const rootDir = fileURLToPath(new URL('.', import.meta.url))
+
+function importModule (paths: string[]) {
+  for (const p of paths) {
+    if (existsSync(p)) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      return require(p)
+    }
+  }
+  throw new Error(`Missing module: ${paths.join(' | ')}`)
+}
+
+const { normalizeOpsPhrase } = importModule([
+  resolve(rootDir, 'franks-standard/src/utils/opsPhrase.js'),
+  resolve(rootDir, 'bc-performance-audio/src/utils/opsPhrase.js'),
+]) as { normalizeOpsPhrase: (s: string) => string }
+
+const { META_DESCRIPTION, OG_DESCRIPTION } = importModule([
+  resolve(rootDir, 'franks-standard/src/utils/marketplaceFacilitatorCopy.js'),
+  resolve(rootDir, 'bc-performance-audio/src/utils/marketplaceFacilitatorCopy.js'),
+]) as { META_DESCRIPTION: string, OG_DESCRIPTION: string }
+
 import { isBcPowerAudioPrimarySite } from './bc-performance-audio/src/utils/bcPrimarySite.js'
 import { BC_BRAND } from './bc-performance-audio/src/utils/bcBrand.js'
 import { collectPagesFromDir, createProjectModuleResolver, filterFranksPagesForBcPrimary } from './config/nuxtProjectBridge.ts'
@@ -19,11 +40,26 @@ const franksSiteTitle = 'The Franks Standard — Marketplace Facilitator for Col
 const siteTitle = bcPrimarySite ? BC_LEGAL_NAME : franksSiteTitle
 const siteDescription = bcPrimarySite ? bcSiteDescription : META_DESCRIPTION
 const siteOgDescription = bcPrimarySite ? bcSiteDescription : OG_DESCRIPTION
+
+function resolveGlobalCss (): string[] {
+  const candidates = [
+    '~/assets/css/main.css',
+    '~/assets/css/marketplace-ui.css',
+    '~/assets/css/learn-hub.css',
+    '~/assets/css/bc-premium-theme.css',
+  ]
+  return candidates.filter((entry) => {
+    const rel = entry.replace(/^~\//, '')
+    return existsSync(resolve(rootDir, rel))
+  })
+}
+
 const bcPrerenderRoutes = bcPrimarySite
   ? [
       '/',
       '/bc-audio/catalog',
       '/bc-audio/open-door',
+      '/bc-audio/account',
       '/bc-audio/order-success',
       '/bc-audio/sms-consent',
     ]
@@ -69,7 +105,6 @@ const payListingFeeUrl = payUrl('NUXT_PUBLIC_PAY_LISTING_FEE_URL')
 const payProSellerUrl = payUrl('NUXT_PUBLIC_PAY_PRO_SELLER_URL')
 const payOrderDepositUrl = payUrl('NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL')
 
-const rootDir = fileURLToPath(new URL('.', import.meta.url))
 const franksPagesRoot = resolve(rootDir, 'franks-standard/src/pages')
 const bcPagesRoot = resolve(rootDir, 'bc-performance-audio/src/pages/bc-audio')
 const bcPluginsDir = resolve(rootDir, 'bc-performance-audio/src/plugins')
@@ -85,6 +120,7 @@ const bcPagesFromProjectFolder = [
   bcPage('open-door.vue', '/bc-audio/open-door'),
   bcPage('order-success.vue', '/bc-audio/order-success'),
   bcPage('sms-consent.vue', '/bc-audio/sms-consent'),
+  bcPage('account.vue', '/bc-audio/account'),
   bcPage('ops/index.vue', '/bc-audio/ops'),
   bcPage('ops/panel.vue', '/bc-audio/ops/panel'),
   bcPage('ops/marketing-automation.vue', '/bc-audio/ops/marketing-automation'),
@@ -122,7 +158,9 @@ export default defineNuxtConfig({
       resolve(rootDir, 'bc-performance-audio/src/server'),
     ],
     alias: {
-      '#server-utils': resolve(rootDir, 'franks-standard/src/server/utils'),
+      '#server-utils': existsSync(resolve(rootDir, 'franks-standard/src/server/utils'))
+        ? resolve(rootDir, 'franks-standard/src/server/utils')
+        : resolve(rootDir, 'bc-performance-audio/src/server/utils'),
       '#bc-server-utils': resolve(rootDir, 'bc-performance-audio/src/server/utils'),
     },
     prerender: {
@@ -141,6 +179,11 @@ export default defineNuxtConfig({
   runtimeConfig: {
     stripeSecretKey: process.env.STRIPE_SECRET_KEY || '',
     stripeDistributorConnectAccountId: process.env.STRIPE_DISTRIBUTOR_CONNECT_ACCOUNT_ID || '',
+    autoRefundEnabled: process.env.AUTO_REFUND_ENABLED ?? 'true',
+    autoRefundMaxAmount: process.env.AUTO_REFUND_MAX_AMOUNT || '200',
+    aiProviderApiKey: process.env.AI_PROVIDER_API_KEY || '',
+    aiProviderEndpoint: process.env.AI_PROVIDER_ENDPOINT || '',
+    notificationEmailFrom: process.env.NOTIFICATION_EMAIL_FROM || 'no-reply@bcpoweraudio.com',
     public: {
       siteUrl: siteUrl,
       opsAccessKeyHash,
@@ -170,6 +213,8 @@ export default defineNuxtConfig({
       bcAudioSupportTel: process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL || '+18337224147',
       bcAudioSupportEmail: process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_EMAIL || 'bc-audio@thefranksstandard.com',
       bcAudioOwnerName: process.env.NUXT_PUBLIC_BC_AUDIO_OWNER_NAME || 'Charles W. Franks',
+      /** When true, shoppers need an owner-approved account before checkout. */
+      bcAccountsRequired: process.env.NUXT_PUBLIC_BC_ACCOUNTS_REQUIRED ?? 'true',
       /** Legacy aliases — prefer runtimeConfig.public.supabase.url from @nuxtjs/supabase */
       supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '',
       supabaseKey: process.env.NUXT_PUBLIC_SUPABASE_KEY || process.env.SUPABASE_KEY || '',
@@ -254,8 +299,8 @@ export default defineNuxtConfig({
       theme_color: '#0c0619',
       background_color: '#0c0619',
       display: 'standalone',
-      start_url: '/',
-      scope: '/',
+      start_url: bcPrimarySite ? '/bc-audio' : '/',
+      scope: bcPrimarySite ? '/bc-audio' : '/',
       orientation: 'any',
       categories: ['shopping', 'business'],
       icons: [
@@ -359,5 +404,5 @@ export default defineNuxtConfig({
     },
   },
 
-  css: ['~/assets/css/main.css', '~/assets/css/marketplace-ui.css', '~/assets/css/learn-hub.css'],
+  css: resolveGlobalCss(),
 })

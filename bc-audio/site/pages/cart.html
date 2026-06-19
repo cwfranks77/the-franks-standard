@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Cart — BC Audio</title>
+  <link rel="stylesheet" href="../styles/home.css" />
+  <script src="../scripts/cart.js" defer></script>
+</head>
+
+<body>
+
+<header class="bc-header">
+  <div class="logo">BC AUDIO</div>
+  <nav>
+    <a href="/bc-audio">Home</a>
+    <a href="/bc-audio/car-audio">Car Audio</a>
+    <a href="/bc-audio/home-audio">Home Audio</a>
+    <a href="/bc-audio/dj-pro">DJ & Pro</a>
+    <a href="/bc-audio/best-deals">Best Deals</a>
+    <a href="/bc-audio/cart" class="cart-icon">Cart</a>
+  </nav>
+</header>
+
+<section class="cart">
+  <h1>Your Cart</h1>
+  <div id="cart-items"></div>
+  <button class="checkout-btn" onclick="startCheckout()">Proceed to Checkout</button>
+</section>
+
+  <script src="../scripts/checkout.js"></script>
+</body>
+</html>

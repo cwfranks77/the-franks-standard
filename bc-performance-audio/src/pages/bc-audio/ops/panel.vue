@@ -19,10 +19,11 @@ const support = computed(() => getBcSupport(config))
 const { revoke } = useOpsSession()
 const { theme, applyPreset, patch, resetTheme, publishTheme, presets, themeSaving, themeMessage } = useBcTheme()
 
-const tab = ref('inventory')
+const tab = ref('dashboard')
 const orders = ref([])
 const ordersLoading = ref(false)
 const ordersError = ref('')
+const pendingAccounts = ref(0)
 
 const BC_SEO_DEFAULTS = { ...BC_META_DEFAULTS }
 
@@ -42,18 +43,30 @@ function opsErrorMessage (e, fallback) {
 }
 
 const tabs = [
+  { id: 'dashboard', label: 'Dashboard' },
+  { id: 'website', label: 'Edit website' },
   { id: 'homepage', label: 'Homepage text' },
   { id: 'store', label: 'Manual products' },
   { id: 'inventory', label: 'Inventory & pricing' },
   { id: 'catalog', label: 'Hide catalog items' },
+  { id: 'accounts', label: 'Customer accounts' },
   { id: 'ledger', label: 'Transactions & tax' },
   { id: 'monitor', label: 'Traffic & errors' },
-  { id: 'seo', label: 'SEO & homepage text' },
+  { id: 'seo', label: 'SEO & social' },
   { id: 'theme', label: 'Colors & theme' },
   { id: 'activity', label: 'Sales & activity' },
   { id: 'orders', label: 'Orders' },
+  { id: 'disputes', label: 'Disputes' },
+  { id: 'auctions', label: 'Auctions' },
+  { id: 'payouts', label: 'Seller payouts' },
+  { id: 'app', label: 'B&C app' },
   { id: 'tools', label: 'Fix problems' },
 ]
+
+function goToTab (id) {
+  tab.value = id
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
 
 const orderSummary = computed(() => summarizeBcOrders(orders.value))
 
@@ -106,6 +119,15 @@ async function saveSeo () {
   }
 }
 
+async function loadPendingAccounts () {
+  try {
+    const data = await opsFetch('/api/ops/bc-customer-accounts')
+    pendingAccounts.value = data?.pending || 0
+  } catch {
+    pendingAccounts.value = 0
+  }
+}
+
 async function loadOrders () {
   ordersLoading.value = true
   ordersError.value = ''
@@ -154,12 +176,15 @@ function printOrderSummary () {
 }
 
 watch(tab, (t) => {
-  if (t === 'orders' || t === 'activity') loadOrders()
-  if (t === 'seo') loadSeo()
+  if (t === 'orders' || t === 'activity' || t === 'dashboard') loadOrders()
+  if (t === 'seo' || t === 'website') loadSeo()
+  if (t === 'accounts' || t === 'dashboard') loadPendingAccounts()
 })
 
 onMounted(() => {
-  if (tab.value === 'seo') loadSeo()
+  loadOrders()
+  loadPendingAccounts()
+  if (tab.value === 'seo' || tab.value === 'website') loadSeo()
 })
 
 useSeoMeta({
@@ -174,7 +199,7 @@ useSeoMeta({
       <div>
         <p class="bc-panel__eyebrow">B&amp;C website owner console</p>
         <h1>Run your storefront</h1>
-        <p class="bc-panel__sub">Edit products, turn the store on/off, change colors, and track orders — everything shoppers see on bcpoweraudio.com.</p>
+        <p class="bc-panel__sub">Tap <strong>Dashboard</strong> for a full map of every tool — edit text, colors, orders, accounts, and the mobile app.</p>
       </div>
       <button type="button" class="btn btn-outline btn-sm" @click="signOut">Sign out</button>
     </header>
@@ -197,6 +222,58 @@ useSeoMeta({
         {{ t.label }}
       </button>
     </nav>
+
+  <!-- DASHBOARD -->
+    <section v-show="tab === 'dashboard'" class="bc-panel__section">
+      <h2>Owner dashboard — all tools</h2>
+      <BcOpsDashboard
+        :order-count="orderSummary.count"
+        :pending-accounts="pendingAccounts"
+        @go="goToTab"
+      />
+    </section>
+
+  <!-- EDIT WEBSITE (combined) -->
+    <section v-show="tab === 'website'" class="bc-panel__section">
+      <h2>Edit your whole website</h2>
+      <p class="bc-panel__note">Change homepage text, Google preview, and store colors in one place. Publish theme so every visitor sees updates.</p>
+      <h3 class="bc-panel__h3">Homepage &amp; ribbon</h3>
+      <BcOpsHomepageEditor />
+      <h3 class="bc-panel__h3">SEO &amp; social sharing</h3>
+      <p v-if="seoError" class="bc-alert bc-alert--err">{{ seoError }}</p>
+      <p v-if="seoMessage" class="bc-alert bc-alert--ok">{{ seoMessage }}</p>
+      <div v-if="seoLoading" class="bc-muted">Loading…</div>
+      <template v-else>
+        <div class="bc-form-stack">
+          <label>Page title<input v-model="seo.title" class="input" type="text"></label>
+          <label>Description<textarea v-model="seo.description" class="input bc-textarea" rows="3" /></label>
+          <label>Share image URL<input v-model="seo.image" class="input" type="url"></label>
+        </div>
+        <button type="button" class="btn btn-primary btn-sm" :disabled="seoSaving" @click="saveSeo">Save SEO</button>
+      </template>
+      <h3 class="bc-panel__h3">Store colors</h3>
+      <p v-if="themeMessage" class="bc-alert bc-alert--ok">{{ themeMessage }}</p>
+      <div class="bc-panel__presets">
+        <button
+          v-for="p in presets"
+          :key="p.id"
+          type="button"
+          class="bc-preset"
+          :class="{ active: theme.presetId === p.id }"
+          :style="{ '--swatch': p.accent }"
+          @click="applyPreset(p.id)"
+        >
+          {{ p.label }}
+        </button>
+      </div>
+      <div class="bc-panel__colors">
+        <label>Main red<input type="color" :value="theme.accent" @input="patch({ accent: $event.target.value })"></label>
+        <label>Background<input type="color" :value="theme.bg" @input="patch({ bg: $event.target.value })"></label>
+      </div>
+      <button type="button" class="btn btn-primary btn-sm" :disabled="themeSaving" @click="publishTheme">
+        {{ themeSaving ? 'Publishing…' : 'Publish theme for all visitors' }}
+      </button>
+    </section>
 
   <!-- HOMEPAGE TEXT -->
     <section v-show="tab === 'homepage'" class="bc-panel__section">
@@ -235,9 +312,11 @@ useSeoMeta({
 
   <!-- SITE MONITOR -->
     <section v-show="tab === 'monitor'" class="bc-panel__section">
-      <h2>Traffic &amp; errors</h2>
-      <p class="bc-panel__note">See what broke for visitors — checkout errors, script failures, and page URLs.</p>
+      <h2>Traffic, errors &amp; site activity</h2>
+      <p class="bc-panel__note">Visitor errors below. Full transaction and signup feed is in the activity section.</p>
       <BcOpsSiteMonitor />
+      <hr class="bc-panel__hr">
+      <BcOpsActivityFeed />
     </section>
 
   <!-- SEO -->
@@ -372,6 +451,41 @@ useSeoMeta({
       </div>
     </section>
 
+  <!-- CUSTOMER ACCOUNTS -->
+    <section v-show="tab === 'accounts'" class="bc-panel__section">
+      <h2>Customer accounts — approve before purchase</h2>
+      <p class="bc-panel__note">Shoppers sign up at <strong>/bc-audio/account</strong>. They cannot checkout until you approve them here.</p>
+      <BcOpsCustomerAccounts />
+    </section>
+
+  <!-- DISPUTES -->
+    <section v-show="tab === 'disputes'" class="bc-panel__section">
+      <h2>Buyer disputes</h2>
+      <p class="bc-panel__note">Open cases, run AI triage, and issue refunds under your shipping &amp; returns policy.</p>
+      <BcOpsDisputes />
+    </section>
+
+  <!-- AUCTIONS -->
+    <section v-show="tab === 'auctions'" class="bc-panel__section">
+      <h2>Competition auctions</h2>
+      <p class="bc-panel__note">Schedule auctions for rare gear. Anti-sniping extends the end time when bids arrive in the last 5 minutes.</p>
+      <BcOpsAuctions />
+    </section>
+
+  <!-- PAYOUTS -->
+    <section v-show="tab === 'payouts'" class="bc-panel__section">
+      <h2>Seller payouts (Stripe Connect)</h2>
+      <p class="bc-panel__note">Onboard sellers and send transfers after disputes clear. Your 25% tax reserve stays in the ledger tab.</p>
+      <BcOpsPayouts />
+    </section>
+
+  <!-- B&C APP -->
+    <section v-show="tab === 'app'" class="bc-panel__section">
+      <h2>B&amp;C Performance Audio app</h2>
+      <p class="bc-panel__note">Set Android and Windows download links. Customers can also install from the browser “Add to Home Screen” on phones.</p>
+      <BcOpsAppSettings />
+    </section>
+
   <!-- TOOLS -->
     <section v-show="tab === 'tools'" class="bc-panel__section">
       <h2>Fix problems</h2>
@@ -416,6 +530,8 @@ useSeoMeta({
   border-radius: 12px; background: var(--bc-bg-card, #16161c);
 }
 .bc-panel__section h2 { font-size: 1.05rem; color: #ff5252; margin: 0 0 8px; }
+.bc-panel__h3 { font-size: 0.92rem; color: #ff8a80; margin: 1.25rem 0 8px; }
+.bc-panel__hr { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 1.5rem 0; }
 .bc-panel__note { font-size: 0.88rem; color: #b8bcc6; margin: 0 0 14px; line-height: 1.5; }
 .bc-panel__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .bc-form-stack { display: flex; flex-direction: column; gap: 12px; margin-bottom: 14px; }

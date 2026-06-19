@@ -206,23 +206,24 @@ watch(() => route.fullPath, closeMenu)
   gap: 8px;
   padding: 8px 14px;
   border-radius: 8px;
-  border: 1px solid rgba(211, 47, 47, 0.55);
-  background: rgba(211, 47, 47, 0.18);
-  color: #ff5252;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #121216;
+  color: #f5f5f7;
   font: inherit;
   font-size: 0.85rem;
   font-weight: 800;
   cursor: pointer;
 }
 .bc-cat-nav__btn:hover {
-  background: rgba(211, 47, 47, 0.28);
+  background: rgba(211, 47, 47, 0.12);
+  color: #ff5252;
 }
 .bc-cat-nav__chev {
   width: 0;
   height: 0;
   border-left: 4px solid transparent;
   border-right: 4px solid transparent;
-  border-top: 5px solid #ff5252;
+  border-top: 5px solid currentColor;
   transition: transform 0.15s;
 }
 .bc-cat-nav__chev--open {

@@ -1,0 +1,10 @@
+Subject: Action required for Order {orderId} — Shipment missing
+
+Hi {sellerName},
+
+Order {orderId} shows no shipment information and a dispute has been opened. Please provide carrier and tracking number within 72 hours to avoid cancellation and refund to the buyer.
+
+If you need help, reply with proof of shipment.
+
+Thanks,
+BC Audio Operations

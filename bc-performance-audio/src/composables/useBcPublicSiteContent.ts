@@ -2,7 +2,7 @@ import { BC_META_DEFAULTS } from '~/utils/bcMetaDefaults.js'
 import { DEFAULT_PRIVATE_TXN_LEDGER } from '~/utils/privateTxnLedgerDefaults.js'
 import { getPublicSupabaseKey, getPublicSupabaseUrl, hasPublicSupabase } from '~/utils/publicSupabase.js'
 
-type SiteContentKey = 'bcMeta' | 'bcTheme' | 'homepage' | 'ads' | 'antiqueLedger' | 'bcHiddenCatalog' | 'privateTxnLedger' | 'bcHomepage' | 'bcPriceOverrides'
+type SiteContentKey = 'bcMeta' | 'bcTheme' | 'homepage' | 'ads' | 'antiqueLedger' | 'bcHiddenCatalog' | 'privateTxnLedger' | 'bcHomepage' | 'bcPriceOverrides' | 'bcAppSettings'
 
 const CONTENT_DEFAULTS: Record<string, unknown> = {
   bcMeta: BC_META_DEFAULTS,
@@ -22,6 +22,12 @@ const CONTENT_DEFAULTS: Record<string, unknown> = {
     heroLede: 'Home audio, car audio, and powersports audio — filter by department above.',
   },
   bcPriceOverrides: {},
+  bcAppSettings: {
+    androidApkUrl: '',
+    windowsInstallerUrl: '',
+    appTitle: 'B&C Performance Audio',
+    appBlurb: 'Install the B&C app for quick catalog access.',
+  },
 }
 
 function mergeRows (keys: SiteContentKey[], rows: Array<{ content_key: string, payload: Record<string, unknown> }> | null) {

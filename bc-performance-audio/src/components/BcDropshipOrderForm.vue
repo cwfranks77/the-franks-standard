@@ -8,6 +8,9 @@ const props = defineProps({
 
 const emit = defineEmits(['success', 'error'])
 
+const { canPurchase, accountsRequired, isLoggedIn, isPending } = useBcCustomerAccount()
+const route = useRoute()
+
 const form = ref({
   customerName: '',
   customerEmail: '',
@@ -49,10 +52,20 @@ const canSubmit = computed(() => {
     && form.value.shippingAddress.trim()
     && termsAgreed.value
     && !isSubmitting.value
+    && canPurchase.value
 })
 
 async function submitOrder () {
   if (!props.product || !canSubmit.value) return
+
+  if (accountsRequired.value && !canPurchase.value) {
+    statusError.value = true
+    statusMessage.value = isLoggedIn.value && isPending.value
+      ? 'Your account is waiting for owner approval before you can checkout.'
+      : 'Create an account and get owner approval before checkout.'
+    await navigateTo({ path: '/bc-audio/account', query: { redirect: route.fullPath } })
+    return
+  }
 
   isSubmitting.value = true
   statusMessage.value = ''
@@ -113,6 +126,11 @@ async function submitOrder () {
     </div>
 
     <template v-else>
+      <div v-if="accountsRequired && !canPurchase" class="bc-order__gate">
+        <p v-if="!isLoggedIn"><strong>Account required.</strong> <NuxtLink to="/bc-audio/account">Create an account</NuxtLink> — owner must approve you before checkout.</p>
+        <p v-else-if="isPending"><strong>Pending approval.</strong> The owner must approve your account before you can buy. Check <NuxtLink to="/bc-audio/account">My account</NuxtLink>.</p>
+      </div>
+
       <div class="bc-order__selected">
         <p class="bc-order__selected-label">Selected unit</p>
         <p class="bc-order__selected-name">{{ product.brand }} — {{ product.name }}</p>
@@ -176,6 +194,16 @@ async function submitOrder () {
 .bc-order__title { font-size: 1.15rem; font-weight: 800; margin: 0 0 6px; color: #f5f5f7; }
 .bc-order__sub { margin: 0; font-size: 0.8rem; color: #7a8190; line-height: 1.45; }
 
+.bc-order__gate {
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: rgba(255, 216, 20, 0.1);
+  border: 1px solid rgba(255, 216, 20, 0.35);
+  font-size: 0.88rem;
+  color: #ffd814;
+}
+.bc-order__gate a { color: #ff5252; font-weight: 700; }
 .bc-order__empty {
   padding: 2rem 1rem;
   text-align: center;

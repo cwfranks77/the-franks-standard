@@ -11,6 +11,8 @@ const franksHomeUrl = computed(() => franksMarketplacePath(config, '/'))
 const support = computed(() => getBcSupport(config))
 const onBrandKnock = inject('opsLogoKnock', null)
 
+const { isLoggedIn, isApproved, canPurchase } = useBcCustomerAccount()
+
 const menuOpen = ref(false)
 const storesOpen = ref(false)
 const storesRoot = ref(null)
@@ -60,16 +62,20 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
         >
       </NuxtLink>
 
+      <!-- Mobile: hamburger only — no red dropdown beside it -->
       <div class="bc-nav__actions">
-        <BcWholesaleDeptSelect class="bc-nav__dept" />
-        <BcCatalogNavMenu @close="closeAll" />
-
         <button type="button" class="bc-nav__toggle" aria-label="Menu" @click="menuOpen = !menuOpen">
           <span /><span /><span />
         </button>
       </div>
 
       <nav class="bc-nav__links" :class="{ open: menuOpen }">
+        <!-- Catalog + department live inside the menu, not beside the hamburger -->
+        <div class="bc-nav__menu-tools">
+          <BcCatalogNavMenu class="bc-nav__catalog-menu" @close="closeAll" />
+          <BcWholesaleDeptSelect class="bc-nav__dept-in-menu" @click="closeAll" />
+        </div>
+
         <div ref="storesRoot" class="bc-nav__stores">
           <button
             type="button"
@@ -112,8 +118,11 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
             <a :href="franksStoresUrl" class="bc-nav__stores-all" target="_blank" rel="noopener noreferrer" @click="closeAll">All stores on The Franks Standard ↗</a>
           </div>
         </div>
-        <BcWholesaleDeptSelect class="bc-nav__dept-mobile" @click="closeAll" />
+
         <NuxtLink to="/bc-audio/catalog" class="bc-nav__link bc-nav__link--catalog" @click="closeAll">Full catalog</NuxtLink>
+        <NuxtLink to="/bc-audio/account" class="bc-nav__link bc-nav__link--account" @click="closeAll">
+          {{ isLoggedIn ? (isApproved ? 'My account' : 'Account (pending)') : 'Sign in / Register' }}
+        </NuxtLink>
         <NuxtLink to="/bc-audio/open-door" class="bc-nav__link bc-nav__link--door" @click="closeAll">Open Door</NuxtLink>
         <a
           :href="franksHomeUrl"
@@ -183,9 +192,14 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   gap: 8px;
   margin-left: auto;
 }
-.bc-nav__dept { display: none; }
-@media (min-width: 900px) {
-  .bc-nav__dept { display: block; }
+.bc-nav__menu-tools {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.bc-nav__dept-in-menu :deep(.bc-dept__select) {
+  max-width: 14rem;
 }
 .bc-nav__links {
   display: flex;
@@ -205,6 +219,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 }
 .bc-nav__link:hover { background: rgba(211, 47, 47, 0.12); color: #ff5252; }
 .bc-nav__link--catalog { color: #ffd814; }
+.bc-nav__link--account { color: #f5f5f7; border: 1px solid rgba(255,255,255,0.15); }
 .bc-nav__link--muted { color: #9ca3af; }
 .bc-nav__link--external { color: #ffd814; }
 .bc-nav__link--external:hover { color: #fff; background: rgba(255, 216, 20, 0.12); }
@@ -217,20 +232,20 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   gap: 8px;
   padding: 8px 14px;
   border-radius: 8px;
-  border: 1px solid rgba(211, 47, 47, 0.5);
-  background: rgba(211, 47, 47, 0.12);
-  color: #ff5252;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #121216;
+  color: #f5f5f7;
   font: inherit;
   font-size: 0.85rem;
   font-weight: 800;
   cursor: pointer;
 }
-.bc-nav__stores-btn:hover { background: rgba(211, 47, 47, 0.22); }
+.bc-nav__stores-btn:hover { background: rgba(211, 47, 47, 0.12); color: #ff5252; }
 .bc-nav__chev {
   width: 0; height: 0;
   border-left: 4px solid transparent;
   border-right: 4px solid transparent;
-  border-top: 5px solid #ff5252;
+  border-top: 5px solid currentColor;
 }
 .bc-nav__stores-panel {
   position: absolute;
@@ -290,19 +305,29 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   .bc-nav__actions {
     order: 3;
     margin-left: 0;
+    display: none;
   }
   .bc-nav__links {
     order: 2;
     flex: 1;
     justify-content: flex-end;
     margin-left: auto;
+    display: flex !important;
+  }
+  .bc-nav__menu-tools {
+    margin-right: 4px;
   }
 }
 @media (max-width: 768px) {
   .bc-nav__toggle { display: flex; }
-  .bc-nav__dept { display: none; }
-  .bc-nav__dept-mobile { display: block; width: 100%; }
-  .bc-nav__dept-mobile :deep(.bc-dept__select) { width: 100%; max-width: none; }
+  .bc-nav__menu-tools {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .bc-nav__dept-in-menu :deep(.bc-dept__select) { width: 100%; max-width: none; }
   .bc-nav__links {
     display: none;
     width: 100%;
@@ -315,8 +340,5 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   }
   .bc-nav__links.open { display: flex; }
   .bc-nav__stores-panel { position: static; margin-top: 8px; width: 100%; }
-}
-@media (min-width: 769px) {
-  .bc-nav__dept-mobile { display: none; }
 }
 </style>

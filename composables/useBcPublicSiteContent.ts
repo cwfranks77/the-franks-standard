@@ -1,7 +1,8 @@
 import { BC_META_DEFAULTS } from '~/utils/bcMetaDefaults.js'
+import { DEFAULT_PRIVATE_TXN_LEDGER } from '~/utils/privateTxnLedgerDefaults.js'
 import { getPublicSupabaseKey, getPublicSupabaseUrl, hasPublicSupabase } from '~/utils/publicSupabase.js'
 
-type SiteContentKey = 'bcMeta' | 'bcTheme' | 'homepage' | 'ads' | 'antiqueLedger'
+type SiteContentKey = 'bcMeta' | 'bcTheme' | 'homepage' | 'ads' | 'antiqueLedger' | 'bcHiddenCatalog' | 'privateTxnLedger' | 'bcHomepage' | 'bcPriceOverrides' | 'bcAppSettings'
 
 const CONTENT_DEFAULTS: Record<string, unknown> = {
   bcMeta: BC_META_DEFAULTS,
@@ -11,6 +12,21 @@ const CONTENT_DEFAULTS: Record<string, unknown> = {
     accentBright: '#ff5252',
     bg: '#0a0a0c',
     bgCard: '#16161c',
+  },
+  bcHiddenCatalog: { productIds: [] as string[] },
+  privateTxnLedger: DEFAULT_PRIVATE_TXN_LEDGER,
+  bcHomepage: {
+    ribbonLeft: '🔊 B&C PERFORMANCE AUDIO — AUTHORIZED DISTRIBUTION CENTER',
+    ribbonRight: 'Sovereign Dealer Network',
+    heroTitle: 'Competition Audio Inventory',
+    heroLede: 'Home audio, car audio, and powersports audio — filter by department above.',
+  },
+  bcPriceOverrides: {},
+  bcAppSettings: {
+    androidApkUrl: '',
+    windowsInstallerUrl: '',
+    appTitle: 'B&C Performance Audio',
+    appBlurb: 'Install the B&C app for quick catalog access.',
   },
 }
 
@@ -24,6 +40,26 @@ function mergeRows (keys: SiteContentKey[], rows: Array<{ content_key: string, p
       out.antiqueLedger = {
         items: Array.isArray(payload.items) ? payload.items : [],
       }
+      continue
+    }
+    if (key === 'bcHiddenCatalog') {
+      out.bcHiddenCatalog = {
+        productIds: Array.isArray(payload.productIds) ? payload.productIds.map(String) : [],
+      }
+      continue
+    }
+    if (key === 'privateTxnLedger') {
+      out.privateTxnLedger = {
+        transactions: Array.isArray(payload.transactions) ? payload.transactions : [],
+      }
+      continue
+    }
+    if (key === 'bcHomepage') {
+      out.bcHomepage = { ...(CONTENT_DEFAULTS.bcHomepage as object), ...payload }
+      continue
+    }
+    if (key === 'bcPriceOverrides') {
+      out.bcPriceOverrides = payload && typeof payload === 'object' ? payload : {}
       continue
     }
     out[key] = { ...base, ...payload }
