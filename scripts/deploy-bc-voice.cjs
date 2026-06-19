@@ -15,6 +15,7 @@ const {
   normalizeE164,
   twimletEcho,
   twimletSayThenForward,
+  bcVoiceInboundUrl,
   updateVoiceWebhook,
   findNumber,
   loadEnvLocal,
@@ -38,8 +39,8 @@ function bcSupportE164 () {
   )
 }
 
-function buildBcVoiceUrls (ownerE164) {
-  const voiceUrl = twimletSayThenForward(BC_HOLD_GREETING, ownerE164)
+function buildBcVoiceUrls () {
+  const voiceUrl = process.env.BC_VOICE_WEBHOOK_URL || bcVoiceInboundUrl()
   const fallbackUrl = twimletEcho(
     'We could not complete your call to B and C Performance Audio. Please visit b c power audio dot com or email bc-audio at the franks standard dot com. Goodbye.',
   )
@@ -51,7 +52,7 @@ async function main () {
   requireCredentials()
   const ownerE164 = requireOwnerPhone()
   const bcE164 = bcSupportE164()
-  const { voiceUrl, fallbackUrl } = buildBcVoiceUrls(ownerE164)
+  const { voiceUrl, fallbackUrl } = buildBcVoiceUrls()
 
   const line = await findNumber(
     (r) => r.phone_number === bcE164,

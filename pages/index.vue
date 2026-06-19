@@ -105,7 +105,7 @@
 
       <div class="portal-nav__headline">
         <h1 class="portal-nav__title">B&amp;C PERFORMANCE AUDIO LLC</h1>
-        <a href="tel:1-866-319-8547" class="portal-nav__phone">1-866-319-8547</a>
+        <a :href="`tel:${support.phoneTel}`" class="portal-nav__phone">{{ support.phoneDisplay }}</a>
       </div>
 
       <NuxtLink
@@ -341,7 +341,7 @@
 <script setup>
 import { BC_BRAND } from '~/utils/bcBrand.js'
 import { BC_LEGAL_NAME } from '~/utils/bcSeo.js'
-import { getBcCartPath } from '~/utils/bcSupport.js'
+import { getBcCartPath, getBcSupport } from '~/utils/bcSupport.js'
 import {
   filterBcAudioProducts,
   bcAudioDepartmentKey,
@@ -352,6 +352,7 @@ definePageMeta({ layout: false })
 
 const config = useRuntimeConfig()
 const cartPath = computed(() => getBcCartPath(config))
+const support = computed(() => getBcSupport(config))
 const { addItem, itemCount, hasItem } = useCart()
 const cartJustAdded = ref(false)
 let cartAddedTimer = null

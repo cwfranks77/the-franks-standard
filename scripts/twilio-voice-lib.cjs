@@ -3,18 +3,24 @@ const path = require('node:path')
 
 const ROOT = path.join(__dirname, '..')
 const ENV_LOCAL = path.join(ROOT, '.env.local')
+const ENV_FILE = path.join(ROOT, '.env')
 const PLACEHOLDER_RE = /your_actual|XXXXXXXXXX|placeholder/i
 const FRANKS_TOLL_FREE = '+18778370527'
 
-function loadEnvLocal () {
-  if (!fs.existsSync(ENV_LOCAL)) return
-  for (const line of fs.readFileSync(ENV_LOCAL, 'utf8').split(/\r?\n/)) {
+function loadEnvFile (filePath) {
+  if (!fs.existsSync(filePath)) return
+  for (const line of fs.readFileSync(filePath, 'utf8').split(/\r?\n/)) {
     const trimmed = line.trim()
     if (!trimmed || trimmed.startsWith('#')) continue
     const m = trimmed.match(/^([A-Za-z_][A-Za-z0-9_]*)=(.*)$/)
     if (!m || process.env[m[1]]) continue
     process.env[m[1]] = m[2].replace(/^["']|["']$/g, '')
   }
+}
+
+function loadEnvLocal () {
+  loadEnvFile(ENV_FILE)
+  loadEnvFile(ENV_LOCAL)
 }
 
 function authHeader () {
