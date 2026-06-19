@@ -7,7 +7,7 @@ import { computed, ref, watch } from 'vue'
 import { BC_BRAND } from '~/utils/bcBrand.js'
 import { BC_SHIPPING } from '~/utils/bcShipping.js'
 import { BC_LEGAL_NAME } from '~/utils/bcSeo.js'
-import { getBcSupport } from '~/utils/bcSupport.js'
+import { getBcCartPath, getBcSupport } from '~/utils/bcSupport.js'
 import { getPublicSupabaseKey, getPublicSupabaseUrl } from '~/utils/publicSupabase.js'
 import {
   BC_AUDIO_DEPARTMENTS,
@@ -28,6 +28,7 @@ const DEPARTMENTS = BC_AUDIO_DEPARTMENTS
 type DeptKey = (typeof DEPARTMENTS)[number]['key']
 
 const config = useRuntimeConfig()
+const cartPath = computed(() => getBcCartPath(config))
 const support = computed(() => getBcSupport(config))
 const { canPurchase, accountsRequired, isLoggedIn, isPending } = useBcCustomerAccount()
 const route = useRoute()
@@ -295,7 +296,7 @@ const isCheckoutBusy = (product: any) =>
 
     <div class="bc-home__gate">
       <div class="bc-home__gate-inner">
-        <NuxtLink to="/bc-audio/cart" class="bc-home__gate-cart" aria-label="View cart">
+        <NuxtLink :to="cartPath" class="bc-home__gate-cart" aria-label="View your cart" title="View your cart">
           <svg class="bc-home__gate-cart-icon" viewBox="0 0 24 24" aria-hidden="true">
             <path fill="currentColor" d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zM7.16 14h9.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 21.05 5H5.21L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7.42l.74-1z" />
           </svg>
@@ -373,7 +374,7 @@ const isCheckoutBusy = (product: any) =>
               </button>
               <NuxtLink
                 v-if="cartAddedId === getProductId(product) || hasItem(getProductId(product))"
-                to="/bc-audio/cart"
+                :to="cartPath"
                 class="bc-home__btn bc-home__btn--goto-cart"
               >
                 Go to Cart →

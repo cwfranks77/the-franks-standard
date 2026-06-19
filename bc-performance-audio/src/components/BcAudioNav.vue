@@ -2,9 +2,10 @@
 import { SHOP_STORES } from '~/utils/dropshipCatalogs.js'
 import { getBcExternalSiteUrl } from '~/utils/bcExternalSite.js'
 import { franksMarketplacePath } from '~/utils/franksMarketplaceUrl.js'
-import { getBcSupport } from '~/utils/bcSupport.js'
+import { getBcCartPath, getBcSupport } from '~/utils/bcSupport.js'
 
 const config = useRuntimeConfig()
+const cartPath = computed(() => getBcCartPath(config))
 const bcExternalUrl = computed(() => getBcExternalSiteUrl(config))
 const franksStoresUrl = computed(() => franksMarketplacePath(config, '/stores'))
 const franksHomeUrl = computed(() => franksMarketplacePath(config, '/'))
@@ -66,9 +67,10 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
       <!-- Cart sits directly left of Products / department dropdowns -->
       <div class="bc-nav__actions">
         <NuxtLink
-          to="/bc-audio/cart"
+          :to="cartPath"
           class="bc-nav__cart bc-nav__cart--desktop"
-          aria-label="View cart"
+          aria-label="View your cart"
+          title="View your cart"
           @click="closeAll"
         >
           <svg class="bc-nav__cart-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -84,9 +86,10 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
           <BcWholesaleDeptSelect class="bc-nav__dept-in-menu" @click="closeAll" />
         </div>
         <NuxtLink
-          to="/bc-audio/cart"
+          :to="cartPath"
           class="bc-nav__cart bc-nav__cart--mobile"
-          aria-label="View cart"
+          aria-label="View your cart"
+          title="View your cart"
           @click="closeAll"
         >
           <svg class="bc-nav__cart-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -226,6 +229,8 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   margin-left: auto;
   flex-shrink: 0;
   flex-wrap: nowrap;
+  position: relative;
+  z-index: 5;
 }
 .bc-nav__menu-tools {
   display: flex;

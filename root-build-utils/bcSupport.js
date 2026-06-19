@@ -29,3 +29,14 @@ export function getBcOpsPanelPath () {
 export function getBcOpsUnlockPath () {
   return isOnBcWebsite() ? '/bc-audio/ops' : '/ops'
 }
+
+/** Cart page — short /cart on www.bcpoweraudio.com, /bc-audio/cart on the Franks marketplace. */
+export function getBcCartPath (runtimeConfig) {
+  if (import.meta.client) {
+    const host = window.location.hostname.toLowerCase()
+    if (host === 'bcpoweraudio.com' || host === 'www.bcpoweraudio.com') return '/cart'
+  }
+  const config = runtimeConfig || (typeof useRuntimeConfig === 'function' ? useRuntimeConfig() : null)
+  if (config && isBcPowerAudioPrimarySite(config.public?.siteUrl)) return '/cart'
+  return '/bc-audio/cart'
+}

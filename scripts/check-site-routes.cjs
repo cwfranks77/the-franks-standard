@@ -87,7 +87,7 @@ const dynamicPatterns = [
 ]
 
 // Franks Standard marketplace routes linked from BC Audio chrome.
-const crossSiteRoutes = new Set(['/stores', '/privacy', '/terms'])
+const crossSiteRoutes = new Set(['/stores', '/privacy', '/terms', '/cart'])
 
 function ok (p) {
   const norm = p.replace(/\/$/, '') || '/'

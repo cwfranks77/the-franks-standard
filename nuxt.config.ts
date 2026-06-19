@@ -59,6 +59,7 @@ const bcPrerenderRoutes = bcPrimarySite
       '/',
       '/bc-audio/catalog',
       '/bc-audio/cart',
+      '/cart',
       '/bc-audio/open-door',
       '/bc-audio/account',
       '/bc-audio/order-success',
@@ -127,6 +128,7 @@ const bcPagesFromProjectFolder = [
   bcPage('ops/panel.vue', '/bc-audio/ops/panel'),
   bcPage('ops/marketing-automation.vue', '/bc-audio/ops/marketing-automation'),
   bcPage('product/[id].vue', '/bc-audio/product/:id'),
+  ...(bcPrimarySite ? [bcPage('cart.vue', '/cart')] : []),
 ]
 
 const franksNuxtPlugins = existsSync(franksPluginsDir)
@@ -267,6 +269,7 @@ export default defineNuxtConfig({
             headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
           },
           '/bc-audio': { redirect: { to: '/', statusCode: 301 } },
+          '/bc-audio/cart': { redirect: { to: '/cart', statusCode: 301 } },
         }
       : {
           '/': {

@@ -1,5 +1,5 @@
 <script setup>
-import { BC_BRAND } from '~/utils/bcBrand.js'
+import { getBcCartPath } from '~/utils/bcSupport.js'
 import { getPublicSupabaseKey, getPublicSupabaseUrl } from '~/utils/publicSupabase.js'
 
 const props = defineProps({
@@ -11,6 +11,8 @@ const emit = defineEmits(['success', 'error'])
 const { canPurchase, accountsRequired, isLoggedIn, isPending } = useBcCustomerAccount()
 const { addItem, hasItem } = useCart()
 const route = useRoute()
+const config = useRuntimeConfig()
+const cartPath = computed(() => getBcCartPath(config))
 
 const justAdded = ref(false)
 let addedTimer = null
@@ -182,7 +184,7 @@ async function submitOrder () {
         </button>
         <NuxtLink
           v-if="showGoToCart"
-          to="/bc-audio/cart"
+          :to="cartPath"
           class="bc-order__btn bc-order__btn--goto"
         >
           Go to Cart →

@@ -1,11 +1,13 @@
 <script setup>
 import { BC_BRAND } from '~/utils/bcBrand.js'
+import { getBcCartPath } from '~/utils/bcSupport.js'
 import { bcProductJsonLd, bcProductSeoTitle, BC_SEO_KEYWORDS } from '~/utils/bcSeo.js'
 definePageMeta({ layout: 'bc-audio' })
 
 const route = useRoute()
 const config = useRuntimeConfig()
 const siteUrl = computed(() => String(config.public.siteUrl || 'https://www.bcpoweraudio.com').replace(/\/$/, ''))
+const cartPath = computed(() => getBcCartPath(config))
 
 const { data: dropshipData } = useBcDropshipCatalog()
 
@@ -107,7 +109,7 @@ useHead(() => ({
           <NuxtLink :to="buyUrl" class="bc-product-page__btn bc-product-page__btn--buy">Buy It Now</NuxtLink>
           <NuxtLink
             v-if="showGoToCart"
-            to="/bc-audio/cart"
+            :to="cartPath"
             class="bc-product-page__btn bc-product-page__btn--goto"
           >
             Go to Cart →
