@@ -132,7 +132,9 @@ async function prepareIndustryAlert (admin, fraudCaseId) {
     .from('industry_alerts')
     .upsert({
       fraud_case_id: fraudCaseId,
+      case_id: fraudCaseId,
       alert,
+      alert_json: alert,
       prepared_at: new Date().toISOString(),
     }, { onConflict: 'fraud_case_id' })
     .select('id')

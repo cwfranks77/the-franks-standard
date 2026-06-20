@@ -137,9 +137,11 @@ async function prepareLawEnforcementReport (admin, fraudCaseId) {
     .from('law_enforcement_reports')
     .upsert({
       fraud_case_id: fraudCaseId,
+      case_id: fraudCaseId,
       user_id: userId,
       severity: fraudCase.severity,
       report,
+      report_json: report,
       prepared_at: new Date().toISOString(),
     }, { onConflict: 'fraud_case_id' })
     .select('id')
