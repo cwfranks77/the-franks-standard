@@ -142,7 +142,7 @@ Deno.serve(async (req) => {
     if (!caseId) return json({ error: 'case_id_required' }, 400)
     const result = await prepareLawEnforcementReport(admin, caseId)
     return result.ok
-      ? json({ ok: true, draft_id: result.draftId, payload: result.payload, requires_owner_approval: true })
+      ? json({ ok: true, report_id: result.reportId, payload: result.payload, requires_owner_approval: true })
       : json({ error: result.error }, 500)
   }
 
@@ -151,7 +151,7 @@ Deno.serve(async (req) => {
     if (!caseId) return json({ error: 'case_id_required' }, 400)
     const result = await prepareIndustryAlert(admin, caseId)
     return result.ok
-      ? json({ ok: true, draft_id: result.draftId, payload: result.payload, requires_owner_approval: true })
+      ? json({ ok: true, alert_id: result.draftId, payload: result.payload, requires_owner_approval: true })
       : json({ error: result.error }, 500)
   }
 

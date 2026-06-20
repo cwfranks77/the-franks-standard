@@ -1,0 +1,13 @@
+{
+  "fbi_ic3": "https://www.ic3.gov",
+  "secret_service_field_offices": "https://www.secretservice.gov/contact/field-offices",
+  "ncmec_cybertip": "https://report.cybertip.org",
+  "fbi_contact": "https://www.fbi.gov/contact-us",
+  "local_police_lookup": "https://www.usa.gov/local-governments",
+  "ebay_fraud": "https://www.ebay.com/help/policies/reporting-violations/reporting-fraud?id=4036",
+  "etsy_fraud": "https://help.etsy.com/hc/en-us/articles/115015672808",
+  "mercari_fraud": "https://www.mercari.com/help_center/article/67/",
+  "facebook_marketplace_fraud": "https://www.facebook.com/help/196687617389465",
+  "offerup_fraud": "https://help.offerup.com/hc/en-us/articles/360000714947",
+  "craigslist_abuse": "https://www.craigslist.org/about/help/abuse"
+}
