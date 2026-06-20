@@ -4,6 +4,8 @@
 
 const LIMITS = {
   login: { max: 5, windowMs: 10 * 60 * 1000 },
+  auth: { max: 20, windowMs: 10 * 60 * 1000 },
+  global: { max: 300, windowMs: 15 * 60 * 1000 },
   messaging: { max: 20, windowMs: 60 * 1000 },
   messages: { max: 20, windowMs: 60 * 1000 },
   listing_edit: { max: 10, windowMs: 60 * 1000 },
@@ -16,6 +18,11 @@ const LIMITS = {
 
 /** Map API path prefixes to rate-limit categories (Section 10). */
 const API_PATH_LIMITS = [
+  { prefix: '/api/auth', category: 'auth' },
+  { prefix: '/api/login', category: 'auth' },
+  { prefix: '/api/register', category: 'auth' },
+  { prefix: '/api/password', category: 'auth' },
+  { prefix: '/api/signup', category: 'auth' },
   { prefix: '/api/messages', category: 'messages' },
   { prefix: '/api/listings', category: 'listings' },
   { prefix: '/api/reviews', category: 'reviews' },
