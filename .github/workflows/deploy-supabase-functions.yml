@@ -167,3 +167,4 @@ jobs:
           deploy communications-sms-verify
           deploy communications-support-ticket --no-verify-jwt
           deploy cron-process-jobs --no-verify-jwt
+          deploy cron-search-index --no-verify-jwt

@@ -9,6 +9,8 @@ const DEFAULT_TTLS = {
   spotlight: 24 * 60 * 60,
   featured: 24 * 60 * 60,
   seo: 24 * 60 * 60,
+  search: 60,
+  autocomplete: 10 * 60,
 }
 
 const memory = new Map()
