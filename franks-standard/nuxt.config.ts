@@ -1,0 +1,86 @@
+import { createHash } from 'node:crypto'
+import { normalizeOpsPhrase } from './utils/opsPhrase'
+import { extendBackendPages } from './scripts/extend-backend-pages.mjs'
+
+const opsKeyPlain = String(process.env.NUXT_PUBLIC_OPS_ACCESS_KEY || process.env.OWNER_SECRET_PASSPHRASE || '').trim()
+const opsKeyHashFromEnv = String(process.env.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH || '').trim().toLowerCase()
+const opsAccessKeyHash = opsKeyPlain
+  ? createHash('sha256').update(normalizeOpsPhrase(opsKeyPlain)).digest('hex')
+  : opsKeyHashFromEnv
+const opsUnlockAvailable = Boolean(opsAccessKeyHash)
+
+if (opsAccessKeyHash) {
+  process.env.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH = opsAccessKeyHash
+}
+
+// nuxt.config.ts
+export default defineNuxtConfig({
+  ssr: true,
+  css: ['~/assets/css/main.css', '~/assets/css/marketplace-ui.css', '~/assets/css/marketplace-dark.css'],
+  modules: ['@nuxtjs/tailwindcss'],
+  tailwindcss: {
+    cssPath: '~/assets/css/tailwind.css',
+    configPath: 'tailwind.config.cjs',
+  },
+  components: {
+    dirs: [{ path: '~/components', pathPrefix: false }],
+  },
+  imports: {
+    dirs: ['src/composables', 'src/utils', 'composables', 'utils'],
+  },
+  hooks: {
+    'pages:extend': extendBackendPages,
+  },
+  app: {
+    head: {
+      title: 'The Franks Standard | Authenticity-Guaranteed Collectibles Marketplace',
+      meta: [
+        {
+          name: 'description',
+          content:
+            'The Franks Standard LLC — authenticity-guaranteed collectibles marketplace. Sports cards, watches, sneakers, coins, and estate finds with COA-backed listings.'
+        },
+        { name: 'robots', content: 'index,follow' },
+        { name: 'application-name', content: 'The Franks Standard' },
+        { property: 'og:site_name', content: 'The Franks Standard' },
+        { property: 'og:type', content: 'website' }
+      ],
+      link: [{ rel: 'canonical', href: 'https://thefranksstandard.com/' }]
+    }
+  },
+  nitro: {
+    preset: 'github-pages',
+    prerender: {
+      crawlLinks: true,
+      routes: [
+        '/',
+        '/browse',
+        '/sell',
+        '/sell/start',
+        '/sell/list',
+        '/sell/coa',
+        '/sell/dropship-setup',
+        '/store-builder',
+        '/terms',
+        '/privacy',
+        '/marketplace-policy',
+        '/seller-agreement',
+        '/prohibited-items',
+        '/cart',
+        '/checkout',
+        '/order/success',
+      ],
+      failOnError: false
+    },
+  },
+  runtimeConfig: {
+    public: {
+      opsUnlockAvailable,
+      /** SHA-256 of normalized phrase — safe for static unlock; never the plain phrase. */
+      opsAccessKeyHash: opsAccessKeyHash,
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://thefranksstandard.com',
+      supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL || '',
+      supabaseKey: process.env.NUXT_PUBLIC_SUPABASE_KEY || process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY || '',
+    }
+  }
+})

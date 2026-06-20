@@ -2,29 +2,8 @@ import { createHash } from 'node:crypto'
 import { existsSync, globSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-
-const rootDir = fileURLToPath(new URL('.', import.meta.url))
-
-function importModule (paths: string[]) {
-  for (const p of paths) {
-    if (existsSync(p)) {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      return require(p)
-    }
-  }
-  throw new Error(`Missing module: ${paths.join(' | ')}`)
-}
-
-const { normalizeOpsPhrase } = importModule([
-  resolve(rootDir, 'franks-standard/src/utils/opsPhrase.js'),
-  resolve(rootDir, 'bc-performance-audio/src/utils/opsPhrase.js'),
-]) as { normalizeOpsPhrase: (s: string) => string }
-
-const { META_DESCRIPTION, OG_DESCRIPTION } = importModule([
-  resolve(rootDir, 'franks-standard/src/utils/marketplaceFacilitatorCopy.js'),
-  resolve(rootDir, 'bc-performance-audio/src/utils/marketplaceFacilitatorCopy.js'),
-]) as { META_DESCRIPTION: string, OG_DESCRIPTION: string }
-
+import { normalizeOpsPhrase } from './franks-standard/src/utils/opsPhrase'
+import { META_DESCRIPTION, OG_DESCRIPTION } from './franks-standard/src/utils/marketplaceFacilitatorCopy.js'
 import { isBcPowerAudioPrimarySite } from './bc-performance-audio/src/utils/bcPrimarySite.js'
 import { BC_BRAND } from './bc-performance-audio/src/utils/bcBrand.js'
 import { collectPagesFromDir, createProjectModuleResolver, filterFranksPagesForBcPrimary } from './config/nuxtProjectBridge.ts'
@@ -40,28 +19,11 @@ const franksSiteTitle = 'The Franks Standard — Marketplace Facilitator for Col
 const siteTitle = bcPrimarySite ? BC_LEGAL_NAME : franksSiteTitle
 const siteDescription = bcPrimarySite ? bcSiteDescription : META_DESCRIPTION
 const siteOgDescription = bcPrimarySite ? bcSiteDescription : OG_DESCRIPTION
-
-function resolveGlobalCss (): string[] {
-  const candidates = [
-    '~/assets/css/main.css',
-    '~/assets/css/marketplace-ui.css',
-    '~/assets/css/learn-hub.css',
-    '~/assets/css/bc-premium-theme.css',
-  ]
-  return candidates.filter((entry) => {
-    const rel = entry.replace(/^~\//, '')
-    return existsSync(resolve(rootDir, rel))
-  })
-}
-
 const bcPrerenderRoutes = bcPrimarySite
   ? [
       '/',
       '/bc-audio/catalog',
-      '/bc-audio/cart',
-      '/cart',
       '/bc-audio/open-door',
-      '/bc-audio/account',
       '/bc-audio/order-success',
       '/bc-audio/sms-consent',
     ]
@@ -71,35 +33,13 @@ const ogImage = (rawOg && String(rawOg).trim())
   ? String(rawOg).trim()
   : (bcPrimarySite ? `${siteUrl}/img/hero-showcase-v2.svg` : `${siteUrl}/franks-pavilion.png`)
 
-// Operator unlock: hash the phrase at BUILD time (normalized, same as the modal).
-// NUXT_PUBLIC_OPS_ACCESS_KEY is the source of truth when set; HASH is fallback only.
-const opsKeyPlain = String(process.env.NUXT_PUBLIC_OPS_ACCESS_KEY || '').trim()
-const opsKeyHashFromEnv = String(process.env.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH || '').trim().toLowerCase()
+// Operator unlock: hash at BUILD time only — kept server-side (never in public runtimeConfig).
+const opsKeyPlain = String(process.env.NUXT_PUBLIC_OPS_ACCESS_KEY || process.env.OWNER_SECRET_PASSPHRASE || '').trim()
+const opsKeyHashFromEnv = String(process.env.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH || process.env.OPS_ACCESS_KEY_HASH || '').trim().toLowerCase()
 const opsAccessKeyHash = opsKeyPlain
   ? createHash('sha256').update(normalizeOpsPhrase(opsKeyPlain)).digest('hex')
   : opsKeyHashFromEnv
-// IMPORTANT: write the computed hash back into process.env so Nuxt's
-// automatic runtimeConfig override (NUXT_PUBLIC_OPS_ACCESS_KEY_HASH ->
-// runtimeConfig.public.opsAccessKeyHash) picks up our computed value
-// instead of the empty string a CI job might pass when the HASH secret
-// is not separately set. Without this, the GitHub Actions workflow's
-// `${{ secrets.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH }}` (which resolves to "")
-// would silently wipe out the hash we just computed from the plaintext.
-if (opsAccessKeyHash) {
-  process.env.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH = opsAccessKeyHash
-}
-const bcPwaEnabled = bcPrimarySite
-const pwaIncludeAssets = bcPrimarySite
-  ? ['icons/icon-192.png', 'icons/icon-512.png', 'img/bc-logo-primary.png']
-  : ['franks-pavilion.png', 'logo.svg', 'icons/icon-192.png', 'icons/icon-512.png']
-const pwaManifestShortcuts = bcPrimarySite
-  ? [
-      { name: 'Shop', short_name: 'Shop', url: '/', icons: [{ src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }] },
-      { name: 'Catalog', short_name: 'Catalog', url: '/bc-audio/catalog', icons: [{ src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }] },
-      { name: 'Cart', short_name: 'Cart', url: '/cart', icons: [{ src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }] },
-      { name: 'My account', short_name: 'Account', url: '/bc-audio/account', icons: [{ src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }] },
-    ]
-  : []
+const opsUnlockAvailable = Boolean(opsAccessKeyHash)
 
 // Stripe Payment Link defaults — CI passes empty secrets when unset; write back so Nuxt
 // does not override runtimeConfig.public.pay*Url with "" (same gotcha as ops hash above).
@@ -118,6 +58,7 @@ const payListingFeeUrl = payUrl('NUXT_PUBLIC_PAY_LISTING_FEE_URL')
 const payProSellerUrl = payUrl('NUXT_PUBLIC_PAY_PRO_SELLER_URL')
 const payOrderDepositUrl = payUrl('NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL')
 
+const rootDir = fileURLToPath(new URL('.', import.meta.url))
 const franksPagesRoot = resolve(rootDir, 'franks-standard/src/pages')
 const bcPagesRoot = resolve(rootDir, 'bc-performance-audio/src/pages/bc-audio')
 const bcPluginsDir = resolve(rootDir, 'bc-performance-audio/src/plugins')
@@ -130,16 +71,13 @@ function bcPage (relativeFile: string, path: string) {
 const bcPagesFromProjectFolder = [
   bcPage('index.vue', '/bc-audio'),
   bcPage('catalog.vue', '/bc-audio/catalog'),
-  bcPage('cart.vue', '/bc-audio/cart'),
   bcPage('open-door.vue', '/bc-audio/open-door'),
   bcPage('order-success.vue', '/bc-audio/order-success'),
   bcPage('sms-consent.vue', '/bc-audio/sms-consent'),
-  bcPage('account.vue', '/bc-audio/account'),
   bcPage('ops/index.vue', '/bc-audio/ops'),
   bcPage('ops/panel.vue', '/bc-audio/ops/panel'),
   bcPage('ops/marketing-automation.vue', '/bc-audio/ops/marketing-automation'),
   bcPage('product/[id].vue', '/bc-audio/product/:id'),
-  ...(bcPrimarySite ? [bcPage('cart.vue', '/cart')] : []),
 ]
 
 const franksNuxtPlugins = existsSync(franksPluginsDir)
@@ -173,9 +111,7 @@ export default defineNuxtConfig({
       resolve(rootDir, 'bc-performance-audio/src/server'),
     ],
     alias: {
-      '#server-utils': existsSync(resolve(rootDir, 'franks-standard/src/server/utils'))
-        ? resolve(rootDir, 'franks-standard/src/server/utils')
-        : resolve(rootDir, 'bc-performance-audio/src/server/utils'),
+      '#server-utils': resolve(rootDir, 'franks-standard/src/server/utils'),
       '#bc-server-utils': resolve(rootDir, 'bc-performance-audio/src/server/utils'),
     },
     prerender: {
@@ -189,24 +125,21 @@ export default defineNuxtConfig({
     },
   },
 
-  // Operator unlock phrase for /ops — only the SHA-256 hash ships to the browser.
-  // See the-franks-standard-continuity/OPS-ACCESS.md and scripts/hash-ops-key.cjs.
+  // Operator unlock: hash stays private; browsers call /api/ops/session or ops-session Edge Function.
   runtimeConfig: {
+    opsAccessKeyHash,
+    opsSessionSecret: process.env.OPS_SESSION_SECRET || opsAccessKeyHash || '',
     stripeSecretKey: process.env.STRIPE_SECRET_KEY || '',
     stripeDistributorConnectAccountId: process.env.STRIPE_DISTRIBUTOR_CONNECT_ACCOUNT_ID || '',
-    autoRefundEnabled: process.env.AUTO_REFUND_ENABLED ?? 'true',
-    autoRefundMaxAmount: process.env.AUTO_REFUND_MAX_AMOUNT || '200',
-    aiProviderApiKey: process.env.AI_PROVIDER_API_KEY || '',
-    aiProviderEndpoint: process.env.AI_PROVIDER_ENDPOINT || '',
-    notificationEmailFrom: process.env.NOTIFICATION_EMAIL_FROM || 'no-reply@bcpoweraudio.com',
     public: {
       siteUrl: siteUrl,
-      opsAccessKeyHash,
+      opsUnlockAvailable,
       payListingFeeUrl,
       payProSellerUrl,
       payOrderDepositUrl,
       stripeCheckoutEnabled: process.env.NUXT_PUBLIC_STRIPE_CHECKOUT_ENABLED ?? 'true',
       stripeTaxCheckoutEnabled: process.env.NUXT_PUBLIC_STRIPE_TAX_CHECKOUT_ENABLED ?? 'true',
+      stripePublishableKey: process.env.NUXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '',
       customerServicePhone: process.env.NUXT_PUBLIC_CUSTOMER_SERVICE_PHONE || '(877) 837-0527',
       /** Brandy's Sporting Goods storefront paused until supplier account is funded */
       brandyStoreOnHold: process.env.NUXT_PUBLIC_BRANDY_STORE_ON_HOLD ?? 'true',
@@ -228,8 +161,6 @@ export default defineNuxtConfig({
       bcAudioSupportTel: process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL || '+18337224147',
       bcAudioSupportEmail: process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_EMAIL || 'bc-audio@thefranksstandard.com',
       bcAudioOwnerName: process.env.NUXT_PUBLIC_BC_AUDIO_OWNER_NAME || 'Charles W. Franks',
-      /** When true, shoppers need an owner-approved account before checkout. */
-      bcAccountsRequired: process.env.NUXT_PUBLIC_BC_ACCOUNTS_REQUIRED ?? 'true',
       /** Legacy aliases — prefer runtimeConfig.public.supabase.url from @nuxtjs/supabase */
       supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '',
       supabaseKey: process.env.NUXT_PUBLIC_SUPABASE_KEY || process.env.SUPABASE_KEY || '',
@@ -280,7 +211,6 @@ export default defineNuxtConfig({
             headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
           },
           '/bc-audio': { redirect: { to: '/', statusCode: 301 } },
-          '/bc-audio/cart': { redirect: { to: '/cart', statusCode: 301 } },
         }
       : {
           '/': {
@@ -302,26 +232,23 @@ export default defineNuxtConfig({
 
   pwa: {
     registerType: 'autoUpdate',
-    // B&C primary site (bcpoweraudio.com): installable app. Franks build keeps SW off to avoid stale cache issues.
-    injectRegister: bcPwaEnabled ? 'auto' : false,
-    selfDestroying: !bcPwaEnabled,
+    // Service worker caused flip-flop between fixed and broken cached JS after deploys.
+    injectRegister: false,
+    selfDestroying: true,
     registerWebManifestInRouteRules: true,
-    includeAssets: pwaIncludeAssets,
+    includeAssets: ['franks-pavilion.png', 'logo.svg', 'icons/icon-192.png', 'icons/icon-512.png'],
     manifest: {
       id: '/',
       name: bcPrimarySite ? BC_LEGAL_NAME : 'The Franks Standard',
       short_name: bcPrimarySite ? BC_BRAND.short : 'Franks Standard',
-      description: bcPrimarySite
-        ? 'Shop B&C Performance Audio — competition car audio, orders, and support from your home screen.'
-        : siteDescription,
-      theme_color: bcPrimarySite ? '#0a0a0c' : '#0c0619',
-      background_color: bcPrimarySite ? '#0a0a0c' : '#0c0619',
+      description: siteDescription,
+      theme_color: '#0c0619',
+      background_color: '#0c0619',
       display: 'standalone',
       start_url: '/',
       scope: '/',
       orientation: 'any',
       categories: ['shopping', 'business'],
-      shortcuts: pwaManifestShortcuts.length ? pwaManifestShortcuts : undefined,
       icons: [
         { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
         { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
@@ -329,6 +256,7 @@ export default defineNuxtConfig({
       ],
     },
     workbox: {
+      // Do not precache HTML or hashed /_nuxt bundles — stale shells pin users to 404 chunks after deploy.
       globPatterns: ['**/*.{png,svg,ico,json,woff2,webmanifest,jpg,jpeg,webp}'],
       globIgnores: ['**/node_modules/**', '**/_nuxt/**', '**/*.html'],
       skipWaiting: true,
@@ -339,7 +267,7 @@ export default defineNuxtConfig({
           urlPattern: ({ request }) => request.mode === 'navigate',
           handler: 'NetworkFirst',
           options: {
-            cacheName: bcPrimarySite ? 'bc-html' : 'fss-html',
+            cacheName: 'fss-html',
             networkTimeoutSeconds: 4,
             expiration: { maxEntries: 8, maxAgeSeconds: 60 * 60 },
           },
@@ -348,7 +276,7 @@ export default defineNuxtConfig({
           urlPattern: ({ url }) => url.pathname.startsWith('/_nuxt/'),
           handler: 'NetworkFirst',
           options: {
-            cacheName: bcPrimarySite ? 'bc-nuxt-chunks' : 'fss-nuxt-chunks',
+            cacheName: 'fss-nuxt-chunks',
             networkTimeoutSeconds: 3,
             expiration: { maxEntries: 96, maxAgeSeconds: 7 * 24 * 60 * 60 },
           },
@@ -356,8 +284,8 @@ export default defineNuxtConfig({
       ],
     },
     client: {
-      installPrompt: bcPwaEnabled ? 'bc-pwa-install-dismissed' : false,
-      periodicSyncForUpdates: bcPwaEnabled ? 3600 : 0,
+      installPrompt: false,
+      periodicSyncForUpdates: 3600,
     },
     devOptions: {
       enabled: false,
@@ -397,7 +325,7 @@ export default defineNuxtConfig({
         { name: 'twitter:title', content: siteTitle },
         { name: 'twitter:description', content: siteOgDescription },
         { name: 'twitter:image', content: ogImage },
-        { name: 'theme-color', content: bcPrimarySite ? '#0a0a0c' : '#0c0619' },
+        { name: 'theme-color', content: '#0c0619' },
         { name: 'mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
@@ -422,5 +350,5 @@ export default defineNuxtConfig({
     },
   },
 
-  css: resolveGlobalCss(),
+  css: ['~/assets/css/main.css', '~/assets/css/marketplace-ui.css', '~/assets/css/learn-hub.css'],
 })
