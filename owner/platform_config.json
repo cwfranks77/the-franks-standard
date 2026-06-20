@@ -1,0 +1,40 @@
+{
+  "fee_rates": {
+    "default_bps": 1000,
+    "bc_audio_bps": 500,
+    "featured_bps": 800,
+    "starter_free_slug": "starter_free_90",
+    "starter_free_days": 90
+  },
+  "payout_delay_days": {
+    "trusted_seller": 2,
+    "new_seller": 7,
+    "held_review": 14
+  },
+  "spotlight_enabled": true,
+  "featured_store_id": null,
+  "fraud_thresholds": {
+    "new_cases_per_10min_warning": 3,
+    "new_cases_per_10min_critical": 10,
+    "open_cases_warning": 25
+  },
+  "dispute_time_limits": {
+    "seller_response_hours": 72,
+    "buyer_filing_days_after_delivery": 30,
+    "escalation_after_hours": 120
+  },
+  "refund_time_limits": {
+    "seller_response_hours": 48,
+    "auto_escalate_hours": 72
+  },
+  "backup_schedule": {
+    "pre_launch_required": true,
+    "cron_label": "weekly_sunday_04utc"
+  },
+  "monitoring_intervals": {
+    "post_launch_monitor_minutes": 10,
+    "search_index_listings_minutes": 5,
+    "search_index_stores_minutes": 10,
+    "job_queue_minutes": 60
+  }
+}

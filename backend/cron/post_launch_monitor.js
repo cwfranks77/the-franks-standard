@@ -136,6 +136,35 @@ async function runPostLaunchMonitor (admin) {
   const critical = results.filter((r) => r.status === 'critical').length
   const warnings = results.filter((r) => r.status === 'warning').length
 
+  try {
+    const { triggerAlertsFromMonitor } = require('../owner/alerts.js')
+    await triggerAlertsFromMonitor(admin, results)
+  } catch {
+    // owner_alerts table may not exist until migration 056
+  }
+
+  const { data: banAttempts } = await admin
+    .from('security_events')
+    .select('id, event_type, device_fingerprint, ip_address, user_id')
+    .gte('created_at', since10m)
+    .in('event_type', ['banned_device_blocked', 'banned_ip_blocked', 'device_ban_attempt'])
+    .limit(20)
+
+  if ((banAttempts ?? []).length > 0) {
+    try {
+      const { alertBannedDeviceAttempt } = require('../owner/alerts.js')
+      for (const evt of banAttempts) {
+        await alertBannedDeviceAttempt(admin, {
+          deviceFingerprint: evt.device_fingerprint,
+          ipAddress: evt.ip_address,
+          userId: evt.user_id,
+        })
+      }
+    } catch {
+      // non-fatal
+    }
+  }
+
   return {
     ok: critical === 0,
     checks: results,

@@ -9,9 +9,11 @@ const REQUIRED_TABLES = [
   'email_logs', 'sms_verification', 'notifications', 'fraud_cases', 'dispute_cases',
   'search_index_listings', 'search_events', 'background_jobs', 'launch_lock', 'backups',
   'post_launch_events', 'audit_logs', 'webhook_events', 'refund_requests',
+  'owner_alerts', 'owner_api_keys',
 ]
 
 const MIGRATION_MARKERS = [
+  { table: 'owner_alerts', label: '056_section15_owner_controls' },
   { table: 'launch_lock', label: '055_section14_launch' },
   { table: 'search_index_listings', label: '054_section13_search' },
   { table: 'ledger_entries', label: '053_section12_payments_accounting' },
