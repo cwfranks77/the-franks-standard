@@ -1,0 +1,1 @@
+import{R as o,k as e,l as i}from"./BZo2Fz9R.js";import{c as s}from"./Bm8FaHvA.js";const r=Object.freeze({items:[],store:{is_live:!0},offline:!1});function f(){const t=i();return o(t.public.siteUrl)?{data:e(r),pending:e(!1),error:e(null)}:s("/api/public/dropship-catalog",{query:{storeId:"bc-performance-audio"},default:()=>({...r,items:[]}),retry:0},"$MXn-T2Chcz")}export{f as u};

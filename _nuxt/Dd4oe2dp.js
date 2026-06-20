@@ -1,1 +1,0 @@
-import{i as e}from"./Ca90fpAH.js";function u(){const t=e();function i(r){if(!r)return"/img/hero-showcase-v2.svg";if(/^https?:\/\//i.test(String(r)))return String(r);const{data:s}=t.storage.from("listings").getPublicUrl(r);return s.publicUrl}return{publicUrlForPath:i}}export{u};

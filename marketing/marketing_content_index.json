@@ -1,0 +1,38 @@
+{
+  "version": "2026-06-20",
+  "sections": [
+    { "key": "facebook_rebrand_package", "path": "/marketing/facebook_rebrand_package.md", "category": "facebook" },
+    { "key": "live_broadcast_script", "path": "/marketing/live_broadcast_script.md", "category": "live" },
+    { "key": "ai_agent_script", "path": "/marketing/ai_agent_script.md", "category": "support" },
+    { "key": "seo_keywords", "path": "/marketing/seo_keywords.md", "category": "seo" },
+    { "key": "seo_blog_topics", "path": "/marketing/seo_blog_topics.md", "category": "seo" },
+    { "key": "seo_marketplace_copy", "path": "/marketing/seo_marketplace_copy.md", "category": "seo" },
+    { "key": "social_posts", "path": "/marketing/social_posts.md", "category": "social" }
+  ],
+  "video_ads": [
+    "ad_1_authenticity_push",
+    "ad_2_seller_recruitment",
+    "ad_3_buyer_safety",
+    "ad_4_bc_audio_launch",
+    "ad_5_marketplace_trust"
+  ],
+  "email_sequences": [
+    "welcome_sequence",
+    "seller_onboarding_sequence",
+    "buyer_onboarding_sequence",
+    "abandoned_cart_sequence",
+    "dispute_resolution_sequence",
+    "fraud_alert_sequence"
+  ],
+  "live_broadcast_folder": [
+    "launch_event_script",
+    "q_and_a_script",
+    "authenticity_demo_script",
+    "seller_invitation_script",
+    "buyer_invitation_script"
+  ],
+  "api": {
+    "endpoint": "/api/marketing-content",
+    "static_mirror": "/marketing/"
+  }
+}

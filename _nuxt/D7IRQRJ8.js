@@ -1,1 +1,0 @@
-import{j as s,X as r,I as a}from"./Ca90fpAH.js";const _={__name:"seller-lookup",async setup(p){let e,t;const o=s();return[e,t]=r(()=>a({path:"/ops/seller-lookup",query:o.query},{replace:!0})),await e,t(),()=>{}}};export{_ as default};

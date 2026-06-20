@@ -1,2 +1,0 @@
-const n="info@thefranksstandard.com";function t(){const o=encodeURIComponent("Apply to sell on The Franks Standard"),e=["I would like to sell (or list inventory) on The Franks Standard.","","Store or business name:","Categories / what I sell:","Link to website or social (optional):","Volume or listing goal (rough is fine):","Name and best email/phone for follow-up:","Notes:","","— Sent from thefranksstandard.com/sellers"].join(`
-`);return`mailto:${n}?subject=${o}&body=${encodeURIComponent(e)}`}export{t as b};

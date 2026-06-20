@@ -1,1 +1,0 @@
-import{aL as o,a1 as r,i,aN as c,I as d}from"./Ca90fpAH.js";const p=o(async a=>{let e,t;const{isAuthed:s}=r();if(s.value)return;const u=i(),{data:{user:n}}=([e,t]=c(()=>u.auth.getUser()),e=await e,t(),e);if(!n)return d(`/auth/login?redirect=${encodeURIComponent(a.fullPath)}`)});export{p as default};
