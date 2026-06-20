@@ -140,6 +140,12 @@ jobs:
           deploy ops-safety-action --no-verify-jwt
           deploy safety-scan-content --no-verify-jwt
           deploy signup-safety-check --no-verify-jwt
+          deploy featured-store --no-verify-jwt
+          deploy spotlight-store --no-verify-jwt
+          deploy support-followup-submit --no-verify-jwt
+          deploy support-followup-dispatch --no-verify-jwt
+          deploy cron-daily-spotlight --no-verify-jwt
+          deploy cron-expire-seller-plans --no-verify-jwt
           deploy verify-coa-serial --no-verify-jwt
           deploy auth-send-email --no-verify-jwt
           # Authenticated (JWT required)
@@ -156,3 +162,5 @@ jobs:
           deploy issue-coa-certificate
           deploy platform-send-message
           deploy safety-open-dispute
+          deploy submit-review
+          deploy marketplace-update-compliance

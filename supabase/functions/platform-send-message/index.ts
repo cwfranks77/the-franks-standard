@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { assertAccountNotFrozenForActivity, isMessagingFrozen, loadSafetyProfile } from '../_shared/accountSafety.ts'
+import { assertMarketplaceCompliance } from '../_shared/marketplaceCompliance.ts'
 import { scanAndEnforceViolation } from '../_shared/violationEnforcement.ts'
 import { logServerActivity } from '../_shared/platformActivityLog.ts'
 import { corsHeaders, json } from '../_shared/stripe.ts'
@@ -41,6 +42,9 @@ Deno.serve(async (req) => {
 
   const activity = await assertAccountNotFrozenForActivity(admin, user.id)
   if (!activity.ok) return json({ error: activity.error, message: activity.message }, 403)
+
+  const compliance = await assertMarketplaceCompliance(admin, user.id)
+  if (!compliance.ok) return json({ error: compliance.error, message: compliance.message }, 403)
 
   const profile = await loadSafetyProfile(admin, user.id)
   if (isMessagingFrozen(profile)) {

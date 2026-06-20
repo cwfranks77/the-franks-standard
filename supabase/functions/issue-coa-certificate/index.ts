@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { assertAccountNotFrozen } from '../_shared/sellerAccountFreeze.ts'
+import { assertMarketplaceCompliance } from '../_shared/marketplaceCompliance.ts'
 import { assertSellerPoliciesAccepted } from '../_shared/sellerPolicyAcceptance.ts'
 import { recordCoaIssued } from '../_shared/coaChainOfCustody.ts'
 import { clientIpFromRequest } from '../_shared/requestContext.ts'
@@ -52,6 +53,9 @@ Deno.serve(async (req) => {
 
   const freeze = await assertAccountNotFrozen(admin, user.id)
   if (!freeze.ok) return json({ error: freeze.error, message: freeze.message }, 403)
+
+  const compliance = await assertMarketplaceCompliance(admin, user.id)
+  if (!compliance.ok) return json({ error: compliance.error, message: compliance.message }, 403)
 
   const policies = await assertSellerPoliciesAccepted(admin, user.id)
   if (!policies.ok) return json({ error: policies.error, message: policies.message }, 403)

@@ -3,6 +3,7 @@ import { assertAccountNotFrozen } from '../_shared/sellerAccountFreeze.ts'
 import { assertSellerNotOnIntegrityHold } from '../_shared/sellerIntegrityHold.ts'
 import { assertBuyerPoliciesAccepted, CURRENT_CHECKOUT_ACK_VERSION } from '../_shared/buyerPolicyAcceptance.ts'
 import { assertSellerPoliciesAccepted } from '../_shared/sellerPolicyAcceptance.ts'
+import { assertMarketplaceCompliance } from '../_shared/marketplaceCompliance.ts'
 import { calcCharitySplit, calcDropshipSplit, calcFees, corsHeaders, json, siteUrl, stripeClient } from '../_shared/stripe.ts'
 import { marketplaceListingTaxOptions, stripeTaxEnabled, TAX_CODE_TANGIBLE } from '../_shared/stripeTax.ts'
 import { isBanned } from '../_shared/accountSafety.ts'
@@ -94,6 +95,11 @@ Deno.serve(async (req) => {
     const buyerPolicies = await assertBuyerPoliciesAccepted(admin, user.id)
     if (!buyerPolicies.ok) {
       return json({ error: buyerPolicies.error, message: buyerPolicies.message }, 403)
+    }
+
+    const compliance = await assertMarketplaceCompliance(admin, user.id)
+    if (!compliance.ok) {
+      return json({ error: compliance.error, message: compliance.message }, 403)
     }
 
     const { data: listing, error: listingError } = await admin

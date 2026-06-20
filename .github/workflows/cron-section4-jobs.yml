@@ -1,0 +1,41 @@
+name: Section 4 cron jobs
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  run-cron:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Daily store spotlight
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "Skip — add CRON_SECRET to GitHub Secrets"
+            exit 0
+          fi
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            -H "x-cron-secret: ${CRON_SECRET}" \
+            "https://rochesyrxiyrxhzmkuwk.supabase.co/functions/v1/cron-daily-spotlight"
+
+      - name: Expire Starter Free 90 plans
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            -H "x-cron-secret: ${CRON_SECRET}" \
+            "https://rochesyrxiyrxhzmkuwk.supabase.co/functions/v1/cron-expire-seller-plans"
+
+      - name: Dispatch support follow-up emails
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            -H "x-cron-secret: ${CRON_SECRET}" \
+            "https://rochesyrxiyrxhzmkuwk.supabase.co/functions/v1/support-followup-dispatch"

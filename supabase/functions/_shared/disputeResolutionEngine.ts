@@ -1,5 +1,6 @@
 import type { SupabaseClient } from 'npm:@supabase/supabase-js@2'
 import { logServerActivity } from './platformActivityLog.ts'
+import { sendFollowupEmail } from './supportFollowup.ts'
 
 export type DisputeStatus = 'open' | 'awaiting_response' | 'tfs_review' | 'resolved'
 
@@ -88,6 +89,12 @@ export async function resolveDispute (
   ruling: string,
   rulingMetadata?: Record<string, unknown>,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
+  const { data: dispute } = await admin
+    .from('dispute_cases')
+    .select('id, buyer_id, status')
+    .eq('id', disputeId)
+    .maybeSingle()
+
   const { error } = await admin.from('dispute_cases').update({
     status: 'resolved',
     ruling: ruling.slice(0, 4000),
@@ -96,5 +103,12 @@ export async function resolveDispute (
   }).eq('id', disputeId)
 
   if (error) return { ok: false, error: error.message }
+
+  if (dispute?.buyer_id && dispute.status !== 'resolved') {
+    await sendFollowupEmail(admin, dispute.buyer_id, 'dispute', disputeId).catch((e) => {
+      console.error('resolveDispute followup', disputeId, e instanceof Error ? e.message : e)
+    })
+  }
+
   return { ok: true }
 }
