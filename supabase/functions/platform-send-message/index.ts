@@ -100,17 +100,35 @@ Deno.serve(async (req) => {
   }
 
   const displayName = String(user.user_metadata?.full_name || 'Account holder')
+  const receiverId = conv.buyer_id === user.id ? conv.seller_id : conv.buyer_id
+
   const { data: msg, error: msgErr } = await admin.from('platform_messages').insert({
     conversation_id: conversationId,
     sender_id: user.id,
     sender_display_name: displayName,
     body: messageBody,
+    raw_content: rawBody,
+    sanitized_content: messageBody,
+    receiver_id: receiverId,
+    ip_address: ip,
+    device_fingerprint: deviceFp,
     status: 'sent',
-    blocked_pii: false,
-    pii_violations: [],
+    blocked_pii: sanitized.modified,
+    pii_violations: sanitized.stripped,
   }).select('id, created_at').single()
 
   if (msgErr) return json({ error: msgErr.message }, 500)
+
+  await admin.from('messages').insert({
+    sender_id: user.id,
+    receiver_id: receiverId,
+    conversation_id: conversationId,
+    content: rawBody,
+    sanitized_content: messageBody,
+    ip_address: ip,
+    device_fingerprint: deviceFp,
+    platform_message_id: msg?.id,
+  })
 
   await logServerActivity(admin, {
     userId: user.id,

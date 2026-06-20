@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { corsHeaders, json } from '../_shared/stripe.ts'
+import { processEmailJobPayload } from '../_shared/emailQueue.ts'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.get('SERVICE_ROLE_KEY') ?? ''
@@ -39,6 +40,12 @@ Deno.serve(async (req) => {
         for (const table of ['platform_activity_events', 'violation_events', 'security_events', 'audit_logs']) {
           await admin.from(table).delete().lt('created_at', cutoff)
         }
+      }
+
+      if (job.job_type === 'send_email') {
+        const payload = (job.payload as Record<string, unknown>) || {}
+        const result = await processEmailJobPayload(admin, payload)
+        if (!result.ok && !result.skipped) throw new Error(String(result.error || 'send_email_failed'))
       }
 
       await admin.from('background_jobs').update({

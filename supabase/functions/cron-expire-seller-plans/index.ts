@@ -1,5 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
-import { expireStarterPlans } from '../_shared/sellerSubscriptionPlans.ts'
+import { expireStarterPlans, warnUpcomingPlanExpirations } from '../_shared/sellerSubscriptionPlans.ts'
 import { corsHeaders, json } from '../_shared/stripe.ts'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
@@ -16,6 +16,7 @@ Deno.serve(async (req) => {
   }
 
   const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, { auth: { persistSession: false } })
+  const warnings = await warnUpcomingPlanExpirations(admin)
   const result = await expireStarterPlans(admin)
-  return json({ ok: true, ...result })
+  return json({ ok: true, warnings, ...result })
 })

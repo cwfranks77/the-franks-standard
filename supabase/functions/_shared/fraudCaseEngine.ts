@@ -1,5 +1,6 @@
 import type { SupabaseClient } from 'npm:@supabase/supabase-js@2'
 import { logAudit } from './auditLog.ts'
+import { notificationTriggers } from './notifications.ts'
 
 export type FraudSeverity = 'low' | 'medium' | 'high' | 'critical'
 
@@ -30,6 +31,12 @@ export async function openFraudCase (
     targetId: data.id,
     details: { user_id: params.userId, severity: params.severity ?? 'high' },
   })
+
+  await notificationTriggers.fraudCase(admin, {
+    userId: params.userId,
+    caseId: data.id,
+    status: 'open',
+  }).catch((e) => console.error('fraud case notification', e))
 
   return { ok: true, caseId: data.id }
 }
@@ -70,7 +77,7 @@ export async function closeFraudCase (
   caseId: string,
   resolution?: Record<string, unknown>,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
-  const { data: existing } = await admin.from('fraud_cases').select('evidence').eq('id', caseId).maybeSingle()
+  const { data: existing } = await admin.from('fraud_cases').select('user_id, evidence').eq('id', caseId).maybeSingle()
   const evidence = {
     ...((existing?.evidence as Record<string, unknown>) || {}),
     resolution: resolution ?? { closed_at: new Date().toISOString() },
@@ -83,5 +90,14 @@ export async function closeFraudCase (
   }).eq('id', caseId)
 
   if (error) return { ok: false, error: error.message }
+
+  if (existing?.user_id) {
+    await notificationTriggers.fraudCase(admin, {
+      userId: existing.user_id,
+      caseId,
+      status: 'closed',
+    }).catch((e) => console.error('fraud case close notification', e))
+  }
+
   return { ok: true }
 }

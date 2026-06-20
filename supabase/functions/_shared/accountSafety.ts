@@ -1,4 +1,5 @@
 import type { SupabaseClient } from 'npm:@supabase/supabase-js@2'
+import { notificationTriggers } from './notifications.ts'
 
 export type SafetyProfile = {
   id: string
@@ -63,6 +64,7 @@ export async function freezeAccount (
   }).eq('id', userId)
   if (error) return { ok: false, error: error.message }
   await logBanAudit(admin, { userId, reason, bannedBy: 'system', action: 'freeze_account' })
+  await notificationTriggers.accountFreeze(admin, { userId, reason }).catch((e) => console.error('freeze notification', e))
   return { ok: true }
 }
 
@@ -116,6 +118,7 @@ export async function banUser (
   }).eq('seller_id', userId).eq('status', 'published')
 
   await logBanAudit(admin, { userId, reason, bannedBy, action: 'ban_user' })
+  await notificationTriggers.accountBan(admin, { userId, reason }).catch((e) => console.error('ban notification', e))
   return { ok: true }
 }
 

@@ -3,6 +3,7 @@ import { assertAccountNotFrozen } from '../_shared/sellerAccountFreeze.ts'
 import { assertMarketplaceCompliance } from '../_shared/marketplaceCompliance.ts'
 import { assertSellerPoliciesAccepted } from '../_shared/sellerPolicyAcceptance.ts'
 import { recordCoaIssued } from '../_shared/coaChainOfCustody.ts'
+import { notificationTriggers } from '../_shared/notifications.ts'
 import { clientIpFromRequest } from '../_shared/requestContext.ts'
 import { corsHeaders, json, siteUrl } from '../_shared/stripe.ts'
 
@@ -155,6 +156,12 @@ Deno.serve(async (req) => {
     ipAddress: clientIpFromRequest(req),
     deviceFingerprint: String((body as { device_fingerprint?: string }).device_fingerprint ?? '').trim() || null,
   })
+
+  await notificationTriggers.coaUpload(admin, {
+    userId: user.id,
+    coaSerial: serial,
+    listingId,
+  }).catch((e) => console.error('coa notification', e))
 
   return json({
     ok: true,

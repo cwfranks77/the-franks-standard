@@ -164,3 +164,6 @@ jobs:
           deploy safety-open-dispute
           deploy submit-review
           deploy marketplace-update-compliance
+          deploy communications-sms-verify
+          deploy communications-support-ticket --no-verify-jwt
+          deploy cron-process-jobs --no-verify-jwt

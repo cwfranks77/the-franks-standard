@@ -1,6 +1,7 @@
 import type { SupabaseClient } from 'npm:@supabase/supabase-js@2'
 import { logServerActivity } from './platformActivityLog.ts'
 import { sendFollowupEmail } from './supportFollowup.ts'
+import { notificationTriggers } from './notifications.ts'
 
 export type DisputeStatus = 'open' | 'awaiting_response' | 'tfs_review' | 'resolved'
 
@@ -66,6 +67,14 @@ export async function notifyOtherParty (
     metadata: { dispute_id: disputeId },
   })
 
+  const { data: authUser } = await admin.auth.admin.getUserById(notifyUserId)
+  await notificationTriggers.dispute(admin, {
+    userId: notifyUserId,
+    disputeId,
+    status: 'awaiting_response',
+    toEmail: authUser?.user?.email ?? null,
+  }).catch((e) => console.error('dispute notify', e))
+
   return { ok: true, notified_user_id: notifyUserId }
 }
 
@@ -91,7 +100,7 @@ export async function resolveDispute (
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   const { data: dispute } = await admin
     .from('dispute_cases')
-    .select('id, buyer_id, status')
+    .select('id, buyer_id, seller_id, status')
     .eq('id', disputeId)
     .maybeSingle()
 
@@ -105,6 +114,26 @@ export async function resolveDispute (
   if (error) return { ok: false, error: error.message }
 
   if (dispute?.buyer_id && dispute.status !== 'resolved') {
+    const { data: buyerAuth } = await admin.auth.admin.getUserById(dispute.buyer_id)
+    await notificationTriggers.dispute(admin, {
+      userId: dispute.buyer_id,
+      disputeId,
+      status: 'resolved',
+      ruling,
+      toEmail: buyerAuth?.user?.email ?? null,
+    }).catch((e) => console.error('dispute resolve buyer', e))
+
+    if (dispute.seller_id) {
+      const { data: sellerAuth } = await admin.auth.admin.getUserById(dispute.seller_id)
+      await notificationTriggers.dispute(admin, {
+        userId: dispute.seller_id,
+        disputeId,
+        status: 'resolved',
+        ruling,
+        toEmail: sellerAuth?.user?.email ?? null,
+      }).catch((e) => console.error('dispute resolve seller', e))
+    }
+
     await sendFollowupEmail(admin, dispute.buyer_id, 'dispute', disputeId).catch((e) => {
       console.error('resolveDispute followup', disputeId, e instanceof Error ? e.message : e)
     })

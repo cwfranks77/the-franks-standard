@@ -1,5 +1,6 @@
 import { createClient, SupabaseClient } from 'npm:@supabase/supabase-js@2'
 import { queueDropshipOrder } from './queueDropshipOrder.ts'
+import { notificationTriggers } from './notifications.ts'
 
 export function adminClient (): SupabaseClient {
   const url = Deno.env.get('SUPABASE_URL') ?? ''
@@ -83,6 +84,16 @@ export async function markOrderPaid (admin: SupabaseClient, params: {
     }).catch((e) => {
       console.error('activity purchase log', orderId, e instanceof Error ? e.message : e)
     })
+
+    const totalDisplay = orderRow.total_paid != null
+      ? `$${(Number(orderRow.total_paid) / 100).toFixed(2)}`
+      : undefined
+    await notificationTriggers.purchase(admin, {
+      userId: orderRow.buyer_id,
+      orderId,
+      total: totalDisplay,
+      toEmail: buyerEmail ?? null,
+    }).catch((e) => console.error('purchase notification', orderId, e))
   }
 
   return { ok: true }

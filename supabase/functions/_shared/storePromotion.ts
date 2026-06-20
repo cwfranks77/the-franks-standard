@@ -1,4 +1,5 @@
 import type { SupabaseClient } from 'npm:@supabase/supabase-js@2'
+import { notificationTriggers } from './notifications.ts'
 
 export type StorePublicRow = {
   id: string
@@ -71,6 +72,19 @@ export async function pickDailySpotlight (
   })
 
   if (insErr) return { ok: false, error: insErr.message }
+
+  const { data: store } = await admin
+    .from('profiles')
+    .select('store_name')
+    .eq('id', pick)
+    .maybeSingle()
+
+  await notificationTriggers.spotlightSelected(admin, {
+    userId: pick,
+    storeName: store?.store_name ?? undefined,
+    date: today,
+  }).catch((e) => console.error('spotlight notification', e))
+
   return { ok: true, store_id: pick, spotlight_date: today }
 }
 

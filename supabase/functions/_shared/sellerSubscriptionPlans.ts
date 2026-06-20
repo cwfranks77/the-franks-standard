@@ -1,4 +1,5 @@
 import type { SupabaseClient } from 'npm:@supabase/supabase-js@2'
+import { notificationTriggers } from './notifications.ts'
 
 export const STARTER_FREE_SLUG = 'starter_free_90'
 export const DEFAULT_PAID_SLUG = 'marketplace_standard'
@@ -95,4 +96,42 @@ export async function expireStarterPlans (
   }
 
   return { switched, errors }
+}
+
+/** Warn sellers whose active plan expires within the next 7 days. */
+export async function warnUpcomingPlanExpirations (
+  admin: SupabaseClient,
+): Promise<{ warned: number; errors: string[] }> {
+  const now = Date.now()
+  const inSevenDays = new Date(now + 7 * 24 * 60 * 60 * 1000).toISOString()
+  const nowIso = new Date(now).toISOString()
+
+  const { data: subs, error } = await admin
+    .from('seller_subscriptions')
+    .select('seller_id, expires_at, subscription_plans(name)')
+    .eq('status', 'active')
+    .not('expires_at', 'is', null)
+    .gt('expires_at', nowIso)
+    .lte('expires_at', inSevenDays)
+
+  if (error) return { warned: 0, errors: [error.message] }
+
+  let warned = 0
+  const errors: string[] = []
+
+  for (const row of subs ?? []) {
+    const planName = (row.subscription_plans as { name?: string } | null)?.name ?? 'Seller plan'
+    const expiresAt = String(row.expires_at ?? '').slice(0, 10)
+    const { data: authUser } = await admin.auth.admin.getUserById(row.seller_id)
+    const result = await notificationTriggers.planExpiration(admin, {
+      userId: row.seller_id,
+      planName,
+      expiresAt,
+      toEmail: authUser?.user?.email ?? null,
+    })
+    if (!result.ok) errors.push(result.error)
+    else warned += 1
+  }
+
+  return { warned, errors }
 }

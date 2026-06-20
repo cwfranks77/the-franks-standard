@@ -1,17 +1,11 @@
-/** Send transactional email job (queued — does not send without owner mailer config). */
+/** Send transactional email job — Section 11 email engine. */
+
+const { processEmailJob } = require('../email/email_queue.js')
 
 module.exports = async function sendEmailJob (admin, payload) {
-  const { to, subject, body, template } = payload || {}
-  if (!to || !subject) throw new Error('send_email_missing_fields')
-
-  if (admin) {
-    await admin.from('reliability_events').insert({
-      event_type: 'job_send_email',
-      operation: 'send_email',
-      succeeded: true,
-      metadata: { to, subject, template: template || null, queued_only: true },
-    })
+  const result = await processEmailJob(admin, payload || {})
+  if (!result.ok && !result.skipped) {
+    throw new Error(result.error || 'send_email_failed')
   }
-
-  return { ok: true, queued: true, note: 'Email job recorded. Wire SMTP/SendGrid to dispatch.' }
+  return result
 }
