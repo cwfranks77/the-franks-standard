@@ -3,18 +3,7 @@
  * Used by Nitro server middleware (not Express).
  */
 
-const HTML_ESCAPE = {
-  '&': '&amp;',
-  '<': '&lt;',
-  '>': '&gt;',
-  '"': '&quot;',
-  "'": '&#x27;',
-  '/': '&#x2F;',
-}
-
-function escapeHtml (str) {
-  return String(str).replace(/[&<>"'/]/g, (c) => HTML_ESCAPE[c] || c)
-}
+const xss = require('xss')
 
 /** Helmet-equivalent response headers for Nitro setResponseHeaders */
 const SECURITY_HEADERS = {
@@ -59,11 +48,7 @@ const CRITICAL_PATH_PREFIXES = [
 
 function sanitizeString (input) {
   if (typeof input !== 'string') return ''
-  let s = input.trim()
-  s = s.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-  s = s.replace(/javascript:/gi, '')
-  s = s.replace(/on\w+\s*=/gi, '')
-  return escapeHtml(s)
+  return xss(input.trim())
 }
 
 function sanitizeObject (obj) {
@@ -127,7 +112,7 @@ function getSecurityHardeningStatus () {
     auth_rate: AUTH_RATE,
     auth_paths: AUTH_PATH_PREFIXES,
     critical_paths: CRITICAL_PATH_PREFIXES,
-    sanitization: true,
+    sanitization: 'xss',
   }
 }
 

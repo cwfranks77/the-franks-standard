@@ -5,6 +5,7 @@ apps/android/.gradle
 apps/android/app/build
 apps/android/build
 *.log*
+logs/
 .nuxt
 .nitro
 .cache
@@ -25,5 +26,7 @@ dist
 franks-standard-credentials/
 .cursor/
 supabase/.temp/
+*.bundle
+repo-backup.bundle
 scripts/vantage_keygen.py
 scripts/obd-scan-temp.py

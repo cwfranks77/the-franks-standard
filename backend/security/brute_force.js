@@ -58,6 +58,16 @@ async function recordLoginAttempt (admin, {
   let captchaRequired = state?.captcha_required ?? false
   let accountFrozenUntil = state?.account_frozen_until ?? null
 
+  const { logFailedLogin, logSuspiciousActivity } = require('../activity/activity_recorder.js')
+  await logFailedLogin(userId ?? null, admin).catch(() => {})
+
+  if (failedCount >= THRESHOLDS.captcha) {
+    await logSuspiciousActivity(userId ?? idKey, 'multiple failed logins', {
+      failed_count: failedCount,
+      ip_address: ipAddress,
+    }, admin).catch(() => {})
+  }
+
   if (failedCount >= THRESHOLDS.accountFreeze) {
     accountFrozenUntil = new Date(now.getTime() + ACCOUNT_FREEZE_MS).toISOString()
     captchaRequired = true

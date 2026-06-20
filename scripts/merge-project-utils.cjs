@@ -6,6 +6,7 @@ const targetDir = path.join(rootDir, 'utils')
 const sourceDirs = [
   path.join(rootDir, 'bc-performance-audio', 'src', 'utils'),
   path.join(rootDir, 'franks-standard', 'src', 'utils'),
+  path.join(rootDir, 'franks-standard', 'utils'),
 ]
 
 function copyDir (sourceDir, destDir) {

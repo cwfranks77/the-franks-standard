@@ -29,7 +29,16 @@ export function createActionHandler (actionKey: string) {
     const actions = require('../../../../backend/owner/actions.js')
     const body = await readBody(event).catch(() => ({}))
     const fn = actions[method]
-    if (method === 'reindexSearch') return fn(sb)
-    return fn(sb, body)
+    let result
+    if (method === 'reindexSearch') result = await fn(sb)
+    else result = await fn(sb, body)
+
+    const { logAdminAction } = require('../../../../backend/activity/activity_recorder.js')
+    await logAdminAction('ops', method, {
+      ...(body && typeof body === 'object' ? body : {}),
+      ok: result?.ok !== false,
+    }, sb).catch(() => {})
+
+    return result
   })
 }
