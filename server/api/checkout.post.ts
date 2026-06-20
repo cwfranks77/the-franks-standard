@@ -1,8 +1,6 @@
-import { createRequire } from 'node:module'
-
-const require = createRequire(import.meta.url)
-const { startCheckout } = require('../../../backend/marketplace/checkout.js')
-const { logCheckoutComplete } = require('../../../backend/checkout/checkout_validation.js')
+import { backendRequire as require } from '#cjs-require'
+const { startCheckout } = require('#backend/marketplace/checkout.js')
+const { logCheckoutComplete } = require('#backend/checkout/checkout_validation.js')
 
 /**
  * POST /api/checkout

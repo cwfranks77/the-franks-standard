@@ -1,7 +1,6 @@
-import { createRequire } from 'node:module'
+import { backendRequire as require } from '#cjs-require'
 import { requireOwnerAuth } from '../../utils/ownerAuth'
 
-const require = createRequire(import.meta.url)
 
 /**
  * GET /api/security/healthcheck — owner-only security subsystem status.
@@ -9,12 +8,12 @@ const require = createRequire(import.meta.url)
 export default defineEventHandler((event) => {
   requireOwnerAuth(event)
 
-  const { getRateLimitStatus } = require('../../../backend/security/rate_limit.js')
-  const { getBruteForceStatus } = require('../../../backend/security/brute_force.js')
-  const { getSessionSecurityStatus } = require('../../../backend/security/session_security.js')
-  const { getFingerprintEnforcementStatus } = require('../../../backend/security/device_fingerprint.js')
-  const { getIpRiskStatus } = require('../../../backend/security/ip_risk.js')
-  const { getFileScanStatus } = require('../../../backend/security/file_upload.js')
+  const { getRateLimitStatus } = require('#backend/security/rate_limit.js')
+  const { getBruteForceStatus } = require('#backend/security/brute_force.js')
+  const { getSessionSecurityStatus } = require('#backend/security/session_security.js')
+  const { getFingerprintEnforcementStatus } = require('#backend/security/device_fingerprint.js')
+  const { getIpRiskStatus } = require('#backend/security/ip_risk.js')
+  const { getFileScanStatus } = require('#backend/security/file_upload.js')
 
   return {
     ok: true,

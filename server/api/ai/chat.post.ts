@@ -1,8 +1,6 @@
 import { getServiceSupabase, supabaseUnavailable } from '../../utils/serviceSupabase'
-import { createRequire } from 'node:module'
-
-const require = createRequire(import.meta.url)
-const { handleChatMessage } = require('../../../backend/ai_chat_agent/chat_router.js')
+import { backendRequire as require } from '#cjs-require'
+const { handleChatMessage } = require('#backend/ai_chat_agent/chat_router.js')
 
 /**
  * POST /api/ai/chat — backend AI support chat (no UI changes).

@@ -1,8 +1,5 @@
-import { createRequire } from 'node:module'
 import { requireOwnerAuth } from '../../../utils/ownerAuth'
 import { getServiceSupabase, supabaseUnavailable } from '../../../utils/serviceSupabase'
-
-const require = createRequire(import.meta.url)
 
 export default defineEventHandler(async (event) => {
   requireOwnerAuth(event)

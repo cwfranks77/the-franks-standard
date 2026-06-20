@@ -1,8 +1,7 @@
-import { createRequire } from 'node:module'
+import { backendRequire as require } from '#cjs-require'
 import { getServiceSupabase, supabaseUnavailable } from '../../utils/serviceSupabase'
 
-const require = createRequire(import.meta.url)
-const { searchQuery } = require('../../../backend/search/query.js')
+const { searchQuery } = require('#backend/search/query.js')
 
 /** GET /api/search/query — backend search (no UI). */
 export default defineEventHandler(async (event) => {

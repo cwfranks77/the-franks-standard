@@ -1,8 +1,6 @@
 import { getServiceSupabase, supabaseUnavailable } from '../../utils/serviceSupabase'
-import { createRequire } from 'node:module'
-
-const require = createRequire(import.meta.url)
-const { createListing } = require('../../../backend/marketplace/create_listing.js')
+import { backendRequire as require } from '#cjs-require'
+const { createListing } = require('#backend/marketplace/create_listing.js')
 
 /**
  * POST /api/listings/create

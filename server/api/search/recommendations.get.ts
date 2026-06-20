@@ -1,11 +1,10 @@
-import { createRequire } from 'node:module'
+import { backendRequire as require } from '#cjs-require'
 import { getServiceSupabase, supabaseUnavailable } from '../../utils/serviceSupabase'
 
-const require = createRequire(import.meta.url)
-const { recommendForUser } = require('../../../backend/recommendations/recommend_for_user.js')
-const { recommendSimilarItems } = require('../../../backend/recommendations/recommend_similar_items.js')
-const { recommendTrending } = require('../../../backend/recommendations/recommend_trending.js')
-const { discoverStores } = require('../../../backend/recommendations/store_discovery.js')
+const { recommendForUser } = require('#backend/recommendations/recommend_for_user.js')
+const { recommendSimilarItems } = require('#backend/recommendations/recommend_similar_items.js')
+const { recommendTrending } = require('#backend/recommendations/recommend_trending.js')
+const { discoverStores } = require('#backend/recommendations/store_discovery.js')
 
 export default defineEventHandler(async (event) => {
   const sb = getServiceSupabase()

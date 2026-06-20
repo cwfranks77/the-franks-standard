@@ -1,8 +1,7 @@
-import { createRequire } from 'node:module'
+import { backendRequire as require } from '#cjs-require'
 import { requireOwnerAuth } from '../utils/ownerAuth'
 import { getServiceSupabase } from '../utils/serviceSupabase'
 
-const require = createRequire(import.meta.url)
 const {
   evaluateListingEnforcement,
   enforceBuyerRulesContext,
@@ -12,7 +11,7 @@ const {
   isBuyerActionPath,
   isSellerActionPath,
   persistListingViolationFlags,
-} = require('../../backend/marketplace/marketplace_enforcement.js')
+} = require('#backend/marketplace/marketplace_enforcement.js')
 
 function opsKeyValid (event: Parameters<typeof getRequestURL>[0]) {
   try {

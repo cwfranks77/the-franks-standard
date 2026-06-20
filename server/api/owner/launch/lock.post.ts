@@ -1,9 +1,7 @@
 import { requireOwnerAuth } from '../../../utils/ownerAuth'
 import { getServiceSupabase, supabaseUnavailable } from '../../../utils/serviceSupabase'
-import { createRequire } from 'node:module'
-
-const require = createRequire(import.meta.url)
-const { lockLaunch, unlockLaunch } = require('../../../../backend/launch/lock.js')
+import { backendRequire as require } from '#cjs-require'
+const { lockLaunch, unlockLaunch } = require('#backend/launch/lock.js')
 
 export default defineEventHandler(async (event) => {
   requireOwnerAuth(event)

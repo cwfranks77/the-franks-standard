@@ -1,10 +1,8 @@
 import { readFile, readdir, stat } from 'node:fs/promises'
 import { join, relative } from 'node:path'
-import { createRequire } from 'node:module'
-
-const require = createRequire(import.meta.url)
-const { getOrSet, DEFAULT_TTLS } = require('../../backend/cache/cache.js')
-const { prepareHandlerContext } = require('../../backend/performance/response_optimizer.js')
+import { backendRequire as require } from '#cjs-require'
+const { getOrSet, DEFAULT_TTLS } = require('#backend/cache/cache.js')
+const { prepareHandlerContext } = require('#backend/performance/response_optimizer.js')
 
 const MARKETING_DIR = join(process.cwd(), 'marketing')
 

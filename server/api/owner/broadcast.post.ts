@@ -1,10 +1,9 @@
-import { createRequire } from 'node:module'
+import { backendRequire as require } from '#cjs-require'
 import { requireOwnerAuth } from '../../utils/ownerAuth'
 import { getServiceSupabase, supabaseUnavailable } from '../../utils/serviceSupabase'
 
-const require = createRequire(import.meta.url)
-const { sendNotification } = require('../../../backend/notifications/send_notification.js')
-const { sendEmail } = require('../../../backend/email/send_email.js')
+const { sendNotification } = require('#backend/notifications/send_notification.js')
+const { sendEmail } = require('#backend/email/send_email.js')
 
 /**
  * POST /api/owner/broadcast — owner-only platform-wide broadcast.

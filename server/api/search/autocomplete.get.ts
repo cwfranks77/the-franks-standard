@@ -1,8 +1,7 @@
-import { createRequire } from 'node:module'
+import { backendRequire as require } from '#cjs-require'
 import { getServiceSupabase, supabaseUnavailable } from '../../utils/serviceSupabase'
 
-const require = createRequire(import.meta.url)
-const { autocomplete } = require('../../../backend/search/autocomplete.js')
+const { autocomplete } = require('#backend/search/autocomplete.js')
 
 export default defineEventHandler(async (event) => {
   const sb = getServiceSupabase()

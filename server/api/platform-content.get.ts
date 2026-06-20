@@ -1,10 +1,8 @@
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { createRequire } from 'node:module'
-
-const require = createRequire(import.meta.url)
-const { getOrSet, DEFAULT_TTLS } = require('../../backend/cache/cache.js')
-const { prepareHandlerContext } = require('../../backend/performance/response_optimizer.js')
+import { backendRequire as require } from '#cjs-require'
+const { getOrSet, DEFAULT_TTLS } = require('#backend/cache/cache.js')
+const { prepareHandlerContext } = require('#backend/performance/response_optimizer.js')
 
 const CONTENT_DIR = join(process.cwd(), 'content')
 

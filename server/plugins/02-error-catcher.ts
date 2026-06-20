@@ -1,11 +1,9 @@
-import { createRequire } from 'node:module'
-
-const require = createRequire(import.meta.url)
+import { backendRequire as require } from '#cjs-require'
 const {
   attachCrashGuards,
   writeErrorLog,
   shouldLogNitroError,
-} = require('../../backend/error/error_catcher.js')
+} = require('#backend/error/error_catcher.js')
 
 export default defineNitroPlugin((nitroApp) => {
   attachCrashGuards()

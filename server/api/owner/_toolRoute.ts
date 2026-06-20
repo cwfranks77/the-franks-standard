@@ -1,10 +1,9 @@
 import { requireOwnerAuth } from '../../utils/ownerAuth'
 import { getServiceSupabase, supabaseUnavailable } from '../../utils/serviceSupabase'
-import { createRequire } from 'node:module'
+import { backendRequire as require } from '#cjs-require'
 import type { H3Event } from 'h3'
 
-const require = createRequire(import.meta.url)
-const tools = require('../../../backend/owner/owner_tools.js')
+const tools = require('#backend/owner/owner_tools.js')
 
 export type ToolResult = { ok: boolean, error?: string, status?: number, [key: string]: unknown }
 

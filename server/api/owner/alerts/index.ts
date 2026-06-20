@@ -1,8 +1,6 @@
 import { requireOwnerAuth } from '../../../utils/ownerAuth'
 import { getServiceSupabase, supabaseUnavailable } from '../../../utils/serviceSupabase'
-import { createRequire } from 'node:module'
-
-const require = createRequire(import.meta.url)
+import { backendRequire as require } from '#cjs-require'
 
 export default defineEventHandler(async (event) => {
   requireOwnerAuth(event)
@@ -12,7 +10,7 @@ export default defineEventHandler(async (event) => {
   const query = getQuery(event)
   const unreadOnly = query.unread === 'true'
 
-  const { listOwnerAlerts, markAlertRead } = require('../../../../backend/owner/alerts.js')
+  const { listOwnerAlerts, markAlertRead } = require('#backend/owner/alerts.js')
 
   if (getMethod(event) === 'POST') {
     const body = await readBody(event).catch(() => ({})) as { alert_id?: string }

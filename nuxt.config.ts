@@ -116,6 +116,8 @@ export default defineNuxtConfig({
       resolve(rootDir, 'bc-performance-audio/src/server'),
     ],
     alias: {
+      '#backend': resolve(rootDir, 'backend'),
+      '#cjs-require': resolve(rootDir, 'server/utils/cjsRequire.ts'),
       '#server-utils': serverUtilsAlias,
       '#bc-server-utils': bcServerUtilsDir,
     },

@@ -1,15 +1,14 @@
-import { createRequire } from 'node:module'
+import { backendRequire as require } from '#cjs-require'
 import { requireOwnerAuth } from '../../utils/ownerAuth'
 import { getServiceSupabase } from '../../utils/serviceSupabase'
 
-const require = createRequire(import.meta.url)
-require('../../backend/jobs/register.js')
+require('#backend/jobs/register.js')
 
-const { getCacheStatus } = require('../../../backend/cache/cache.js')
-const { getRateLimitStatus } = require('../../../backend/security/rate_limit.js')
-const { getQueueStatus } = require('../../../backend/jobs/queue.js')
-const { getReliabilityStatus } = require('../../../backend/reliability/failover.js')
-const { API_VERSION } = require('../../../backend/performance/response_optimizer.js')
+const { getCacheStatus } = require('#backend/cache/cache.js')
+const { getRateLimitStatus } = require('#backend/security/rate_limit.js')
+const { getQueueStatus } = require('#backend/jobs/queue.js')
+const { getReliabilityStatus } = require('#backend/reliability/failover.js')
+const { API_VERSION } = require('#backend/performance/response_optimizer.js')
 
 const STARTED_AT = Date.now()
 

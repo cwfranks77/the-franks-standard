@@ -1,9 +1,7 @@
 import { requireOwnerAuth } from '../utils/ownerAuth'
 import { getServiceSupabase } from '../utils/serviceSupabase'
-import { createRequire } from 'node:module'
-
-const require = createRequire(import.meta.url)
-const { runBuildVerification, resolveBaseUrlFromRequest } = require('../../../backend/launch/build_verification.js')
+import { backendRequire as require } from '#cjs-require'
+const { runBuildVerification, resolveBaseUrlFromRequest } = require('#backend/launch/build_verification.js')
 
 /**
  * GET /api/verify-build — owner-only final build verification report.

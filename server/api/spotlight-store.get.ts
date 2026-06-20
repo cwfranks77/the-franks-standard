@@ -1,9 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
-import { createRequire } from 'node:module'
-
-const require = createRequire(import.meta.url)
-const { getOrSet, DEFAULT_TTLS } = require('../../backend/cache/cache.js')
-const { prepareHandlerContext } = require('../../backend/performance/response_optimizer.js')
+import { backendRequire as require } from '#cjs-require'
+const { getOrSet, DEFAULT_TTLS } = require('#backend/cache/cache.js')
+const { prepareHandlerContext } = require('#backend/performance/response_optimizer.js')
 
 function adminClient () {
   const url = process.env.SUPABASE_URL || process.env.NUXT_SUPABASE_URL || ''

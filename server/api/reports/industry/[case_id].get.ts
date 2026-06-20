@@ -1,9 +1,7 @@
 import { requireOwnerAuth } from '../../../utils/ownerAuth'
 import { getServiceSupabase, supabaseUnavailable } from '../../../utils/serviceSupabase'
-import { createRequire } from 'node:module'
-
-const require = createRequire(import.meta.url)
-const { redactObject } = require('../../../../backend/reporting/industry/prepare_alert.js')
+import { backendRequire as require } from '#cjs-require'
+const { redactObject } = require('#backend/reporting/industry/prepare_alert.js')
 
 /**
  * GET /api/reports/industry/:case_id

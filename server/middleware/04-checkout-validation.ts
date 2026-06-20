@@ -1,8 +1,7 @@
-import { createRequire } from 'node:module'
+import { backendRequire as require } from '#cjs-require'
 import { getServiceSupabase } from '../utils/serviceSupabase'
 
-const require = createRequire(import.meta.url)
-const { evaluateCheckout, isCheckoutPath, logCheckoutStart } = require('../../backend/checkout/checkout_validation.js')
+const { evaluateCheckout, isCheckoutPath, logCheckoutStart } = require('#backend/checkout/checkout_validation.js')
 
 export default defineEventHandler(async (event) => {
   const path = getRequestURL(event).pathname

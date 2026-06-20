@@ -1,12 +1,11 @@
-import { createRequire } from 'node:module'
+import { backendRequire as require } from '#cjs-require'
 import { getServiceSupabase } from '../utils/serviceSupabase'
 
-const require = createRequire(import.meta.url)
 const {
   evaluateReviewSubmission,
   isReviewWritePath,
-} = require('../../backend/reviews/review_system.js')
-const { persistReviewFlags } = require('../../backend/reviews/submit_review.js')
+} = require('#backend/reviews/review_system.js')
+const { persistReviewFlags } = require('#backend/reviews/submit_review.js')
 
 export default defineEventHandler(async (event) => {
   const path = getRequestURL(event).pathname

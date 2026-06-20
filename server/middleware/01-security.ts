@@ -1,17 +1,16 @@
-import { createRequire } from 'node:module'
+import { backendRequire as require } from '#cjs-require'
 import { requireOwnerAuth } from '../utils/ownerAuth'
 import { getServiceSupabase } from '../utils/serviceSupabase'
 
-const require = createRequire(import.meta.url)
-const { checkRateLimit, checkRateLimitForPath } = require('../../backend/security/rate_limit.js')
-const { checkOwnerAccess, isOwnerRoute } = require('../../backend/security/owner_only.js')
-const { scoreIp } = require('../../backend/security/ip_risk.js')
+const { checkRateLimit, checkRateLimitForPath } = require('#backend/security/rate_limit.js')
+const { checkOwnerAccess, isOwnerRoute } = require('#backend/security/owner_only.js')
+const { scoreIp } = require('#backend/security/ip_risk.js')
 const {
   sanitizeObject,
   isAuthPath,
   isCriticalPath,
   protectCriticalRouteContext,
-} = require('../../backend/security/security_hardening.js')
+} = require('#backend/security/security_hardening.js')
 
 function clientIp (event: Parameters<typeof getRequestURL>[0]) {
   return getHeader(event, 'x-forwarded-for')?.split(',')[0]?.trim()

@@ -1,11 +1,9 @@
 import { requireOwnerAuth } from '../../../../utils/ownerAuth'
 import { getServiceSupabase, supabaseUnavailable } from '../../../../utils/serviceSupabase'
-import { createRequire } from 'node:module'
-
-const require = createRequire(import.meta.url)
-const { createBackup } = require('../../../../backend/backups/create_backup.js')
-const { listBackups } = require('../../../../backend/backups/list_backups.js')
-const { restoreBackup } = require('../../../../backend/backups/restore_backup.js')
+import { backendRequire as require } from '#cjs-require'
+const { createBackup } = require('#backend/backups/create_backup.js')
+const { listBackups } = require('#backend/backups/list_backups.js')
+const { restoreBackup } = require('#backend/backups/restore_backup.js')
 
 export default defineEventHandler(async (event) => {
   requireOwnerAuth(event)

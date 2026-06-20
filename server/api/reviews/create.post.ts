@@ -1,9 +1,8 @@
-import { createRequire } from 'node:module'
+import { backendRequire as require } from '#cjs-require'
 import { getServiceSupabase, supabaseUnavailable } from '../../utils/serviceSupabase'
 
-const require = createRequire(import.meta.url)
-const { evaluateReviewSubmission } = require('../../../backend/reviews/review_system.js')
-const { submitReview } = require('../../../backend/reviews/submit_review.js')
+const { evaluateReviewSubmission } = require('#backend/reviews/review_system.js')
+const { submitReview } = require('#backend/reviews/submit_review.js')
 
 function clientIp (event: Parameters<typeof getRequestURL>[0]) {
   return getHeader(event, 'x-forwarded-for')?.split(',')[0]?.trim()
