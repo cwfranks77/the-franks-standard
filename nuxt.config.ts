@@ -63,6 +63,11 @@ const franksPagesRoot = resolve(rootDir, 'franks-standard/src/pages')
 const bcPagesRoot = resolve(rootDir, 'bc-performance-audio/src/pages/bc-audio')
 const bcPluginsDir = resolve(rootDir, 'bc-performance-audio/src/plugins')
 const franksPluginsDir = resolve(rootDir, 'franks-standard/src/plugins')
+const franksServerUtilsDir = resolve(rootDir, 'franks-standard/src/server/utils')
+const bcServerUtilsDir = resolve(rootDir, 'bc-performance-audio/src/server/utils')
+const serverUtilsAlias = existsSync(resolve(franksServerUtilsDir, 'ownerCms.ts'))
+  ? franksServerUtilsDir
+  : bcServerUtilsDir
 
 function bcPage (relativeFile: string, path: string) {
   return { path, file: resolve(bcPagesRoot, relativeFile) }
@@ -111,8 +116,8 @@ export default defineNuxtConfig({
       resolve(rootDir, 'bc-performance-audio/src/server'),
     ],
     alias: {
-      '#server-utils': resolve(rootDir, 'franks-standard/src/server/utils'),
-      '#bc-server-utils': resolve(rootDir, 'bc-performance-audio/src/server/utils'),
+      '#server-utils': serverUtilsAlias,
+      '#bc-server-utils': bcServerUtilsDir,
     },
     prerender: {
       routes: [
