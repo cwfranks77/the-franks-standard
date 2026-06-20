@@ -1,0 +1,16 @@
+{
+  "version": "2026-06-20",
+  "blocks": [
+    { "key": "founder_story", "path": "/content/founder_story.md", "title": "Founder Story" },
+    { "key": "authenticity_mission", "path": "/content/authenticity_mission.md", "title": "Authenticity Mission" },
+    { "key": "safety_overview", "path": "/content/safety_overview.md", "title": "Marketplace Safety" },
+    { "key": "why_sell_on_tfs", "path": "/content/why_sell_on_tfs.md", "title": "Why Sell on TFS" },
+    { "key": "why_buy_on_tfs", "path": "/content/why_buy_on_tfs.md", "title": "Why Buy on TFS" },
+    { "key": "no_counterfeits", "path": "/content/no_counterfeits.md", "title": "No Counterfeits Policy" },
+    { "key": "platform_reviews", "path": "/content/platform_reviews.md", "title": "Platform Reviews" },
+    { "key": "customer_service_quality", "path": "/content/customer_service_quality.md", "title": "Customer Service Quality" },
+    { "key": "home_highlights", "path": "/content/home_highlights.md", "title": "Home Highlights" },
+    { "key": "home_safety_banner", "path": "/content/home_safety_banner.md", "title": "Home Safety Banner" },
+    { "key": "home_authenticity_banner", "path": "/content/home_authenticity_banner.md", "title": "Home Authenticity Banner" }
+  ]
+}
