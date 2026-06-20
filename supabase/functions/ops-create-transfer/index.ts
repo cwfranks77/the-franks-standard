@@ -1,6 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { verifyOpsKey } from '../_shared/opsAuth.ts'
 import { corsHeaders, json, stripeClient } from '../_shared/stripe.ts'
+import { assertLaunchNotLocked } from '../_shared/launchLock.ts'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.get('SERVICE_ROLE_KEY') ?? ''
@@ -23,6 +24,13 @@ Deno.serve(async (req) => {
 
   const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, { auth: { persistSession: false } })
   const action = String(body.action ?? 'create_transfer')
+
+  if (action !== 'list_pending') {
+    const launchGate = await assertLaunchNotLocked(admin, 'payouts')
+    if (!launchGate.ok) {
+      return json({ error: launchGate.error, message: launchGate.message }, 503)
+    }
+  }
 
   if (action === 'list_pending') {
     const { data, error } = await admin

@@ -5,6 +5,7 @@ import { openDispute } from '../_shared/disputeResolutionEngine.ts'
 import { scanAndEnforceViolation } from '../_shared/violationEnforcement.ts'
 import { corsHeaders, json } from '../_shared/stripe.ts'
 import { clientIpFromRequest } from '../_shared/requestContext.ts'
+import { assertLaunchNotLocked } from '../_shared/launchLock.ts'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.get('SERVICE_ROLE_KEY') ?? ''
@@ -40,6 +41,11 @@ Deno.serve(async (req) => {
 
   const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, { auth: { persistSession: false } })
   const ip = clientIpFromRequest(req)
+
+  const launchGate = await assertLaunchNotLocked(admin, 'disputes')
+  if (!launchGate.ok) {
+    return json({ error: launchGate.error, message: launchGate.message }, 503)
+  }
 
   const activity = await assertAccountNotFrozenForActivity(admin, user.id)
   if (!activity.ok) return json({ error: activity.error, message: activity.message }, 403)

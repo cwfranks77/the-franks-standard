@@ -10,6 +10,7 @@ import { marketplaceListingTaxOptions, stripeTaxEnabled, TAX_CODE_TANGIBLE } fro
 import { isBanned } from '../_shared/accountSafety.ts'
 import { applyVpnPolicy } from '../_shared/vpnDetection.ts'
 import { clientIpFromRequest } from '../_shared/requestContext.ts'
+import { assertLaunchNotLocked } from '../_shared/launchLock.ts'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.get('SERVICE_ROLE_KEY') ?? ''
@@ -58,6 +59,12 @@ Deno.serve(async (req) => {
     }
 
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, { auth: { persistSession: false } })
+
+    const launchGate = await assertLaunchNotLocked(admin, 'purchases')
+    if (!launchGate.ok) {
+      return json({ error: launchGate.error, message: launchGate.message }, 503)
+    }
+
     const clientIp = clientIpFromRequest(req)
     const deviceFp = String(body.device_fingerprint ?? '').trim() || null
 

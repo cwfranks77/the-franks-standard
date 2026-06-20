@@ -8,6 +8,7 @@ import { clientIpFromRequest } from '../_shared/requestContext.ts'
 import { checkRateLimit } from '../_shared/security/rateLimit.ts'
 import { assertDeviceFingerprint } from '../_shared/security/deviceFingerprint.ts'
 import { sanitizeAndLog } from '../_shared/security/messageSanitize.ts'
+import { isLaunchLocked } from '../_shared/launchLock.ts'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.get('SERVICE_ROLE_KEY') ?? ''
@@ -42,6 +43,11 @@ Deno.serve(async (req) => {
   const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, { auth: { persistSession: false } })
   const ip = clientIpFromRequest(req)
   const deviceFp = String(body.device_fingerprint ?? '').trim() || null
+
+  const launchState = await isLaunchLocked(admin)
+  if (launchState.emergency_shutdown) {
+    return json({ error: 'messaging_disabled', message: 'Messaging is disabled during emergency shutdown.' }, 503)
+  }
 
   const fpCheck = await assertDeviceFingerprint(admin, user.id, deviceFp, ip)
   if (!fpCheck.ok) return json({ error: fpCheck.error, message: 'Device verification required.' }, 403)

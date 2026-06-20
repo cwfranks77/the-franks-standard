@@ -168,3 +168,4 @@ jobs:
           deploy communications-support-ticket --no-verify-jwt
           deploy cron-process-jobs --no-verify-jwt
           deploy cron-search-index --no-verify-jwt
+          deploy cron-post-launch-monitor --no-verify-jwt

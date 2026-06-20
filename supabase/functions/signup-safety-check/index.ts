@@ -4,6 +4,7 @@ import { isBanned } from '../_shared/accountSafety.ts'
 import { applyVpnPolicy } from '../_shared/vpnDetection.ts'
 import { corsHeaders, json } from '../_shared/stripe.ts'
 import { clientIpFromRequest } from '../_shared/requestContext.ts'
+import { assertLaunchNotLocked } from '../_shared/launchLock.ts'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.get('SERVICE_ROLE_KEY') ?? ''
@@ -25,6 +26,11 @@ Deno.serve(async (req) => {
   const userId = body.user_id ? String(body.user_id) : null
 
   const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, { auth: { persistSession: false } })
+
+  const launchGate = await assertLaunchNotLocked(admin, 'registrations')
+  if (!launchGate.ok) {
+    return json({ allowed: false, blocked: true, reason: launchGate.error, message: launchGate.message }, 503)
+  }
 
   const ban = await isBanned(admin, { userId, deviceFingerprint: deviceFp, browserFingerprint: browserFp, ipAddress: ip })
   if (ban.banned) {
