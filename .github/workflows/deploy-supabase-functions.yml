@@ -106,7 +106,13 @@ jobs:
         run: |
           REF=rochesyrxiyrxhzmkuwk
           npx supabase@latest link --project-ref "$REF"
-          deploy () { npx supabase@latest functions deploy "$1" --project-ref "$REF" "${@:2}"; }
+          deploy () {
+            if [ -f "supabase/functions/$1/index.ts" ]; then
+              npx supabase@latest functions deploy "$1" --project-ref "$REF" "${@:2}"
+            else
+              echo "Skip $1 — not in this repo checkout"
+            fi
+          }
           # Public / webhook (no JWT)
           deploy submit-contact --no-verify-jwt
           deploy submit-authenticity-report --no-verify-jwt
