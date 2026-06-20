@@ -1,6 +1,6 @@
 const GREETING =
-  'Thank you for calling B and C Performance Audio, a division of The Franks Standard. ' +
-  'Your call is important to us. Please hold while we connect you to customer support.';
+  'Thank you for calling B and C Performance Audio. ' +
+  'Your call is important to us.';
 
 function escapeXml (value) {
   return String(value)
@@ -12,11 +12,11 @@ function escapeXml (value) {
 
 export default function handler (req, res) {
   const forwardTo = String(
-    process.env.PRIVATE_OWNER_CELL_PHONE
+    process.env.BC_OWNER_CELL_PHONE
+    || process.env.PRIVATE_OWNER_CELL_PHONE
     || process.env.FORWARD_SUPPORT_TO
-    || process.env.NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL
-    || '+18337224147',
-  ).trim();
+    || '+13373400449',
+  ).trim()
 
   const twiml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>

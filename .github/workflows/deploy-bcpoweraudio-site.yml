@@ -43,6 +43,7 @@ on:
       - 'plugins/bc-https-canonical.client.js'
       - 'bc-performance-audio/src/plugins/00-register-bc-middleware.ts'
       - 'components/BcAudioNav.vue'
+      - 'bc-performance-audio/src/components/BcInstallApp.vue'
       - 'components/OperatorUnlockModal.vue'
       - 'composables/useOpsLogoKnock.ts'
       - 'layouts/bc-audio.vue'

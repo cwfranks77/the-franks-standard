@@ -117,9 +117,11 @@ function requireCredentials () {
 }
 
 function requireOwnerPhone () {
-  const ownerE164 = normalizeE164(process.env.PRIVATE_OWNER_CELL_PHONE)
+  const ownerE164 = normalizeE164(
+    process.env.BC_OWNER_CELL_PHONE || process.env.PRIVATE_OWNER_CELL_PHONE,
+  )
   if (!ownerE164) {
-    throw new Error('PRIVATE_OWNER_CELL_PHONE=+1... required in .env.local (real cell, E.164)')
+    throw new Error('BC_OWNER_CELL_PHONE=+1... required in .env.local (owner handoff cell)')
   }
   return ownerE164
 }

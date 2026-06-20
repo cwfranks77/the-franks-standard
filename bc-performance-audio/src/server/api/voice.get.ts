@@ -2,15 +2,15 @@
 export default defineEventHandler((event) => {
   const config = useRuntimeConfig(event)
   const forwardTo = String(
-    process.env.PRIVATE_OWNER_CELL_PHONE
+    process.env.BC_OWNER_CELL_PHONE
+    || process.env.PRIVATE_OWNER_CELL_PHONE
     || config.private?.ownerCellPhone
-    || config.public?.bcAudioSupportTel
-    || '+18337224147',
+    || '+13373400449',
   ).trim()
 
   const greeting =
-    'Thank you for calling B and C Performance Audio, a division of The Franks Standard. ' +
-    'Your call is important to us. Please hold while we connect you to customer support.'
+    'Thank you for calling B and C Performance Audio. ' +
+    'Your call is important to us.'
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>

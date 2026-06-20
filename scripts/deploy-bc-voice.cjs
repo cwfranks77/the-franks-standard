@@ -25,9 +25,8 @@ const dryRun = process.argv.includes('--dry-run')
 
 /** Spoken on answer — keep B&C as "B and C" for text-to-speech. */
 const BC_HOLD_GREETING = [
-  'Thank you for calling B and C Performance Audio, a division of The Franks Standard.',
+  'Thank you for calling B and C Performance Audio.',
   'Your call is important to us.',
-  'Please hold while we connect you to customer support.',
 ].join(' ')
 
 function bcSupportE164 () {
@@ -41,16 +40,13 @@ function bcSupportE164 () {
 
 function buildBcVoiceUrls () {
   const voiceUrl = process.env.BC_VOICE_WEBHOOK_URL || bcVoiceInboundUrl()
-  const fallbackUrl = twimletEcho(
-    'We could not complete your call to B and C Performance Audio. Please visit b c power audio dot com or email bc-audio at the franks standard dot com. Goodbye.',
-  )
+  const fallbackUrl = voiceUrl
   return { voiceUrl, fallbackUrl }
 }
 
 async function main () {
   console.log('=== B&C PERFORMANCE AUDIO — VOICE GREETING ===')
   requireCredentials()
-  const ownerE164 = requireOwnerPhone()
   const bcE164 = bcSupportE164()
   const { voiceUrl, fallbackUrl } = buildBcVoiceUrls()
 
@@ -60,8 +56,8 @@ async function main () {
   )
 
   console.log(`Target: ${line.phone_number}`)
-  console.log(`Forward to: ${ownerE164}`)
-  console.log(`Greeting: ${BC_HOLD_GREETING}`)
+  console.log(`Voice URL: ${voiceUrl}`)
+  console.log('Flow: AI first on +18337224147 — owner cell only when caller asks or AI escalates')
 
   if (dryRun) {
     console.log('\n[DRY RUN] Voice URL:', voiceUrl)

@@ -99,12 +99,11 @@ useSeoMeta({
     <p v-if="accountError" class="bc-account__err">{{ accountError }}</p>
 
     <section class="bc-account__app">
-      <h2>B&amp;C Performance Audio app</h2>
-      <p>Install the app on your phone or PC for quick access to the catalog.</p>
-      <div class="bc-account__app-links">
-        <a v-if="androidUrl" :href="androidUrl" class="btn btn-outline btn-sm" target="_blank" rel="noopener">Android app ↗</a>
-        <a v-if="windowsUrl" :href="windowsUrl" class="btn btn-outline btn-sm" target="_blank" rel="noopener">Windows app ↗</a>
-        <span v-if="!androidUrl && !windowsUrl" class="bc-account__note">App download links coming soon — ask the owner to add them in the owner console.</span>
+      <BcInstallApp variant="panel" />
+      <div v-if="androidUrl || windowsUrl" class="bc-account__app-links bc-account__app-links--extra">
+        <p class="bc-account__note">Optional native builds (if published):</p>
+        <a v-if="androidUrl" :href="androidUrl" class="btn btn-outline btn-sm" target="_blank" rel="noopener">Android APK ↗</a>
+        <a v-if="windowsUrl" :href="windowsUrl" class="btn btn-outline btn-sm" target="_blank" rel="noopener">Windows installer ↗</a>
       </div>
     </section>
   </div>
@@ -140,4 +139,5 @@ useSeoMeta({
 .bc-account__app h2 { font-size: 1rem; color: #ff5252; margin: 0 0 8px; }
 .bc-account__app p { color: #9ca3af; font-size: 0.9rem; }
 .bc-account__app-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.bc-account__app-links--extra { margin-top: 1rem; }
 </style>

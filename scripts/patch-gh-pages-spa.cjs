@@ -28,7 +28,13 @@ html,body{margin:0;background:#0a0a0a;color:#f5f5f5}
   : ''
 const SPA_REDIRECT = `<script id="gh-pages-spa-redirect">(function(){var p=location.pathname+location.search+location.hash;if(p!=='/'&&p!=='/index.html'){sessionStorage.setItem('ghSpaRedirect',p)}})();</script>`
 const CHUNK_RECOVERY_INLINE = `<script id="fss-chunk-recovery-inline">(function(){var k='fss-chunk-reload-v1';function go(){if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1');var u=new URL(location.href);u.searchParams.set('_cb',String(Date.now()));location.replace(u.toString())}var s=document.querySelector('script[type=module][src*="/_nuxt/"]');if(s){s.addEventListener('error',go,{once:true})}})();</script>`
-const NUXT_STORAGE_FIX = `<script id="fss-nuxt-storage-fix">(function(){try{var c=window.__NUXT__&&window.__NUXT__.config;if(c&&c.public&&c.public.supabase){var a=c.public.supabase.clientOptions&&c.public.supabase.clientOptions.auth;if(a&&a.storage&&typeof a.storage.getItem!=='function')delete a.storage}if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister()})})}if(window.caches&&caches.keys){caches.keys().then(function(ks){ks.forEach(function(k){if(/workbox|fss-/i.test(k))caches.delete(k)})})}}catch(e){}})();</script>`
+function nuxtStorageFixScript (purgeServiceWorker) {
+  const swPurge = purgeServiceWorker
+    ? "if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister()})})}if(window.caches&&caches.keys){caches.keys().then(function(ks){ks.forEach(function(k){if(/workbox|fss-|bc-/i.test(k))caches.delete(k)})})}"
+    : ''
+  return `<script id="fss-nuxt-storage-fix">(function(){try{var c=window.__NUXT__&&window.__NUXT__.config;if(c&&c.public&&c.public.supabase){var a=c.public.supabase.clientOptions&&c.public.supabase.clientOptions.auth;if(a&&a.storage&&typeof a.storage.getItem!=='function')delete a.storage}${swPurge}}catch(e){}})();</script>`
+}
+const NUXT_STORAGE_FIX = nuxtStorageFixScript(!bcPrimarySite)
 
 /** Dirs that must not exist without index.html — GH Pages stops at the folder and never serves 404.html. */
 const SPA_BLOCKING_DIRS = ['store', 'ops/print']

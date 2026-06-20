@@ -3,8 +3,10 @@ import { SHOP_STORES } from '~/utils/dropshipCatalogs.js'
 import { getBcExternalSiteUrl } from '~/utils/bcExternalSite.js'
 import { franksMarketplacePath } from '~/utils/franksMarketplaceUrl.js'
 import { getBcCartPath, getBcSupport } from '~/utils/bcSupport.js'
+import { isBcPowerAudioPrimarySite } from '~/utils/bcPrimarySite.js'
 
 const config = useRuntimeConfig()
+const bcPrimarySite = computed(() => isBcPowerAudioPrimarySite(config.public.siteUrl))
 const cartPath = computed(() => getBcCartPath(config))
 const bcExternalUrl = computed(() => getBcExternalSiteUrl(config))
 const franksStoresUrl = computed(() => franksMarketplacePath(config, '/stores'))
@@ -160,6 +162,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
           {{ isLoggedIn ? (isApproved ? 'My account' : 'Account (pending)') : 'Sign in / Register' }}
         </NuxtLink>
         <NuxtLink to="/bc-audio/open-door" class="bc-nav__link bc-nav__link--door" @click="closeAll">Open Door</NuxtLink>
+        <BcInstallApp v-if="bcPrimarySite" variant="link" class="bc-nav__link" />
         <a
           :href="franksHomeUrl"
           class="bc-nav__link bc-nav__link--muted"

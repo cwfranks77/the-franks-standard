@@ -88,7 +88,18 @@ const opsAccessKeyHash = opsKeyPlain
 if (opsAccessKeyHash) {
   process.env.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH = opsAccessKeyHash
 }
-console.log('[ops] opsAccessKeyHash length:', opsAccessKeyHash.length)
+const bcPwaEnabled = bcPrimarySite
+const pwaIncludeAssets = bcPrimarySite
+  ? ['icons/icon-192.png', 'icons/icon-512.png', 'img/bc-logo-primary.png']
+  : ['franks-pavilion.png', 'logo.svg', 'icons/icon-192.png', 'icons/icon-512.png']
+const pwaManifestShortcuts = bcPrimarySite
+  ? [
+      { name: 'Shop', short_name: 'Shop', url: '/', icons: [{ src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }] },
+      { name: 'Catalog', short_name: 'Catalog', url: '/bc-audio/catalog', icons: [{ src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }] },
+      { name: 'Cart', short_name: 'Cart', url: '/cart', icons: [{ src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }] },
+      { name: 'My account', short_name: 'Account', url: '/bc-audio/account', icons: [{ src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }] },
+    ]
+  : []
 
 // Stripe Payment Link defaults — CI passes empty secrets when unset; write back so Nuxt
 // does not override runtimeConfig.public.pay*Url with "" (same gotcha as ops hash above).
@@ -291,23 +302,26 @@ export default defineNuxtConfig({
 
   pwa: {
     registerType: 'autoUpdate',
-    // Service worker caused flip-flop between fixed and broken cached JS after deploys.
-    injectRegister: false,
-    selfDestroying: true,
+    // B&C primary site (bcpoweraudio.com): installable app. Franks build keeps SW off to avoid stale cache issues.
+    injectRegister: bcPwaEnabled ? 'auto' : false,
+    selfDestroying: !bcPwaEnabled,
     registerWebManifestInRouteRules: true,
-    includeAssets: ['franks-pavilion.png', 'logo.svg', 'icons/icon-192.png', 'icons/icon-512.png'],
+    includeAssets: pwaIncludeAssets,
     manifest: {
       id: '/',
       name: bcPrimarySite ? BC_LEGAL_NAME : 'The Franks Standard',
       short_name: bcPrimarySite ? BC_BRAND.short : 'Franks Standard',
-      description: siteDescription,
-      theme_color: '#0c0619',
-      background_color: '#0c0619',
+      description: bcPrimarySite
+        ? 'Shop B&C Performance Audio — competition car audio, orders, and support from your home screen.'
+        : siteDescription,
+      theme_color: bcPrimarySite ? '#0a0a0c' : '#0c0619',
+      background_color: bcPrimarySite ? '#0a0a0c' : '#0c0619',
       display: 'standalone',
-      start_url: bcPrimarySite ? '/bc-audio' : '/',
-      scope: bcPrimarySite ? '/bc-audio' : '/',
+      start_url: '/',
+      scope: '/',
       orientation: 'any',
       categories: ['shopping', 'business'],
+      shortcuts: pwaManifestShortcuts.length ? pwaManifestShortcuts : undefined,
       icons: [
         { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
         { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
@@ -315,7 +329,6 @@ export default defineNuxtConfig({
       ],
     },
     workbox: {
-      // Do not precache HTML or hashed /_nuxt bundles — stale shells pin users to 404 chunks after deploy.
       globPatterns: ['**/*.{png,svg,ico,json,woff2,webmanifest,jpg,jpeg,webp}'],
       globIgnores: ['**/node_modules/**', '**/_nuxt/**', '**/*.html'],
       skipWaiting: true,
@@ -326,7 +339,7 @@ export default defineNuxtConfig({
           urlPattern: ({ request }) => request.mode === 'navigate',
           handler: 'NetworkFirst',
           options: {
-            cacheName: 'fss-html',
+            cacheName: bcPrimarySite ? 'bc-html' : 'fss-html',
             networkTimeoutSeconds: 4,
             expiration: { maxEntries: 8, maxAgeSeconds: 60 * 60 },
           },
@@ -335,7 +348,7 @@ export default defineNuxtConfig({
           urlPattern: ({ url }) => url.pathname.startsWith('/_nuxt/'),
           handler: 'NetworkFirst',
           options: {
-            cacheName: 'fss-nuxt-chunks',
+            cacheName: bcPrimarySite ? 'bc-nuxt-chunks' : 'fss-nuxt-chunks',
             networkTimeoutSeconds: 3,
             expiration: { maxEntries: 96, maxAgeSeconds: 7 * 24 * 60 * 60 },
           },
@@ -343,8 +356,8 @@ export default defineNuxtConfig({
       ],
     },
     client: {
-      installPrompt: false,
-      periodicSyncForUpdates: 3600,
+      installPrompt: bcPwaEnabled ? 'bc-pwa-install-dismissed' : false,
+      periodicSyncForUpdates: bcPwaEnabled ? 3600 : 0,
     },
     devOptions: {
       enabled: false,
@@ -384,7 +397,7 @@ export default defineNuxtConfig({
         { name: 'twitter:title', content: siteTitle },
         { name: 'twitter:description', content: siteOgDescription },
         { name: 'twitter:image', content: ogImage },
-        { name: 'theme-color', content: '#0c0619' },
+        { name: 'theme-color', content: bcPrimarySite ? '#0a0a0c' : '#0c0619' },
         { name: 'mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
