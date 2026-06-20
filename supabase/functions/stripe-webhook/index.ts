@@ -2,6 +2,7 @@ import Stripe from 'npm:stripe@14'
 import { json, stripeClient } from '../_shared/stripe.ts'
 import { markOrderRefunded } from '../_shared/forceRefund.ts'
 import { adminClient, markOrderPaid, markOrderCancelled, paidTotalsFromSession } from '../_shared/markOrderPaid.ts'
+import { logPaymentEvent } from '../_shared/section12Finalize.ts'
 
 const WEBHOOK_SECRET = Deno.env.get('STRIPE_WEBHOOK_SECRET') ?? ''
 
@@ -199,6 +200,15 @@ async function markWebhookProcessed (eventId: string) {
 }
 
 async function dispatchEvent (event: Stripe.Event) {
+  const obj = event.data?.object as Record<string, unknown>
+  await logPaymentEvent(admin, {
+    eventType: `webhook_${event.type}`,
+    stripeEventId: event.id,
+    stripePaymentIntentId: typeof obj.payment_intent === 'string' ? obj.payment_intent : (obj.id as string),
+    amount: typeof obj.amount === 'number' ? obj.amount / 100 : null,
+    metadata: { stripe_type: event.type },
+  }).catch((e) => console.error('payment_event log', e))
+
   switch (event.type) {
     case 'checkout.session.completed':
       await handleCheckoutCompleted(event.data.object as Parameters<typeof handleCheckoutCompleted>[0])

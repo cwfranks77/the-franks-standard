@@ -4,6 +4,7 @@
 
 const OWNER_ROUTE_PREFIXES = [
   '/owner',
+  '/api/owner',
   '/api/reports',
   '/api/admin',
   '/api/fraud',

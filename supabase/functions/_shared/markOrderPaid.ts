@@ -1,6 +1,7 @@
 import { createClient, SupabaseClient } from 'npm:@supabase/supabase-js@2'
 import { queueDropshipOrder } from './queueDropshipOrder.ts'
 import { notificationTriggers } from './notifications.ts'
+import { runPostPaymentHooks } from './section12Finalize.ts'
 
 export function adminClient (): SupabaseClient {
   const url = Deno.env.get('SUPABASE_URL') ?? ''
@@ -39,6 +40,9 @@ export async function markOrderPaid (admin: SupabaseClient, params: {
   if (totalPaid != null && Number.isFinite(totalPaid)) {
     patch.total_paid = totalPaid
   }
+  if (shippingAddress?.postal_code) {
+    patch.shipping_zip = String(shippingAddress.postal_code).slice(0, 10)
+  }
 
   const { error } = await admin
     .from('orders')
@@ -62,7 +66,7 @@ export async function markOrderPaid (admin: SupabaseClient, params: {
 
   const { data: orderRow } = await admin
     .from('orders')
-    .select('buyer_id, listing_id, amount, total_paid')
+    .select('buyer_id, seller_id, listing_id, amount, total_paid, platform_fee, seller_payout')
     .eq('id', orderId)
     .maybeSingle()
 
@@ -86,7 +90,7 @@ export async function markOrderPaid (admin: SupabaseClient, params: {
     })
 
     const totalDisplay = orderRow.total_paid != null
-      ? `$${(Number(orderRow.total_paid) / 100).toFixed(2)}`
+      ? `$${Number(orderRow.total_paid).toFixed(2)}`
       : undefined
     await notificationTriggers.purchase(admin, {
       userId: orderRow.buyer_id,
@@ -94,6 +98,22 @@ export async function markOrderPaid (admin: SupabaseClient, params: {
       total: totalDisplay,
       toEmail: buyerEmail ?? null,
     }).catch((e) => console.error('purchase notification', orderId, e))
+
+    if (orderRow.seller_id) {
+      const gross = Number(orderRow.total_paid ?? orderRow.amount) || 0
+      const platformFee = Number(orderRow.platform_fee) || 0
+      const sellerNet = Number(orderRow.seller_payout) || Math.max(0, gross - platformFee)
+      await runPostPaymentHooks(admin, {
+        orderId,
+        buyerId: orderRow.buyer_id,
+        sellerId: orderRow.seller_id,
+        listingId: orderRow.listing_id,
+        gross,
+        platformFee,
+        sellerNet,
+        paymentIntentId: paymentIntentId ?? null,
+      }).catch((e) => console.error('section12 hooks', orderId, e))
+    }
   }
 
   return { ok: true }

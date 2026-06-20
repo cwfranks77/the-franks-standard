@@ -48,6 +48,25 @@ Deno.serve(async (req) => {
         if (!result.ok && !result.skipped) throw new Error(String(result.error || 'send_email_failed'))
       }
 
+      if (job.job_type === 'escalate_refunds') {
+        const { data: overdue } = await admin
+          .from('refund_requests')
+          .select('id, order_id, buyer_id, seller_id, amount, reason')
+          .eq('status', 'pending')
+          .lt('seller_response_deadline', new Date().toISOString())
+        for (const req of overdue ?? []) {
+          await admin.from('refund_requests').update({ status: 'escalated', updated_at: new Date().toISOString() }).eq('id', req.id)
+          await admin.from('dispute_cases').insert({
+            buyer_id: req.buyer_id,
+            seller_id: req.seller_id,
+            order_id: req.order_id,
+            description: `Seller did not respond within 72 hours. ${req.reason || ''}`.slice(0, 8000),
+            status: 'open',
+            evidence: { refund_request_id: req.id, auto_escalated: true },
+          })
+        }
+      }
+
       await admin.from('background_jobs').update({
         status: 'completed',
         completed_at: new Date().toISOString(),

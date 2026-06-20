@@ -4,7 +4,8 @@ import { assertSellerNotOnIntegrityHold } from '../_shared/sellerIntegrityHold.t
 import { assertBuyerPoliciesAccepted, CURRENT_CHECKOUT_ACK_VERSION } from '../_shared/buyerPolicyAcceptance.ts'
 import { assertSellerPoliciesAccepted } from '../_shared/sellerPolicyAcceptance.ts'
 import { assertMarketplaceCompliance } from '../_shared/marketplaceCompliance.ts'
-import { calcCharitySplit, calcDropshipSplit, calcFees, corsHeaders, json, siteUrl, stripeClient } from '../_shared/stripe.ts'
+import { calcCharitySplit, calcDropshipSplit, corsHeaders, json, siteUrl, stripeClient } from '../_shared/stripe.ts'
+import { calculateFees } from '../_shared/calculateFees.ts'
 import { marketplaceListingTaxOptions, stripeTaxEnabled, TAX_CODE_TANGIBLE } from '../_shared/stripeTax.ts'
 import { isBanned } from '../_shared/accountSafety.ts'
 import { applyVpnPolicy } from '../_shared/vpnDetection.ts'
@@ -236,6 +237,7 @@ Deno.serve(async (req) => {
     let orderSupplierCost = 0
     let orderSellerMargin: number | null = null
     let orderCharityAmount: number | null = null
+    let feeBpsStored: number | null = null
 
     if (hasCharityDonation) {
       const split = calcCharitySplit(orderAmount, charityPct, sellerProfile?.seller_tier)
@@ -252,14 +254,14 @@ Deno.serve(async (req) => {
       orderSellerMargin = split.sellerMargin
       orderSellerPayout = split.sellerMargin
     } else {
-      const { platformFee, sellerPayout } = calcFees(
-        orderAmount,
-        sellerProfile?.seller_tier,
-        sellerProfile?.award_fee_bps,
-        sellerProfile?.award_fee_until,
-      )
+      const { platformFee, sellerPayout, feeBps } = await calculateFees(admin, {
+        merchandiseAmount: orderAmount,
+        sellerId: listing.seller_id,
+        sellerProfile: sellerProfile,
+      })
       orderPlatformFee = platformFee
       orderSellerPayout = sellerPayout
+      feeBpsStored = feeBps
     }
 
     const { data: order, error: orderError } = await admin
@@ -273,6 +275,7 @@ Deno.serve(async (req) => {
         shipping_cost: shippingCost,
         platform_fee: orderPlatformFee,
         seller_payout: orderSellerPayout,
+        fee_bps: feeBpsStored,
         listing_mode: isDropship ? 'dropship' : (listing.listing_mode || 'direct'),
         supplier_cost: orderSupplierCost,
         seller_margin: orderSellerMargin,
