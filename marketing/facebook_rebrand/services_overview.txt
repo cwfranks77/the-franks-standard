@@ -1,0 +1,15 @@
+SERVICES — THE FRANKS STANDARD
+
+• Marketplace listings with proof-before-publish gate
+• Platform COA issuance and serial verification (FS-YYYY-######)
+• Stripe Connect seller payouts
+• Escrow-style buyer checkout
+• Authenticity reporting and dispute resolution
+• Seller onboarding with Starter Free 90 (3 months free store)
+• Daily store spotlight for active sellers
+• Violation scanner, fraud cases, account freeze, and ban pipeline
+• B&C Performance Audio — competition car audio catalog and support
+
+Shop: thefranksstandard.com
+BC Audio: bcpoweraudio.com
+Support: info@thefranksstandard.com
