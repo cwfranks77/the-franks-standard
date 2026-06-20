@@ -1,6 +1,7 @@
 import type { SupabaseClient } from 'npm:@supabase/supabase-js@2'
 
 import { fetchCoaChainForUser } from './coaChainOfCustody.ts'
+import { logAudit } from './auditLog.ts'
 
 
 
