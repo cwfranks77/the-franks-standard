@@ -1,0 +1,26 @@
+# Backend-only Docker Compose (optional local tooling)
+# Does not replace Supabase hosted stack.
+
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  # Run backend tests in container
+  backend-test:
+    build:
+      context: ..
+      dockerfile: devops/Dockerfile
+    working_dir: /app
+    command: npm run test:backend
+    environment:
+      - NODE_ENV=test
+    volumes:
+      - ..:/app
+      - /app/node_modules
+
+volumes:
+  redis_data:

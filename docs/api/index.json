@@ -1,0 +1,671 @@
+{
+  "generated_at": "2026-06-20T06:02:03.655Z",
+  "total_endpoints": 61,
+  "endpoints": [
+    {
+      "path": "/api/ai/chat",
+      "methods": [
+        "POST"
+      ],
+      "files": [
+        "ai/chat.post.ts"
+      ],
+      "owner_only": false,
+      "description": "AI support chat — FAQ and escalation logging"
+    },
+    {
+      "path": "/api/featured-store",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "featured-store.get.ts"
+      ],
+      "owner_only": false,
+      "description": ""
+    },
+    {
+      "path": "/api/marketing-content",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "marketing-content.get.ts"
+      ],
+      "owner_only": false,
+      "description": "Load marketing content assets"
+    },
+    {
+      "path": "/api/owner/actions/ban-device",
+      "methods": [
+        "POST"
+      ],
+      "files": [
+        "owner/actions/ban-device.post.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/actions/ban-ip",
+      "methods": [
+        "POST"
+      ],
+      "files": [
+        "owner/actions/ban-ip.post.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/actions/ban-user",
+      "methods": [
+        "POST"
+      ],
+      "files": [
+        "owner/actions/ban-user.post.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/actions/clear-cache",
+      "methods": [
+        "POST"
+      ],
+      "files": [
+        "owner/actions/clear-cache.post.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/actions/force-logout",
+      "methods": [
+        "POST"
+      ],
+      "files": [
+        "owner/actions/force-logout.post.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/actions/freeze-user",
+      "methods": [
+        "POST"
+      ],
+      "files": [
+        "owner/actions/freeze-user.post.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/actions/reindex-search",
+      "methods": [
+        "POST"
+      ],
+      "files": [
+        "owner/actions/reindex-search.post.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/actions/reset-password",
+      "methods": [
+        "POST"
+      ],
+      "files": [
+        "owner/actions/reset-password.post.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/actions/restore-backup",
+      "methods": [
+        "POST"
+      ],
+      "files": [
+        "owner/actions/restore-backup.post.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/actions/run-backup",
+      "methods": [
+        "POST"
+      ],
+      "files": [
+        "owner/actions/run-backup.post.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/actions/unban-user",
+      "methods": [
+        "POST"
+      ],
+      "files": [
+        "owner/actions/unban-user.post.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/actions/unfreeze-user",
+      "methods": [
+        "POST"
+      ],
+      "files": [
+        "owner/actions/unfreeze-user.post.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/alerts",
+      "methods": [],
+      "files": [
+        "owner/alerts/index.ts"
+      ],
+      "owner_only": false,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/api-keys",
+      "methods": [],
+      "files": [
+        "owner/api-keys/index.ts"
+      ],
+      "owner_only": false,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/broadcast",
+      "methods": [
+        "POST"
+      ],
+      "files": [
+        "owner/broadcast.post.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/emergency/restart",
+      "methods": [
+        "POST"
+      ],
+      "files": [
+        "owner/emergency/restart.post.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/emergency/shutdown",
+      "methods": [
+        "POST"
+      ],
+      "files": [
+        "owner/emergency/shutdown.post.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/export/audit",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/export/audit.get.ts"
+      ],
+      "owner_only": true,
+      "description": "Export audit trail JSON bundle"
+    },
+    {
+      "path": "/api/owner/financial/fees",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/financial/fees.get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/financial/ledger",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/financial/ledger.get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/financial/payouts",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/financial/payouts.get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/financial/refunds",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/financial/refunds.get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/financial/summary",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/financial/summary.get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/launch/backup",
+      "methods": [],
+      "files": [
+        "owner/launch/backup/index.ts"
+      ],
+      "owner_only": false,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/launch/cleanup",
+      "methods": [
+        "POST"
+      ],
+      "files": [
+        "owner/launch/cleanup.post.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/launch/lock",
+      "methods": [
+        "POST"
+      ],
+      "files": [
+        "owner/launch/lock.post.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/launch/readiness",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/launch/readiness.get.ts"
+      ],
+      "owner_only": true,
+      "description": "Pre-launch readiness report"
+    },
+    {
+      "path": "/api/owner/launch/validate",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/launch/validate.get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/lockdown",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/lockdown.get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/logs/activity",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/logs/activity.get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/logs/disputes",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/logs/disputes.get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/logs/emails",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/logs/emails.get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/logs/fraud",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/logs/fraud.get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/logs/jobs",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/logs/jobs.get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/logs/payouts",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/logs/payouts.get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/logs/security",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/logs/security.get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/logs/sms",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/logs/sms.get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/logs/violations",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/logs/violations.get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/search/analytics",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/search/analytics.get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/search/no-result-queries",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/search/no-result-queries.get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/search/top-queries",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/search/top-queries.get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/search/trending-categories",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/search/trending-categories.get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/status/disputes",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/status/disputes.get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/status/financial",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/status/financial.get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/status/fraud",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/status/fraud.get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/status/platform",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/status/platform.get.ts"
+      ],
+      "owner_only": true,
+      "description": "Owner platform health summary"
+    },
+    {
+      "path": "/api/owner/status/security",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/status/security.get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/status/stores",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/status/stores.get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/owner/status/users",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "owner/status/users.get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/platform-content",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "platform-content.get.ts"
+      ],
+      "owner_only": false,
+      "description": "Load platform markdown content blocks"
+    },
+    {
+      "path": "/api/reports/industry/:case_id",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "reports/industry/[case_id].get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/reports/law-enforcement/:case_id",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "reports/law-enforcement/[case_id].get.ts"
+      ],
+      "owner_only": true,
+      "description": ""
+    },
+    {
+      "path": "/api/search/autocomplete",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "search/autocomplete.get.ts"
+      ],
+      "owner_only": false,
+      "description": ""
+    },
+    {
+      "path": "/api/search/query",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "search/query.get.ts"
+      ],
+      "owner_only": false,
+      "description": "Search listings and stores"
+    },
+    {
+      "path": "/api/search/recommendations",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "search/recommendations.get.ts"
+      ],
+      "owner_only": false,
+      "description": ""
+    },
+    {
+      "path": "/api/security/healthcheck",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "security/healthcheck.get.ts"
+      ],
+      "owner_only": false,
+      "description": ""
+    },
+    {
+      "path": "/api/spotlight-store",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "spotlight-store.get.ts"
+      ],
+      "owner_only": false,
+      "description": ""
+    },
+    {
+      "path": "/api/system/health",
+      "methods": [
+        "GET"
+      ],
+      "files": [
+        "system/health.get.ts"
+      ],
+      "owner_only": false,
+      "description": ""
+    }
+  ]
+}

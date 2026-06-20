@@ -75,7 +75,9 @@
     "mail:set-now": "powershell -ExecutionPolicy Bypass -File scripts/set-mailbox-now.ps1",
     "ebay:easy": "powershell -ExecutionPolicy Bypass -File scripts/ebay-easy.ps1",
     "ebay:setup": "powershell -ExecutionPolicy Bypass -File scripts/setup-ebay-api.ps1",
-    "ebay:secrets": "powershell -ExecutionPolicy Bypass -File scripts/push-ebay-api-secrets.ps1"
+    "ebay:secrets": "powershell -ExecutionPolicy Bypass -File scripts/push-ebay-api-secrets.ps1",
+    "test:backend": "node --test backend/tests/*.test.cjs",
+    "docs:api-index": "node backend/docs/generate_api_index.cjs"
   },
   "dependencies": {
     "@nuxtjs/supabase": "^2.0.6",
