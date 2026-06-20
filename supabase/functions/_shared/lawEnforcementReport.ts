@@ -314,6 +314,24 @@ export async function prepareLawEnforcementReport (
 
 
 
+  await logAudit(admin, {
+
+    actorType: 'ops',
+
+    actorId: userId,
+
+    action: 'law_enforcement_report_prepared',
+
+    targetType: 'fraud_case',
+
+    targetId: caseId,
+
+    details: { report_id: saved.id },
+
+  })
+
+
+
   return { ok: true, reportId: saved.id, payload: report }
 
 }

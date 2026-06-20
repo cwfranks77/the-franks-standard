@@ -5,6 +5,9 @@ import { scanAndEnforceViolation } from '../_shared/violationEnforcement.ts'
 import { logServerActivity } from '../_shared/platformActivityLog.ts'
 import { corsHeaders, json } from '../_shared/stripe.ts'
 import { clientIpFromRequest } from '../_shared/requestContext.ts'
+import { checkRateLimit } from '../_shared/security/rateLimit.ts'
+import { assertDeviceFingerprint } from '../_shared/security/deviceFingerprint.ts'
+import { sanitizeAndLog } from '../_shared/security/messageSanitize.ts'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.get('SERVICE_ROLE_KEY') ?? ''
@@ -24,8 +27,8 @@ Deno.serve(async (req) => {
   }
 
   const conversationId = String(body.conversation_id ?? '').trim()
-  const messageBody = String(body.body ?? '').trim().slice(0, 4000)
-  if (!conversationId || messageBody.length < 1) {
+  const rawBody = String(body.body ?? '').trim().slice(0, 4000)
+  if (!conversationId || rawBody.length < 1) {
     return json({ error: 'missing_fields' }, 400)
   }
 
@@ -39,6 +42,22 @@ Deno.serve(async (req) => {
   const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, { auth: { persistSession: false } })
   const ip = clientIpFromRequest(req)
   const deviceFp = String(body.device_fingerprint ?? '').trim() || null
+
+  const fpCheck = await assertDeviceFingerprint(admin, user.id, deviceFp, ip)
+  if (!fpCheck.ok) return json({ error: fpCheck.error, message: 'Device verification required.' }, 403)
+
+  const msgLimit = await checkRateLimit(admin, 'messaging', user.id, { userId: user.id, ipAddress: ip })
+  if (!msgLimit.allowed) return json({ error: msgLimit.error, message: 'Messaging rate limit exceeded.' }, 429)
+
+  const sanitized = await sanitizeAndLog(admin, {
+    userId: user.id,
+    content: rawBody,
+    sourceType: 'message',
+    sourceId: conversationId,
+    ipAddress: ip,
+    deviceFingerprint: deviceFp,
+  })
+  const messageBody = sanitized.sanitized
 
   const activity = await assertAccountNotFrozenForActivity(admin, user.id)
   if (!activity.ok) return json({ error: activity.error, message: activity.message }, 403)

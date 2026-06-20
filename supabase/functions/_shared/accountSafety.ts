@@ -59,8 +59,10 @@ export async function freezeAccount (
   const { error } = await admin.from('profiles').update({
     safety_frozen_at: now,
     safety_freeze_reason: reason.slice(0, 2000),
+    frozen: true,
   }).eq('id', userId)
   if (error) return { ok: false, error: error.message }
+  await logBanAudit(admin, { userId, reason, bannedBy: 'system', action: 'freeze_account' })
   return { ok: true }
 }
 

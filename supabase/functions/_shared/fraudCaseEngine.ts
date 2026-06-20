@@ -1,4 +1,5 @@
 import type { SupabaseClient } from 'npm:@supabase/supabase-js@2'
+import { logAudit } from './auditLog.ts'
 
 export type FraudSeverity = 'low' | 'medium' | 'high' | 'critical'
 
@@ -21,11 +22,12 @@ export async function openFraudCase (
 
   if (error || !data?.id) return { ok: false, error: error?.message ?? 'insert_failed' }
 
-  await admin.from('audit_logs').insert({
-    actor_type: 'system',
+  await logAudit(admin, {
+    actorType: 'system',
+    actorId: params.userId,
     action: 'fraud_case_opened',
-    target_type: 'fraud_case',
-    target_id: data.id,
+    targetType: 'fraud_case',
+    targetId: data.id,
     details: { user_id: params.userId, severity: params.severity ?? 'high' },
   })
 

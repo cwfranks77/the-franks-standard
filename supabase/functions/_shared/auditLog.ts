@@ -12,12 +12,16 @@ export async function logAudit (
   },
 ) {
   try {
+    const target = [row.targetType, row.targetId].filter(Boolean).join(':') || null
+    const userUuid = row.actorId && /^[0-9a-f-]{36}$/i.test(row.actorId) ? row.actorId : null
     await admin.from('audit_logs').insert({
       actor_type: row.actorType,
       actor_id: row.actorId ?? null,
+      user_id: userUuid,
       action: row.action,
       target_type: row.targetType ?? null,
       target_id: row.targetId ?? null,
+      target,
       details: row.details ?? {},
     })
   } catch (e) {
