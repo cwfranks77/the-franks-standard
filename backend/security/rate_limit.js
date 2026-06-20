@@ -5,8 +5,36 @@
 const LIMITS = {
   login: { max: 5, windowMs: 10 * 60 * 1000 },
   messaging: { max: 20, windowMs: 60 * 1000 },
+  messages: { max: 20, windowMs: 60 * 1000 },
   listing_edit: { max: 10, windowMs: 60 * 1000 },
+  listings: { max: 10, windowMs: 60 * 1000 },
+  reviews: { max: 5, windowMs: 60 * 1000 },
+  disputes: { max: 3, windowMs: 60 * 1000 },
+  coa: { max: 5, windowMs: 60 * 1000 },
   api: { max: 200, windowMs: 60 * 1000 },
+}
+
+/** Map API path prefixes to rate-limit categories (Section 10). */
+const API_PATH_LIMITS = [
+  { prefix: '/api/messages', category: 'messages' },
+  { prefix: '/api/listings', category: 'listings' },
+  { prefix: '/api/reviews', category: 'reviews' },
+  { prefix: '/api/disputes', category: 'disputes' },
+  { prefix: '/api/coa', category: 'coa' },
+]
+
+function categoryForPath (path) {
+  const p = String(path || '').split('?')[0]
+  for (const row of API_PATH_LIMITS) {
+    if (p === row.prefix || p.startsWith(`${row.prefix}/`)) return row.category
+  }
+  return null
+}
+
+async function checkRateLimitForPath (admin, path, key, meta = {}) {
+  const category = categoryForPath(path)
+  if (!category) return { ok: true, allowed: true }
+  return checkRateLimit(admin, { category, key, ...meta })
 }
 
 const buckets = new Map()
@@ -82,4 +110,4 @@ function getRateLimitStatus () {
   }
 }
 
-module.exports = { checkRateLimit, getRateLimitStatus, LIMITS }
+module.exports = { checkRateLimit, checkRateLimitForPath, categoryForPath, getRateLimitStatus, LIMITS, API_PATH_LIMITS }

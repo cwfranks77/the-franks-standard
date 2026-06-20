@@ -1,5 +1,10 @@
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { createRequire } from 'node:module'
+
+const require = createRequire(import.meta.url)
+const { getOrSet, DEFAULT_TTLS } = require('../../backend/cache/cache.js')
+const { prepareHandlerContext } = require('../../backend/performance/response_optimizer.js')
 
 const CONTENT_DIR = join(process.cwd(), 'content')
 
@@ -30,6 +35,8 @@ async function loadBlock (key: string) {
 
 /** GET /api/platform-content?keys=founder_story,home_highlights */
 export default defineEventHandler(async (event) => {
+  prepareHandlerContext(event, { cdnMaxAge: DEFAULT_TTLS.homepage })
+
   const query = getQuery(event)
   const raw = String(query.keys ?? query.key ?? '').trim()
   if (!raw) {
@@ -40,14 +47,18 @@ export default defineEventHandler(async (event) => {
   }
 
   const keys = raw.split(',').map((k) => k.trim()).filter(Boolean)
-  const blocks: Record<string, { markdown: string; path: string }> = {}
+  const cacheKey = `homepage:${keys.sort().join(',')}`
 
-  for (const key of keys) {
-    const block = await loadBlock(key)
-    if (block) {
-      blocks[key] = { markdown: block.markdown, path: block.path }
+  const { value, hit } = await getOrSet(cacheKey, DEFAULT_TTLS.homepage, async () => {
+    const blocks: Record<string, { markdown: string; path: string }> = {}
+    for (const key of keys) {
+      const block = await loadBlock(key)
+      if (block) {
+        blocks[key] = { markdown: block.markdown, path: block.path }
+      }
     }
-  }
+    return { blocks }
+  })
 
-  return { blocks }
+  return { ...value, _cache: { hit } }
 })

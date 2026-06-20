@@ -1,5 +1,10 @@
 import { readFile, readdir, stat } from 'node:fs/promises'
 import { join, relative } from 'node:path'
+import { createRequire } from 'node:module'
+
+const require = createRequire(import.meta.url)
+const { getOrSet, DEFAULT_TTLS } = require('../../backend/cache/cache.js')
+const { prepareHandlerContext } = require('../../backend/performance/response_optimizer.js')
 
 const MARKETING_DIR = join(process.cwd(), 'marketing')
 
@@ -35,6 +40,8 @@ async function loadFile (relPath: string) {
  * GET /api/marketing-content?keys=seo_keywords,social_posts
  */
 export default defineEventHandler(async (event) => {
+  prepareHandlerContext(event, { cdnMaxAge: DEFAULT_TTLS.seo })
+
   const query = getQuery(event)
   const key = String(query.key ?? '').trim()
   const filePath = String(query.path ?? '').trim()
@@ -77,12 +84,16 @@ export default defineEventHandler(async (event) => {
   }
 
   const keys = rawKeys ? rawKeys.split(',').map((k) => k.trim()).filter(Boolean) : [key]
-  const assets: Record<string, Awaited<ReturnType<typeof loadFile>>> = {}
+  const cacheKey = `seo:${keys.sort().join(',')}`
 
-  for (const k of keys) {
-    const rel = KEY_MAP[k]
-    if (rel) assets[k] = await loadFile(rel)
-  }
+  const { value, hit } = await getOrSet(cacheKey, DEFAULT_TTLS.seo, async () => {
+    const assets: Record<string, Awaited<ReturnType<typeof loadFile>>> = {}
+    for (const k of keys) {
+      const rel = KEY_MAP[k]
+      if (rel) assets[k] = await loadFile(rel)
+    }
+    return { assets }
+  })
 
-  return { assets }
+  return { ...value, _cache: { hit } }
 })

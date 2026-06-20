@@ -1,10 +1,9 @@
-import { createHash } from 'node:crypto'
 import { createRequire } from 'node:module'
 import { requireOwnerAuth } from '../utils/ownerAuth'
 import { getServiceSupabase } from '../utils/serviceSupabase'
 
 const require = createRequire(import.meta.url)
-const { checkRateLimit } = require('../../backend/security/rate_limit.js')
+const { checkRateLimit, checkRateLimitForPath } = require('../../backend/security/rate_limit.js')
 const { checkOwnerAccess, isOwnerRoute } = require('../../backend/security/owner_only.js')
 const { scoreIp } = require('../../backend/security/ip_risk.js')
 
@@ -41,6 +40,11 @@ export default defineEventHandler(async (event) => {
 
   const ip = clientIp(event)
   const sb = getServiceSupabase()
+
+  const pathLimit = await checkRateLimitForPath(sb, path, ip, { ipAddress: ip, metadata: { path } })
+  if (!pathLimit.allowed) {
+    throw createError({ statusCode: 429, statusMessage: 'Too many requests. Please wait and try again.' })
+  }
 
   const apiLimit = await checkRateLimit(sb, {
     category: 'api',

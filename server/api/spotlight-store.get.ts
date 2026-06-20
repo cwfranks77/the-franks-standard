@@ -1,4 +1,9 @@
 import { createClient } from '@supabase/supabase-js'
+import { createRequire } from 'node:module'
+
+const require = createRequire(import.meta.url)
+const { getOrSet, DEFAULT_TTLS } = require('../../backend/cache/cache.js')
+const { prepareHandlerContext } = require('../../backend/performance/response_optimizer.js')
 
 function adminClient () {
   const url = process.env.SUPABASE_URL || process.env.NUXT_SUPABASE_URL || ''
@@ -23,9 +28,12 @@ function storePayload (store: {
 }
 
 export default defineEventHandler(async (event) => {
+  prepareHandlerContext(event, { cdnMaxAge: DEFAULT_TTLS.spotlight })
+
   const admin = adminClient()
   const query = getQuery(event)
   const today = new Date().toISOString().slice(0, 10)
+  const cacheKey = `spotlight:${today}`
 
   if (query.refresh === '1') {
     const { data: candidates } = await admin
@@ -39,34 +47,38 @@ export default defineEventHandler(async (event) => {
     if (pool.length > 0) {
       const pick = pool[Math.floor(Math.random() * pool.length)]
       await admin.from('daily_spotlight').upsert(
-        { store_id: pick, spotlight_date: today },
+        { store_id: pick, spotlight_date: today, date: today },
         { onConflict: 'spotlight_date' },
       )
     }
   }
 
-  const { data: row } = await admin
-    .from('daily_spotlight')
-    .select('spotlight_date, store_id')
-    .eq('spotlight_date', today)
-    .maybeSingle()
+  const { value, hit } = await getOrSet(cacheKey, DEFAULT_TTLS.spotlight, async () => {
+    const { data: row } = await admin
+      .from('daily_spotlight')
+      .select('spotlight_date, date, store_id')
+      .eq('spotlight_date', today)
+      .maybeSingle()
 
-  if (!row?.store_id) {
-    return { spotlight: null, message: 'No spotlight store selected for today.' }
-  }
+    if (!row?.store_id) {
+      return { spotlight: null, message: 'No spotlight store selected for today.' }
+    }
 
-  const { data: store } = await admin
-    .from('profiles')
-    .select('id, store_name, store_slug, featured_store')
-    .eq('id', row.store_id)
-    .maybeSingle()
+    const { data: store } = await admin
+      .from('profiles')
+      .select('id, store_name, store_slug, featured_store')
+      .eq('id', row.store_id)
+      .maybeSingle()
 
-  if (!store) {
-    return { spotlight: null, message: 'Spotlight store not found.' }
-  }
+    if (!store) {
+      return { spotlight: null, message: 'Spotlight store not found.' }
+    }
 
-  return {
-    spotlight_date: row.spotlight_date,
-    store: storePayload(store),
-  }
+    return {
+      spotlight_date: row.spotlight_date || row.date,
+      store: storePayload(store),
+    }
+  })
+
+  return { ...value, _cache: { hit } }
 })

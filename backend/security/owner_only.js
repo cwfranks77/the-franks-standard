@@ -8,6 +8,7 @@ const OWNER_ROUTE_PREFIXES = [
   '/api/admin',
   '/api/fraud',
   '/api/security',
+  '/api/system',
 ]
 
 function getOwnerUserId () {

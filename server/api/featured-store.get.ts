@@ -1,4 +1,9 @@
 import { createClient } from '@supabase/supabase-js'
+import { createRequire } from 'node:module'
+
+const require = createRequire(import.meta.url)
+const { getOrSet, DEFAULT_TTLS } = require('../../backend/cache/cache.js')
+const { prepareHandlerContext } = require('../../backend/performance/response_optimizer.js')
 
 function adminClient () {
   const url = process.env.SUPABASE_URL || process.env.NUXT_SUPABASE_URL || ''
@@ -22,19 +27,22 @@ function storePayload (store: {
   }
 }
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
+  prepareHandlerContext(event, { cdnMaxAge: DEFAULT_TTLS.featured })
+
   const admin = adminClient()
-  const { data: store } = await admin
-    .from('profiles')
-    .select('id, store_name, store_slug, featured_store')
-    .eq('featured_store', true)
-    .order('updated_at', { ascending: false })
-    .limit(1)
-    .maybeSingle()
+  const { value, hit } = await getOrSet('featured:current', DEFAULT_TTLS.featured, async () => {
+    const { data: store } = await admin
+      .from('profiles')
+      .select('id, store_name, store_slug, featured_store')
+      .eq('featured_store', true)
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
 
-  if (!store) {
-    return { featured: false, store: null }
-  }
+    if (!store) return { featured: false, store: null }
+    return { featured: true, store: storePayload(store) }
+  })
 
-  return { featured: true, store: storePayload(store) }
+  return { ...value, _cache: { hit } }
 })
