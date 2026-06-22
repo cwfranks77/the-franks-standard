@@ -114,19 +114,30 @@ export default defineNuxtConfig({
     scanDirs: [
       resolve(rootDir, 'franks-standard/src/server'),
       resolve(rootDir, 'bc-performance-audio/src/server'),
+      resolve(rootDir, 'tfs/api/owner'),
     ],
     alias: {
       '#backend': resolve(rootDir, 'backend'),
       '#cjs-require': resolve(rootDir, 'server/utils/cjsRequire.ts'),
+      '#tfs-owner-api': resolve(rootDir, 'tfs/api/owner'),
       '#server-utils': serverUtilsAlias,
       '#bc-server-utils': bcServerUtilsDir,
     },
+    publicAssets: [
+      {
+        baseURL: '/tfs/owner',
+        dir: resolve(rootDir, 'tfs/owner'),
+        maxAge: 0,
+      },
+    ],
     prerender: {
       routes: [
         '/ops/documents',
         '/ops/print-pack',
         '/ops/print-coa',
         '/verify/coa',
+        '/tfs/owner/index.html',
+        '/tfs/owner/file-manager.html',
         ...bcPrerenderRoutes,
       ],
     },
