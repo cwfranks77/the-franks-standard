@@ -100,7 +100,15 @@
 
     <nav class="portal-nav">
       <button type="button" class="portal-nav__brand" @click="onBrandOrLogoClick">
-        <div class="portal-nav__logo">B&amp;C</div>
+        <img
+          src="/img/bc-logo-primary.png?v=20260622"
+          alt="B&amp;C Performance Audio"
+          class="portal-nav__logo-img"
+          width="260"
+          height="60"
+          decoding="async"
+          fetchpriority="high"
+        >
       </button>
 
       <div class="portal-nav__headline">
@@ -969,19 +977,13 @@ async function handleBuyNow () {
   text-align: left;
 }
 
-.portal-nav__logo {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 900;
-  font-size: 0.72rem;
-  color: #fff;
-  background: linear-gradient(135deg, var(--portal-red) 0%, var(--portal-charcoal) 100%);
-  border: 1px solid rgba(211, 47, 47, 0.35);
-  box-shadow: 0 4px 14px rgba(211, 47, 47, 0.25);
+.portal-nav__logo-img {
+  display: block;
+  width: auto;
+  max-width: min(220px, 52vw);
+  max-height: 48px;
+  height: auto;
+  object-fit: contain;
 }
 
 .portal-nav__title {

@@ -8,6 +8,7 @@ import { isBcPowerAudioPrimarySite } from '~/utils/bcPrimarySite.js'
 const config = useRuntimeConfig()
 const bcPrimarySite = computed(() => isBcPowerAudioPrimarySite(config.public.siteUrl))
 const cartPath = computed(() => getBcCartPath(config))
+const brandHomePath = computed(() => (bcPrimarySite.value ? '/' : '/bc-audio'))
 const bcExternalUrl = computed(() => getBcExternalSiteUrl(config))
 const franksStoresUrl = computed(() => franksMarketplacePath(config, '/stores'))
 const franksHomeUrl = computed(() => franksMarketplacePath(config, '/'))
@@ -51,12 +52,12 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   <header class="bc-nav">
     <div class="bc-nav__inner">
       <NuxtLink
-        to="/bc-audio"
+        :to="brandHomePath"
         class="bc-nav__brand"
         @click="(e) => { closeAll(); onBrandKnock?.(e) }"
       >
         <img
-          src="/img/bc-logo-primary.png?v=20260612"
+          src="/img/bc-logo-primary.png?v=20260622"
           alt="B&amp;C Performance Audio"
           class="bc-nav__logo-img"
           width="260"
