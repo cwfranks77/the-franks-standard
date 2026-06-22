@@ -9,10 +9,10 @@ import {
   statSync,
   writeFileSync,
 } from 'node:fs'
-import { basename, dirname, extname } from 'node:path'
+import { basename, dirname, extname, resolve } from 'node:path'
 import type { H3Event } from 'h3'
 import { requireTfsOwnerAuth } from './auth'
-import { logOwnerFileAction } from './log'
+import { logOwnerFileAction, logOwnerAccess, logOwnerError, ALLOWED_OWNER_LOGS, getLogsDir } from './log'
 import { assertDestructiveAllowed } from './rateLimit'
 import { getTfsRoot, resolveSafeRelativePath, toLogPath } from './paths'
 import { validateUploadFile } from './uploadValidation'
@@ -227,4 +227,38 @@ export async function handleNewFolder (event: H3Event) {
   mkdirSync(child.absolute, { recursive: false })
   logOwnerFileAction(owner, 'new-folder', toLogPath(child.relative))
   return { ok: true, path: child.relative }
+}
+
+export function handleReadLog (event: H3Event) {
+  const owner = requireTfsOwnerAuth(event)
+  const query = getQuery(event)
+  const rawName = basename(String(query.file || query.name || '').trim())
+  if (!rawName || !ALLOWED_OWNER_LOGS.has(rawName)) {
+    throw createError({ statusCode: 400, statusMessage: 'Invalid or disallowed log file' })
+  }
+
+  const logPath = resolve(getLogsDir(), rawName)
+  if (!logPath.startsWith(getLogsDir())) {
+    throw createError({ statusCode: 400, statusMessage: 'Invalid log path' })
+  }
+
+  const contents = existsSync(logPath) ? readFileSync(logPath, 'utf8') : ''
+  logOwnerAccess(owner, 'read-log', rawName)
+
+  return {
+    ok: true,
+    file: rawName,
+    contents,
+    size: contents.length,
+    modified: existsSync(logPath) ? statSync(logPath).mtime.toISOString() : null,
+  }
+}
+
+export async function handleLogError (event: H3Event) {
+  const owner = requireTfsOwnerAuth(event)
+  const body = await readBody(event).catch(() => ({})) as { message?: string, context?: string }
+  const message = String(body.message || 'Unknown error').slice(0, 2000)
+  const context = String(body.context || '').slice(0, 500)
+  logOwnerError(owner, message, context)
+  return { ok: true }
 }

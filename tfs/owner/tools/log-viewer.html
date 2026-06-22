@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TFS Owner — System Logs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/tfs/owner/file-manager.css">
+  <link rel="stylesheet" href="/tfs/owner/tools/log-viewer.css">
+  <link rel="stylesheet" href="/tfs/owner/components/error-overlay.css">
+</head>
+<body>
+  <div class="owner-shell">
+    <header class="owner-header">
+      <div>
+        <h1>System Logs</h1>
+        <p class="sub">The Franks Standard — owner audit &amp; error logs</p>
+      </div>
+      <nav class="owner-nav" aria-label="Owner navigation">
+        <a class="owner-btn" href="/tfs/owner/index.html">← Dashboard</a>
+        <button type="button" class="owner-btn" id="btn-logout">Sign out</button>
+      </nav>
+    </header>
+
+    <div class="owner-card">
+      <div class="lv-toolbar">
+        <label>
+          Log file
+          <select class="lv-select" id="lv-file" aria-label="Select log file">
+            <option value="owner-file-actions.log">owner-file-actions.log</option>
+            <option value="dealer-packet.log">dealer-packet.log</option>
+            <option value="owner-errors.log">owner-errors.log</option>
+            <option value="owner-access.log">owner-access.log</option>
+            <option value="system-validation.log">system-validation.log</option>
+          </select>
+        </label>
+        <label>
+          Search
+          <input type="search" class="lv-input" id="lv-search" placeholder="Filter lines…" aria-label="Search log">
+        </label>
+        <label>
+          From date
+          <input type="date" class="lv-input" id="lv-date" aria-label="Filter by date">
+        </label>
+        <label class="lv-toggle">
+          <input type="checkbox" id="lv-auto">
+          Auto-refresh (10s)
+        </label>
+        <button type="button" class="owner-btn owner-btn--primary" id="lv-refresh">Refresh</button>
+      </div>
+
+      <p class="lv-meta" id="lv-meta">Loading…</p>
+      <div class="lv-window" id="lv-window" role="log" aria-live="polite" aria-label="Log contents"></div>
+      <p class="fm-status" id="lv-status" role="status"></p>
+    </div>
+  </div>
+
+  <script type="module" src="/tfs/owner/components/error-overlay.js"></script>
+  <script type="module" src="/tfs/owner/tools/log-viewer.js"></script>
+</body>
+</html>
