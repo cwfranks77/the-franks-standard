@@ -1,0 +1,153 @@
+{
+  "generatedAt": "2026-06-22T03:56:26.533Z",
+  "documentCount": 21,
+  "documents": [
+    {
+      "filename": "onboarding/buyer/buyer_safety_tips.md",
+      "size": 2581,
+      "type": "md",
+      "category": "marketplace-onboarding",
+      "lastModified": "2026-06-20T05:55:54.757Z"
+    },
+    {
+      "filename": "onboarding/buyer/how_disputes_work_for_buyers.md",
+      "size": 2300,
+      "type": "md",
+      "category": "marketplace-onboarding",
+      "lastModified": "2026-06-20T05:55:44.712Z"
+    },
+    {
+      "filename": "onboarding/buyer/how_to_search.md",
+      "size": 2462,
+      "type": "md",
+      "category": "markdown",
+      "lastModified": "2026-06-20T05:54:13.436Z"
+    },
+    {
+      "filename": "onboarding/buyer/how_to_use_reviews.md",
+      "size": 2168,
+      "type": "md",
+      "category": "markdown",
+      "lastModified": "2026-06-20T05:55:35.698Z"
+    },
+    {
+      "filename": "onboarding/buyer/how_to_verify_authenticity.md",
+      "size": 2971,
+      "type": "md",
+      "category": "authenticity",
+      "lastModified": "2026-06-20T05:55:26.917Z"
+    },
+    {
+      "filename": "onboarding/buyer/welcome_buyers.md",
+      "size": 2079,
+      "type": "md",
+      "category": "marketplace-onboarding",
+      "lastModified": "2026-06-20T05:53:54.770Z"
+    },
+    {
+      "filename": "onboarding/seller/how_disputes_work.md",
+      "size": 2414,
+      "type": "md",
+      "category": "markdown",
+      "lastModified": "2026-06-20T05:52:10.175Z"
+    },
+    {
+      "filename": "onboarding/seller/how_payouts_work.md",
+      "size": 3054,
+      "type": "md",
+      "category": "markdown",
+      "lastModified": "2026-06-20T05:52:23.099Z"
+    },
+    {
+      "filename": "onboarding/seller/how_to_avoid_violations.md",
+      "size": 2836,
+      "type": "md",
+      "category": "markdown",
+      "lastModified": "2026-06-20T05:51:59.221Z"
+    },
+    {
+      "filename": "onboarding/seller/how_to_list.md",
+      "size": 3094,
+      "type": "md",
+      "category": "markdown",
+      "lastModified": "2026-06-20T05:51:37.351Z"
+    },
+    {
+      "filename": "onboarding/seller/how_to_use_coa.md",
+      "size": 3038,
+      "type": "md",
+      "category": "authenticity",
+      "lastModified": "2026-06-20T05:51:47.639Z"
+    },
+    {
+      "filename": "onboarding/seller/seller_best_practices.md",
+      "size": 2670,
+      "type": "md",
+      "category": "marketplace-onboarding",
+      "lastModified": "2026-06-20T05:52:38.746Z"
+    },
+    {
+      "filename": "onboarding/seller/welcome_sellers.md",
+      "size": 2481,
+      "type": "md",
+      "category": "marketplace-onboarding",
+      "lastModified": "2026-06-20T05:51:25.056Z"
+    },
+    {
+      "filename": "policies/authenticity_mission.md",
+      "size": 2130,
+      "type": "md",
+      "category": "authenticity",
+      "lastModified": "2026-06-20T04:37:32.000Z"
+    },
+    {
+      "filename": "policies/founder_story.md",
+      "size": 2382,
+      "type": "md",
+      "category": "marketing",
+      "lastModified": "2026-06-20T04:37:23.036Z"
+    },
+    {
+      "filename": "policies/no_counterfeits.md",
+      "size": 2255,
+      "type": "md",
+      "category": "authenticity",
+      "lastModified": "2026-06-20T04:38:06.153Z"
+    },
+    {
+      "filename": "policies/reporting_guide.md",
+      "size": 4142,
+      "type": "md",
+      "category": "markdown",
+      "lastModified": "2026-06-20T04:31:47.366Z"
+    },
+    {
+      "filename": "policies/safety_overview.md",
+      "size": 2329,
+      "type": "md",
+      "category": "markdown",
+      "lastModified": "2026-06-20T04:37:38.787Z"
+    },
+    {
+      "filename": "policies/why_buy_on_tfs.md",
+      "size": 1912,
+      "type": "md",
+      "category": "markdown",
+      "lastModified": "2026-06-20T04:37:54.241Z"
+    },
+    {
+      "filename": "policies/why_sell_on_tfs.md",
+      "size": 1968,
+      "type": "md",
+      "category": "markdown",
+      "lastModified": "2026-06-20T04:37:45.737Z"
+    },
+    {
+      "filename": "README.md",
+      "size": 75,
+      "type": "md",
+      "category": "markdown",
+      "lastModified": "2026-06-22T03:55:32.422Z"
+    }
+  ]
+}
