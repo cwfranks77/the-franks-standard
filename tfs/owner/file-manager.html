@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TFS Owner — File Manager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/tfs/owner/file-manager.css">
+<link rel="canonical" href="https://thefranksstandard.com/tfs/owner/file-manager">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="manifest" href="/manifest.json">
+</head>
+<body>
+  <div class="owner-shell">
+    <header class="owner-header">
+      <div>
+        <h1>FTP Tool / File Manager</h1>
+        <p class="sub">The Franks Standard — owner only · TFS project root</p>
+      </div>
+      <nav class="owner-nav" aria-label="Owner navigation">
+        <a class="owner-btn" href="/tfs/owner/index.html">← Dashboard</a>
+        <button type="button" class="owner-btn" id="btn-logout">Sign out</button>
+      </nav>
+    </header>
+
+    <div class="fm-drop" id="fm-drop" role="region" aria-label="Upload drop zone">
+      Drop files here to upload to the current folder
+    </div>
+
+    <div class="fm-toolbar">
+      <button type="button" class="owner-btn" id="btn-up">↑ Up</button>
+      <button type="button" class="owner-btn owner-btn--primary" id="btn-upload">Upload</button>
+      <button type="button" class="owner-btn" id="btn-download">Download</button>
+      <button type="button" class="owner-btn" id="btn-rename">Rename</button>
+      <button type="button" class="owner-btn owner-btn--danger" id="btn-delete">Delete</button>
+      <button type="button" class="owner-btn" id="btn-mkdir">New Folder</button>
+      <button type="button" class="owner-btn" id="btn-preview">Preview</button>
+      <button type="button" class="owner-btn" id="btn-refresh">Refresh</button>
+      <span class="spacer"></span>
+      <input type="search" class="owner-input fm-search" id="fm-search" placeholder="Search names…" aria-label="Search files">
+      <input type="file" id="fm-file-input" multiple hidden>
+    </div>
+
+    <p id="fm-path" class="fm-path-label">/</p>
+
+    <div class="owner-grid-2">
+      <aside class="fm-tree" id="fm-tree" aria-label="Folder tree"></aside>
+      <section class="fm-main">
+        <div class="fm-list">
+          <table class="fm-table">
+            <thead>
+              <tr><th>Name</th><th>Size</th><th>Modified</th></tr>
+            </thead>
+            <tbody id="fm-tbody"></tbody>
+          </table>
+        </div>
+        <p class="fm-status" id="fm-status" role="status"></p>
+      </section>
+    </div>
+  </div>
+
+  <div class="fm-modal" id="fm-modal" hidden role="dialog" aria-modal="true" aria-labelledby="fm-modal-title">
+    <div class="fm-modal__backdrop" id="fm-modal-backdrop"></div>
+    <div class="fm-modal__panel">
+      <header class="fm-modal__header">
+        <h2 id="fm-modal-title">File preview</h2>
+        <button type="button" class="owner-btn" id="fm-modal-close" aria-label="Close preview">✕</button>
+      </header>
+      <pre class="fm-modal__body" id="fm-modal-body"></pre>
+    </div>
+  </div>
+
+  <script type="module" src="/tfs/owner/file-manager.js"></script>
+</body>
+</html>
