@@ -30,6 +30,11 @@ export function getBcOpsUnlockPath () {
   return isOnBcWebsite() ? '/bc-audio/ops' : '/ops'
 }
 
+/** Storefront home — `/` on bcpoweraudio.com, `/bc-audio` on the Franks marketplace. */
+export function getBcStorefrontPath () {
+  return isOnBcWebsite() ? '/' : '/bc-audio'
+}
+
 /** Cart page — short /cart on www.bcpoweraudio.com, /bc-audio/cart on the Franks marketplace. */
 export function getBcCartPath (runtimeConfig) {
   if (import.meta.client) {

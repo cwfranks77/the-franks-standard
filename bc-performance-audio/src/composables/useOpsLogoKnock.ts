@@ -1,11 +1,11 @@
 import { useOpsSession } from '~/composables/useOpsSession'
+import { getBcOpsPanelPath } from '~/utils/bcSupport.js'
 
 const KNOCK_COUNT = 5
 const KNOCK_WINDOW_MS = 2500
 
 export function useOpsLogoKnock () {
   const config = useRuntimeConfig()
-  const route = useRoute()
   const { unlock } = useOpsSession()
 
   const isDev = computed(() => import.meta.dev)
@@ -50,8 +50,7 @@ export function useOpsLogoKnock () {
       return
     }
     closeOpModal()
-    const panelPath = route.path.startsWith('/bc-audio') ? '/bc-audio/ops/panel' : '/ops/panel'
-    await navigateTo(panelPath)
+    await navigateTo(getBcOpsPanelPath())
   }
 
   return {

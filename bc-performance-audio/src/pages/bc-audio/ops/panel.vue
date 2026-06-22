@@ -1,6 +1,6 @@
 <script setup>
 import { BC_BRAND } from '~/utils/bcBrand.js'
-import { getBcSupport } from '~/utils/bcSupport.js'
+import { getBcSupport, getBcStorefrontPath } from '~/utils/bcSupport.js'
 import { BC_META_DEFAULTS } from '~/utils/bcMetaDefaults.js'
 import { getStoredOpsPhrase } from '~/utils/opsClientAuth'
 import {
@@ -104,7 +104,7 @@ async function saveSeo () {
       method: 'PUT',
       body: { contentKey: 'bcMeta', payload: seo.value },
     })
-    seoMessage.value = 'Saved to cloud — Google and Facebook previews update within a minute. Refresh the storefront to see changes.'
+    seoMessage.value = 'Saved to cloud — Google and social previews update within a minute. Refresh the storefront to see changes.'
   } catch (e) {
     const msg = opsErrorMessage(e, 'Save failed.')
     if (/unauthorized|expired/i.test(msg)) {
@@ -149,7 +149,7 @@ function formatDate (v) {
 
 async function signOut () {
   await revoke()
-  navigateTo('/bc-audio')
+  navigateTo(getBcStorefrontPath())
 }
 
 function clearSiteCache () {
@@ -321,7 +321,7 @@ useSeoMeta({
 
   <!-- SEO -->
     <section v-show="tab === 'seo'" class="bc-panel__section">
-      <h2>Search &amp; social (Google, Facebook)</h2>
+      <h2>Search &amp; social (Google share previews)</h2>
       <p class="bc-panel__note">Title and description shown in Google results and when someone shares your link.</p>
       <p v-if="seoError" class="bc-alert bc-alert--err">{{ seoError }}</p>
       <p v-if="seoInfo" class="bc-alert bc-alert--info">{{ seoInfo }}</p>
