@@ -168,7 +168,6 @@ export default defineNuxtConfig({
       gadsId: process.env.NUXT_PUBLIC_GADS_ID || '',
       gadsConversionLabel: process.env.NUXT_PUBLIC_GADS_CONVERSION_LABEL || '',
       socialInstagram: process.env.NUXT_PUBLIC_SOCIAL_INSTAGRAM || '',
-      socialFacebook: process.env.NUXT_PUBLIC_SOCIAL_FACEBOOK || '',
       socialTiktok: process.env.NUXT_PUBLIC_SOCIAL_TIKTOK || '',
       socialYoutube: process.env.NUXT_PUBLIC_SOCIAL_YOUTUBE || '',
       socialX: process.env.NUXT_PUBLIC_SOCIAL_X || '',

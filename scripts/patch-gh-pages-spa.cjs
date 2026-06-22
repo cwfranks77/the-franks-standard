@@ -90,4 +90,21 @@ console.log('patch-gh-pages-spa: wrote 404.html from index.html')
 for (const relativeDir of SPA_BLOCKING_DIRS) {
   fixSpaBlockingDir(relativeDir)
 }
+
+if (bcPrimarySite) {
+  const cartIndex = path.join(ROOT, 'cart', 'index.html')
+  const bcCartIndex = path.join(ROOT, 'bc-audio', 'cart', 'index.html')
+  if (!fs.existsSync(cartIndex)) {
+    console.error('patch-gh-pages-spa: missing cart/index.html — /cart did not prerender')
+    process.exit(1)
+  }
+  if (fs.existsSync(bcCartIndex)) {
+    const bcCartHtml = fs.readFileSync(bcCartIndex, 'utf8')
+    if (!bcCartHtml.includes('id="__nuxt"')) {
+      console.error('patch-gh-pages-spa: bc-audio/cart/index.html is redirect-only — cart must be a full SPA page')
+      process.exit(1)
+    }
+  }
+}
+
 console.log('patch-gh-pages-spa: done')
