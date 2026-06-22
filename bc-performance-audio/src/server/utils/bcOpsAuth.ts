@@ -16,7 +16,7 @@ function hashOpsPhrase (phrase: string): string {
 /** Owner-only guard for B&C Nitro routes. Matches ops panel unlock phrase. */
 export function requireBcOpsAuth (event: H3Event): void {
   const config = useRuntimeConfig(event)
-  const expected = String(config.public.opsAccessKeyHash || '').trim().toLowerCase()
+  const expected = String(config.opsAccessKeyHash || config.public.opsAccessKeyHash || '').trim().toLowerCase()
   if (!expected) {
     throw createError({ statusCode: 503, statusMessage: 'Owner access is not configured on this deploy.' })
   }

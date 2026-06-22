@@ -9,7 +9,10 @@ export function useOpsLogoKnock () {
   const { unlock } = useOpsSession()
 
   const isDev = computed(() => import.meta.dev)
-  const keyConfigured = computed(() => Boolean(String(config.public.opsAccessKeyHash || '').trim()))
+  const keyConfigured = computed(() =>
+    Boolean(String(config.public.opsAccessKeyHash || '').trim())
+    || Boolean(config.public.opsUnlockAvailable),
+  )
 
   const opModalOpen = ref(false)
   const opPhrase = ref('')

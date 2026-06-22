@@ -33,13 +33,17 @@ const ogImage = (rawOg && String(rawOg).trim())
   ? String(rawOg).trim()
   : (bcPrimarySite ? `${siteUrl}/img/hero-showcase-v2.svg` : `${siteUrl}/franks-pavilion.png`)
 
-// Operator unlock: hash at BUILD time only — kept server-side (never in public runtimeConfig).
+// Operator unlock: hash the phrase at BUILD time (normalized, same as the modal).
+// NUXT_PUBLIC_OPS_ACCESS_KEY is the source of truth when set; HASH is fallback only.
 const opsKeyPlain = String(process.env.NUXT_PUBLIC_OPS_ACCESS_KEY || process.env.OWNER_SECRET_PASSPHRASE || '').trim()
 const opsKeyHashFromEnv = String(process.env.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH || process.env.OPS_ACCESS_KEY_HASH || '').trim().toLowerCase()
 const opsAccessKeyHash = opsKeyPlain
   ? createHash('sha256').update(normalizeOpsPhrase(opsKeyPlain)).digest('hex')
   : opsKeyHashFromEnv
 const opsUnlockAvailable = Boolean(opsAccessKeyHash)
+if (opsAccessKeyHash) {
+  process.env.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH = opsAccessKeyHash
+}
 
 // Stripe Payment Link defaults — CI passes empty secrets when unset; write back so Nuxt
 // does not override runtimeConfig.public.pay*Url with "" (same gotcha as ops hash above).
@@ -145,7 +149,7 @@ export default defineNuxtConfig({
     },
   },
 
-  // Operator unlock: hash stays private; browsers call /api/ops/session or ops-session Edge Function.
+  // Operator unlock: SHA-256 hash ships to the browser for static unlock (never the plain phrase).
   runtimeConfig: {
     opsAccessKeyHash,
     opsSessionSecret: process.env.OPS_SESSION_SECRET || opsAccessKeyHash || '',
@@ -154,6 +158,8 @@ export default defineNuxtConfig({
     public: {
       siteUrl: siteUrl,
       opsUnlockAvailable,
+      /** SHA-256 of normalized phrase — safe for static unlock; never the plain phrase. */
+      opsAccessKeyHash,
       payListingFeeUrl,
       payProSellerUrl,
       payOrderDepositUrl,
