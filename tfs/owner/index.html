@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TFS Owner Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/tfs/owner/file-manager.css">
+</head>
+<body>
+  <div class="owner-shell">
+    <header class="owner-header">
+      <div>
+        <h1>The Franks Standard — Owner Dashboard</h1>
+        <p class="sub">Internal tools · not public · not B&amp;C Audio</p>
+      </div>
+    </header>
+
+    <div class="owner-card" id="login-card">
+      <h2>Owner sign-in</h2>
+      <p style="color:var(--muted);font-size:0.9rem;margin:0 0 12px;">
+        Enter your ops access key. It is stored only in this browser session — never sent except to TFS owner APIs.
+      </p>
+      <input type="password" class="owner-input" id="ops-key" placeholder="Ops access key" autocomplete="off">
+      <div style="margin-top:12px;display:flex;gap:8px;">
+        <button type="button" class="owner-btn owner-btn--primary" id="btn-login">Unlock dashboard</button>
+      </div>
+      <p class="fm-status error" id="login-error" hidden></p>
+    </div>
+
+    <div class="owner-card" id="dashboard-card" hidden>
+      <h2>Owner tools</h2>
+      <nav class="owner-nav owner-nav--stack" aria-label="TFS owner dashboard navigation">
+        <a class="owner-nav__link" href="/tfs/owner/file-manager.html">
+          <span class="owner-nav__title">FTP Tool / File Manager</span>
+          <span class="owner-nav__hint">Browse, upload, download · TFS root only</span>
+        </a>
+      </nav>
+      <p style="margin-top:16px;">
+        <button type="button" class="owner-btn" id="btn-signout">Sign out</button>
+      </p>
+    </div>
+  </div>
+  <script type="module">
+    import { getOwnerKey, setOwnerKey, clearOwnerKey } from './owner-shared.js'
+
+    const loginCard = document.getElementById('login-card')
+    const dashCard = document.getElementById('dashboard-card')
+    const loginError = document.getElementById('login-error')
+
+    function showDashboard () {
+      loginCard.hidden = true
+      dashCard.hidden = false
+    }
+
+    async function verifyKey (key) {
+      const res = await fetch('/tfs/api/owner/files/list?path=tfs', {
+        headers: { 'x-ops-key': key },
+      })
+      return res.ok
+    }
+
+    document.getElementById('btn-login').addEventListener('click', async () => {
+      const key = document.getElementById('ops-key').value.trim()
+      loginError.hidden = true
+      if (!key) {
+        loginError.textContent = 'Enter your ops key.'
+        loginError.hidden = false
+        return
+      }
+      if (!(await verifyKey(key))) {
+        loginError.textContent = 'Invalid ops key or API unavailable (use nuxt dev / server deploy).'
+        loginError.hidden = false
+        return
+      }
+      setOwnerKey(key)
+      showDashboard()
+    })
+
+    document.getElementById('btn-signout').addEventListener('click', () => {
+      clearOwnerKey()
+      dashCard.hidden = true
+      loginCard.hidden = false
+      document.getElementById('ops-key').value = ''
+    })
+
+    if (getOwnerKey()) {
+      verifyKey(getOwnerKey()).then((ok) => {
+        if (ok) showDashboard()
+        else clearOwnerKey()
+      })
+    }
+  </script>
+</body>
+</html>
