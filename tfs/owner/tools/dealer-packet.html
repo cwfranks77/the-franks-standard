@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TFS Owner — Dealer Packet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/tfs/owner/file-manager.css">
+  <link rel="stylesheet" href="/tfs/owner/tools/dealer-packet.css">
+  <link rel="stylesheet" href="/tfs/owner/components/error-overlay.css">
+</head>
+<body>
+  <div class="owner-shell">
+    <header class="owner-header">
+      <div>
+        <h1>Dealer Packet Builder</h1>
+        <p class="sub">Wholesale onboarding documents · TFS + policies</p>
+      </div>
+      <nav class="owner-nav" aria-label="Owner navigation">
+        <a class="owner-btn" href="/tfs/owner/index.html">← Dashboard</a>
+        <button type="button" class="owner-btn" id="btn-logout">Sign out</button>
+      </nav>
+    </header>
+
+    <div class="owner-card">
+      <p class="dp-summary" id="dp-summary">
+        Build a dealer packet with business identity, compliance policies, marketplace protections, and contact info.
+        Output: <strong>Dealer_Packet.md</strong>, <strong>Dealer_Packet.pdf</strong>, <strong>Dealer_Packet.zip</strong>, and <strong>index.json</strong>.
+      </p>
+
+      <div class="dp-progress" id="dp-progress" hidden aria-hidden="true">
+        <div class="dp-progress__bar" id="dp-progress-bar"></div>
+      </div>
+
+      <div class="dp-actions">
+        <button type="button" class="owner-btn owner-btn--primary" id="btn-build">Build Packet</button>
+        <button type="button" class="owner-btn" id="btn-pdf">Export as PDF</button>
+        <button type="button" class="owner-btn" id="btn-zip">Export as ZIP</button>
+        <button type="button" class="owner-btn" id="btn-folder">Open Packet Folder</button>
+        <a class="owner-btn" href="/tfs/owner/file-manager.html?path=tfs/system/dealer-packet" id="btn-fm">Browse in File Manager</a>
+      </div>
+
+      <p class="fm-status" id="dp-status" role="status"></p>
+    </div>
+  </div>
+
+  <script type="module" src="/tfs/owner/components/error-overlay.js"></script>
+  <script type="module" src="/tfs/owner/tools/dealer-packet.js"></script>
+</body>
+</html>

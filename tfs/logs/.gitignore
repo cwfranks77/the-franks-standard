@@ -1,1 +1,5 @@
 owner-file-actions.log
+dealer-packet.log
+owner-errors.log
+owner-access.log
+system-validation.log

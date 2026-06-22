@@ -138,6 +138,8 @@ export default defineNuxtConfig({
         '/verify/coa',
         '/tfs/owner/index.html',
         '/tfs/owner/file-manager.html',
+        '/tfs/owner/tools/log-viewer.html',
+        '/tfs/owner/tools/dealer-packet.html',
         ...bcPrerenderRoutes,
       ],
     },
