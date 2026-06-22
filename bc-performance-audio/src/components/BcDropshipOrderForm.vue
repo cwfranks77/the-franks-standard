@@ -43,6 +43,7 @@ function handleAddToCart () {
     name: props.product.name,
     sku: props.product.sku || props.product.id,
     price,
+    retailPrice: price,
     image: props.product.image || undefined,
   })
   justAdded.value = true

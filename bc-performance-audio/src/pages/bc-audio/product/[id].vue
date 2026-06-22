@@ -48,6 +48,7 @@ function handleAddToCart () {
     name: item.name,
     sku: item.sku || productId.value,
     price,
+    retailPrice: price,
     image: item.image || undefined,
   })
   justAdded.value = true

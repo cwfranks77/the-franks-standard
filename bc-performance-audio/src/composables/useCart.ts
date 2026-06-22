@@ -5,6 +5,7 @@ type CartItem = {
   name: string
   sku?: string
   price: number
+  retailPrice?: number
   image?: string
   qty?: number
 }
@@ -40,11 +41,16 @@ export function useCart () {
   function addItem (item: CartItem) {
     if (!item?.id) return
     hydrateCart()
+    const retail = Number(item.retailPrice ?? item.price)
+    if (!Number.isFinite(retail) || retail <= 0) return
+    const row = { ...item, price: retail, retailPrice: retail }
     const existing = cart.value.find((r) => r.id === item.id)
     if (existing) {
       existing.qty = (existing.qty || 1) + 1
+      existing.price = retail
+      existing.retailPrice = retail
     } else {
-      cart.value.push({ ...item, qty: 1 })
+      cart.value.push({ ...row, qty: 1 })
     }
     persistCart()
   }
@@ -68,7 +74,7 @@ export function useCart () {
   const itemCount = computed(() => cart.value.reduce((n, r) => n + (r.qty || 1), 0))
 
   const subtotal = computed(() =>
-    cart.value.reduce((sum, r) => sum + (Number(r.price) || 0) * (r.qty || 1), 0),
+    cart.value.reduce((sum, r) => sum + (Number(r.retailPrice ?? r.price) || 0) * (r.qty || 1), 0),
   )
 
   return { cart, addItem, removeItem, clear, hasItem, itemCount, subtotal }

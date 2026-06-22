@@ -154,9 +154,7 @@
             class="portal-showcase"
           >
             <header class="portal-showcase__head">
-              <div class="portal-showcase__icon" aria-hidden="true">{{ lane.icon }}</div>
               <div>
-                <span v-if="lane.badge" class="portal-showcase__badge">{{ lane.badge }}</span>
                 <h3 class="portal-showcase__title">{{ lane.title }}</h3>
                 <p class="portal-showcase__desc">{{ lane.description }}</p>
               </div>
@@ -369,25 +367,19 @@ const SHOWCASE_LANE_DEFS = [
   {
     deptKey: 'home',
     laneIndex: 0,
-    icon: '🔊',
     title: 'Home Audio',
-    badge: 'HOME THEATER MATRIX',
     description: 'Receivers, speakers, amplifiers, and soundbars from authorized competition and home theater lines.',
   },
   {
     deptKey: 'car',
     laneIndex: 1,
-    icon: '🚗',
     title: 'Car Audio',
-    badge: 'VEHICLE OUTPUT MATRIX',
     description: 'Speakers, subwoofers, amplifiers, and wiring for street and competition installs.',
   },
   {
     deptKey: 'powersports',
     laneIndex: 2,
-    icon: '⚓',
     title: 'Powersports & Marine Audio',
-    badge: 'ELEMENT-PROOF OUTPUT',
     description: 'Marine and powersports speakers and amps built for high-output trail and offshore environments.',
   },
 ]
@@ -499,7 +491,7 @@ function getProductDescription (product) {
 
 function getProductBaseCost (product) {
   if (!product) return null
-  const raw = product.baseCost ?? product.wholesaleCost ?? product.cost ?? product.price
+  const raw = product.baseCost ?? product.wholesaleCost ?? product.cost ?? product._wholesale
   if (raw == null || raw === '') return null
   const numeric = Number(raw)
   if (!Number.isFinite(numeric) || numeric <= 0) return null
@@ -522,6 +514,11 @@ function calculateTargetRetailPrice (product) {
 
 function getProductPrice (product) {
   if (!product) return null
+  const listed = product.retailPrice ?? product.msrp
+  if (listed != null && listed !== '') {
+    const retail = Number(listed)
+    if (Number.isFinite(retail) && retail > 0) return retail
+  }
   const baseCost = getProductBaseCost(product)
   if (baseCost != null) {
     const calculated = Number(calculateTargetRetailPrice({
@@ -530,11 +527,9 @@ function getProductPrice (product) {
     }))
     if (Number.isFinite(calculated) && calculated > 0) return calculated
   }
-  const raw = product.retailPrice ?? product.msrp
-  if (raw == null || raw === '') return null
-  const numeric = Number(raw)
-  if (!Number.isFinite(numeric) || numeric <= 0) return null
-  return numeric
+  const fallback = Number(product.price)
+  if (Number.isFinite(fallback) && fallback > 0) return fallback
+  return null
 }
 
 function formatPrice (product) {
@@ -754,6 +749,7 @@ function handleAddToCart () {
     name: getProductName(product),
     sku: getProductSku(product),
     price,
+    retailPrice: price,
     image: getProductImage(product) || undefined,
   })
   cartJustAdded.value = true
@@ -1367,7 +1363,7 @@ async function handleBuyNow () {
 }
 
 .portal-showcase__title {
-  margin: 0.45rem 0 0;
+  margin: 0;
   font-size: 1.1rem;
   font-weight: 900;
 }

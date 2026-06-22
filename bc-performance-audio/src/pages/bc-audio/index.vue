@@ -220,6 +220,7 @@ const handleAddToCart = (product: any) => {
     name: getProductName(product),
     sku: getProductSku(product),
     price,
+    retailPrice: price,
     image: getProductImage(product) || undefined,
   })
   flashCartAdded(product)

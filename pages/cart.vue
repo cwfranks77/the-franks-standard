@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { BC_BRAND } from '~/utils/bcBrand.js'
+import { resolveCustomerRetailPrice } from '~/utils/bcRetailPricing.js'
 
 definePageMeta({ layout: 'bc-audio' })
 
@@ -11,8 +12,15 @@ function formatRetail (amount: number) {
   return `$${n.toFixed(2)}`
 }
 
-function lineRetailTotal (item: { price: number, qty?: number }) {
-  return (Number(item.price) || 0) * (item.qty || 1)
+function itemRetailUnit (item: { price: number, retailPrice?: number }) {
+  return resolveCustomerRetailPrice({
+    retailPrice: item.retailPrice ?? item.price,
+    price: item.retailPrice ?? item.price,
+  }) ?? 0
+}
+
+function lineRetailTotal (item: { price: number, retailPrice?: number, qty?: number }) {
+  return itemRetailUnit(item) * (item.qty || 1)
 }
 
 useHead({
@@ -40,20 +48,14 @@ useHead({
           <span class="bc-cart-page__qty">Qty {{ item.qty || 1 }}</span>
         </div>
         <div class="bc-cart-page__item-side">
-          <div class="bc-cart-page__price-row">
-            <span class="bc-cart-page__price-label">Markup Retail Price</span>
-            <span class="bc-cart-page__price">{{ formatRetail(lineRetailTotal(item)) }}</span>
-          </div>
+          <span class="bc-cart-page__price">{{ formatRetail(lineRetailTotal(item)) }}</span>
           <button type="button" class="bc-cart-page__remove" @click="removeItem(item.id)">Remove</button>
         </div>
       </li>
     </ul>
 
     <footer v-if="cart.length" class="bc-cart-page__foot">
-      <div class="bc-cart-page__total-row">
-        <span class="bc-cart-page__price-label">Markup Retail Subtotal</span>
-        <strong class="bc-cart-page__total-amount">{{ formatRetail(subtotal) }}</strong>
-      </div>
+      <p class="bc-cart-page__total">Subtotal: <strong>{{ formatRetail(subtotal) }}</strong></p>
       <p class="bc-cart-page__note">Tax and shipping are calculated at checkout.</p>
       <div class="bc-cart-page__actions">
         <NuxtLink to="/bc-audio/catalog" class="bc-cart-page__btn bc-cart-page__btn--secondary">Keep shopping</NuxtLink>
@@ -125,34 +127,12 @@ useHead({
   text-align: right;
   flex-shrink: 0;
 }
-.bc-cart-page__price-row,
-.bc-cart-page__total-row {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-}
-.bc-cart-page__price-label {
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #9ca3af;
-}
 .bc-cart-page__price {
   display: block;
   font-weight: 800;
   font-size: 1.1rem;
-  color: #34d399;
+  color: #ffd814;
   margin-bottom: 8px;
-}
-.bc-cart-page__total-row {
-  margin: 0 0 10px;
-}
-.bc-cart-page__total-amount {
-  font-size: 1.35rem;
-  font-weight: 900;
-  color: #34d399;
 }
 .bc-cart-page__remove {
   border: none;
@@ -167,6 +147,10 @@ useHead({
   margin-top: 1.5rem;
   padding-top: 1.25rem;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.bc-cart-page__total {
+  margin: 0 0 10px;
+  font-size: 1.1rem;
 }
 .bc-cart-page__note {
   margin: 0 0 1rem;
