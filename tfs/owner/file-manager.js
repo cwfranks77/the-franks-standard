@@ -264,5 +264,9 @@ if (!requireOwnerKey()) {
   // redirect handled in shared
 } else {
   wireToolbar()
-  navigate('').catch((e) => setStatus(e.message, 'error'))
+  const startPath = new URLSearchParams(window.location.search).get('path') || ''
+  navigate(startPath).catch((e) => {
+    setStatus(e.message, 'error')
+    if (window.tfsShowError) window.tfsShowError(e.message, 'file-manager')
+  })
 }

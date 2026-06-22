@@ -1,0 +1,50 @@
+/* TFS Owner — global error overlay */
+.tfs-err-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.tfs-err-overlay[hidden] { display: none; }
+
+.tfs-err-overlay__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+}
+
+.tfs-err-overlay__panel {
+  position: relative;
+  width: min(520px, 100%);
+  background: #14101f;
+  border: 1px solid rgba(239, 83, 80, 0.45);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+.tfs-err-overlay__panel h2 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+  color: #ffcdd2;
+}
+
+.tfs-err-overlay__body {
+  margin: 0 0 16px;
+  font-size: 0.85rem;
+  color: #e8e4f0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 200px;
+  overflow: auto;
+}
+
+.tfs-err-overlay__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
