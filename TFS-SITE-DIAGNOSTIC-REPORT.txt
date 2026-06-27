@@ -1,0 +1,242 @@
+================================================================================
+THE FRANKS STANDARD — FULL SITE DIAGNOSTIC REPORT
+================================================================================
+Date: June 15, 2026
+Live site: https://thefranksstandard.com
+Backend: Supabase project rochesyrxiyrxhzmkuwk
+Deploy: GitHub Pages (static) + Supabase Edge Functions
+
+================================================================================
+EXECUTIVE SUMMARY
+================================================================================
+
+AREA                    STATUS                              GRADE
+----                    ------                              -----
+Cart                    Broken / not wired                  RED
+Checkout                Built but missing on live site      RED
+Payment (Stripe)        Backend works; buyer UI incomplete  YELLOW
+Sales tax               Policy ≠ code (billing not ship)    RED
+Backend routes          Most deployed; 3 functions missing  YELLOW
+Activity recorder       Edge fn exists; site never calls it RED
+Database                Schema in repo; apply may lag       YELLOW
+Errors / live health      Key URLs 404; split codebase      RED
+
+BOTTOM LINE:
+Stripe and Supabase work on the server side, but the LIVE SITE cannot complete
+a normal buyer purchase from listing pages. Tax uses billing address, not
+shipping zip as your policy states. Activity logs stay in the browser only.
+
+================================================================================
+1. CART
+================================================================================
+
+WHAT EXISTS:
+- useCart.ts — browser-only cart (localStorage key: bcpa_cart_v1), B&C products
+- src/pages/cart.vue — shows items, NO checkout button, "Contact for pricing"
+
+PROBLEMS:
+[CRITICAL] Cart page only in src/pages/ — NOT in deployed pages/ folder
+[CRITICAL] https://thefranksstandard.com/cart → 404
+[CRITICAL] No path from cart to Stripe or Supabase checkout
+[NOTE]     Marketplace is single-item "Buy now" — no multi-item cart
+
+VERDICT: Cart does not work on the live site.
+
+================================================================================
+2. CHECKOUT
+================================================================================
+
+INTENDED FLOW (in src/pages/ — NOT fully on live deploy):
+  Listing → sign in → buyer policy + ack → create-checkout-session
+  → Stripe Hosted Checkout → /order/success
+
+LIVE DEPLOY (pages/ folder only):
+- pages/listing/[id].vue = VIEW ONLY (no "Buy now" button)
+- No pages/cart.vue, pages/order/success.vue, pages/checkout.vue in deploy app
+- Full checkout listing lives in src/pages/listing/[id].vue (NOT used by Nuxt)
+
+LIVE URL TESTS:
+  /                          200 OK
+  /browse                    200 OK
+  /owner                     200 OK
+  /cart                      404 FAIL
+  /checkout                  404 FAIL
+  /order/success             404 FAIL
+  /sell/import               404 FAIL
+
+OTHER GAPS:
+- /checkout?listing_id= deep links fail checkout acknowledgment (ack required)
+- GitHub Pages 404.html redirects to home — loses URL on direct links
+
+VERDICT: Checkout backend is real; live storefront cannot complete purchases.
+
+================================================================================
+3. PAYMENT PROCESSOR (STRIPE)
+================================================================================
+
+WORKING:
+  create-checkout-session     Deployed (alive)
+  stripe-webhook              Deployed — marks orders paid, refunds
+  stripe-connect-onboard/sync Seller payouts
+  ops-force-refund            Real Stripe refunds from owner console
+  bc-dropship-checkout        B&C wholesale split
+  create-platform-checkout-session  Pro plan, listing fees
+
+GAPS:
+  shipping_cost in DB not charged at checkout (listing price only)
+  Connect+Tax failure silently falls back to platform-held payment
+  Legacy Payment Links still on /pay alongside API checkout
+  ops-create-transfer         404 on live — NOT in deploy workflow
+  25% income reserve          UI/ledger only — not enforced in Stripe splits
+
+LIVE EDGE FUNCTION PROBE (POST empty body):
+  create-checkout-session     401  LIVE
+  stripe-webhook              400  LIVE
+  ops-session                 400  LIVE
+  platform-log-activity       401  LIVE
+  ops-dispute-triage          404  NOT DEPLOYED
+  shipping-tracker-webhook    404  NOT DEPLOYED
+  ops-create-transfer         404  NOT DEPLOYED
+
+VERDICT: Stripe connected; buyer-facing checkout blocked by missing live UI.
+
+================================================================================
+4. SALES TAX LOGIC
+================================================================================
+
+YOUR STATED RULE (Louisiana Act 22):
+  Tax from buyer SHIPPING destination zip — not billing address.
+
+WHAT CODE DOES:
+  supabase/functions/_shared/stripeTax.ts
+  → billing_address_collection: 'required'
+  → Comment says "always from buyer billing address"
+
+SITE COPY SAYS SHIPPING ZIP:
+  marketplace-policy.vue, owner Shipping Tax Calculator
+
+B&C CHECKOUT:
+  Flat 4.45% LA rate — not parish/zip-specific
+
+OWNER TAX LEDGER:
+  Flat 9.75% placeholder — not real Stripe Tax amounts
+
+25% BUSINESS INCOME RESERVE:
+  Shown in OwnerTaxAutoLedger / TaxReserveCalculator only
+  NOT deducted at payment time
+
+COMPLIANCE TABLE:
+  Tax from shipping zip     NO  — uses billing address
+  LA facilitator alignment  WARN — needs shipping address in Stripe
+  25% income reserve        NO  — UI only
+  B&C zip-based tax         NO  — flat rate only
+
+VERDICT: Policy and code do not match. Fix stripeTax.ts for shipping address.
+
+================================================================================
+5. BACKEND ROUTES
+================================================================================
+
+DEPLOYED VIA CI (~35 edge functions):
+  create-checkout-session, stripe-webhook, ops-force-refund, ops-session,
+  ops-owner-feed, platform-log-activity, ops-integrity-action, ops-cms-action,
+  auth-send-email, reconcile-orders, etc.
+
+IN REPO BUT NOT DEPLOYED (404 on live):
+  1. shipping-tracker-webhook — escrow release on carrier "delivered"
+  2. ops-create-transfer      — manual Connect payouts to sellers
+  3. ops-dispute-triage       — AI dispute triage + audit logs
+
+NUXT SERVER ROUTES (server/api/):
+  Only work with live Node server — NOT on static GitHub Pages
+  e.g. live-split-payment.post.ts, ops/*
+
+SPLIT CODEBASE RISK:
+  franks-standard/franks-standard/pages/     ← GitHub Pages BUILDS THIS
+  franks-standard/franks-standard/src/pages/ ← full app (checkout, cart, ops)
+  franks-standard/pages/                     ← parent copy
+
+VERDICT: Backend mostly deployed; live site uses thinner pages/ copy.
+
+================================================================================
+6. ACTIVITY RECORDER
+================================================================================
+
+DATABASE:
+  platform_activity_events  — migration 043
+  audit_logs                — migration 044
+
+EDGE:
+  platform-log-activity     Deployed — writes DB with user JWT + real IP
+  ops-owner-feed            Reads activity for owner console
+
+CLIENT TODAY:
+  plugins/platform-activity.client.ts → localStorage ONLY
+  utils/platformActivity.ts           → local + demo seed data
+  NO client code calls platform-log-activity (zero invoke/fetch found)
+
+VERDICT: Built but not wired. Owner monitor mostly shows this browser's log.
+
+================================================================================
+7. DATABASE
+================================================================================
+
+MIGRATIONS: 46 files in supabase/migrations/ (001 → 044)
+
+KEY TABLES:
+  orders, listings, profiles, disputes, audit_logs,
+  platform_activity_events, platform_messages, order_refund_events,
+  webhook_events
+
+MIGRATION CI RISK:
+  apply-supabase-migrations.yml uses continue-on-error: true
+  → failed db push may not fail the job; production can lag repo
+
+NOT VERIFIED LIVE:
+  platform_activity_events, audit_logs (no health-check probe)
+
+VERDICT: Schema documented in repo; confirm 043/044 in Supabase dashboard.
+
+================================================================================
+8. ERRORS & LIVE HEALTH
+================================================================================
+
+BUILD: npm run generate in franks-standard/franks-standard — PASSES (29 routes)
+
+PRODUCTION HEALTH: scripts/health-check.cjs (CI daily + after deploy)
+  Checks: live site, Supabase tables, key edge functions
+
+STRUCTURAL ISSUES (highest impact):
+  1. Deployed listing page has NO Buy button (full version in src/pages/)
+  2. cart / checkout / order/success not in deploy tree
+  3. Tax policy ≠ tax code
+  4. Activity not sent to Supabase
+  5. Three edge functions not deployed
+  6. Direct URLs to non-prerendered routes → 404 or redirect home
+
+PRERENDERED ROUTES ONLY (~29):
+  /, /browse, /sell/*, /store-builder, /owner, legal pages
+
+================================================================================
+PRIORITY FIX LIST
+================================================================================
+
+DO FIRST (blocks sales):
+  1. Put Buy now on live listing page (merge src/pages/listing into pages/)
+  2. Fix SPA fallback so /listing/* and /order/success work on direct links
+  3. Change stripeTax.ts to shipping_address_collection (LA shipping zip)
+
+DO NEXT (trust & ops):
+  4. Wire platform-log-activity from client on sign-in and key actions
+  5. Deploy ops-dispute-triage, shipping-tracker-webhook, ops-create-transfer
+  6. Confirm migrations 043/044 applied in Supabase
+  7. Remove continue-on-error on migration CI
+
+LATER:
+  8. Cart checkout or remove cart from navigation
+  9. Charge shipping_cost at checkout when set on listings
+  10. Consolidate src/ vs pages/ trees
+
+================================================================================
+END OF REPORT
+================================================================================

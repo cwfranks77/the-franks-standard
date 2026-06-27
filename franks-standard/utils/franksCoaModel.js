@@ -69,6 +69,61 @@ export const COA_FINE_PRINT_SHORT =
 export const UPLOADED_COA_DISCLOSURE =
   'You upload a third-party COA (PSA, PCGS, issuer, etc.). The seller backs the listing; The Franks Standard does not guarantee third-party certificate content.'
 
+/** Printed on every Franks-issued certificate body */
+export const COA_NON_TRANSFERABLE_NOTICE =
+  'NON-TRANSFERABLE: This certificate is permanently bound to one listing, one item snapshot, and one serial number. ' +
+  'It may not be reassigned, transferred to another item, or reused on a different listing.'
+
+/** Anti-copy language for branded COA documents */
+export const COA_ANTI_COPY_NOTICE =
+  'Each official copy carries a unique copy ID watermarked across the page with The Franks Standard seal. ' +
+  'Photocopies or reprints without a valid copy ID issued from thefranksstandard.com will not verify. ' +
+  'Request additional copies only through your account — every copy is documented in our registry.'
+
+/** Owner console + seller hub — steps before any COA print or issue */
+export const COA_SELLER_REQUIREMENT_STEPS = [
+  {
+    id: 'thumbnails',
+    title: 'Item thumbnail photos',
+    desc: 'Upload at least one clear photo of the actual item. Photo 1 is frozen on the certificate as the certified thumbnail.',
+  },
+  {
+    id: 'description',
+    title: 'Brief item description',
+    desc: 'Minimum 20 characters — what the item is, condition, and any serial or grade visible on the piece.',
+  },
+  {
+    id: 'serial',
+    title: 'Platform serial assigned',
+    desc: `Server-issued registry serial (${FRANKS_COA_SERIAL_FORMAT}) — one per listing, never reused.`,
+  },
+  {
+    id: 'signature',
+    title: 'Seller Written Guarantee',
+    desc: 'Your full legal name as electronic signature on the Franks COA at publish.',
+  },
+  {
+    id: 'verified',
+    title: 'Backend verification',
+    desc: 'Our system authenticates the document, binds the file hash, and logs chain-of-custody before print unlocks.',
+  },
+]
+
+/** Strict anti-fraud protections — emphasize in owner + seller COA UI */
+export const COA_FRAUD_PROTECTION_BULLETS = [
+  'COAs are NEVER transferable — permanently bound to one listing, one item snapshot, and one serial. There is no step after which transfer becomes allowed.',
+  'Print, download, and buyer access stay locked until item thumbnails, description, serial, and backend verification are complete.',
+  'Every official copy is watermarked with our seal, a unique copy ID, and logged — unauthorized photocopies fail verification.',
+  'Third-party COA uploads are fingerprinted (SHA-256); duplicate files and reused issuer serials on other listings are blocked.',
+  'Listing photos and description are frozen into a certificate fingerprint — changing them after issue invalidates print until re-synced.',
+  'Buyers verify serials and copy IDs at /verify/coa before trusting a certificate.',
+  'Proven counterfeit or misrepresented items trigger enforcement: refunds, COA revocation, account action, and permanent ban.',
+]
+
+/** Owner / seller hub lead — no “until transferable” wording */
+export const COA_OWNER_MANAGER_LEAD =
+  'Strict COA registry: sellers upload item thumbnails and complete all requirements before print. Certificates are never transferable to another item — fraud protections are enforced server-side.'
+
 /** Legacy standalone guarantee form (retired for new listings) */
 export const LEGACY_STANDALONE_GUARANTEE_NOTE =
   'Older listings may show a retired standalone guarantee form. New collectible listings must use uploaded third-party COA or a Franks Standard COA with Seller Written Guarantee — not a separate signature-only form.'

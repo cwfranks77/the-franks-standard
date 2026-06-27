@@ -1,0 +1,56 @@
+[
+  {
+    "id": "cards-001",
+    "name": "1952 Topps Mickey Mantle #311 (Graded)",
+    "description": "PSA-graded flagship card with documented chain of custody.",
+    "category": "Sports Cards",
+    "featured": true,
+    "images": ["/img/showcase/cards.jpg"],
+    "coaId": 101
+  },
+  {
+    "id": "watch-001",
+    "name": "Vintage Omega Seamaster 1960s",
+    "description": "Serviced automatic with COA-backed authenticity review.",
+    "category": "Watches",
+    "featured": true,
+    "images": ["/img/showcase/watches.jpg"],
+    "coaId": 102
+  },
+  {
+    "id": "sneaker-001",
+    "name": "Air Jordan 1 Retro High OG",
+    "description": "Deadstock pair with in-platform authenticity guarantee.",
+    "category": "Sneakers",
+    "featured": true,
+    "images": ["/img/showcase/sneakers.jpg"],
+    "coaId": 103
+  },
+  {
+    "id": "coin-001",
+    "name": "1878 Morgan Silver Dollar",
+    "description": "Documented mint-state coin with third-party verification.",
+    "category": "Coins",
+    "featured": false,
+    "images": ["/img/showcase/coins.jpg"],
+    "coaId": 104
+  },
+  {
+    "id": "art-001",
+    "name": "Signed Limited Edition Print",
+    "description": "Gallery provenance packet included with listing.",
+    "category": "Art",
+    "featured": false,
+    "images": ["/img/showcase/art.jpg"],
+    "coaId": 105
+  },
+  {
+    "id": "estate-001",
+    "name": "Estate Curated Lot — Vintage Collectibles",
+    "description": "Mixed estate find with itemized COA bundle.",
+    "category": "Estate Finds",
+    "featured": false,
+    "images": ["/img/showcase/estate.jpg"],
+    "coaId": 106
+  }
+]

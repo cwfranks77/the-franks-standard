@@ -3,9 +3,17 @@ import { assertAccountNotFrozen } from '../_shared/sellerAccountFreeze.ts'
 import { assertMarketplaceCompliance } from '../_shared/marketplaceCompliance.ts'
 import { assertSellerPoliciesAccepted } from '../_shared/sellerPolicyAcceptance.ts'
 import { recordCoaIssued } from '../_shared/coaChainOfCustody.ts'
+import { recordCoaPrintCopy } from '../_shared/recordCoaPrintCopy.ts'
 import { notificationTriggers } from '../_shared/notifications.ts'
 import { clientIpFromRequest } from '../_shared/requestContext.ts'
 import { corsHeaders, json, siteUrl } from '../_shared/stripe.ts'
+import {
+  COA_NON_TRANSFERABLE_NOTICE,
+  certificateHasFrozenThumbnail,
+  coaReadyForPrint,
+  listingItemFingerprint,
+  sellerMayPrintOrIssue,
+} from '../_shared/coaDocumentPolicy.ts'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.get('SERVICE_ROLE_KEY') ?? ''
@@ -15,15 +23,12 @@ function formatSerial (year: number, n: number) {
 }
 
 /** Fingerprint of photos + title + description at issue time. */
-function listingItemFingerprint (listing: {
+function listingItemFingerprintLegacy (listing: {
   image_paths?: string[] | null
   title?: string
   description?: string
 }) {
-  const paths = [...(listing.image_paths || [])].sort()
-  const title = String(listing.title || '').trim()
-  const description = String(listing.description || '').trim()
-  return `${paths.join('|')}::${title}::${description}`
+  return listingItemFingerprint(listing)
 }
 
 Deno.serve(async (req) => {
@@ -72,19 +77,54 @@ Deno.serve(async (req) => {
 
   const images = (listing.image_paths as string[] | null) || []
   const description = String(listing.description || '').trim()
-  if (!images.length) {
-    return json({ error: 'photos_required', message: 'Upload item photos before issuing a Franks COA.' }, 400)
+  const gate = sellerMayPrintOrIssue(listing)
+  if (!gate.ok) {
+    return json({ error: gate.code || 'listing_incomplete', message: gate.reason }, 400)
   }
-  if (description.length < 20) {
-    return json({ error: 'description_required', message: 'Add a full item description before COA issue — it is frozen on the certificate.' }, 400)
+  if (!images[0]) {
+    return json({
+      error: 'thumbnail_missing',
+      message: 'Upload at least one item thumbnail photo before a Franks COA can be issued.',
+    }, 400)
   }
 
   if (listing.coa_certificate_id && listing.coa_serial_number) {
+    const { data: existingCert } = await admin
+      .from('coa_certificates')
+      .select('id, serial_number, primary_image_path, image_fingerprint, auth_status')
+      .eq('id', listing.coa_certificate_id)
+      .maybeSingle()
+
+    if (existingCert && !certificateHasFrozenThumbnail(existingCert) && images[0]) {
+      const fingerprint = listingItemFingerprintLegacy(listing)
+      await admin.from('coa_certificates').update({
+        primary_image_path: images[0],
+        image_fingerprint: fingerprint,
+        description_excerpt: description.slice(0, 500),
+        auth_status: 'verified',
+        auth_notes: 'Thumbnail and snapshot re-synced from listing.',
+      }).eq('id', existingCert.id)
+      await admin.from('listings').update({ coa_auth_status: 'verified' }).eq('id', listingId)
+    }
+
+    const { data: refreshedCert } = await admin
+      .from('coa_certificates')
+      .select('id, serial_number, primary_image_path, image_fingerprint, auth_status')
+      .eq('id', listing.coa_certificate_id)
+      .maybeSingle()
+
+    const printGate = coaReadyForPrint(
+      { ...listing, coa_auth_status: 'verified' },
+      refreshedCert || { primary_image_path: images[0] },
+    )
+
     return json({
       ok: true,
       serial_number: listing.coa_serial_number,
       verify_url: `${siteUrl()}/verify/coa/${listing.coa_serial_number}`,
       already_issued: true,
+      print_ready: printGate.ok,
+      print_lock_reason: printGate.ok ? null : printGate.reason,
     })
   }
 
@@ -101,8 +141,9 @@ Deno.serve(async (req) => {
 
   await admin.from('coa_serial_sequences').upsert({ year, last_number: nextNum }, { onConflict: 'year' })
 
-  const fingerprint = listingItemFingerprint(listing)
+  const fingerprint = listingItemFingerprintLegacy(listing)
   const coaDisclosure =
+    `${COA_NON_TRANSFERABLE_NOTICE} ` +
     'The Franks Standard COA is a platform-issued document template only. It is not a guarantee or warranty by The Franks Standard LLC. The seller backs authenticity of this item.'
 
   const snapshot = {
@@ -116,6 +157,7 @@ Deno.serve(async (req) => {
     listing_id: listingId,
     floor_slot_code: serial,
     coa_disclosure_fine_print: coaDisclosure,
+    non_transferable: true,
   }
 
   const { data: cert, error: certErr } = await admin
@@ -125,10 +167,15 @@ Deno.serve(async (req) => {
       listing_id: listingId,
       seller_id: user.id,
       status: 'active',
+      document_source: 'franks_issued',
+      auth_status: 'verified',
+      auth_notes: 'Franks issued — bound to listing snapshot at issue.',
       item_snapshot: snapshot,
       primary_image_path: images[0],
       image_fingerprint: fingerprint,
       description_excerpt: description.slice(0, 500),
+      non_transferable: true,
+      buyer_access_enabled: false,
     })
     .select('id, serial_number')
     .single()
@@ -141,7 +188,10 @@ Deno.serve(async (req) => {
       coa_type: 'franks_issued',
       coa_certificate_id: cert.id,
       coa_serial_number: serial,
+      coa_document_serial: serial,
       floor_slot_code: serial,
+      coa_auth_status: 'verified',
+      coa_buyer_access_enabled: false,
     })
     .eq('id', listingId)
 
@@ -156,6 +206,17 @@ Deno.serve(async (req) => {
     ipAddress: clientIpFromRequest(req),
     deviceFingerprint: String((body as { device_fingerprint?: string }).device_fingerprint ?? '').trim() || null,
   })
+
+  await recordCoaPrintCopy(admin, {
+    certificateId: cert.id,
+    serialNumber: serial,
+    issuedToUserId: user.id,
+    listingId,
+    copyType: 'original_issue',
+    ipAddress: clientIpFromRequest(req),
+    deviceFingerprint: String((body as { device_fingerprint?: string }).device_fingerprint ?? '').trim() || null,
+    metadata: { source: 'issue-coa-certificate' },
+  }).catch((e) => console.error('original COA copy log', e))
 
   await notificationTriggers.coaUpload(admin, {
     userId: user.id,

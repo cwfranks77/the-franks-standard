@@ -1,0 +1,156 @@
+[
+  {
+    "id": "site-activity",
+    "icon": "📡",
+    "title": "Site Activity Monitor",
+    "description": "Signed-in account activity with IP, names, and action type. Anonymous viewers are not named.",
+    "category": "Operations"
+  },
+  {
+    "id": "transaction-log",
+    "icon": "💳",
+    "title": "Financial Transactions",
+    "description": "All platform sales, escrow, refunds, and payment events — no personal emails shown.",
+    "category": "Operations"
+  },
+  {
+    "id": "message-monitor",
+    "icon": "💬",
+    "title": "Message Monitor",
+    "description": "On-platform buyer–seller messages. Blocks email, phone, and off-platform contact.",
+    "category": "Operations"
+  },
+  {
+    "id": "privacy-enforcement",
+    "icon": "🔒",
+    "title": "Privacy & On-Platform Rules",
+    "description": "How contact info is blocked and why profiles hide personal data.",
+    "category": "Trust"
+  },
+  {
+    "id": "contact-inbox",
+    "icon": "📬",
+    "title": "Contact Inbox",
+    "description": "Public contact form submissions — operator eyes only.",
+    "category": "Operations"
+  },
+  {
+    "id": "dropship-builder",
+    "icon": "📦",
+    "title": "Dropshipping AI Store Builder",
+    "description": "Full AI dropship wizard embedded in the operator console.",
+    "category": "Catalog"
+  },
+  {
+    "id": "ai-store",
+    "icon": "🤖",
+    "title": "AI Store Builder",
+    "description": "SEO, listing templates, and search-engine pack — embedded here.",
+    "category": "Catalog"
+  },
+  {
+    "id": "add-product",
+    "icon": "➕",
+    "title": "Add Product",
+    "description": "List a new collectible with name, category, and COA details.",
+    "category": "Catalog"
+  },
+  {
+    "id": "catalog-editor",
+    "icon": "✏️",
+    "title": "Catalog Editor",
+    "description": "Edit featured listings and showcase product data.",
+    "category": "Catalog"
+  },
+  {
+    "id": "tax-reserve",
+    "icon": "🏦",
+    "title": "Tax Reserve Calculator",
+    "description": "Set aside 25% of each sale for Louisiana business income tax.",
+    "category": "Finance"
+  },
+  {
+    "id": "shipping-tax",
+    "icon": "📍",
+    "title": "Shipping Tax Calculator",
+    "description": "Sales tax from the buyer shipping zip (Louisiana Marketplace Facilitator Act 22).",
+    "category": "Finance"
+  },
+  {
+    "id": "wholesale-transfer",
+    "icon": "🚚",
+    "title": "Wholesale Transfer Tracker",
+    "description": "Log instant wholesale transfers to distributor fulfillment nodes.",
+    "category": "Finance"
+  },
+  {
+    "id": "forced-refund",
+    "icon": "💸",
+    "title": "Forced Refund Control",
+    "description": "Look up orders, dry-run, and issue full Stripe refunds. Freeze sellers when at fault.",
+    "category": "Trust"
+  },
+  {
+    "id": "listing-control",
+    "icon": "🗑️",
+    "title": "Listing Control",
+    "description": "Remove, suspend, or flag counterfeit listings. Auto-freeze sellers on confirmed counterfeit.",
+    "category": "Trust"
+  },
+  {
+    "id": "compliance-monitor",
+    "icon": "🛡️",
+    "title": "Compliance Monitor",
+    "description": "Keyword, contact-info, COA gate, and image filename scans. Auto-scan all published listings.",
+    "category": "Trust"
+  },
+  {
+    "id": "site-monitor",
+    "icon": "📟",
+    "title": "Site Monitor & Auto-Fix",
+    "description": "Policy infractions, JavaScript errors, and automated integrity scans without manual steps.",
+    "category": "Operations"
+  },
+  {
+    "id": "tax-auto-ledger",
+    "icon": "📊",
+    "title": "Tax & Transaction Auto-Ledger",
+    "description": "Automatic 25% income reserve and LA sales tax estimates on every recorded transaction.",
+    "category": "Finance"
+  },
+  {
+    "id": "coa-manager",
+    "icon": "🛡️",
+    "title": "COA Manager",
+    "description": "Issue and verify floor office COA serials (FS-YYYY-NNNNNN).",
+    "category": "Trust"
+  },
+  {
+    "id": "enforcement",
+    "icon": "⚖️",
+    "title": "Refund & Counterfeit Review",
+    "description": "Select a case to review reports, approve forced refunds, freezes, and COA revocations.",
+    "category": "Trust"
+  },
+  {
+    "id": "ebay-import",
+    "icon": "📥",
+    "title": "eBay CSV Import",
+    "description": "Import listings from eBay Seller Hub export files.",
+    "category": "Catalog"
+  },
+  {
+    "id": "social-ads",
+    "icon": "📣",
+    "title": "Social Ads Copy",
+    "description": "X, Facebook, Instagram, TikTok, and Telegram ad copy for campaigns.",
+    "category": "Marketing"
+  },
+  {
+    "id": "site-rebuild",
+    "icon": "🔧",
+    "title": "Rebuild Site",
+    "description": "Run the Franks Standard build pipeline (generate + SEO + IndexNow).",
+    "category": "Operations"
+  }
+]

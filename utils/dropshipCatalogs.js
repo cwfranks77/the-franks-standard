@@ -1,40 +1,111 @@
+/**
+ * Dropship store registry + catalog arrays for homepage grid processing.
+ * B&C Performance Audio is the live partner store; others are opening soon.
+ */
+
 import { BC_BRAND } from '~/utils/bcBrand.js'
 
 export const SHOP_STORES = [
   {
     id: 'bc-performance-audio',
     name: BC_BRAND.full,
-    tagline: 'Competition car audio — authorized distribution',
+    slug: 'bc-performance-audio',
     path: '/bc-audio',
+    /** Set NUXT_PUBLIC_BC_AUDIO_EXTERNAL_URL for a standalone marketing site (opens in new tab). */
+    externalUrlEnv: 'NUXT_PUBLIC_BC_AUDIO_EXTERNAL_URL',
+    tagline: 'Competition-grade subwoofers, amps & staging — dropship fulfillment',
     accent: '#d32f2f',
+    status: 'live',
+    dropship: true,
+  },
+  {
+    id: 'brandy-sporting',
+    name: "Brandy's Sporting Goods",
+    slug: 'brandyssportinggoods',
+    path: '/store/brandyssportinggoods',
+    tagline: 'Authenticated sporting gear — opening on The Franks Standard',
+    accent: '#146eb4',
+    status: 'opening_soon',
+    dropship: true,
   },
   {
     id: 'store-directory',
-    name: 'The Franks Standard',
-    tagline: 'Multi-vendor marketplace',
+    name: 'All partner stores',
+    slug: 'stores',
     path: '/stores',
-    accent: '#7c4dff',
+    tagline: 'Browse every storefront on the marketplace',
+    accent: '#7a8190',
+    status: 'directory',
+    dropship: false,
   },
 ]
 
-export function processCatalogArrays (catalogs) {
-  const list = Array.isArray(catalogs) ? catalogs : []
+/** B&C Performance Audio — live dropship catalog (mirrors /shop inventory) */
+export const BC_AUDIO_CATALOG = [
+  {
+    id: 'prod-sub-12',
+    storeId: 'bc-performance-audio',
+    brand: 'Kicker',
+    name: 'Solobaric L7S 12-Inch Subwoofer',
+    tagline: 'Square Cone Technology for Extreme Bass Output',
+    retailPrice: 349.99,
+    wholesaleCost: 210.0,
+    category: 'Subwoofers',
+    badge: 'Hot Seller',
+    image: '/img/hero-showcase-v2.svg',
+    specs: ['1500W Peak Power', 'Dual 4-Ohm Voice Coil', 'Signature Double Blue Stitching'],
+  },
+  {
+    id: 'prod-amp-1200',
+    storeId: 'bc-performance-audio',
+    brand: 'Rockford Fosgate',
+    name: 'Punch P1000X1BD Mono Amplifier',
+    tagline: 'Class-BD Constant Power Optimization Matrix',
+    retailPrice: 429.99,
+    wholesaleCost: 265.0,
+    category: 'Amplifiers',
+    badge: 'Top Rated',
+    image: '/img/hero-showcase-v2.svg',
+    specs: ['1000 Watts RMS @ 1-Ohm', 'Punch EQ Differential Control', 'Cast Aluminum Stealth Heatsink'],
+  },
+]
+
+/**
+ * Flatten catalog arrays from one or more stores into grid-ready rows.
+ * @param {Array<{ storeId: string, items?: object[] } | object[]>} sources
+ */
+export function processCatalogArrays (sources) {
   const rows = []
-  for (const block of list) {
-    const products = block?.products || block?.items || (Array.isArray(block) ? block : [])
-    for (const p of products) {
-      if (!p || typeof p !== 'object') continue
-      rows.push({
-        id: String(p.id || p.sku || p.vendorSku || p.code || p.name || ''),
-        name: String(p.name || p.title || 'Product'),
-        brand: String(p.brand || p.manufacturer || ''),
-        category: String(p.category || p.shelf || 'Audio'),
-        price: p.retailPrice ?? p.price,
-        retailPrice: p.retailPrice ?? p.price,
-        image: p.image || p.imageUrl || p.img,
-        sku: p.sku || p.vendorSku,
-      })
+  for (const source of sources) {
+    if (Array.isArray(source)) {
+      for (const item of source) {
+        if (item?.id) rows.push(normalizeCatalogItem(item))
+      }
+      continue
+    }
+    const items = source.items || source.catalog || []
+    const storeId = source.storeId || source.id
+    for (const item of items) {
+      rows.push(normalizeCatalogItem({ ...item, storeId: item.storeId || storeId }))
     }
   }
-  return rows.filter((r) => r.id)
+  return rows
+}
+
+function normalizeCatalogItem (item) {
+  const store = SHOP_STORES.find((s) => s.id === item.storeId) || SHOP_STORES[0]
+  return {
+    ...item,
+    storeName: store.name,
+    storePath: store.path,
+    accent: store.accent,
+    formattedPrice: typeof item.retailPrice === 'number'
+      ? item.retailPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
+      : item.retailPrice,
+  }
+}
+
+/** All dropship catalogs combined for homepage grid */
+export function getHomeDropshipCatalogs () {
+  return processCatalogArrays([BC_AUDIO_CATALOG])
 }

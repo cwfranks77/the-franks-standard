@@ -6,7 +6,7 @@ import { normalizeOpsPhrase } from './franks-standard/utils/opsPhrase.js'
 import { META_DESCRIPTION, OG_DESCRIPTION } from './franks-standard/utils/marketplaceFacilitatorCopy.js'
 import { isBcPowerAudioPrimarySite } from './bc-performance-audio/src/utils/bcPrimarySite.js'
 import { BC_BRAND } from './bc-performance-audio/src/utils/bcBrand.js'
-import { collectPagesFromDir, createProjectModuleResolver, filterFranksPagesForBcPrimary } from './config/nuxtProjectBridge.ts'
+import { collectPagesFromDir, createProjectModuleResolver } from './config/nuxtProjectBridge.ts'
 
 const BC_LEGAL_NAME = 'B&C Performance Audio LLC'
 const rawSite = process.env.NUXT_PUBLIC_SITE_URL
@@ -135,6 +135,8 @@ export default defineNuxtConfig({
       },
     ],
     prerender: {
+      failOnError: false,
+      crawlLinks: true,
       routes: [
         '/ops/documents',
         '/ops/print-pack',
@@ -188,7 +190,12 @@ export default defineNuxtConfig({
       bcAudioOwnerName: process.env.NUXT_PUBLIC_BC_AUDIO_OWNER_NAME || 'Charles W. Franks',
       /** Legacy aliases — prefer runtimeConfig.public.supabase.url from @nuxtjs/supabase */
       supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '',
-      supabaseKey: process.env.NUXT_PUBLIC_SUPABASE_KEY || process.env.SUPABASE_KEY || '',
+      supabaseKey:
+        process.env.NUXT_PUBLIC_SUPABASE_KEY
+        || process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY
+        || process.env.SUPABASE_KEY
+        || process.env.SUPABASE_ANON_KEY
+        || '',
     },
   },
 
@@ -198,11 +205,26 @@ export default defineNuxtConfig({
 
   hooks: {
     'pages:extend' (pages) {
+      const withoutRootHome = pages.filter((p) => p.path !== '/')
+      pages.splice(0, pages.length, ...withoutRootHome)
+
       for (const page of bcPagesFromProjectFolder) {
         pages.push(page)
       }
+
       const franksPages = collectPagesFromDir(franksPagesRoot, rootDir)
-      const franksRoutes = bcPrimarySite ? filterFranksPagesForBcPrimary(franksPages) : franksPages
+      const bcHome = resolve(rootDir, 'franks-standard/src/pages/bc-dealer-portal.vue')
+      const marketHome = resolve(rootDir, 'franks-standard/src/pages/index.vue')
+      const franksRoutes = franksPages.filter(
+        (p) => p.path !== '/' && p.path !== '/bc-dealer-portal',
+      )
+
+      if (bcPrimarySite && existsSync(bcHome)) {
+        franksRoutes.push({ path: '/', file: bcHome, name: 'bc-dealer-home' })
+      } else if (existsSync(marketHome)) {
+        franksRoutes.push({ path: '/', file: marketHome, name: 'franks-marketplace-home' })
+      }
+
       for (const page of franksRoutes) {
         pages.push(page)
       }
@@ -215,18 +237,25 @@ export default defineNuxtConfig({
 
   imports: {
     dirs: [
+      'franks-standard/composables',
       'franks-standard/src/composables',
       'bc-performance-audio/src/composables',
     ],
   },
 
   components: [
+    { path: '~/franks-standard/components', pathPrefix: false },
     { path: '~/franks-standard/src/components', pathPrefix: false },
     { path: '~/bc-performance-audio/src/components', pathPrefix: false },
   ],
 
   vite: {
     plugins: [createProjectModuleResolver(rootDir)],
+    resolve: {
+      alias: {
+        '~/data': resolve(rootDir, 'franks-standard/data'),
+      },
+    },
   },
 
   routeRules: {

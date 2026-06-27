@@ -1,0 +1,19 @@
+{
+  "STRICT_RULE": "THIS IS AN ISOLATED CONFIGURATION FOR THE FRANKS STANDARD LLC ANTIQUES & GOLD LOGISTICS.",
+  "SYSTEM_GUARD": "TRUE - BLOCKED FROM ALL BC POWER AUDIO CODE ROUTINES AND DATA CHANNELS.",
+  "wordpress_deployment_profile": {
+    "site_name": "The Franks Standard LLC",
+    "business_type": "Used Antiques, Estate Jewelry, and Fine Gold Acquisitions",
+    "location_target": "Louisiana, USA Local SEO Grid",
+    "state_sales_tax_rate": "0.0445",
+    "primary_collection_modules": [
+      "Vintage Estate Furniture",
+      "Scrap Gold & Precious Bullion Weight Classes",
+      "Loose Natural Rubies & Cultured Pearls"
+    ],
+    "automated_seo_meta_tags": {
+      "homepage_title": "The Franks Standard LLC | Premium Antiques & Gold Buyers Louisiana",
+      "meta_description": "We purchase used antiques, fine estate jewelry, and scrap gold weights at top market values. Secure local evaluations and professional liquidations."
+    }
+  }
+}

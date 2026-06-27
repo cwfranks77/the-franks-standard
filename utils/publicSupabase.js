@@ -1,27 +1,25 @@
-/** Public Supabase URL + anon key for browser and edge calls. */
-export function getPublicSupabaseUrl (runtimeConfig) {
-  const c = runtimeConfig?.public || {}
-  return String(c.supabase?.url || c.supabaseUrl || process.env.NUXT_PUBLIC_SUPABASE_URL || '').trim()
+/**
+ * Resolve Supabase public client config from Nuxt runtime (static + dev builds).
+ * @nuxtjs/supabase v2 stores URL/key at runtimeConfig.public.supabase.{url,key}.
+ */
+export function getPublicSupabaseUrl (config) {
+  const pub = config?.public || {}
+  return String(pub.supabase?.url || pub.supabaseUrl || '').replace(/\/+$/, '')
 }
 
-export function getPublicSupabaseKey (runtimeConfig) {
-  const c = runtimeConfig?.public || {}
-  return String(
-    c.supabase?.key
-    || c.supabaseKey
-    || process.env.NUXT_PUBLIC_SUPABASE_KEY
-    || process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY
-    || '',
-  ).trim()
+export function getPublicSupabaseKey (config) {
+  const pub = config?.public || {}
+  return String(pub.supabase?.key || pub.supabaseKey || '').trim()
 }
 
-export function hasPublicSupabase (runtimeConfig) {
-  return Boolean(getPublicSupabaseUrl(runtimeConfig) && getPublicSupabaseKey(runtimeConfig))
+export function hasPublicSupabase (config) {
+  return Boolean(getPublicSupabaseUrl(config) && getPublicSupabaseKey(config))
 }
 
-/** Base URL for Supabase Edge Functions (e.g. …/functions/v1). */
-export function getSupabaseFunctionsBase (runtimeConfig) {
-  const url = getPublicSupabaseUrl(runtimeConfig).replace(/\/$/, '')
-  if (!url) return ''
+export function getSupabaseFunctionsBase (config) {
+  const url = getPublicSupabaseUrl(config)
+  if (!url) {
+    throw new Error('Supabase URL is not configured on this build.')
+  }
   return `${url}/functions/v1`
 }

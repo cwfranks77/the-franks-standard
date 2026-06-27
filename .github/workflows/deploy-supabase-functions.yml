@@ -160,6 +160,8 @@ jobs:
           deploy create-platform-checkout-session
           deploy accept-seller-policies
           deploy issue-coa-certificate
+          deploy register-coa-upload
+          deploy issue-coa-print-copy
           deploy platform-send-message
           deploy safety-open-dispute
           deploy submit-review

@@ -59,16 +59,19 @@ function resolveLegacyRootModule (
 export function createProjectModuleResolver (rootDir: string): Plugin {
   const utilsDirs = [
     'bc-performance-audio/src/utils',
+    'franks-standard/utils',
     'franks-standard/src/utils',
     'utils',
   ]
   const componentDirs = [
     'bc-performance-audio/src/components',
+    'franks-standard/components',
     'franks-standard/src/components',
     'components',
   ]
   const composableDirs = [
     'bc-performance-audio/src/composables',
+    'franks-standard/composables',
     'franks-standard/src/composables',
     'composables',
   ]

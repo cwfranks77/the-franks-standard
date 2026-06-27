@@ -2,11 +2,49 @@ import { createClient, SupabaseClient } from 'npm:@supabase/supabase-js@2'
 import { queueDropshipOrder } from './queueDropshipOrder.ts'
 import { notificationTriggers } from './notifications.ts'
 import { runPostPaymentHooks } from './section12Finalize.ts'
+import { coaReadyForPrint, listingHasAssignedSerial } from './coaDocumentPolicy.ts'
 
 export function adminClient (): SupabaseClient {
   const url = Deno.env.get('SUPABASE_URL') ?? ''
   const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.get('SERVICE_ROLE_KEY') ?? ''
   return createClient(url, key, { auth: { persistSession: false } })
+}
+
+/** Unlock COA download for buyer after paid order — only when listing gates pass. */
+export async function unlockCoaBuyerAccess (admin: SupabaseClient, listingId: string) {
+  const { data: listing } = await admin
+    .from('listings')
+    .select('id, coa_type, coa_certificate_id, coa_auth_status, coa_buyer_access_enabled, coa_serial_number, coa_document_serial, image_paths, title, description, third_party_coa_serial')
+    .eq('id', listingId)
+    .maybeSingle()
+
+  if (!listing || listing.coa_type === 'none') return
+
+  let cert = null
+  if (listing.coa_certificate_id) {
+    const { data } = await admin
+      .from('coa_certificates')
+      .select('id, primary_image_path, image_fingerprint, auth_status')
+      .eq('id', listing.coa_certificate_id)
+      .maybeSingle()
+    cert = data
+  }
+
+  const gate = cert
+    ? coaReadyForPrint(listing, cert)
+    : { ok: false, reason: 'missing_certificate' }
+
+  if (!gate.ok || !listingHasAssignedSerial(listing)) {
+    console.warn('unlockCoaBuyerAccess skipped', listingId, gate.reason || listing.coa_auth_status)
+    return
+  }
+
+  await admin.from('listings').update({ coa_buyer_access_enabled: true }).eq('id', listingId)
+
+  if (listing.coa_certificate_id) {
+    await admin.from('coa_certificates').update({ buyer_access_enabled: true }).eq('id', listing.coa_certificate_id)
+    await admin.from('coa_files').update({ buyer_access_enabled: true }).eq('certificate_id', listing.coa_certificate_id)
+  }
 }
 
 export async function markOrderPaid (admin: SupabaseClient, params: {
@@ -88,6 +126,12 @@ export async function markOrderPaid (admin: SupabaseClient, params: {
     }).catch((e) => {
       console.error('activity purchase log', orderId, e instanceof Error ? e.message : e)
     })
+
+    if (orderRow.listing_id) {
+      await unlockCoaBuyerAccess(admin, orderRow.listing_id).catch((e) => {
+        console.error('unlockCoaBuyerAccess', orderId, e instanceof Error ? e.message : e)
+      })
+    }
 
     const totalDisplay = orderRow.total_paid != null
       ? `$${Number(orderRow.total_paid).toFixed(2)}`
