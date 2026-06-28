@@ -18,7 +18,6 @@
     />
 
     <BcAiSupportDrawer />
-    <BcInstallApp />
   </div>
 </template>
 

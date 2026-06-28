@@ -213,11 +213,9 @@ export default defineNuxtConfig({
       }
 
       const franksPages = collectPagesFromDir(franksPagesRoot, rootDir)
-      const bcHome = resolve(rootDir, 'franks-standard/src/pages/bc-dealer-portal.vue')
+      const bcHome = resolve(rootDir, 'bc-performance-audio/src/pages/dealer-portal.vue')
       const marketHome = resolve(rootDir, 'franks-standard/src/pages/index.vue')
-      const franksRoutes = franksPages.filter(
-        (p) => p.path !== '/' && p.path !== '/bc-dealer-portal',
-      )
+      const franksRoutes = franksPages.filter((p) => p.path !== '/')
 
       if (bcPrimarySite && existsSync(bcHome)) {
         franksRoutes.push({ path: '/', file: bcHome, name: 'bc-dealer-home' })

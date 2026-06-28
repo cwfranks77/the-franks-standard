@@ -1,7 +1,7 @@
-﻿<template>
+<template>
   <div class="portal-root bc-audio-theme">
     <div class="portal-ribbon">
-      <span class="portal-ribbon__left">≡ƒöè B&amp;C PERFORMANCE AUDIO ΓÇö AUTHORIZED DISTRIBUTION CENTER</span>
+      <span class="portal-ribbon__left">🔊 B&amp;C PERFORMANCE AUDIO — AUTHORIZED DISTRIBUTION CENTER</span>
       <span class="portal-ribbon__right">Sovereign Dealer Network</span>
     </div>
 
@@ -51,7 +51,7 @@
             >
               <span class="portal-catalog-picker__category-name">{{ group.label }}</span>
               <span class="portal-catalog-picker__count">{{ group.items.length }}</span>
-              <span class="portal-catalog-picker__caret" aria-hidden="true">{{ expandedCategory === group.label ? 'Γû╛' : 'Γû╕' }}</span>
+              <span class="portal-catalog-picker__caret" aria-hidden="true">{{ expandedCategory === group.label ? '▾' : '▸' }}</span>
             </button>
             <div
               v-if="expandedCategory === group.label"
@@ -144,7 +144,7 @@
         </p>
 
         <p v-else-if="catalogPending" class="portal-catalog-loading">
-          Loading live catalogΓÇª
+          Loading live catalog…
         </p>
 
         <div v-else class="portal-scroll-stack">
@@ -217,13 +217,13 @@
 
       <div v-else-if="viewMode === 'category'" class="portal-category portal-fade">
         <button type="button" class="portal-detail__back" @click="backToShowroom">
-          ΓåÉ Return to Master Showroom
+          ← Return to Master Showroom
         </button>
 
         <header class="portal-category__head">
           <span class="portal-category__eyebrow">Category catalog</span>
           <h2 class="portal-category__title">{{ selectedCategoryLabel }}</h2>
-          <p class="portal-category__meta">{{ categoryListProducts.length }} items ΓÇö select one for full details</p>
+          <p class="portal-category__meta">{{ categoryListProducts.length }} items — select one for full details</p>
         </header>
 
         <div class="portal-category__grid">
@@ -263,7 +263,7 @@
 
       <div v-else class="portal-detail portal-fade">
         <button type="button" class="portal-detail__back" @click="resetToHome">
-          {{ selectedCategoryLabel ? 'ΓåÉ Back to category list' : 'ΓåÉ Return to Master Showroom' }}
+          {{ selectedCategoryLabel ? '← Back to category list' : '← Return to Master Showroom' }}
         </button>
 
         <article v-if="currentProduct" class="portal-detail__card">
@@ -282,7 +282,7 @@
                 <span class="portal-detail__icon">{{ getIconForProduct(currentProduct) }}</span>
               </template>
               <div class="portal-detail__media-badge">
-                <p>Γ£ô AUTHORIZED RETAIL MANIFEST ASSET</p>
+                <p>✓ AUTHORIZED RETAIL MANIFEST ASSET</p>
               </div>
             </div>
 
@@ -309,7 +309,7 @@
                   :to="cartPath"
                   class="portal-btn portal-btn--goto-cart"
                 >
-                  Go to Cart ΓåÆ
+                  Go to Cart →
                 </NuxtLink>
                 <button
                   type="button"
@@ -317,7 +317,7 @@
                   :disabled="checkoutBusy"
                   @click="handleBuyNow"
                 >
-                  {{ checkoutBusy ? 'Starting checkoutΓÇª' : 'Buy It Now' }}
+                  {{ checkoutBusy ? 'Starting checkout…' : 'Buy It Now' }}
                 </button>
               </div>
             </div>
@@ -327,7 +327,7 @@
     </main>
 
     <footer class="portal-footer">
-      <p>B&amp;C Performance Audio ΓÇö Authorized Distribution Hub</p>
+      <p>B&amp;C Performance Audio — Authorized Distribution Hub</p>
     </footer>
 
     <OperatorUnlockModal
@@ -455,11 +455,11 @@ useHead({
   title: BC_LEGAL_NAME,
   titleTemplate: () => BC_LEGAL_NAME,
   meta: [
-    { key: 'description', name: 'description', content: `${BC_LEGAL_NAME} ΓÇö authorized wholesale distribution portal.` },
+    { key: 'description', name: 'description', content: `${BC_LEGAL_NAME} — authorized wholesale distribution portal.` },
     { key: 'og:title', property: 'og:title', content: BC_LEGAL_NAME },
-    { key: 'og:description', property: 'og:description', content: `${BC_LEGAL_NAME} ΓÇö authorized wholesale distribution portal.` },
+    { key: 'og:description', property: 'og:description', content: `${BC_LEGAL_NAME} — authorized wholesale distribution portal.` },
     { key: 'twitter:title', name: 'twitter:title', content: BC_LEGAL_NAME },
-    { key: 'twitter:description', name: 'twitter:description', content: `${BC_LEGAL_NAME} ΓÇö authorized wholesale distribution portal.` },
+    { key: 'twitter:description', name: 'twitter:description', content: `${BC_LEGAL_NAME} — authorized wholesale distribution portal.` },
     { key: 'apple-mobile-web-app-title', name: 'apple-mobile-web-app-title', content: BC_BRAND.short },
   ],
 })
@@ -544,7 +544,7 @@ function normalizeImageUrl (raw) {
   return value.replace(/^http:\/\//i, 'https://')
 }
 
-/** Petra catalog URLs use a host that fails browser SSL ΓÇö rewrite to the working S3 path. */
+/** Petra catalog URLs use a host that fails browser SSL — rewrite to the working S3 path. */
 function fixPetraImageUrl (raw) {
   const value = normalizeImageUrl(raw)
   if (!value) return ''
@@ -722,10 +722,10 @@ function backToShowroom () {
 
 function getIconForProduct (product) {
   const dept = getDeptKey(product)
-  if (dept === 'home') return '≡ƒöè'
-  if (dept === 'car') return '≡ƒÜù'
-  if (dept === 'powersports') return 'ΓÜô'
-  return '≡ƒ¢Æ'
+  if (dept === 'home') return '🔊'
+  if (dept === 'car') return '🚗'
+  if (dept === 'powersports') return '⚓'
+  return '🛒'
 }
 
 function resetToHome () {
@@ -782,7 +782,7 @@ async function handleBuyNow () {
       productSku: getProductSku(product),
       customerEmail,
       customerZip,
-      shippingAddress: `${customerName} ΓÇö B&C wholesale order`,
+      shippingAddress: `${customerName} — B&C wholesale order`,
       retailPrice,
       wholesaleCost,
     }
