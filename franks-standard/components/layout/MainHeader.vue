@@ -3,7 +3,6 @@ const links = [
   { label: 'Browse', href: '/browse' },
   { label: 'Categories', href: '/browse' },
   { label: 'Sell', href: '/sell/start' },
-  { label: 'Owner', href: '/owner' },
 ]
 
 const router = useRouter()
@@ -44,7 +43,7 @@ function runSearch () {
         <button
           type="button"
           class="h-10 w-10 rounded-md overflow-hidden shrink-0 p-0 border-0 bg-transparent cursor-pointer touch-manipulation"
-          aria-label="The Franks Standard — tap five times for operator access"
+          aria-label="The Franks Standard home"
           @click="onLogoKnock"
         >
           <img

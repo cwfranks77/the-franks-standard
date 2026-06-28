@@ -4,12 +4,12 @@
       <h1>Operator area</h1>
       <p class="text-muted">
         Owner toolkit — not the same as signing in with email on <NuxtLink to="/auth/login">/auth/login</NuxtLink>.
-        Use your <strong>operator phrase</strong> (the <code>NUXT_PUBLIC_OPS_ACCESS_KEY</code> value from your <code>.env</code> and GitHub Actions).
+        Enter your private <strong>operator phrase</strong> below.
       </p>
 
       <form class="ops-form" @submit.prevent="submitAndGoPanel">
         <div v-if="!keyConfigured" class="ops-warn" role="alert">
-          Operator key is missing on this build. Set <code>NUXT_PUBLIC_OPS_ACCESS_KEY</code> in GitHub Actions secrets and redeploy.
+          Operator phrase is not configured on this build yet. Add it in your deploy secrets and rebuild.
         </div>
         <template v-else>
           <label class="label" for="ops-phrase">Operator phrase</label>
@@ -19,11 +19,8 @@
             class="input"
             type="password"
             autocomplete="off"
-            placeholder="Same as NUXT_PUBLIC_OPS_ACCESS_KEY"
+            placeholder="Your private operator phrase"
           />
-          <p class="text-muted small">
-            Or on the <NuxtLink to="/">home page</NuxtLink>, tap the logo and site name together five times quickly.
-          </p>
         </template>
         <p v-if="error" class="ops-err" role="alert">{{ error }}</p>
         <div class="ops-actions">

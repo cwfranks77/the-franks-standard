@@ -31,7 +31,7 @@ const { onLogoKnock } = useLogoOwnerKnock()
         <button
           type="button"
           class="block w-full p-0 border-0 bg-transparent cursor-pointer touch-manipulation"
-          aria-label="Marketplace pavilion — tap five times for operator access"
+          aria-label="The Franks Standard marketplace"
           @click="onLogoKnock"
         >
           <img

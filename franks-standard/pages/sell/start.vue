@@ -50,9 +50,6 @@ useHead({ title: 'Start selling — The Franks Standard' })
           </p>
         </NuxtLink>
       </div>
-      <p class="text-xs text-white mt-6 max-w-xl">
-        Operations console is hidden — tap the pavilion logo five times if you need operator tools.
-      </p>
     </main>
     <MainFooter />
   </div>

@@ -1,5 +1,12 @@
 [
   {
+    "id": "listing-control",
+    "icon": "🗂️",
+    "title": "Manage All Listings",
+    "description": "Search, edit, hide, or remove any seller listing on the marketplace — yours or someone else's.",
+    "category": "Operations"
+  },
+  {
     "id": "site-activity",
     "icon": "📡",
     "title": "Site Activity Monitor",
@@ -88,13 +95,6 @@
     "icon": "💸",
     "title": "Forced Refund Control",
     "description": "Look up orders, dry-run, and issue full Stripe refunds. Freeze sellers when at fault.",
-    "category": "Trust"
-  },
-  {
-    "id": "listing-control",
-    "icon": "🗑️",
-    "title": "Listing Control",
-    "description": "Remove, suspend, or flag counterfeit listings. Auto-freeze sellers on confirmed counterfeit.",
     "category": "Trust"
   },
   {

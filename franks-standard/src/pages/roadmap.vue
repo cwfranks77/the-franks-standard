@@ -115,7 +115,7 @@ const phases = [
       { text: 'AI Store Builder — generate store bio, descriptions, pricing strategy', done: true },
       { text: 'Dropshipping support — supplier fields, ship time, origin', done: true },
       { text: 'Pricing tiers: Starter (free), Pro ($14.99/mo), Store ($32.99/mo)', done: true },
-      { text: 'Owner mode with free full access (hidden room)', done: true },
+      { text: 'Owner mode with free full access (private operator console)', done: true },
       { text: 'Launch offer: 10 free listings, 3% promo fee, referral program', done: true },
       { text: 'Native Android and Windows app downloads', done: true },
       { text: 'AI customer service chatbot with 20+ topics', done: true },

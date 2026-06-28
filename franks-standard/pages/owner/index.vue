@@ -11,7 +11,7 @@ useHead({
 const { unlocked, tryUnlock, lock, error, keyConfigured } = useOwnerAccess()
 const keyInput = ref('')
 const keyError = ref(false)
-const selectedTool = ref('site-activity')
+const selectedTool = ref('listing-control')
 const products = ref([...productsCatalog])
 const transactionLog = ref([
   { id: 1, type: 'sale', detail: 'Sample escrow hold — cards-001', amount: 12500, at: '2026-06-14' },
@@ -119,6 +119,29 @@ function runRebuildNote() {
             <p class="text-sm text-white/80 mt-1">
               Tax, catalog, trust enforcement, and marketplace operations.
             </p>
+            <div class="flex flex-wrap gap-2 mt-3">
+              <button
+                type="button"
+                class="text-xs px-3 py-1.5 rounded border border-primary/50 text-primary hover:bg-primary/10"
+                @click="selectTool('listing-control')"
+              >
+                Manage listings
+              </button>
+              <button
+                type="button"
+                class="text-xs px-3 py-1.5 rounded border border-border text-white/80 hover:border-primary"
+                @click="selectTool('forced-refund')"
+              >
+                Refunds
+              </button>
+              <button
+                type="button"
+                class="text-xs px-3 py-1.5 rounded border border-border text-white/80 hover:border-primary"
+                @click="selectTool('site-activity')"
+              >
+                Activity log
+              </button>
+            </div>
           </div>
           <button
             type="button"

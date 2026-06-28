@@ -336,15 +336,12 @@ export function getAiReply (message: string): string {
       'Visit **Compare** in the Features or Settings menu for the full side-by-side breakdown.'
   }
 
-  // Operator / ops / owner / hidden panel
+  // Operator / ops / owner — never reveal unlock steps on the public Help chat
   if (matchAny(q, [/operator|ops|owner|hidden|panel|unlock|admin|toolkit|5.?tap|five tap|secret/])) {
     ctx.lastTopic = 'ops'
-    return '**Owner Toolkit (Operator Console):**\n\n' +
-      'The operator console is for site owners only.\n\n' +
-      'To access: On the **homepage**, tap the **logo and site name** five times quickly, ' +
-      'then enter your access key (same as `NUXT_PUBLIC_OPS_ACCESS_KEY` in your build).\n\n' +
-      'Owner Mode gives you: free seller access, all fees waived, priority features, and admin tools.\n\n' +
-      '**Dev shortcut:** Add `?ops=unlock` to any URL in development mode.'
+    return '**Site operator tools** are for authorized staff only.\n\n' +
+      'If you need help as a **buyer or seller**, call **(877) 837-0527** or email **info@thefranksstandard.com**.\n\n' +
+      'If you are the site owner, use your private operator sign-in — not this public Help chat.'
   }
 
   // Escrow / buyer protection

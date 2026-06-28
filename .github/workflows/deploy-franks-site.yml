@@ -6,6 +6,11 @@ on:
   push:
     branches: [master]
     paths:
+      - 'franks-standard/**'
+      - 'app.vue'
+      - 'nuxt.config.ts'
+      - 'package.json'
+      - 'middleware/**'
       - '.github/workflows/deploy-franks-site.yml'
 
 permissions:

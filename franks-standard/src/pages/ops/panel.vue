@@ -64,7 +64,7 @@
           <div class="perk-item"><span class="perk-check">✓</span> Dropship and direct sell</div>
           <div class="perk-item"><span class="perk-check">✓</span> Priority everything</div>
         </div>
-        <p class="free-access-note">This access is your backdoor inside the hidden room. Tap the logo 5 times on the homepage to unlock anytime.</p>
+        <p class="free-access-note">You are signed in as operator. Lock this page when you step away.</p>
       </section>
 
       <section class="platform-snapshot">

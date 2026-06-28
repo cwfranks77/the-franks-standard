@@ -92,9 +92,6 @@
         <NuxtLink to="/terms">Terms</NuxtLink>
         <NuxtLink to="/privacy">Privacy</NuxtLink>
       </div>
-      <p class="text-muted small mt-2">
-        Owner toolkit (operator console) is for site owners only - unlock from the home page logo; ask Help for operator.
-      </p>
     </section>
 
     <section class="section-muted">

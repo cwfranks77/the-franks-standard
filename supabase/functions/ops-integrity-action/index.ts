@@ -82,8 +82,69 @@ Deno.serve(async (req) => {
     return json({ ok: true, flagged: flagged || [], reports: reports || [] })
   }
 
+  if (action === 'list_listings') {
+    const statusFilter = String(body.status ?? 'all')
+    const search = String(body.search ?? '').trim()
+    const limit = Math.min(Number(body.limit ?? 100) || 100, 200)
+
+    let query = admin
+      .from('listings')
+      .select('id,title,description,category,status,integrity_status,price,created_at,seller_id,coa_serial_number,image_paths')
+      .order('created_at', { ascending: false })
+      .limit(limit)
+
+    if (statusFilter !== 'all') {
+      query = query.eq('status', statusFilter)
+    }
+    if (search) {
+      query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%,category.ilike.%${search}%`)
+    }
+
+    const { data, error } = await query
+    if (error) return json({ error: error.message }, 500)
+    return json({ ok: true, listings: data || [] })
+  }
+
   const listingId = String(body.listing_id ?? '')
   const sellerId = String(body.seller_id ?? '')
+
+  if (action === 'update_listing' && listingId) {
+    const patch: Record<string, unknown> = {}
+    const allowed = [
+      'title',
+      'description',
+      'category',
+      'price',
+      'status',
+      'condition',
+      'integrity_status',
+    ] as const
+
+    for (const key of allowed) {
+      if (body[key] !== undefined && body[key] !== null) {
+        patch[key] = body[key]
+      }
+    }
+
+    if (!Object.keys(patch).length) {
+      return json({ error: 'no_fields_to_update' }, 400)
+    }
+
+    if (patch.status === 'published') {
+      patch.integrity_scanned_at = new Date().toISOString()
+    }
+
+    const { data, error } = await admin
+      .from('listings')
+      .update(patch)
+      .eq('id', listingId)
+      .select('id,title,status,price,category,seller_id')
+      .maybeSingle()
+
+    if (error) return json({ error: error.message }, 500)
+    if (!data) return json({ error: 'listing_not_found' }, 404)
+    return json({ ok: true, listing: data })
+  }
 
   if (action === 'suspend_listing' && listingId) {
     await admin.from('listings').update({
@@ -96,7 +157,23 @@ Deno.serve(async (req) => {
 
   if (action === 'delete_listing' && listingId) {
     const { error } = await admin.from('listings').delete().eq('id', listingId)
-    if (error) return json({ error: error.message }, 500)
+    if (error) {
+      const fkBlocked = String(error.message || '').includes('foreign key') || error.code === '23503'
+      if (!fkBlocked) return json({ error: error.message }, 500)
+
+      await admin.from('listings').update({
+        status: 'archived',
+        integrity_status: 'suspended',
+        integrity_scanned_at: new Date().toISOString(),
+      }).eq('id', listingId)
+
+      return json({
+        ok: true,
+        archived: true,
+        deleted: listingId,
+        note: 'Listing has order history — removed from marketplace (archived) instead of hard delete.',
+      })
+    }
     return json({ ok: true, deleted: listingId })
   }
 
