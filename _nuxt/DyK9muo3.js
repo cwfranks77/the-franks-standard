@@ -1,0 +1,38 @@
+import{P as i}from"./hnYqAGES.js";import{c as k,b as c,S as f}from"./CcyI36FP.js";const e="https://thefranksstandard.com",A=[{id:"instagram",label:"Instagram",icon:"📸",audience:"Card breaks, shop staff, millennial/Gen Z collectors",priority:"primary",formats:["Reels (15–60s)","Stories (polls + link sticker)","Carousels (fee comparison)","Shop highlights"],postingCadence:"4–5×/week Reels + daily Stories during launch",links:[{label:"Learn hub",url:`${e}/learn`},{label:"Fee calculator",url:`${e}/learn/tools/fee-calculator`},{label:"Sell",url:`${e}/sell/start`}]},{id:"tiktok",label:"TikTok",icon:"🎵",audience:'Younger buyers/sellers, break content, "marketplace drama" education',priority:"primary",formats:["Shorts (<60s)","Green-screen explainers","Before/after import from eBay",'POV: buyer asks "is it real?"'],postingCadence:"1–2×/day Shorts for 14 days, then 3–5×/week",links:[{label:"Tracked postcard CTA",url:`${e}/go/postcard`},{label:"Import guide",url:`${e}/learn/import-ebay-to-franks-standard`}]},{id:"reddit",label:"Reddit & forums",icon:"🔶",audience:"Hobby subs, flippers, eBay sellers, founders (value-first posts)",priority:"community",formats:["Educational text post (no link in title)","AMA in comments","Fee/COA infographic","Cross-post to Indie Hackers / PH"],postingCadence:"2–3 helpful comments/week per sub · 1 value post/month per sub max",links:[{label:"Community playbook",url:`${e}/social/community`},{label:"Protection summary",url:`${e}/protection`},{label:"Marketplace policies",url:`${e}/marketplace-policy`}]},{id:"linkedin",label:"LinkedIn",icon:"💼",audience:"Shop owners, coin/card dealers, B2B collectibles, serious resellers",priority:"primary",formats:["Text posts + document carousels","Founder story","Fee math for $10k/mo shops","Case study: eBay import"],postingCadence:"2–3×/week — quality over volume",links:[{label:"Compare fees",url:`${e}/compare`},{label:"Store partner",url:`${e}/join/store-partner`},{label:"Partners program",url:`${e}/partners`}]}],b={core:["#TheFranksStandard","#Collectibles","#COA","#AuthenticityMatters"],cards:["#SportsCards","#CardBreak","#TradingCards","#PSA","#BGS","#TheHobby"],coins:["#CoinCollecting","#Numismatics","#PCGS","#NGC"],seller:["#Reseller","#SideHustle","#eBaySeller","#SmallBusiness"],launch:["#NewMarketplace","#SellerTips","#LowFees"],trending:["#MarketplaceTips","#CollectorsCommunity","#TrustYourSeller"],security:["#TrustBothSides","#EscrowCheckout","#AntiCounterfeit","#ProofBeforePublish"]},P=[{id:"ugc-coa",type:"UGC",title:"Show your COA Sunday",description:"Sellers post a Reel/Short of their slab + COA scan. Repost best entries to @thefranksstandard Stories (with permission).",rules:["Must be your own inventory listed or about to list on Franks Standard","Tag @thefranksstandard + hashtag #FranksCOA","No off-platform payment requests in comments"],prize:"Feature on Stories + 1 month Pro for winner (manual pick)"},{id:"poll-fees",type:"Poll",title:"Fee stack poll (Story)",question:"What hurts more on a $500 sale?",options:["~13% stacked fees elsewhere",`~${i.proTxPercent}% on Franks Standard Pro`],followUp:"Link sticker → fee calculator"},{id:"contest-founders",type:"Contest",title:"FOUNDERS10 seller spotlight",description:"First 10 sellers who list with COA get 3 months Pro — document publicly while spots remain.",rules:["Sign up at thefranksstandard.com/join/founders10","Publish 1 listing with COA or signed guarantee",'Comment "listed" on announcement post — we verify on-platform'],disclaimer:"While spots last · one per person · no purchase necessary to browse"},{id:"quiz-authentic",type:"Interactive",title:"Real or fake? carousel",description:"3-slide carousel: two items, ask audience which has COA on Franks Standard. Slide 3 = answer + sell CTA.",cta:`${e}/how-it-works`}],l={instagram:{reel:`POV: buyers stop asking "is this real?" 🏛️
+
+Collectible listings on The Franks Standard need seller COA or signed guarantee — we facilitate; we don't guarantee authenticity. Escrow checkout. {{fees}} sale fees by plan.
+
+Import from eBay → list in minutes.
+{{cta}}
+
+{{hashtags}}`,story:`Poll time 👇 — which fee stack would you pick on a $300 card?
+
+Tap link for free fee calculator ⬆️
+{{cta}}`,carousel:`Slide 1: "Other marketplaces" fee stack ~{{competitor}}
+Slide 2: Franks Standard {{fees}} + proof required
+Slide 3: Try the calculator — link in bio
+
+{{cta}}
+{{hashtags}}`},tiktok:{short:`Stop eating 13% in fees on cards you already proved were real 📉
+
+We built a marketplace where:
+✅ Seller proof on collectibles
+✅ Stripe escrow
+✅ {{fees}} seller fees
+
+{{cta}}
+{{hashtags}}`},linkedin:{post:`Card shop owners: authenticity and margin usually don't move together.
+
+The Franks Standard requires seller proof on collectible SKUs (marketplace facilitator, not Platform authentication) — sale fees run {{fees}} by plan ({{launch}} for new sellers), not a stacked ~{{competitor}}.
+
+If you already list on eBay, you can import Active Listings CSV and test the floor without abandoning your current channel.
+
+{{cta}}
+
+#collectibles #sportscards #marketplace #entrepreneurship`},reddit:{education:c({variant:"education"}),founder:c({variant:"founder",subreddit:"sportscards"})}},S=`Security stack (what sets us apart):
+{{securityBullets}}
+
+Full enforcement: {{policyUrl}}
+Protection overview: {{protectionUrl}}`;function g(t=["core","cards","launch"]){const a=new Set;for(const o of t)for(const s of b[o]||[])a.add(s);return[...a].slice(0,12).join(" ")}function O({platform:t="instagram",format:a="reel",topic:o="fees",ctaPath:s="/sell/start"}){const u=`${i.txRangeLabel} (${i.launchTxPromoPercent}% launch promo 90 days)`,d=i.competitorTypical,p=`${i.launchTxPromoPercent}% for 90 days`,m=`${e}${s.startsWith("/")?s:`/${s}`}`,n=l[t]||l.instagram;let r=n[a]||n.reel||n.post||n.short;r||(r=l.instagram.reel);const h=g(o==="security"?["core","security","trending"]:o==="coa"?["core","cards","security"]:o==="coins"?["core","coins"]:["core","cards","seller","launch"]);if(o==="security"&&t!=="reddit"){const y=S.replace("{{securityBullets}}",k(5)).replace("{{policyUrl}}",`${e}/marketplace-policy`).replace("{{protectionUrl}}",`${e}/protection`);r=`${r}
+
+${y}`}return t==="reddit"?(r=l.reddit[a]||l.reddit.education,r.trim()):r.replace(/\{\{fees\}\}/g,u).replace(/\{\{competitor\}\}/g,d).replace(/\{\{launch\}\}/g,p).replace(/\{\{cta\}\}/g,m).replace(/\{\{hashtags\}\}/g,h).trim()}const $=[{hook:"I imported 40 eBay listings in 22 minutes",body:"Screen record Seller Hub CSV → /sell/import → publish with COA",cta:"/sell/import"},{hook:'Buyers asked "is it real?" 50 times — so we changed marketplaces',body:"Explain COA requirement + escrow in 30s",cta:"/how-it-works"},{hook:"Fee math on a $1,000 card sale",body:"Green screen calculator vs 13% stacked",cta:"/learn/tools/fee-calculator"},{hook:"Video inspect before you pay",body:"Show /video room on a high-value SKU",cta:"/video"},{hook:"What happens if a seller refuses a refund?",body:"Walk through escrow → policy → forced refund → account freeze (on-screen bullets)",cta:"/marketplace-policy"},{hook:"Scan this COA before you pay",body:"Screen record /verify/coa + listing match",cta:"/protection"},{hook:"We make sellers sign policies before listing",body:"Show SellerPolicyAgreement + digital signature",cta:"/seller-agreement"}];f.map(t=>({title:t.title,hook:t.socialHook,link:t.link}));const F=[{cmd:"npm run post:social",desc:"Post to Telegram, Facebook Page, X (env keys required)"},{cmd:"npm run post:social:honor -- --x",desc:"HONOR26 campaign variant"},{cmd:"npm run x:rebrand",desc:"Update X profile name, bio, URL, photo"}];export{F as A,P as E,b as H,$ as R,A as S,e as a,O as b};

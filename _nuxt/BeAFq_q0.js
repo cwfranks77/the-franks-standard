@@ -1,0 +1,1 @@
+import{o as t,c as a,b as n,aJ as o}from"./CNseUe2N.js";const c={class:"franks-main-container"},p={__name:"default",setup(_){return(s,r)=>{const e=o;return t(),a("div",c,[n(e)])}}};export{p as default};

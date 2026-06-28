@@ -1,0 +1,1 @@
+import{an as a,c as n,a as o,y as r,o as c}from"./CNseUe2N.js";const i={class:"container",style:{padding:"3rem 1rem","text-align":"center"}},m={__name:"test",async setup(_){let e,t;return[e,t]=a(()=>r("/ops/test-checkout",{replace:!0})),await e,t(),(p,s)=>(c(),n("div",i,[...s[0]||(s[0]=[o("p",{class:"text-muted"},"Redirecting to QA tests…",-1)])]))}};export{m as default};

@@ -1,0 +1,1 @@
+function s(e,n,r="/img/franks-pavilion.png"){const i=String(e||"").replace(/\/$/,""),t=String(n||"").trim().replace(/^\//,"");return!i||!t?r:/^https?:\/\//i.test(t)?t:`${i}/storage/v1/object/public/listings/${t}`}export{s as p};

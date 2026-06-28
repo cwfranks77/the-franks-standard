@@ -1,1 +1,0 @@
-import{S as s,M as u,D as a}from"./BZo2Fz9R.js";const r=s(t=>{const{isAuthed:e}=u();if(e.value&&t.path==="/bc-audio/ops")return a("/bc-audio/ops/panel",{replace:!0});if(!e.value)return a("/bc-audio",{replace:!0})});export{r as default};
