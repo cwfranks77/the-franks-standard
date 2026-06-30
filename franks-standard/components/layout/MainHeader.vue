@@ -34,8 +34,6 @@ function runSearch () {
       >
         Customer support: {{ support.phoneDisplay }}
       </a>
-      <span class="text-white/50 text-xs mx-2 hidden sm:inline">·</span>
-      <span class="text-white/70 text-xs hidden sm:inline">Mon–Sat 9AM–6PM CST</span>
     </div>
 
     <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center gap-3 md:gap-6">
