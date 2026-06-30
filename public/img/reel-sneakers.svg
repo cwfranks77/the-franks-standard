@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="520" viewBox="0 0 800 520" fill="none" role="img" aria-label="Authenticated sneakers and streetwear">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#070412"/><stop offset="1" stop-color="#061b22"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffd84d"/><stop offset="0.5" stop-color="#00e0ff"/><stop offset="1" stop-color="#ff2d7a"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="520" rx="28" fill="url(#bg)"/>
+  <rect x="18" y="18" width="764" height="484" rx="22" fill="none" stroke="url(#edge)" stroke-width="2" opacity="0.75"/>
+  <path d="M210 310c40-80 120-110 200-90 50 12 90 8 130-10 30-14 60-10 90 20l30 90c8 24-6 50-32 56H240c-28 0-48-26-40-52l10-14z" fill="#12121f" stroke="url(#edge)" stroke-width="3"/>
+  <path d="M250 286h120" stroke="#ff2d7a" stroke-width="8" stroke-linecap="round" opacity="0.8"/>
+  <circle cx="290" cy="356" r="22" fill="#0f0c1c" stroke="#ffd84d" stroke-width="3"/>
+  <circle cx="520" cy="356" r="22" fill="#0f0c1c" stroke="#ffd84d" stroke-width="3"/>
+</svg>

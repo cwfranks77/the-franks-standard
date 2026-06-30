@@ -1,15 +1,17 @@
 <script setup>
+import { onShowcaseImageError } from '~/utils/marketplaceShowcaseImages.js'
+
 const departments = [
-  { label: 'Sports Cards', img: '/img/showcase/cards.jpg', href: '/browse' },
-  { label: 'Watches', img: '/img/showcase/watches.jpg', href: '/browse' },
-  { label: 'Sneakers', img: '/img/showcase/sneakers.jpg', href: '/browse' },
-  { label: 'Coins', img: '/img/showcase/coins.jpg', href: '/browse' },
-  { label: 'Art', img: '/img/showcase/art.jpg', href: '/browse' },
-  { label: 'Vintage', img: '/img/showcase/vintage.jpg', href: '/browse' },
-  { label: 'Estate Finds', img: '/img/showcase/estate.jpg', href: '/browse' },
-  { label: 'Comics', img: '/img/showcase/comics.jpg', href: '/browse' },
-  { label: 'Guitars', img: '/img/showcase/guitars.jpg', href: '/browse' },
-  { label: 'Cameras', img: '/img/showcase/camera.jpg', href: '/browse' }
+  { label: 'Sports Cards', img: '/img/showcase/cards.jpg', key: 'cards', href: '/browse' },
+  { label: 'Watches', img: '/img/showcase/watches.jpg', key: 'watches', href: '/browse' },
+  { label: 'Sneakers', img: '/img/showcase/sneakers.jpg', key: 'sneakers', href: '/browse' },
+  { label: 'Coins', img: '/img/showcase/coins.jpg', key: 'coins', href: '/browse' },
+  { label: 'Art', img: '/img/showcase/art.jpg', key: 'art', href: '/browse' },
+  { label: 'Vintage', img: '/img/showcase/vintage.jpg', key: 'vintage', href: '/browse' },
+  { label: 'Estate Finds', img: '/img/showcase/estate.jpg', key: 'estate', href: '/browse' },
+  { label: 'Comics', img: '/img/showcase/comics.jpg', key: 'comics', href: '/browse' },
+  { label: 'Guitars', img: '/img/showcase/guitars.jpg', key: 'guitars', href: '/browse' },
+  { label: 'Cameras', img: '/img/showcase/camera.jpg', key: 'camera', href: '/browse' },
 ]
 </script>
 
@@ -34,9 +36,11 @@ const departments = [
           <img
             :src="dept.img"
             :alt="dept.label"
+            :data-showcase-key="dept.key"
             class="w-full h-full object-cover"
             loading="lazy"
             decoding="async"
+            @error="onShowcaseImageError"
           />
         </div>
         <p class="text-[0.7rem] font-medium text-center mt-1.5 line-clamp-2 text-white group-hover:text-primary transition">

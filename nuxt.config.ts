@@ -199,7 +199,12 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ['@nuxtjs/supabase', '@vite-pwa/nuxt'],
+  modules: ['@nuxtjs/tailwindcss', '@nuxtjs/supabase', '@vite-pwa/nuxt'],
+
+  tailwindcss: {
+    cssPath: '~/assets/css/tailwind.css',
+    configPath: 'tailwind.config.cjs',
+  },
 
   plugins: nuxtPlugins,
 
@@ -402,5 +407,10 @@ export default defineNuxtConfig({
     },
   },
 
-  css: ['~/assets/css/main.css', '~/assets/css/marketplace-ui.css', '~/assets/css/learn-hub.css'],
+  css: [
+    '~/assets/css/main.css',
+    '~/assets/css/marketplace-ui.css',
+    '~/assets/css/marketplace-dark.css',
+    '~/assets/css/learn-hub.css',
+  ],
 })
