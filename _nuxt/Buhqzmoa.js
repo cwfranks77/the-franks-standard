@@ -1,1 +1,0 @@
-import{h as s,an as a,y as r}from"./BPpdaZ9t.js";const n={__name:"seller-lookup",async setup(p){let e,t;const o=s();return[e,t]=a(()=>r({path:"/ops/seller-lookup",query:o.query},{replace:!0})),await e,t(),()=>{}}};export{n as default};

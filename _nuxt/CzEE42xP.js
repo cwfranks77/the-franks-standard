@@ -1,1 +1,0 @@
-import{h as a,V as r,y as u}from"./BPpdaZ9t.js";async function n(){const t=a(),s=r();if(t.query.switch==="1"){await s.auth.signOut();return}const{data:{session:e}}=await s.auth.getSession();e?.user&&(typeof t.query.redirect=="string"&&t.query.redirect.startsWith("/")||await u("/dashboard"))}export{n as u};

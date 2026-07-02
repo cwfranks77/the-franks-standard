@@ -1,1 +1,0 @@
-import{C as a}from"./CjpmVDiK.js";import{_ as o,o as t,c as e,t as r,j as c,E as _}from"./BPpdaZ9t.js";const l={__name:"CoaSellerDisclosure",props:{variant:{type:String,default:"short"}},setup(s){return(n,p)=>(t(),e("p",{class:_(["coa-disclosure",{"coa-disclosure--full":s.variant==="full"}])},r(c(a)),3))}},f=o(l,[["__scopeId","data-v-f74c512d"]]);export{f as _};
