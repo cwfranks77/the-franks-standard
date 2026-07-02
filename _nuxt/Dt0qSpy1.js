@@ -1,0 +1,1 @@
+import{aH as r,L as e,J as s,x as o}from"./Bl7vfERA.js";const n=r(t=>{if((t.path.replace(/\/$/,"")||"/")==="/ops")return;const{isAuthed:a}=e();if(!a.value){if(s()){e().grant();return}return o("/ops",{replace:!0})}});export{n as default};

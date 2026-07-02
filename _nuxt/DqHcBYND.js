@@ -1,1 +1,0 @@
-import{aB as t,K as o,y as u}from"./CXfSaoZb.js";import{u as e}from"./CIW_sRYP.js";import"./4BRLw7t9.js";const i=t(()=>{const{unlocked:r}=e();if(!r.value){if(o()){e().unlocked.value=!0;return}return u("/ops",{replace:!0})}});export{i as default};

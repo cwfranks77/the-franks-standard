@@ -1,0 +1,1 @@
+import{aH as s,L as r,x as a,aI as o,N as u}from"./Bl7vfERA.js";const n=s(t=>{const{isAuthed:e}=r();if(e.value&&t.path==="/bc-audio/ops")return a(o(),{replace:!0});if(!e.value)return a(u(),{replace:!0})});export{n as default};

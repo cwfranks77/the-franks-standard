@@ -1,1 +1,0 @@
-import{aB as e,aD as i,T as s,y as a,z as n}from"./CXfSaoZb.js";const u=e(()=>{const o=n(),t=window.location.hostname.toLowerCase();if(!(i.has(t)||s(o.public.siteUrl)))return a("/bc-audio")});export{u as default};

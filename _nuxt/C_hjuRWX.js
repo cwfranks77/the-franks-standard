@@ -1,0 +1,1 @@
+import{au as a,c as o,a as r,x as n,o as c}from"./Bl7vfERA.js";const i={class:"container",style:{padding:"3rem 1rem","text-align":"center"}},m={__name:"test",async setup(_){let e,t;return[e,t]=a(()=>n("/ops/test-checkout",{replace:!0})),await e,t(),(p,s)=>(c(),o("div",i,[...s[0]||(s[0]=[r("p",{class:"text-muted"},"Redirecting to QA tests…",-1)])]))}};export{m as default};

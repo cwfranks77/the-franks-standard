@@ -1,1 +1,0 @@
-import{aB as r,N as e,K as s,y as o}from"./CXfSaoZb.js";const n=r(t=>{if((t.path.replace(/\/$/,"")||"/")==="/ops")return;const{isAuthed:a}=e();if(!a.value){if(s()){e().grant();return}return o("/ops",{replace:!0})}});export{n as default};

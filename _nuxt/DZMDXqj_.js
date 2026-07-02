@@ -1,0 +1,1 @@
+import{aH as e,aJ as i,R as s,x as a,y as n}from"./Bl7vfERA.js";const u=e(()=>{const o=n(),t=window.location.hostname.toLowerCase();if(!(i.has(t)||s(o.public.siteUrl)))return a("/bc-audio")});export{u as default};

@@ -1,1 +1,0 @@
-import{h as o,k as s,i as c,c as n,o as a}from"./CXfSaoZb.js";const _={__name:"checkout",setup(i){const r=o(),t=s();return c(()=>{const e=String(r.query.listing_id||"").trim();if(e){t.replace(`/listing/${e}`);return}t.replace("/cart")}),(e,u)=>(a(),n("div"))}};export{_ as default};
