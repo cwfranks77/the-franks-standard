@@ -1,0 +1,1 @@
+import{V as e}from"./BPpdaZ9t.js";function u(){const t=e();function s(r){if(!r)return"/img/hero-showcase-v2.svg";if(/^https?:\/\//i.test(String(r)))return String(r);const{data:i}=t.storage.from("listings").getPublicUrl(r);return i.publicUrl}return{publicUrlForPath:s}}export{u};
