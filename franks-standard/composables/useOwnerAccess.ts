@@ -3,7 +3,7 @@ import {
   getStoredOpsPhrase,
   storeOpsPhraseForSession,
 } from '~/utils/opsClientAuth'
-import { verifyOpsPhraseRemote } from '~/utils/opsRemoteUnlock'
+import { verifyOpsPhrase } from '~/utils/verifyOpsPhrase'
 import { appendLocalActivity } from '~/utils/platformActivity'
 
 export function useOwnerAccess () {
@@ -30,7 +30,7 @@ export function useOwnerAccess () {
       error.value = 'Operator phrase is not configured on this build. Set owner secrets, then rebuild.'
       return false
     }
-    const ok = await verifyOpsPhraseRemote(phrase)
+    const ok = await verifyOpsPhrase(phrase)
     if (ok) {
       unlocked.value = true
       storeOpsPhraseForSession(phrase)

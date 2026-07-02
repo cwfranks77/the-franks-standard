@@ -1,6 +1,6 @@
 import { normalizeOpsPhrase } from '~/utils/opsPhrase'
 import { storeOpsPhraseForSession } from '~/utils/opsClientAuth'
-import { verifyOpsPhraseRemote } from '~/utils/opsRemoteUnlock'
+import { verifyOpsPhrase } from '~/utils/verifyOpsPhrase'
 
 /** Owner unlock — phrase checked on server only (never embed hash in static HTML). */
 export function useOpsUnlock () {
@@ -25,8 +25,8 @@ export function useOpsUnlock () {
     submitting.value = true
     try {
       const raw = String(phrase.value || '').trim()
-      if (!(await verifyOpsPhraseRemote(raw))) {
-        error.value = 'That phrase does not match your owner password. Type it exactly — capitals do not matter.'
+      if (!(await verifyOpsPhrase(raw))) {
+        error.value = 'That phrase does not match. Type it exactly — spaces become dashes, capitals do not matter.'
         return false
       }
       grant()

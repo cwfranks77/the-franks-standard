@@ -1,9 +1,7 @@
-import { normalizeOpsPhrase } from '~/utils/opsPhrase'
-
-/** Verify owner phrase via Supabase Edge (static GitHub Pages — no hash in browser). */
+/** Verify owner phrase via Supabase Edge (fallback when browser hash check fails). */
 export async function verifyOpsPhraseRemote (phrase: string): Promise<boolean> {
-  const normalized = normalizeOpsPhrase(phrase)
-  if (!normalized) return false
+  const raw = String(phrase || '').trim()
+  if (!raw) return false
 
   const config = useRuntimeConfig()
   const base = String(config.public.supabaseUrl || '').replace(/\/$/, '')
@@ -13,7 +11,7 @@ export async function verifyOpsPhraseRemote (phrase: string): Promise<boolean> {
     const res = await fetch(`${base}/functions/v1/ops-session`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phrase: normalized }),
+      body: JSON.stringify({ phrase: raw }),
     })
     if (!res.ok) return false
     const data = await res.json()

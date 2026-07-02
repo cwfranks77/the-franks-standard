@@ -1,4 +1,4 @@
-import { verifyOpsPhraseRemote } from '~/utils/opsRemoteUnlock'
+import { verifyOpsPhrase } from '~/utils/verifyOpsPhrase'
 
 export const useOpsAccess = () => {
   const config = useRuntimeConfig()
@@ -28,7 +28,7 @@ export const useOpsAccess = () => {
   const verifyPassword = async (password: string): Promise<boolean> => {
     if (!config.public.opsUnlockAvailable) return false
 
-    const isValid = await verifyOpsPhraseRemote(password)
+    const isValid = await verifyOpsPhrase(password)
 
     if (isValid && typeof window !== 'undefined') {
       const { grant } = useOpsSession()
