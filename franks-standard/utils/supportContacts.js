@@ -36,7 +36,7 @@ export function getFranksSupport (runtimeConfig) {
     phoneDisplay,
     phoneTel,
     email: String(row.email || 'info@thefranksstandard.com').trim(),
-    hours: String(row.hours || 'Mon-Sat 9AM - 6PM CST').trim(),
+    hours: String(row.hours || '').trim(),
   }
 }
 
@@ -55,7 +55,7 @@ export function getBcSupportFromLedger (runtimeConfig) {
     phoneDisplay,
     phoneTel,
     email: String(row.email || pub.bcAudioSupportEmail || 'bc-audio@thefranksstandard.com').trim(),
-    hours: String(row.hours || 'Mon-Sat 9AM - 6PM CST').trim(),
+    hours: String(row.hours || '').trim(),
     ownerName: String(pub.bcAudioOwnerName || 'Charles W. Franks').trim(),
   }
 }

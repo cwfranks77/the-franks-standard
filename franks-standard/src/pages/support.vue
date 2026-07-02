@@ -19,8 +19,7 @@
       </div>
       <p class="text-muted">
         Marketplace orders, seller accounts, COA, returns, and billing.
-        Email <a :href="`mailto:${franksSupport.email}`">{{ franksSupport.email }}</a>
-        · {{ franksSupport.hours }}
+        Email <a :href="`mailto:${franksSupport.email}`">{{ franksSupport.email }}</a><template v-if="franksSupport.hours"> · {{ franksSupport.hours }}</template>
       </p>
     </section>
 
@@ -33,8 +32,7 @@
       </div>
       <p class="text-muted">
         Competition subwoofers, amplifiers, and install help.
-        Email <a :href="`mailto:${bcSupport.email}`">{{ bcSupport.email }}</a>
-        · {{ bcSupport.hours }}
+        Email <a :href="`mailto:${bcSupport.email}`">{{ bcSupport.email }}</a><template v-if="bcSupport.hours"> · {{ bcSupport.hours }}</template>
         · Shop at <a href="https://www.bcpoweraudio.com" rel="noopener">www.bcpoweraudio.com</a>
         or <NuxtLink to="/bc-audio">/bc-audio</NuxtLink>.
       </p>
