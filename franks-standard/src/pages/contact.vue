@@ -3,18 +3,18 @@
     <h1>Contact</h1>
     <p class="text-muted lead">
       Questions from buyers and sellers, press, and partnerships. Use the form below — it reaches the team even while
-      if <strong>info@</strong> webmail fails, reset the mailbox password in Namecheap (see ops <NuxtLink to="/ops/mail-setup">mail setup</NuxtLink> after owner unlock).
+      <strong>info@</strong> webmail is being restored.
     </p>
 
     <div v-if="formSuccess" class="card success-card" role="status">
       <p><strong>Message received.</strong> We will reply to the email you entered. For urgent issues, call
-        <a href="tel:+18778370527">(877) 837-0527</a> or use the <strong>Help</strong> chat on any page.</p>
+        <a href="tel:+18778370527">(877) 837-0527</a> or visit <NuxtLink to="/support">Help &amp; support</NuxtLink>.</p>
     </div>
 
     <form v-else class="card contact-form" @submit.prevent="submitForm">
       <p class="form-note text-muted small">
         Prefer email later? <strong>info@thefranksstandard.com</strong> will work again after mailbox reset.
-        Right now this form + phone + Help chat are the fastest paths.
+        Right now this form + phone + the footer Help link are the fastest paths.
       </p>
       <div class="form-group">
         <label class="label">Your name</label>
@@ -48,8 +48,8 @@
       </div>
       <hr class="contact-divider" />
       <div class="contact-method">
-        <p class="label">Help chat</p>
-        <p class="text-muted small">Click <strong>Help</strong> (bottom-right) on any page.</p>
+        <p class="label">Help</p>
+        <p class="text-muted small">Use the <NuxtLink to="/support">Help &amp; support</NuxtLink> page or the footer links at the bottom of every page.</p>
       </div>
       <hr class="contact-divider" />
       <div class="contact-method">

@@ -47,7 +47,7 @@ const emit = defineEmits(['update:phrase', 'close', 'submit'])
         <div class="flex justify-end gap-2 mt-2">
           <button
             type="button"
-            class="px-3 py-2 text-sm rounded-md border border-border text-white/90 hover:border-primary"
+            class="px-3 py-2 text-sm rounded-md border border-border text-white/90 hover:border-gold"
             @click="emit('close')"
           >
             Cancel
@@ -55,7 +55,7 @@ const emit = defineEmits(['update:phrase', 'close', 'submit'])
           <button
             v-if="keyConfigured"
             type="button"
-            class="px-3 py-2 text-sm rounded-md bg-primary text-bg font-medium hover:bg-primary/90 disabled:opacity-50"
+            class="px-3 py-2 text-sm rounded-md bg-gold text-stone-900 font-medium hover:bg-goldLight disabled:opacity-50"
             :disabled="submitting"
             @click="emit('submit')"
           >

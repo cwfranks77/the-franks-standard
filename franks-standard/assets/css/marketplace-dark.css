@@ -30,8 +30,8 @@ html:has(.marketplace-shell) body::before {
   color: #e5e7eb !important;
 }
 
-.marketplace-shell a:not([class*="bg-primary"]):not(.btn-primary) {
-  color: #38bdf8 !important;
+.marketplace-shell a:not([class*="bg-primary"]):not(.btn-primary):not(.btn) {
+  color: #fbbf24 !important;
 }
 
 .marketplace-shell input,
@@ -51,4 +51,47 @@ html:has(.marketplace-shell) body::before {
 
 .marketplace-shell header {
   z-index: 50;
+}
+
+/* Pale content bands inside the dark shell (collections, protection, learn, etc.) */
+.marketplace-shell .light-content {
+  background: #f8f9fb;
+  color: #111827 !important;
+}
+
+.marketplace-shell .light-content :where(h1, h2, h3, h4, h5, h6, p, li, label, strong, em, span) {
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+}
+
+.marketplace-shell .light-content :where(.text-muted) {
+  color: #4b5563 !important;
+  -webkit-text-fill-color: #4b5563 !important;
+}
+
+.marketplace-shell .light-content a:not(.btn):not(.btn-primary):not(.btn-outline) {
+  color: #d97706 !important;
+}
+
+.marketplace-shell .light-content .detail-hero,
+.marketplace-shell .light-content .section-alt,
+.marketplace-shell .light-content .coll-hero {
+  background: #f8f9fb;
+}
+
+.marketplace-shell .light-content .empty {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  margin-top: 8px;
+}
+
+.marketplace-shell .light-content .empty p {
+  color: #374151 !important;
+  -webkit-text-fill-color: #374151 !important;
+}
+
+.marketplace-shell .light-content .promo-box h2 {
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
 }

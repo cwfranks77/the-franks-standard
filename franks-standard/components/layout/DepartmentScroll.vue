@@ -21,7 +21,7 @@ const departments = [
       <h2 class="text-sm font-semibold text-white uppercase tracking-wide">
         Shop by department
       </h2>
-      <NuxtLink to="/browse" class="text-xs text-primary hover:underline">
+      <NuxtLink to="/browse" class="text-xs text-gold hover:underline">
         See all categories
       </NuxtLink>
     </div>
@@ -32,7 +32,7 @@ const departments = [
         :to="dept.href"
         class="flex-shrink-0 w-[100px] group"
       >
-        <div class="aspect-[4/3] rounded-lg overflow-hidden border border-border bg-surface2 group-hover:border-primary transition">
+        <div class="aspect-[4/3] rounded-lg overflow-hidden border border-border bg-surface2 group-hover:border-gold transition">
           <img
             :src="dept.img"
             :alt="dept.label"
@@ -43,7 +43,7 @@ const departments = [
             @error="onShowcaseImageError"
           />
         </div>
-        <p class="text-[0.7rem] font-medium text-center mt-1.5 line-clamp-2 text-white group-hover:text-primary transition">
+        <p class="text-[0.7rem] font-medium text-center mt-1.5 line-clamp-2 text-white group-hover:text-gold transition">
           {{ dept.label }}
         </p>
       </NuxtLink>

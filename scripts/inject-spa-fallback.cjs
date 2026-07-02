@@ -52,6 +52,12 @@ const SHARED_FOOTER = `
     : 'The Franks Standard &mdash; Authenticity-Guaranteed Marketplace'} &middot; ${SITE_URL.replace(/^https?:\/\//, '')}</p>
 </footer>`
 
+const HOME_FOOTER = `
+<footer class="fss-static-footer">
+  <p class="fss-static-tag">The Franks Standard &mdash; Authenticity-Guaranteed Marketplace</p>
+  <p style="margin:.5rem 0 0"><a href="/about">About us</a> &middot; <a href="/contact">Contact us</a> &middot; <a href="/support">Help</a></p>
+</footer>`
+
 // Boot HTML stays visible until Nuxt mounts (see plugins/0.remove-static-fallback.client.ts).
 const EARLY_HIDE_SCRIPT = ''
 
@@ -65,10 +71,10 @@ const SHARED_STYLE = `<style id="fss-static-boot-style">
 ${BC_BOOT_VISIBLE}
 #__nuxt{position:relative;z-index:1}
 html.nuxt-ready #fss-static-boot,html.nuxt-ready #fss-static-boot-style,html.nuxt-ready #fss-static-boot-hide{display:none!important}
-.fss-static-aur{position:absolute;inset:0;pointer-events:none;opacity:.7;background:radial-gradient(ellipse 80% 50% at 0% 0%,rgba(255,45,122,.28) 0%,transparent 50%),radial-gradient(ellipse 60% 40% at 100% 10%,rgba(0,224,255,.14) 0%,transparent 45%),linear-gradient(180deg,#0a0518 0%,#120a22 100%)}
+.fss-static-aur{position:absolute;inset:0;pointer-events:none;opacity:.7;background:radial-gradient(ellipse 80% 50% at 0% 0%,rgba(255,179,0,.18) 0%,transparent 50%),radial-gradient(ellipse 60% 40% at 100% 10%,rgba(255,206,93,.12) 0%,transparent 45%),linear-gradient(180deg,#0a0518 0%,#120a22 100%)}
 .fss-static-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1;display:grid;gap:1.5rem;align-items:center;padding-top:1rem;grid-template-columns:1fr}
 @media(min-width:900px){.fss-static-inner{grid-template-columns:1.1fr 0.9fr;padding-top:2rem}.fss-static-h1{font-size:clamp(1.5rem,3vw,2.6rem)}}
-.fss-static-ribbon{text-transform:uppercase;letter-spacing:.12em;font-size:.7rem;color:#00f5a0;font-weight:700;margin:0}
+.fss-static-ribbon{text-transform:uppercase;letter-spacing:.12em;font-size:.7rem;color:#ffb300;font-weight:700;margin:0}
 .fss-static-h1{font-family:Cinzel,Georgia,serif;font-size:clamp(1.4rem,4vw,2.1rem);line-height:1.2;margin:.75rem 0 .5rem}
 .fss-s2{background:linear-gradient(90deg,#ffd84d 0%,#fff3a6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
 .fss-static-sub{color:#a39ab8;font-size:.95rem;max-width:32rem;margin:0 0 1rem}
@@ -77,7 +83,7 @@ html.nuxt-ready #fss-static-boot,html.nuxt-ready #fss-static-boot-style,html.nux
 .fss-static-contact-block{margin:1rem 0;padding:1rem 1.25rem;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
 .fss-static-contact-block a{color:#ffd84d;font-weight:600;text-decoration:none}
 .fss-static-contact-block a:hover{text-decoration:underline}
-.fss-static-phone{font-family:Cinzel,Georgia,serif;font-size:1.4rem;color:#00f5a0;display:inline-block;margin-right:.75rem}
+.fss-static-phone{font-family:Cinzel,Georgia,serif;font-size:1.4rem;color:#ffb300;display:inline-block;margin-right:.75rem}
 .fss-static-footer{margin-top:2rem;padding:1rem;border-top:1px solid rgba(255,255,255,.08);text-align:center;font-size:.85rem;color:#a39ab8;position:relative;z-index:1}
 .fss-static-footer a{color:#ffd84d;text-decoration:none}
 .fss-static-footer a:hover{text-decoration:underline}
@@ -228,7 +234,28 @@ function fallbackForRoute (route) {
       ${contactBlock}`
         break
       }
-      // fall through for Franks marketplace home
+      return `${START}
+<div id="fss-static-boot" class="fss-static-boot">
+  <div class="fss-static-aur" aria-hidden="true"></div>
+  <div class="fss-static-inner">
+    <div class="fss-static-copy">
+      <p class="fss-static-ribbon">Authenticity-first marketplace</p>
+      <h1 class="fss-static-h1"><span class="fss-s1">Browse verified</span> <span class="fss-s2">collectibles</span></h1>
+      <p class="fss-static-sub">Every listing needs a COA or signed in-platform guarantee. Escrow checkout, fair seller fees, no fakes.</p>
+      <p class="fss-static-actions"><a class="fss-static-btn fss-static-btn-primary" href="/browse">Browse marketplace</a> <a class="fss-static-btn" href="/sell/start">Start selling</a></p>
+      <div class="fss-static-preview" aria-label="Category preview">
+        <a href="/browse?category=Watches%20%26%20Jewelry"><img src="/img/reel-watches.svg" alt="Watches and jewelry" width="120" height="120" loading="lazy" /></a>
+        <a href="/browse?category=Sneakers%20%26%20Streetwear"><img src="/img/reel-sneakers.svg" alt="Sneakers and streetwear" width="120" height="120" loading="lazy" /></a>
+        <a href="/browse?category=Musical%20Instruments"><img src="/img/reel-guitars.svg" alt="Musical instruments" width="120" height="120" loading="lazy" /></a>
+        <a href="/browse?category=Home%20%26%20Estate%20Collectibles"><img src="/img/reel-estate.svg" alt="Home and estate collectibles" width="120" height="120" loading="lazy" /></a>
+      </div>
+    </div>
+  </div>
+  ${HOME_FOOTER}
+</div>
+${SHARED_STYLE}
+${EARLY_HIDE_SCRIPT}
+${END}`
     default:
       body = `
       <p class="fss-static-ribbon">Proof-first marketplace. <span>Live floor energy.</span></p>

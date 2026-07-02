@@ -14,7 +14,9 @@ on:
       - 'nuxt.config.ts'
       - 'package.json'
       - 'middleware/**'
-      - '.github/workflows/deploy-franks-site.yml'
+      - 'scripts/inject-spa-fallback.cjs'
+      - 'scripts/patch-gh-pages-spa.cjs'
+      - 'scripts/merge-project-components.cjs'
 
 permissions:
   contents: read

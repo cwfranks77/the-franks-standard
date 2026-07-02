@@ -1,5 +1,7 @@
 <template>
-  <div v-if="page" class="collection-detail">
+  <div class="marketplace-shell min-h-screen flex flex-col bg-bg text-textMain">
+    <MainHeader />
+    <div v-if="page" class="collection-detail light-content flex-1">
     <section class="detail-hero">
       <div class="container">
         <p class="eyebrow">
@@ -58,6 +60,8 @@
         <button type="button" class="btn btn-outline btn-sm" @click="copyPromo">{{ copied ? 'Copied' : 'Copy campaign text' }}</button>
       </div>
     </section>
+    </div>
+    <MainFooter />
   </div>
 </template>
 
@@ -187,10 +191,12 @@ useSeoMeta({
 <style scoped>
 .collection-detail { padding-bottom: 48px; }
 .detail-hero { padding: 40px 0 24px; background: #f8f9fb; }
-.detail-hero h1 { font-family: 'Cinzel', Georgia, serif; font-weight: 800; font-size: clamp(1.5rem, 3.5vw, 2rem); }
-.lead { max-width: 40rem; line-height: 1.6; font-weight: 600; }
+.detail-hero h1 { font-family: 'Cinzel', Georgia, serif; font-weight: 800; font-size: clamp(1.5rem, 3.5vw, 2rem); color: #111827; }
+.lead { max-width: 40rem; line-height: 1.6; font-weight: 600; color: #374151; }
+.eyebrow { color: #92400e; }
 .eyebrow a { color: #146eb4; font-weight: 700; }
-.ebay-angle { margin-top: 12px; font-weight: 600; max-width: 40rem; }
+.ebay-angle { margin-top: 12px; font-weight: 600; max-width: 40rem; color: #111827; }
+.section-alt h2 { color: #111827; font-size: 1.15rem; margin-bottom: 12px; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
 .section { padding: 32px 0; }
 .section-alt { background: #f8fafc; }

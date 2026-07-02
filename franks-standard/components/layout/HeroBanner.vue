@@ -1,59 +1,47 @@
-<script setup>
-const { onLogoKnock } = useLogoOwnerKnock()
-</script>
-
 <template>
-  <section class="max-w-6xl mx-auto px-4 py-10">
-    <div class="grid md:grid-cols-2 gap-8 items-center">
-      <div>
-        <h1 class="text-3xl md:text-4xl font-bold mb-4 text-white">
-          The Franks Standard
-        </h1>
-        <p class="text-white/85 mb-4">
-          The authenticity-first collectibles marketplace. Every listing backed by a Certificate of Authenticity or signed in-platform guarantee — not hype, not fakes.
-        </p>
-        <div class="flex gap-3">
-          <NuxtLink
-            to="/browse"
-            class="inline-flex items-center px-4 py-2 rounded-md bg-primary text-bg text-sm font-medium hover:bg-primary/90 transition"
-          >
-            Browse marketplace
-          </NuxtLink>
-          <NuxtLink
-            to="/sell/start"
-            class="inline-flex items-center px-4 py-2 rounded-md border border-border text-sm text-white hover:border-primary hover:text-primary transition"
-          >
-            Start selling
-          </NuxtLink>
-        </div>
-      </div>
-      <div class="bg-surface2 rounded-xl border border-border overflow-hidden">
-        <button
-          type="button"
-          class="block w-full p-0 border-0 bg-transparent cursor-pointer touch-manipulation"
-          aria-label="The Franks Standard marketplace"
-          @click="onLogoKnock"
+  <section class="max-w-6xl mx-auto px-4 py-6 md:py-8">
+    <div class="rounded-xl border border-gold/25 bg-surface2 p-6 md:p-8">
+      <p class="text-xs uppercase tracking-widest text-gold font-semibold mb-2">
+        Authenticity-first marketplace
+      </p>
+      <h1 class="text-2xl md:text-3xl font-bold mb-3 text-white">
+        Browse verified collectibles — every listing needs proof
+      </h1>
+      <p class="text-white/85 mb-5 max-w-2xl">
+        Sports cards, watches, coins, estate finds, and more. Sellers upload a COA or sign our in-platform guarantee before anything goes live.
+      </p>
+      <div class="flex flex-wrap gap-3 mb-6">
+        <NuxtLink
+          to="/browse"
+          class="inline-flex items-center px-4 py-2 rounded-md bg-gold text-stone-900 text-sm font-bold hover:bg-goldLight transition"
         >
-          <img
-            src="/img/franks-pavilion.png"
-            alt="The Franks Standard marketplace pavilion"
-            class="w-full h-56 md:h-72 object-cover pointer-events-none select-none"
-            width="640"
-            height="480"
-            decoding="async"
-            draggable="false"
-          >
-        </button>
-        <div class="p-6">
-          <p class="text-xs uppercase tracking-wide text-white/80 mb-2">
-            Why The Franks Standard?
-          </p>
-          <ul class="list-disc list-inside space-y-2 text-sm text-white/85">
-            <li>Every item tied to a documented COA.</li>
-            <li>No wholesale pricing, no race to the bottom.</li>
-            <li>Platform-level logging of transactions and tax events.</li>
-            <li>Built for serious buyers and sellers, not impulse scroll.</li>
-          </ul>
+          Browse marketplace
+        </NuxtLink>
+        <NuxtLink
+          to="/sell/start"
+          class="inline-flex items-center px-4 py-2 rounded-md border border-border text-sm text-white hover:border-gold hover:text-gold transition"
+        >
+          Start selling
+        </NuxtLink>
+        <NuxtLink
+          to="/collections"
+          class="inline-flex items-center px-4 py-2 rounded-md border border-gold/35 text-sm text-gold hover:bg-gold/10 transition"
+        >
+          Featured collections
+        </NuxtLink>
+      </div>
+      <div class="grid sm:grid-cols-3 gap-3">
+        <div class="rounded-lg border border-border bg-bg/60 p-4">
+          <p class="text-gold text-sm font-bold mb-1">COA on file</p>
+          <p class="text-xs text-white/80 leading-relaxed">Upload or Franks serial — no proof, no publish.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-bg/60 p-4">
+          <p class="text-gold text-sm font-bold mb-1">Escrow checkout</p>
+          <p class="text-xs text-white/80 leading-relaxed">Buyers pay on-platform; sellers ship after funds clear.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-bg/60 p-4">
+          <p class="text-gold text-sm font-bold mb-1">Fair seller fees</p>
+          <p class="text-xs text-white/80 leading-relaxed">No race to the bottom — built for serious dealers.</p>
         </div>
       </div>
     </div>

@@ -1,5 +1,7 @@
 <template>
-  <div class="collections-page">
+  <div class="marketplace-shell min-h-screen flex flex-col bg-bg text-textMain">
+    <MainHeader />
+    <div class="collections-page light-content flex-1">
     <section class="coll-hero">
       <div class="container">
         <p class="eyebrow">Collections</p>
@@ -67,6 +69,8 @@
         <NuxtLink to="/how-it-works" class="btn btn-outline btn-sm">How buying works</NuxtLink>
       </div>
     </section>
+    </div>
+    <MainFooter />
   </div>
 </template>
 
@@ -86,7 +90,8 @@ useSeoMeta({
 <style scoped>
 @import '~/assets/css/learn-hub.css';
 .coll-hero { padding: 48px 0 28px; background: linear-gradient(180deg, #f8f9fb, #fff); }
-.coll-hero h1 { font-family: 'Cinzel', Georgia, serif; font-weight: 800; font-size: clamp(1.6rem, 4vw, 2.2rem); }
+.coll-hero h1 { font-family: 'Cinzel', Georgia, serif; font-weight: 800; font-size: clamp(1.6rem, 4vw, 2.2rem); color: #111827; }
+.section-title { color: #111827; font-size: 1.15rem; margin-bottom: 8px; }
 .lead { max-width: 42rem; line-height: 1.65; font-weight: 600; }
 .eyebrow { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #92400e; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }

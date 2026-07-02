@@ -26,7 +26,7 @@ const displayProducts = computed(() =>
         <article
           v-for="product in displayProducts"
           :key="product.id"
-          class="min-w-[220px] bg-surface2 border border-border rounded-lg p-3 hover:border-primary transition"
+          class="min-w-[220px] bg-surface2 border border-border rounded-lg p-3 hover:border-gold transition"
         >
           <div class="aspect-video bg-bg rounded mb-2 overflow-hidden">
             <img
@@ -45,7 +45,7 @@ const displayProducts = computed(() =>
           </p>
           <NuxtLink
             :to="`/listing/${product.id}`"
-            class="mt-2 inline-flex text-xs text-primary hover:underline"
+            class="mt-2 inline-flex text-xs text-gold hover:underline"
           >
             View listing
           </NuxtLink>

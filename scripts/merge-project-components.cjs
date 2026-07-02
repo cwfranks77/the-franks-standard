@@ -5,6 +5,7 @@ const rootDir = path.resolve(__dirname, '..')
 const targetDir = path.join(rootDir, 'components')
 const sourceDirs = [
   path.join(rootDir, 'bc-performance-audio', 'src', 'components'),
+  path.join(rootDir, 'franks-standard', 'components'),
   path.join(rootDir, 'franks-standard', 'src', 'components'),
   path.join(rootDir, 'root-build-components'),
 ]
