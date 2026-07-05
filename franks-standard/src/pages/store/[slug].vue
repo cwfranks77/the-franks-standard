@@ -165,7 +165,7 @@ async function loadStore () {
   }
 
   const { data: profile, error: pErr } = await supabase
-    .from('profiles')
+    .from('public_store_profiles')
     .select('id, full_name, store_name, store_slug')
     .eq('store_slug', slug)
     .maybeSingle()

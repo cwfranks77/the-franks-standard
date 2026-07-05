@@ -99,7 +99,7 @@ useSeoMeta({
 async function loadStores() {
   loadError.value = ''
   const { data, error } = await supabase
-    .from('profiles')
+    .from('public_store_profiles')
     .select('id, full_name, store_name, store_slug')
     .neq('store_slug', '')
     .order('store_name', { ascending: true })
