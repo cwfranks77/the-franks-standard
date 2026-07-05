@@ -1,0 +1,28 @@
+# Fails the build if a migration re-opens public data leaks (profiles, dropship, etc.).
+name: Security — Supabase migrations
+
+on:
+  pull_request:
+    paths:
+      - 'supabase/migrations/**'
+      - 'scripts/check-supabase-security.mjs'
+      - '.github/workflows/security-supabase-migrations.yml'
+  push:
+    branches: [master]
+    paths:
+      - 'supabase/migrations/**'
+      - 'supabase/functions/**'
+      - 'scripts/check-supabase-security.mjs'
+      - '.github/workflows/security-supabase-migrations.yml'
+      - '.github/workflows/deploy-supabase-functions.yml'
+
+jobs:
+  migration-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Block dangerous RLS patterns
+        run: node scripts/check-supabase-security.mjs

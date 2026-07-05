@@ -21,7 +21,6 @@ export function storeOpsPhraseForSession (phrase) {
   if (!import.meta.client) return
   const normalized = normalizeOpsPhrase(phrase)
   sessionStorage.setItem(OPS_PHRASE_STORAGE_KEY, normalized)
-  localStorage.setItem(OPS_PHRASE_STORAGE_KEY, normalized)
 }
 
 export function setStoredOpsPhrase (phrase) {
@@ -36,11 +35,7 @@ export function clearStoredOpsPhrase () {
 
 export function getStoredOpsPhrase () {
   if (!import.meta.client) return ''
-  return (
-    sessionStorage.getItem(OPS_PHRASE_STORAGE_KEY)
-    || localStorage.getItem(OPS_PHRASE_STORAGE_KEY)
-    || ''
-  )
+  return sessionStorage.getItem(OPS_PHRASE_STORAGE_KEY) || ''
 }
 
 export function isOpsApiUnavailable (error) {
