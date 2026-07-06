@@ -34,6 +34,8 @@ export function useOwnerAccess () {
     if (ok) {
       unlocked.value = true
       storeOpsPhraseForSession(phrase)
+      const { grant } = useOpsSession()
+      grant()
       appendLocalActivity({
         user_id: 'operator',
         user_display_name: 'Operator',
@@ -45,13 +47,14 @@ export function useOwnerAccess () {
       })
       return true
     }
-    error.value = 'That phrase does not match. Type it exactly — spaces become dashes, capitals do not matter.'
+    error.value = 'That operator phrase does not match. Capitals do not matter. Include the exclamation mark at the end if your password has one.'
     return false
   }
 
-  function lock () {
+  async function lock () {
     unlocked.value = false
     clearStoredOpsPhrase()
+    await useOpsSession().revoke()
   }
 
   return { unlocked, error, keyConfigured, tryUnlock, lock }

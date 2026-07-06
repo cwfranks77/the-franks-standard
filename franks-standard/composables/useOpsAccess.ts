@@ -1,3 +1,4 @@
+import { storeOpsPhraseForSession } from '~/utils/opsClientAuth'
 import { verifyOpsPhrase } from '~/utils/verifyOpsPhrase'
 
 export const useOpsAccess = () => {
@@ -33,6 +34,7 @@ export const useOpsAccess = () => {
     if (isValid && typeof window !== 'undefined') {
       const { grant } = useOpsSession()
       grant()
+      storeOpsPhraseForSession(password)
       sessionStorage.setItem('ops_access_granted', 'true')
     }
 
