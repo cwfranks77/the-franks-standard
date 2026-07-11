@@ -24,11 +24,6 @@ html,body{margin:0;background:#050509;color:#f9fafb}
 #__nuxt{min-height:100vh;background:#050509}
 </style>
 <script id="fss-hide-static-boot">document.documentElement.classList.add('nuxt-ready')</script>`
-const BC_LOGO_ASSET = '/img/bc-logo-primary.png?v=20260622'
-/** B&C builds: preload the real logo first so the browser never flashes the old Franks favicon. */
-const BC_LOGO_HEAD = bcPrimarySite
-  ? `<link rel="icon" type="image/png" href="${BC_LOGO_ASSET}"><link rel="apple-touch-icon" href="${BC_LOGO_ASSET}"><link rel="preload" as="image" href="${BC_LOGO_ASSET}" fetchpriority="high">`
-  : ''
 /** B&C builds: full-screen logo splash stays up until Vue mounts (plugins/0.remove-static-fallback.client.ts). */
 const BC_LOADING_SHELL = `<style id="bc-instant-shell">
 html,body{margin:0;background:#0a0a0c;color:#f5f5f7}
@@ -54,9 +49,6 @@ function injectRedirect (html) {
   }
   if (BC_HOME_REDIRECT && !out.includes('bc-storefront-home')) {
     out = out.replace(/<head[^>]*>/i, (m) => `${m}\n${BC_HOME_REDIRECT}`)
-  }
-  if (BC_LOGO_HEAD && !out.includes('bc-logo-primary.png')) {
-    out = out.replace(/<head[^>]*>/i, (m) => `${m}\n${BC_LOGO_HEAD}`)
   }
   if (bcPrimarySite) {
     if (BC_LOADING_SHELL && !out.includes('bc-instant-shell')) {
