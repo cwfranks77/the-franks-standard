@@ -23,6 +23,8 @@ const AUDIO_CATEGORIES = new Set([
   'Custom Install',
   'Cables, Connectors & Wiring Harnesses',
   'Cables & Interconnects',
+  'Headphones',
+  'Musical Equipment',
 ])
 
 const NON_AUDIO_NAME_RE =
@@ -94,6 +96,14 @@ export function isBcAudioProduct (product) {
 
   if (cat === 'Amplifiers' || cat === 'Subwoofers' || cat === 'Speakers, Subwoofers & Accessories') {
     return SPEAKER_NAME_RE.test(text) || /\b(amp|sub|speaker|audio)\b/i.test(text)
+  }
+
+  if (cat === 'Headphones') {
+    return /\b(headphone|earbud|in[- ]ear|over[- ]ear|headset|hearing|earbud)\b/i.test(text)
+  }
+
+  if (cat === 'Musical Equipment') {
+    return /\b(mic|microphone|speaker|monitor|mixer|amp|audio|dynamic|condenser|instrument|wireless system)\b/i.test(text)
   }
 
   return false

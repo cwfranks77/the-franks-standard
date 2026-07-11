@@ -23,10 +23,11 @@ export const SHOP_STORES = [
     name: "Brandy's Sporting Goods",
     slug: 'brandyssportinggoods',
     path: '/store/brandyssportinggoods',
-    tagline: 'Authenticated sporting gear — opening on The Franks Standard',
+    tagline: 'Outdoor, fitness & sporting gear — dropship from Petra wholesale feed',
     accent: '#146eb4',
-    status: 'opening_soon',
+    status: 'live',
     dropship: true,
+    catalogUrl: '/catalog/brandy-sporting-products.json',
   },
   {
     id: 'store-directory',

@@ -1,3 +1,5 @@
+import { hasPublicSupabase } from '~/utils/publicSupabase.js'
+
 export type BcCustomerStatus = 'pending' | 'approved' | 'blocked'
 
 export type BcCustomerProfile = {
@@ -13,8 +15,12 @@ export type BcCustomerProfile = {
 
 export function useBcCustomerAccount () {
   const config = useRuntimeConfig()
-  const supabase = useSupabaseClient()
   const user = useSupabaseUser()
+
+  function getSupabase () {
+    if (!hasPublicSupabase(config)) return null
+    return useSupabaseClient()
+  }
 
   const profile = ref<BcCustomerProfile | null>(null)
   const loading = ref(false)
@@ -35,9 +41,15 @@ export function useBcCustomerAccount () {
       profile.value = null
       return null
     }
+    const sb = getSupabase()
+    if (!sb) {
+      error.value = 'Sign-in is temporarily unavailable. Please try again later.'
+      profile.value = null
+      return null
+    }
     loading.value = true
     try {
-      const { data, error: qErr } = await supabase
+      const { data, error: qErr } = await sb
         .from('bc_customer_profiles')
         .select('*')
         .eq('user_id', user.value.id)
@@ -77,7 +89,9 @@ export function useBcCustomerAccount () {
 
   async function signUp (email: string, password: string, fullName: string, phone?: string) {
     error.value = ''
-    const { data, error: signErr } = await supabase.auth.signUp({ email, password })
+    const sb = getSupabase()
+    if (!sb) throw new Error('Sign-in is temporarily unavailable. Please try again later.')
+    const { data, error: signErr } = await sb.auth.signUp({ email, password })
     if (signErr) throw signErr
     if (data.user) {
       await registerProfile({ fullName, phone })
@@ -87,14 +101,17 @@ export function useBcCustomerAccount () {
 
   async function signIn (email: string, password: string) {
     error.value = ''
-    const { data, error: signErr } = await supabase.auth.signInWithPassword({ email, password })
+    const sb = getSupabase()
+    if (!sb) throw new Error('Sign-in is temporarily unavailable. Please try again later.')
+    const { data, error: signErr } = await sb.auth.signInWithPassword({ email, password })
     if (signErr) throw signErr
     await loadProfile()
     return data
   }
 
   async function signOut () {
-    await supabase.auth.signOut()
+    const sb = getSupabase()
+    if (sb) await sb.auth.signOut()
     profile.value = null
   }
 

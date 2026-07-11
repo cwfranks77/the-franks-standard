@@ -12,7 +12,6 @@ export const BC_PLATFORM_LINKS = {
   youtube_studio: 'https://studio.youtube.com/channel/UC/videos/upload?d=ud',
   tiktok: 'https://www.tiktok.com/upload',
   instagram: 'https://www.instagram.com/',
-  facebook: 'https://www.facebook.com/',
   linkedin: 'https://www.linkedin.com/post/new/',
   search_console: 'https://search.google.com/search-console',
   bing: 'https://www.bing.com/webmasters',
@@ -91,10 +90,10 @@ export const BC_VISIBILITY_DESTINATIONS = [
     steps: 'Keywords: competition subwoofer, car audio wholesale, marine amplifier — link to catalog',
   },
   {
-    id: 'facebook-instagram',
-    label: 'Facebook & Instagram',
+    id: 'instagram-reels',
+    label: 'Instagram Reels',
     why: 'Car audio enthusiasts and install shops scroll Reels daily.',
-    url: BC_PLATFORM_LINKS.facebook,
+    url: BC_PLATFORM_LINKS.instagram,
     steps: 'Post Reels with catalog link · use caption from weekly queue',
   },
   {
@@ -110,7 +109,6 @@ export const BC_WEEKLY_SLOTS = [
   { slot: 'mon-linkedin', dayOffset: 0, dayLabel: 'Monday', kind: 'social', platform: 'linkedin', title: 'LinkedIn — authorized dealer post' },
   { slot: 'tue-tiktok', dayOffset: 1, dayLabel: 'Tuesday', kind: 'social', platform: 'tiktok', title: 'TikTok — bass demo Short' },
   { slot: 'wed-instagram', dayOffset: 2, dayLabel: 'Wednesday', kind: 'social', platform: 'instagram', title: 'Instagram Reel — catalog walkthrough' },
-  { slot: 'thu-facebook', dayOffset: 3, dayLabel: 'Thursday', kind: 'social', platform: 'facebook', title: 'Facebook — install shop offer' },
   { slot: 'fri-youtube', dayOffset: 4, dayLabel: 'Friday', kind: 'social', platform: 'youtube', title: 'YouTube Short — product highlight' },
   { slot: 'mon-email', dayOffset: 0, dayLabel: 'Monday', kind: 'email', title: 'Email — install shop outreach' },
   { slot: 'wed-seo', dayOffset: 2, dayLabel: 'Wednesday', kind: 'seo', title: 'SEO — request indexing' },
@@ -136,10 +134,6 @@ ${BC_SITE_URL}
 Browse departments → checkout on ${BC_SITE_URL.replace('https://', '')}
 
 #BCPerformanceAudio #CarAudio #Subwoofer #MarineAudio #CompetitionGrade`,
-  facebook: `${BC_BRAND.full} — your authorized distribution center for serious sound.
-
-Open catalog: ${BC_SITE_URL}/bc-audio/catalog
-Questions? Call (833) 722-4147`,
   youtube: `Title: ${BC_BRAND.full} — Competition Audio Catalog Tour
 
 Description: Authorized wholesale portal for subwoofers, amplifiers, marine and car audio. Browse ${BC_SITE_URL}
@@ -189,7 +183,6 @@ export const BC_POST_VIDEO_DESTINATIONS = [
   { id: 'youtube', label: 'YouTube Studio', url: BC_PLATFORM_LINKS.youtube_studio },
   { id: 'tiktok', label: 'TikTok', url: BC_PLATFORM_LINKS.tiktok },
   { id: 'instagram', label: 'Instagram', url: BC_PLATFORM_LINKS.instagram },
-  { id: 'facebook', label: 'Facebook', url: BC_PLATFORM_LINKS.facebook },
 ]
 
 export function startOfWeek (date = new Date()) {
@@ -210,7 +203,7 @@ export function bcWeekId (date = new Date()) {
 }
 
 function buildBcCaption (platform) {
-  return BC_SOCIAL_CAPTIONS[platform] || BC_SOCIAL_CAPTIONS.facebook
+  return BC_SOCIAL_CAPTIONS[platform] || BC_SOCIAL_CAPTIONS.instagram
 }
 
 function buildTaskFromSlot (slot, weekStart) {
@@ -261,7 +254,7 @@ function buildTaskFromSlot (slot, weekStart) {
     platform: slot.platform,
     title: slot.title,
     caption: buildBcCaption(slot.platform),
-    platformUrl: BC_PLATFORM_LINKS[slot.platform] || BC_PLATFORM_LINKS.facebook,
+    platformUrl: BC_PLATFORM_LINKS[slot.platform] || BC_PLATFORM_LINKS.instagram,
     status: 'pending',
     postedAt: null,
   }

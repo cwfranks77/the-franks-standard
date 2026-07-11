@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT="$(pwd)"
 API_DIR="$ROOT/api"
-VOICE_DIR="$ROOT/bc-audio/voice"
+VOICE_DIR="$ROOT/bc-performance-audio/voice"
 
 echo "=== FIXING TWILIO VOICE GREETING ==="
 

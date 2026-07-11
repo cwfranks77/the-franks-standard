@@ -1,0 +1,59 @@
+{
+  "updatedAt": "2026-07-10T00:00:00.000Z",
+  "notes": "Only contacts with approved:true receive automated email. Add emails you have permission to contact.",
+  "prospects": [
+    {
+      "id": "petra-dealer-support",
+      "brand": "bc",
+      "type": "distributor",
+      "name": "Petra Industries",
+      "email": "customerservice@petra.com",
+      "approved": true,
+      "notes": "Ask about full catalog + FTP feed for weekly sync"
+    },
+    {
+      "id": "tfs-owner-test",
+      "brand": "tfs",
+      "type": "seller",
+      "name": "Charles",
+      "email": "info@thefranksstandard.com",
+      "approved": true,
+      "notes": "Weekly test copy — confirms SendGrid is working"
+    },
+    {
+      "id": "bc-owner-test",
+      "brand": "bc",
+      "type": "dealer",
+      "name": "Charles",
+      "email": "bc-audio@thefranksstandard.com",
+      "approved": true,
+      "notes": "Weekly test copy — confirms B&C outreach template"
+    }
+  ],
+  "wholesalerLeads": [
+    {
+      "name": "Inventory Source",
+      "url": "https://www.inventorysource.com/",
+      "contact": "Dealer application on site",
+      "category": "sporting-goods-dropship"
+    },
+    {
+      "name": "Doba",
+      "url": "https://www.doba.com/",
+      "contact": "Supplier signup on site",
+      "category": "general-dropship"
+    },
+    {
+      "name": "Petra Industries",
+      "url": "https://www.petra.com/customers",
+      "contact": "customerservice@petra.com",
+      "category": "electronics-audio"
+    },
+    {
+      "name": "Spark Shipping",
+      "url": "https://www.sparkshipping.com/petra-industries",
+      "contact": "Integration partner for Petra automation",
+      "category": "integration"
+    }
+  ]
+}

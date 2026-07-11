@@ -92,7 +92,10 @@ const BC_AUDIO_ITEMS = [
 function parseArgs () {
   const csvFlag = process.argv.indexOf('--csv')
   const csvPath = csvFlag >= 0 ? process.argv[csvFlag + 1] : DEFAULT_CSV
-  return { csvPath: path.resolve(csvPath) }
+  const repoCsv = path.join(ROOT, 'prodlist.csv')
+  const resolved = path.resolve(csvPath)
+  const usePath = fs.existsSync(resolved) ? resolved : (fs.existsSync(repoCsv) ? repoCsv : resolved)
+  return { csvPath: usePath }
 }
 
 /** Parse one CSV line respecting double-quoted fields. */

@@ -1,0 +1,40 @@
+# Weekly wholesaler / seller outreach (SendGrid)
+name: Weekly outreach emails
+
+on:
+  schedule:
+    # Tuesdays 15:00 UTC
+    - cron: '0 15 * * 2'
+  workflow_dispatch:
+
+jobs:
+  outreach:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Send approved outreach emails
+        env:
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          SENDGRID_FROM_EMAIL: ${{ secrets.SENDGRID_FROM_EMAIL }}
+          SENDGRID_FROM_NAME: ${{ secrets.SENDGRID_FROM_NAME }}
+          NUXT_PUBLIC_SITE_URL: https://thefranksstandard.com
+          OUTREACH_LIVE: ${{ secrets.OUTREACH_LIVE }}
+          OUTREACH_MAX_PER_BRAND: '3'
+        run: node scripts/send-weekly-outreach.cjs
+
+      - name: Commit sent log
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/outreach-sent-log.json
+          if git diff --staged --quiet; then
+            echo "No log changes."
+          else
+            git commit -m "chore(outreach): update weekly sent log"
+            git push
+          fi
