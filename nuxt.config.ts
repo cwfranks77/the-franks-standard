@@ -35,6 +35,7 @@ const franksSiteTitle = 'The Franks Standard — Marketplace Facilitator for Col
 const siteTitle = bcPrimarySite ? BC_LEGAL_NAME : franksSiteTitle
 const siteDescription = bcPrimarySite ? bcSiteDescription : META_DESCRIPTION
 const siteOgDescription = bcPrimarySite ? bcSiteDescription : OG_DESCRIPTION
+const bcLogoAsset = '/img/bc-logo-primary.png?v=20260622'
 const bcPrerenderRoutes = bcPrimarySite
   ? [
       '/',
@@ -308,11 +309,17 @@ export default defineNuxtConfig({
       scope: '/',
       orientation: 'any',
       categories: ['shopping', 'business'],
-      icons: [
-        { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
-        { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
-        { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
-      ],
+      icons: bcPrimarySite
+        ? [
+            { src: bcLogoAsset, sizes: '192x192', type: 'image/png', purpose: 'any' },
+            { src: bcLogoAsset, sizes: '512x512', type: 'image/png', purpose: 'any' },
+            { src: bcLogoAsset, sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          ]
+        : [
+            { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+            { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+            { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          ],
     },
     workbox: {
       // Do not precache HTML or hashed /_nuxt bundles — stale shells pin users to 404 chunks after deploy.
@@ -396,8 +403,11 @@ export default defineNuxtConfig({
         { 'http-equiv': 'Expires', content: '0' },
       ],
       link: [
-        { rel: 'icon', type: 'image/png', href: bcPrimarySite ? '/icons/icon-192.png' : '/franks-pavilion.png' },
-        { rel: 'apple-touch-icon', href: bcPrimarySite ? '/icons/icon-192.png' : '/franks-pavilion.png' },
+        { rel: 'icon', type: 'image/png', href: bcPrimarySite ? bcLogoAsset : '/franks-pavilion.png' },
+        { rel: 'apple-touch-icon', href: bcPrimarySite ? bcLogoAsset : '/franks-pavilion.png' },
+        ...(bcPrimarySite
+          ? [{ rel: 'preload', as: 'image', href: bcLogoAsset, fetchpriority: 'high' }]
+          : []),
         { rel: 'manifest', href: '/manifest.webmanifest' },
         { rel: 'preconnect', href: 'https://meet.jit.si' },
         { rel: 'preconnect', href: 'https://js.stripe.com' },
