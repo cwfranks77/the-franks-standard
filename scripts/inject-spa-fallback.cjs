@@ -61,16 +61,24 @@ const HOME_FOOTER = `
 // Boot HTML stays visible until Nuxt mounts (see plugins/0.remove-static-fallback.client.ts).
 const EARLY_HIDE_SCRIPT = ''
 
-// SEO fallback HTML stays in the document for crawlers — never show the old splash on screen.
-const BC_BOOT_VISIBLE = `html,body{margin:0;background:#0a0a0a}
+const BC_LOGO_SRC = '/img/bc-logo-primary.png?v=20260622'
+
+const BC_BOOT_FULLSCREEN = `html,body{margin:0;background:#0a0a0c}
+.bc-boot-splash{position:fixed;inset:0;z-index:2147483646;display:flex;align-items:center;justify-content:center;background:#0a0a0c;transition:opacity .25s ease,visibility .25s ease}
+.bc-boot-splash img{width:min(72vw,360px);height:auto;max-height:72vh;object-fit:contain;display:block}
+.bc-boot-seo{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+#__nuxt{position:relative;z-index:1;min-height:100vh;background:#0a0a0a}`
+
+// Franks builds: SEO fallback stays in the document but hidden on screen until crawlers read source.
+const FRANKS_BOOT_HIDDEN = `html,body{margin:0;background:#0a0a0a}
 #fss-static-boot{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;pointer-events:none!important;opacity:0!important}
 #fss-static-boot a{pointer-events:none!important}`
 
 const SHARED_STYLE = `<style id="fss-static-boot-style">
 #fss-static-boot,.fss-static-aur,.fss-static-footer{box-sizing:border-box}
-${BC_BOOT_VISIBLE}
-#__nuxt{position:relative;z-index:1}
-html.nuxt-ready #fss-static-boot,html.nuxt-ready #fss-static-boot-style,html.nuxt-ready #fss-static-boot-hide{display:none!important}
+${BC_PRIMARY_SITE ? BC_BOOT_FULLSCREEN : FRANKS_BOOT_HIDDEN}
+html.nuxt-ready #fss-static-boot,html.nuxt-ready .bc-boot-splash,html.nuxt-ready #fss-static-boot-style,html.nuxt-ready #fss-static-boot-hide{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+html.nuxt-ready #fss-static-boot,html.nuxt-ready .bc-boot-splash,html.nuxt-ready #fss-static-boot-style{display:none!important}
 .fss-static-aur{position:absolute;inset:0;pointer-events:none;opacity:.7;background:radial-gradient(ellipse 80% 50% at 0% 0%,rgba(255,179,0,.18) 0%,transparent 50%),radial-gradient(ellipse 60% 40% at 100% 10%,rgba(255,206,93,.12) 0%,transparent 45%),linear-gradient(180deg,#0a0518 0%,#120a22 100%)}
 .fss-static-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1;display:grid;gap:1.5rem;align-items:center;padding-top:1rem;grid-template-columns:1fr}
 @media(min-width:900px){.fss-static-inner{grid-template-columns:1.1fr 0.9fr;padding-top:2rem}.fss-static-h1{font-size:clamp(1.5rem,3vw,2.6rem)}}
@@ -96,8 +104,27 @@ html.nuxt-ready #fss-static-boot,html.nuxt-ready #fss-static-boot-style,html.nux
 .fss-static-preview img{display:block;width:120px;height:120px;object-fit:cover}
 </style>`
 
+function bcFullscreenSplash () {
+  return `${START}
+<div id="fss-static-boot" class="bc-boot-splash" role="status" aria-live="polite" aria-label="Loading B&amp;C Performance Audio">
+  <img src="${BC_LOGO_SRC}" alt="B&amp;C Performance Audio" width="360" height="360" fetchpriority="high" decoding="async" />
+  <div class="bc-boot-seo" aria-hidden="true">
+    <h1>B&amp;C Performance Audio</h1>
+    <p>Competition car audio megastore — Taramps, Sundown, Rockford Fosgate, Kicker, and more.</p>
+    <p>Contact: <a href="tel:${PHONE_TEL}">${PHONE_DISPLAY}</a> &middot; <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a></p>
+  </div>
+</div>
+${SHARED_STYLE}
+${EARLY_HIDE_SCRIPT}
+${END}`
+}
+
 // Build the visible body block for a given route.
 function fallbackForRoute (route) {
+  if (BC_PRIMARY_SITE) {
+    return bcFullscreenSplash()
+  }
+
   const heroOpen = `<div id="fss-static-boot" class="fss-static-boot">
   <div class="fss-static-aur" aria-hidden="true"></div>
   <div class="fss-static-inner">
@@ -109,14 +136,7 @@ function fallbackForRoute (route) {
   </div>
   ${SHARED_FOOTER}
 </div>`
-  const heroCloseBc = `    </div>
-    <div class="fss-static-media">
-      <img src="/img/hero-showcase-v2.svg" alt="B&amp;C Performance Audio" width="200" height="200" />
-    </div>
-  </div>
-  ${SHARED_FOOTER}
-</div>`
-  const heroClose = (BC_PRIMARY_SITE && route === '/') ? heroCloseBc : heroCloseFranks
+  const heroClose = heroCloseFranks
 
   const contactBlock = `
       <div class="fss-static-contact-block">
@@ -226,13 +246,7 @@ function fallbackForRoute (route) {
       break
     case '/':
       if (BC_PRIMARY_SITE) {
-        body = `
-      <p class="fss-static-ribbon">Competition car audio</p>
-      <h1 class="fss-static-h1"><span class="fss-s1">B&amp;C</span> <span class="fss-s2">Performance Audio</span></h1>
-      <p class="fss-static-sub">Taramps, Sundown, Rockford Fosgate, Kicker, and more &mdash; your megastore for competition-grade sound.</p>
-      <p class="fss-static-actions"><a class="fss-static-btn fss-static-btn-primary" href="/">Open storefront</a></p>
-      ${contactBlock}`
-        break
+        return bcFullscreenSplash()
       }
       return `${START}
 <div id="fss-static-boot" class="fss-static-boot">
@@ -257,6 +271,9 @@ ${SHARED_STYLE}
 ${EARLY_HIDE_SCRIPT}
 ${END}`
     default:
+      if (BC_PRIMARY_SITE) {
+        return bcFullscreenSplash()
+      }
       body = `
       <p class="fss-static-ribbon">Proof-first marketplace. <span>Live floor energy.</span></p>
       <h1 class="fss-static-h1"><span class="fss-s1">If it is here,</span> <span class="fss-s2">it is real.</span></h1>
