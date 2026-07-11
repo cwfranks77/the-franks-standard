@@ -17,18 +17,13 @@ const BC_HTTPS_UPGRADE = bcPrimarySite
 const BC_HOME_REDIRECT = bcPrimarySite
   ? `<script id="bc-storefront-home">(function(){var h=location.hostname.toLowerCase(),p=location.pathname+location.search+location.hash,w='www.bcpoweraudio.com';if(location.protocol==='http:'){location.replace('https://'+(h==='bcpoweraudio.com'?w:h)+p);return}if(h==='bcpoweraudio.com'){location.replace('https://'+w+p);return}if(p==='/bc-audio'||p==='/bc-audio/')location.replace('/'+location.search+location.hash)})();</script>`
   : ''
-/** Franks builds: hide the pre-JS SEO splash immediately. */
-const INSTANT_SHELL_FRANKS = `<style id="fss-instant-shell">
+/** Hide the pre-JS SEO splash immediately — real app replaces #__nuxt when Vue mounts. */
+const INSTANT_SHELL = `<style id="fss-instant-shell">
 html,body{margin:0;background:#050509;color:#f9fafb}
 #fss-static-boot,#fss-static-boot-style{display:none!important;visibility:hidden!important;height:0!important;overflow:hidden!important}
 #__nuxt{min-height:100vh;background:#050509}
 </style>
 <script id="fss-hide-static-boot">document.documentElement.classList.add('nuxt-ready')</script>`
-/** B&C builds: full-screen logo splash stays up until Vue mounts (plugins/0.remove-static-fallback.client.ts). */
-const BC_LOADING_SHELL = `<style id="bc-instant-shell">
-html,body{margin:0;background:#0a0a0c;color:#f5f5f7}
-#__nuxt{min-height:100vh;background:#0a0a0c}
-</style>`
 const SPA_REDIRECT = `<script id="gh-pages-spa-redirect">(function(){var p=location.pathname+location.search+location.hash;if(p!=='/'&&p!=='/index.html'){sessionStorage.setItem('ghSpaRedirect',p)}})();</script>`
 const CHUNK_RECOVERY_INLINE = `<script id="fss-chunk-recovery-inline">(function(){var k='fss-chunk-reload-v1';function staleChunk(m){return/Failed to fetch dynamically imported module|Loading chunk|Importing a module script failed/i.test(String(m||''))}function go(){if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1');var u=new URL(location.href);u.searchParams.set('_cb',String(Date.now()));location.replace(u.toString())}var s=document.querySelector('script[type=module][src*="/_nuxt/"]');if(s){s.addEventListener('error',go,{once:true})}window.addEventListener('unhandledrejection',function(e){if(staleChunk(e.reason&&e.reason.message||e.reason))go()});window.addEventListener('error',function(e){if(staleChunk(e.message))go()},true)})();</script>`
 function nuxtStorageFixScript (purgeServiceWorker) {
@@ -50,12 +45,8 @@ function injectRedirect (html) {
   if (BC_HOME_REDIRECT && !out.includes('bc-storefront-home')) {
     out = out.replace(/<head[^>]*>/i, (m) => `${m}\n${BC_HOME_REDIRECT}`)
   }
-  if (bcPrimarySite) {
-    if (BC_LOADING_SHELL && !out.includes('bc-instant-shell')) {
-      out = out.replace(/<head[^>]*>/i, (m) => `${m}\n${BC_LOADING_SHELL}`)
-    }
-  } else if (INSTANT_SHELL_FRANKS && !out.includes('fss-instant-shell')) {
-    out = out.replace(/<head[^>]*>/i, (m) => `${m}\n${INSTANT_SHELL_FRANKS}`)
+  if (INSTANT_SHELL && !out.includes('fss-instant-shell') && !out.includes('bc-instant-shell')) {
+    out = out.replace(/<head[^>]*>/i, (m) => `${m}\n${INSTANT_SHELL}`)
   }
   if (!out.includes('gh-pages-spa-redirect')) {
     const idx = out.indexOf('<div id="__nuxt">')

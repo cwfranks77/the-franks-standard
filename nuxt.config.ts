@@ -47,7 +47,7 @@ const bcPrerenderRoutes = bcPrimarySite
 const rawOg = process.env.NUXT_PUBLIC_OG_IMAGE
 const ogImage = (rawOg && String(rawOg).trim())
   ? String(rawOg).trim()
-  : (bcPrimarySite ? `${siteUrl}/img/bc-logo-primary.png` : `${siteUrl}/franks-pavilion.png`)
+  : (bcPrimarySite ? `${siteUrl}/img/hero-showcase-v2.svg` : `${siteUrl}/franks-pavilion.png`)
 
 // Operator unlock: hash the phrase at BUILD time (normalized, same as the modal).
 // NUXT_PUBLIC_OPS_ACCESS_KEY is the source of truth when set; HASH is fallback only.
@@ -93,29 +93,17 @@ function bcPage (relativeFile: string, path: string) {
   return { path, file: resolve(bcPagesRoot, relativeFile) }
 }
 
-const bcPagesFromProjectFolder = bcPrimarySite
-  ? [
-      bcPage('index.vue', '/'),
-      bcPage('catalog.vue', '/bc-audio/catalog'),
-      bcPage('open-door.vue', '/bc-audio/open-door'),
-      bcPage('order-success.vue', '/bc-audio/order-success'),
-      bcPage('sms-consent.vue', '/bc-audio/sms-consent'),
-      bcPage('ops/index.vue', '/bc-audio/ops'),
-      bcPage('ops/panel.vue', '/bc-audio/ops/panel'),
-      bcPage('ops/marketing-automation.vue', '/bc-audio/ops/marketing-automation'),
-      bcPage('product/[id].vue', '/bc-audio/product/:id'),
-    ]
-  : [
-      bcPage('index.vue', '/bc-audio'),
-      bcPage('catalog.vue', '/bc-audio/catalog'),
-      bcPage('open-door.vue', '/bc-audio/open-door'),
-      bcPage('order-success.vue', '/bc-audio/order-success'),
-      bcPage('sms-consent.vue', '/bc-audio/sms-consent'),
-      bcPage('ops/index.vue', '/bc-audio/ops'),
-      bcPage('ops/panel.vue', '/bc-audio/ops/panel'),
-      bcPage('ops/marketing-automation.vue', '/bc-audio/ops/marketing-automation'),
-      bcPage('product/[id].vue', '/bc-audio/product/:id'),
-    ]
+const bcPagesFromProjectFolder = [
+  bcPage('index.vue', '/bc-audio'),
+  bcPage('catalog.vue', '/bc-audio/catalog'),
+  bcPage('open-door.vue', '/bc-audio/open-door'),
+  bcPage('order-success.vue', '/bc-audio/order-success'),
+  bcPage('sms-consent.vue', '/bc-audio/sms-consent'),
+  bcPage('ops/index.vue', '/bc-audio/ops'),
+  bcPage('ops/panel.vue', '/bc-audio/ops/panel'),
+  bcPage('ops/marketing-automation.vue', '/bc-audio/ops/marketing-automation'),
+  bcPage('product/[id].vue', '/bc-audio/product/:id'),
+]
 
 const franksNuxtPlugins = existsSync(franksPluginsDir)
   ? [
@@ -293,9 +281,7 @@ export default defineNuxtConfig({
     injectRegister: false,
     selfDestroying: true,
     registerWebManifestInRouteRules: true,
-    includeAssets: bcPrimarySite
-      ? ['img/bc-logo-primary.png', 'logo.svg', 'icons/icon-192.png', 'icons/icon-512.png']
-      : ['franks-pavilion.png', 'logo.svg', 'icons/icon-192.png', 'icons/icon-512.png'],
+    includeAssets: ['franks-pavilion.png', 'logo.svg', 'icons/icon-192.png', 'icons/icon-512.png'],
     manifest: {
       id: '/',
       name: bcPrimarySite ? BC_LEGAL_NAME : 'The Franks Standard',
