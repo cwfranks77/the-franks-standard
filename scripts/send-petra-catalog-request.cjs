@@ -9,7 +9,11 @@
  * Requires SENDGRID_API_KEY in .env (or environment).
  * Sends FROM bc-audio@thefranksstandard.com when SENDGRID_BC_FROM_EMAIL is set or defaulted below.
  */
-require('dotenv').config()
+try {
+  require('dotenv').config()
+} catch {
+  // GitHub Actions injects env vars directly; dotenv is optional locally.
+}
 
 const fs = require('node:fs')
 const path = require('node:path')
