@@ -1,5 +1,5 @@
 <script setup>
-import { SHOP_STORES } from '~/utils/dropshipCatalogs.js'
+import { BC_PARTNER_STORES, isBcPartnerStoreComingSoon } from '~/utils/bcPartnerStores.js'
 import { getBcExternalSiteUrl } from '~/utils/bcExternalSite.js'
 import { franksMarketplacePath } from '~/utils/franksMarketplaceUrl.js'
 import { getBcCartPath, getBcSupport } from '~/utils/bcSupport.js'
@@ -35,7 +35,11 @@ const menuOpen = ref(false)
 const storesOpen = ref(false)
 const storesRoot = ref(null)
 
-const partnerStores = SHOP_STORES.filter((s) => s.id !== 'store-directory')
+const partnerStores = BC_PARTNER_STORES
+
+function storeComingSoon (store) {
+  return isBcPartnerStoreComingSoon(store)
+}
 
 function storeHref (store) {
   if (store.id === 'bc-performance-audio') return store.path
@@ -140,8 +144,19 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
           </button>
           <div v-show="storesOpen" class="bc-nav__stores-panel">
             <template v-for="store in partnerStores" :key="store.id">
+              <span
+                v-if="isExternalStore(store) && storeComingSoon(store)"
+                class="bc-nav__stores-item bc-nav__stores-item--soon"
+              >
+                <span class="bc-nav__stores-dot" :style="{ background: store.accent }" />
+                <span>
+                  <strong>{{ store.name }}</strong>
+                  <small>{{ store.tagline }}</small>
+                  <span class="bc-nav__stores-soon">Coming soon</span>
+                </span>
+              </span>
               <a
-                v-if="isExternalStore(store)"
+                v-else-if="isExternalStore(store)"
                 :href="storeHref(store)"
                 class="bc-nav__stores-item"
                 target="_blank"
@@ -367,7 +382,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 .bc-nav__stores-item:hover { background: rgba(211, 47, 47, 0.08); }
 .bc-nav__stores-item strong { display: block; font-size: 0.88rem; }
 .bc-nav__stores-item small { display: block; font-size: 0.72rem; color: #7a8190; margin-top: 2px; }
-.bc-nav__stores-item--soon { opacity: 0.92; }
+.bc-nav__stores-item--soon { opacity: 0.92; cursor: default; }
 .bc-nav__stores-soon {
   display: inline-block;
   margin-top: 6px;

@@ -2,6 +2,7 @@
  * B&C Performance Audio — owner marketing automation (bcpoweraudio.com only).
  */
 import { BC_BRAND } from '~/utils/bcBrand.js'
+import { BC_AD_LOGO } from '~/utils/bcSocialAdImages.js'
 
 export const BC_SITE_URL = 'https://www.bcpoweraudio.com'
 export const BC_MARKETING_QUEUE_KEY = 'bcMarketingAutomation'
@@ -179,6 +180,76 @@ Site: ${BC_SITE_URL}
 Thank you,
 B&C Performance Audio LLC`
 
+/** Owner social ads page — copy + image previews for bcpoweraudio.com campaigns. */
+export const BC_SOCIAL_AD_CREATIVES = [
+  {
+    platform: 'X (Twitter) — profile + pin',
+    icon: '𝕏',
+    format: 'Profile: 400×400 · Header: 1500×500 · Post image: 1200×675',
+    image: 'img/bc-logo-primary.png',
+    imageSrc: BC_AD_LOGO,
+    tip: 'Pin a catalog tweet with the B&C logo — keep Franks Standard branding off this account.',
+    text: `DISPLAY NAME: B&C Performance Audio
+BIO: Competition-grade car, marine & home audio — authorized wholesale · ${BC_SITE_URL}
+SUPPORT: (833) 722-4147 · bc-audio@thefranksstandard.com
+
+PIN POST:
+Authorized competition audio — subwoofers, amps, staging gear.
+Browse the live catalog with MSRP + dropship checkout.
+
+${BC_SITE_URL}/bc-audio/catalog`,
+  },
+  {
+    platform: 'Instagram / Facebook',
+    icon: '📸',
+    format: 'Square 1080×1080 (feed) · Vertical 1080×1920 (Reels)',
+    image: 'img/bc-logo-primary.png on dark background',
+    imageSrc: BC_AD_LOGO,
+    tip: 'Link in bio → bcpoweraudio.com · use Reels for catalog screen recordings.',
+    text: `${BC_BRAND.full} 🔊
+
+Competition subwoofers · amps · marine audio
+Authorized dealer · dropship checkout
+Open Door support: (833) 722-4147
+
+Shop: ${BC_SITE_URL}
+
+#caraudio #subwoofer #competitionaudio #marineaudio #BCPerformanceAudio`,
+  },
+  {
+    platform: 'TikTok / YouTube Shorts',
+    icon: '🎬',
+    format: 'Vertical 9:16 · 15–45 seconds',
+    image: 'Screen record bcpoweraudio.com catalog + B&C logo end card',
+    imageSrc: BC_AD_LOGO,
+    tip: 'Use the Video ad builder in Marketing automation for scene-by-scene script.',
+    text: `HOOK: POV you found authorized competition bass without the runaround
+BODY: Screen record Car Audio + Marine rows on ${BC_SITE_URL}
+CTA: B&C Performance Audio · (833) 722-4147 · link in bio`,
+  },
+  {
+    platform: 'Google Ads — search',
+    icon: '🔍',
+    format: 'Responsive search ad · 3 headlines · 2 descriptions',
+    image: 'img/bc-logo-primary.png (optional image extension)',
+    imageSrc: BC_AD_LOGO,
+    tip: 'Keywords: competition subwoofer, car audio wholesale, marine amplifier Louisiana',
+    text: `Headlines:
+Authorized Competition Audio | B&C Performance Audio | Car & Marine Catalog
+
+Descriptions:
+Browse subwoofers, amps & staging gear with MSRP shown. Dropship checkout at ${BC_SITE_URL}.
+Louisiana dealer · Open Door owner support (833) 722-4147.`,
+  },
+]
+
+const BC_SOCIAL_IMAGE_BY_PLATFORM = {
+  linkedin: BC_AD_LOGO,
+  tiktok: BC_AD_LOGO,
+  instagram: BC_AD_LOGO,
+  youtube: BC_AD_LOGO,
+}
+
 export const BC_POST_VIDEO_DESTINATIONS = [
   { id: 'youtube', label: 'YouTube Studio', url: BC_PLATFORM_LINKS.youtube_studio },
   { id: 'tiktok', label: 'TikTok', url: BC_PLATFORM_LINKS.tiktok },
@@ -254,6 +325,8 @@ function buildTaskFromSlot (slot, weekStart) {
     platform: slot.platform,
     title: slot.title,
     caption: buildBcCaption(slot.platform),
+    imageSrc: BC_SOCIAL_IMAGE_BY_PLATFORM[slot.platform] || BC_AD_LOGO,
+    imageNote: 'img/bc-logo-primary.png',
     platformUrl: BC_PLATFORM_LINKS[slot.platform] || BC_PLATFORM_LINKS.instagram,
     status: 'pending',
     postedAt: null,

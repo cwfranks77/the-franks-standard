@@ -208,6 +208,9 @@ useSeoMeta({
       <NuxtLink to="/bc-audio/ops/marketing-automation" class="btn btn-primary btn-sm">
         Marketing automation — weekly posts &amp; video ads
       </NuxtLink>
+      <NuxtLink to="/bc-audio/ops/social-ads" class="btn btn-outline btn-sm">
+        Social ads — copy &amp; image previews
+      </NuxtLink>
     </div>
 
     <nav class="bc-panel__tabs" aria-label="Owner console sections">
@@ -511,7 +514,7 @@ useSeoMeta({
 .bc-panel__eyebrow { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.14em; color: #ff5252; margin: 0 0 6px; }
 .bc-panel__head h1 { font-size: 1.6rem; margin: 0 0 8px; }
 .bc-panel__sub { color: #9ca3af; font-size: 0.92rem; margin: 0; max-width: 36rem; line-height: 1.5; }
-.bc-panel__promo { margin-bottom: 1rem; }
+.bc-panel__promo { margin-bottom: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .bc-activity-stats { display: flex; flex-wrap: wrap; gap: 1rem; margin: 14px 0; }
 .bc-stat {
   padding: 12px 16px; border-radius: 10px; border: 1px solid rgba(211,47,47,0.25);

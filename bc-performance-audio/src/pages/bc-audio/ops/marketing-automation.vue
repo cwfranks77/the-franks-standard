@@ -10,6 +10,7 @@
           </p>
         </div>
         <NuxtLink to="/bc-audio/ops/panel" class="btn btn-outline btn-sm">← Owner console</NuxtLink>
+        <NuxtLink to="/bc-audio/ops/social-ads" class="btn btn-outline btn-sm">Social ad creatives ↗</NuxtLink>
       </header>
 
       <section v-if="loadError" class="bcmauto-card bcmauto-alert">{{ loadError }}</section>
@@ -139,6 +140,16 @@
         </div>
 
         <template v-if="task.kind === 'social'">
+          <figure v-if="task.imageSrc" class="bcmauto-preview">
+            <img
+              :src="task.imageSrc"
+              :alt="`${task.platform || 'Social'} creative`"
+              class="bcmauto-preview__img"
+              loading="lazy"
+              decoding="async"
+            >
+            <figcaption v-if="task.imageNote" class="bcmauto-muted small">{{ task.imageNote }}</figcaption>
+          </figure>
           <pre class="bcmauto-caption">{{ task.caption }}</pre>
         </template>
 
@@ -441,6 +452,23 @@ h1 { font-size: 1.75rem; margin: 0 0 8px; }
   padding: 12px; border-radius: 8px; background: rgba(0,0,0,0.35);
   border: 1px solid rgba(255,255,255,0.06); color: #b8bcc6; margin: 0;
 }
+.bcmauto-preview {
+  margin: 0 0 12px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(211, 47, 47, 0.35);
+  background: rgba(0, 0, 0, 0.35);
+  text-align: center;
+}
+.bcmauto-preview__img {
+  display: block;
+  max-width: min(100%, 360px);
+  max-height: 220px;
+  margin: 0 auto;
+  object-fit: contain;
+  border-radius: 8px;
+}
+.bcmauto-preview figcaption { margin-top: 8px; line-height: 1.45; }
 .bcmauto-field {
   display: flex; flex-direction: column; gap: 6px; font-size: 0.78rem; font-weight: 700;
   margin-bottom: 10px; max-width: 320px;

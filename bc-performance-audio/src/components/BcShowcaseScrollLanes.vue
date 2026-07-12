@@ -164,7 +164,10 @@ function openProductFromTile (tile) {
               v-for="(tile, i) in lane.tiles"
               :key="`b-${lane.deptKey}-${i}-${tile.productId}`"
               class="bc-scroll__cell"
+              role="button"
+              tabindex="-1"
               aria-hidden="true"
+              @click="openProductFromTile(tile)"
             >
               <div class="bc-scroll__img-wrap">
                 <img
@@ -173,6 +176,8 @@ function openProductFromTile (tile) {
                   class="bc-scroll__img"
                   loading="eager"
                   decoding="async"
+                  referrerpolicy="no-referrer"
+                  @error="onScrollImageError($event, tile)"
                 >
               </div>
             </figure>
