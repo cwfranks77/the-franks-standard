@@ -154,7 +154,7 @@ export function collectPagesFromDir (pagesRoot: string, rootDir: string) {
   }))
 }
 
-/** On bcpoweraudio.com only the B&C storefront home lives at `/` (franks-standard index.vue). */
-export function filterFranksPagesForBcPrimary<T extends { path: string }> (pages: T[]): T[] {
-  return pages.filter((page) => page.path === '/')
+/** On bcpoweraudio.com the Franks marketplace shell must not register — BC Audio owns `/`. */
+export function filterFranksPagesForBcPrimary<T extends { path: string }> (_pages: T[]): T[] {
+  return []
 }

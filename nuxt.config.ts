@@ -35,6 +35,7 @@ const franksSiteTitle = 'The Franks Standard — Marketplace Facilitator for Col
 const siteTitle = bcPrimarySite ? BC_LEGAL_NAME : franksSiteTitle
 const siteDescription = bcPrimarySite ? bcSiteDescription : META_DESCRIPTION
 const siteOgDescription = bcPrimarySite ? bcSiteDescription : OG_DESCRIPTION
+const bcLogoAsset = '/img/bc-logo-primary.png?v=20260622'
 const bcPrerenderRoutes = bcPrimarySite
   ? [
       '/',
@@ -47,7 +48,7 @@ const bcPrerenderRoutes = bcPrimarySite
 const rawOg = process.env.NUXT_PUBLIC_OG_IMAGE
 const ogImage = (rawOg && String(rawOg).trim())
   ? String(rawOg).trim()
-  : (bcPrimarySite ? `${siteUrl}/img/hero-showcase-v2.svg` : `${siteUrl}/franks-pavilion.png`)
+  : (bcPrimarySite ? `${siteUrl}/img/bc-logo-primary.png` : `${siteUrl}/franks-pavilion.png`)
 
 // Operator unlock: hash the phrase at BUILD time (normalized, same as the modal).
 // NUXT_PUBLIC_OPS_ACCESS_KEY is the source of truth when set; HASH is fallback only.
@@ -93,17 +94,29 @@ function bcPage (relativeFile: string, path: string) {
   return { path, file: resolve(bcPagesRoot, relativeFile) }
 }
 
-const bcPagesFromProjectFolder = [
-  bcPage('index.vue', '/bc-audio'),
-  bcPage('catalog.vue', '/bc-audio/catalog'),
-  bcPage('open-door.vue', '/bc-audio/open-door'),
-  bcPage('order-success.vue', '/bc-audio/order-success'),
-  bcPage('sms-consent.vue', '/bc-audio/sms-consent'),
-  bcPage('ops/index.vue', '/bc-audio/ops'),
-  bcPage('ops/panel.vue', '/bc-audio/ops/panel'),
-  bcPage('ops/marketing-automation.vue', '/bc-audio/ops/marketing-automation'),
-  bcPage('product/[id].vue', '/bc-audio/product/:id'),
-]
+const bcPagesFromProjectFolder = bcPrimarySite
+  ? [
+      bcPage('index.vue', '/'),
+      bcPage('catalog.vue', '/bc-audio/catalog'),
+      bcPage('open-door.vue', '/bc-audio/open-door'),
+      bcPage('order-success.vue', '/bc-audio/order-success'),
+      bcPage('sms-consent.vue', '/bc-audio/sms-consent'),
+      bcPage('ops/index.vue', '/bc-audio/ops'),
+      bcPage('ops/panel.vue', '/bc-audio/ops/panel'),
+      bcPage('ops/marketing-automation.vue', '/bc-audio/ops/marketing-automation'),
+      bcPage('product/[id].vue', '/bc-audio/product/:id'),
+    ]
+  : [
+      bcPage('index.vue', '/bc-audio'),
+      bcPage('catalog.vue', '/bc-audio/catalog'),
+      bcPage('open-door.vue', '/bc-audio/open-door'),
+      bcPage('order-success.vue', '/bc-audio/order-success'),
+      bcPage('sms-consent.vue', '/bc-audio/sms-consent'),
+      bcPage('ops/index.vue', '/bc-audio/ops'),
+      bcPage('ops/panel.vue', '/bc-audio/ops/panel'),
+      bcPage('ops/marketing-automation.vue', '/bc-audio/ops/marketing-automation'),
+      bcPage('product/[id].vue', '/bc-audio/product/:id'),
+    ]
 
 const franksNuxtPlugins = existsSync(franksPluginsDir)
   ? [
@@ -281,7 +294,9 @@ export default defineNuxtConfig({
     injectRegister: false,
     selfDestroying: true,
     registerWebManifestInRouteRules: true,
-    includeAssets: ['franks-pavilion.png', 'logo.svg', 'icons/icon-192.png', 'icons/icon-512.png'],
+    includeAssets: bcPrimarySite
+      ? ['img/bc-logo-primary.png', 'logo.svg', 'icons/icon-192.png', 'icons/icon-512.png']
+      : ['franks-pavilion.png', 'logo.svg', 'icons/icon-192.png', 'icons/icon-512.png'],
     manifest: {
       id: '/',
       name: bcPrimarySite ? BC_LEGAL_NAME : 'The Franks Standard',
@@ -294,11 +309,17 @@ export default defineNuxtConfig({
       scope: '/',
       orientation: 'any',
       categories: ['shopping', 'business'],
-      icons: [
-        { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
-        { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
-        { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
-      ],
+      icons: bcPrimarySite
+        ? [
+            { src: bcLogoAsset, sizes: '192x192', type: 'image/png', purpose: 'any' },
+            { src: bcLogoAsset, sizes: '512x512', type: 'image/png', purpose: 'any' },
+            { src: bcLogoAsset, sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          ]
+        : [
+            { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+            { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+            { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          ],
     },
     workbox: {
       // Do not precache HTML or hashed /_nuxt bundles — stale shells pin users to 404 chunks after deploy.
@@ -382,8 +403,11 @@ export default defineNuxtConfig({
         { 'http-equiv': 'Expires', content: '0' },
       ],
       link: [
-        { rel: 'icon', type: 'image/png', href: bcPrimarySite ? '/icons/icon-192.png' : '/franks-pavilion.png' },
-        { rel: 'apple-touch-icon', href: bcPrimarySite ? '/icons/icon-192.png' : '/franks-pavilion.png' },
+        { rel: 'icon', type: 'image/png', href: bcPrimarySite ? bcLogoAsset : '/franks-pavilion.png' },
+        { rel: 'apple-touch-icon', href: bcPrimarySite ? bcLogoAsset : '/franks-pavilion.png' },
+        ...(bcPrimarySite
+          ? [{ rel: 'preload', as: 'image', href: bcLogoAsset, fetchpriority: 'high' }]
+          : []),
         { rel: 'manifest', href: '/manifest.webmanifest' },
         { rel: 'preconnect', href: 'https://meet.jit.si' },
         { rel: 'preconnect', href: 'https://js.stripe.com' },

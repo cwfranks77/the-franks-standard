@@ -32,13 +32,16 @@ export default defineEventHandler(async (event) => {
   const method = getMethod(event)
 
   if (isOwnerRoute(path)) {
-    const allowed = checkOwnerAccess({
-      path,
-      opsKeyValid: opsKeyValid(event),
-      userId: getHeader(event, 'x-user-id') || null,
-    })
-    if (!allowed.allowed) {
-      throw createError({ statusCode: 403, statusMessage: 'Forbidden — owner access only.' })
+    // Allow static prerender to ship owner HTML shells; auth still applies at runtime.
+    if (!import.meta.prerender) {
+      const allowed = checkOwnerAccess({
+        path,
+        opsKeyValid: opsKeyValid(event),
+        userId: getHeader(event, 'x-user-id') || null,
+      })
+      if (!allowed.allowed) {
+        throw createError({ statusCode: 403, statusMessage: 'Forbidden — owner access only.' })
+      }
     }
   }
 
