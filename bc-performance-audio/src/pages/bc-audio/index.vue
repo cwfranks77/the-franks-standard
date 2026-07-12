@@ -334,83 +334,23 @@ const isCheckoutBusy = (product: any) =>
       <p v-if="catalogPending" class="bc-home__status">Loading authorized catalog…</p>
 
       <BcShowcaseScrollLanes
-        v-else-if="selectedCategory === 'all' && catalogInDept.length"
+        v-else-if="catalogInDept.length"
         :products="catalogInDept"
         class="bc-fade-in"
       />
 
-      <BcCheckoutTermsAgreement
-        v-if="!catalogPending && filteredProducts.length"
-        v-model="checkoutTermsAccepted"
-        compact
-        class="bc-home__terms"
-      />
-
-      <section v-if="!catalogPending && filteredProducts.length" class="bc-home__grid bc-fade-in" aria-label="Product inventory grid">
-        <article
-          v-for="product in filteredProducts"
-          :key="getProductId(product)"
-          class="bc-home__card"
-        >
-          <div class="bc-home__card-top">
-            <div class="bc-home__card-media">
-              <img
-                v-if="getProductImage(product)"
-                :src="getProductImage(product)"
-                :alt="getProductName(product)"
-                class="bc-home__card-img"
-                loading="lazy"
-                @error="onProductImageError($event, product)"
-              >
-              <span v-else class="bc-home__card-icon">{{ getIconForDept(getDeptKey(product)) }}</span>
-              <span class="bc-home__card-badge">✓ AUTHORIZED PICTURE MATRIX</span>
-            </div>
-            <div class="bc-home__card-copy">
-              <span class="bc-home__card-dept">{{ getDeptLabel(getDeptKey(product)) }}</span>
-              <h3 class="bc-home__card-name">{{ getProductName(product) }}</h3>
-              <p class="bc-home__card-sku">MODEL SKU: {{ getProductSku(product) }}</p>
-              <p class="bc-home__card-desc">{{ getProductDescription(product) }}</p>
-            </div>
-          </div>
-          <div class="bc-home__card-foot">
-            <div class="bc-home__card-price-row">
-              <span class="bc-home__card-price-label">MSRP Retail Price</span>
-              <span class="bc-home__card-price">{{ formatPrice(product) }}</span>
-            </div>
-            <BcShippingEstimate compact />
-            <div class="bc-home__card-actions">
-              <button type="button" class="bc-home__btn bc-home__btn--cart" @click="handleAddToCart(product)">
-                {{ cartBtnText(product) }}
-              </button>
-              <NuxtLink
-                v-if="cartAddedId === getProductId(product) || hasItem(getProductId(product))"
-                :to="cartPath"
-                class="bc-home__btn bc-home__btn--goto-cart"
-              >
-                Go to Cart →
-              </NuxtLink>
-              <button
-                type="button"
-                class="bc-home__btn bc-home__btn--buy"
-                :disabled="isCheckoutBusy(product) || !checkoutTermsAccepted"
-                @click="handleStripeExpress(product)"
-              >
-                {{ isCheckoutBusy(product) ? 'Starting…' : 'Buy It Now' }}
-              </button>
-              <p v-if="checkoutNote(product)" class="bc-home__card-note">{{ checkoutNote(product) }}</p>
-            </div>
-          </div>
-        </article>
-      </section>
-
-      <p v-else-if="!catalogPending && !catalogError" class="bc-home__status">
-        No products in this department yet.
+      <p v-if="!catalogPending && catalogInDept.length" class="bc-home__more bc-fade-in">
         <NuxtLink to="/bc-audio/catalog" class="bc-home__catalog-link">Browse full catalog →</NuxtLink>
       </p>
 
-      <p v-if="hasMoreInCatalog" class="bc-home__more">
-        Showing {{ filteredProducts.length }} of {{ totalInView.toLocaleString() }} authorized audio items on this page.
-        <NuxtLink to="/bc-audio/catalog" class="bc-home__catalog-link">Open full catalog (all {{ catalogInDept.length.toLocaleString() }}) →</NuxtLink>
+      <p v-else-if="!catalogPending && !catalogError && !catalogInDept.length" class="bc-home__status">
+        No products in the catalog yet.
+        <NuxtLink to="/bc-audio/catalog" class="bc-home__catalog-link">Browse full catalog →</NuxtLink>
+      </p>
+
+      <p v-else-if="!catalogPending && selectedCategory !== 'all'" class="bc-home__status">
+        Department filter applies on the full catalog.
+        <NuxtLink :to="`/bc-audio/catalog?dept=${selectedCategory}`" class="bc-home__catalog-link">Open this department →</NuxtLink>
       </p>
     </main>
 
