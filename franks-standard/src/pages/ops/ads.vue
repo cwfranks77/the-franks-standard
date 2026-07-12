@@ -46,23 +46,11 @@
             </div>
             <button type="button" class="btn btn-primary btn-sm" @click="copyAd(ad)">{{ ad.copied ? 'Copied!' : 'Copy text' }}</button>
           </div>
-          <figure v-if="ad.imageSrc" class="ad-preview">
-            <img
-              :src="ad.imageSrc"
-              :alt="`${ad.platform} creative preview`"
-              class="ad-preview__img"
-              loading="lazy"
-              decoding="async"
-            >
-            <figcaption class="ad-preview__caption text-muted small">{{ ad.image }}</figcaption>
-          </figure>
-          <p v-else-if="ad.image" class="ad-preview__note text-muted small"><strong>Image:</strong> {{ ad.image }}</p>
           <div class="ad-body">
             <pre class="ad-text">{{ ad.text }}</pre>
           </div>
           <div class="ad-notes">
-            <p v-if="ad.imageSrc" class="text-muted small"><strong>Creative file:</strong> {{ ad.image }}</p>
-            <p v-else class="text-muted small"><strong>Image:</strong> {{ ad.image }}</p>
+            <p class="text-muted small"><strong>Image:</strong> {{ ad.image }}</p>
             <p class="text-muted small"><strong>Tip:</strong> {{ ad.tip }}</p>
           </div>
         </section>
@@ -72,8 +60,6 @@
 </template>
 
 <script setup>
-import { FRANKS_AD_LOGO } from '~/utils/socialAdImages.js'
-
 definePageMeta({ layout: 'default', middleware: 'ops-auth' })
 useSeoMeta({ title: 'Social Ads — The Franks Standard', robots: 'noindex, nofollow' })
 
@@ -85,7 +71,6 @@ const ads = reactive([
     icon: '𝕏',
     format: 'Profile: 400×400 · Header: 1500×500 · Tweet image: 1200×675',
     image: 'public/franks-pavilion.png (profile photo) + same for tweet attachment',
-    imageSrc: FRANKS_AD_LOGO,
     tip: 'Change @handle manually in X settings. Do NOT use old ZFuel name or logo.',
     copied: false,
     text: `DISPLAY NAME: The Franks Standard
@@ -113,7 +98,6 @@ Founders (10 spots): ${SITE}/join/founders10 code FOUNDERS10
     icon: '📘',
     format: 'Landscape 1200×628 or Square 1080×1080',
     image: 'franks-pavilion.png on dark background + headline: THE FRANKS STANDARD',
-    imageSrc: FRANKS_AD_LOGO,
     tip: 'Update Facebook Page name and profile photo to match (Meta Business Suite → Page settings).',
     copied: false,
     text: `Stop selling authentic collectibles on platforms that treat fakes like a minor inconvenience.
@@ -141,7 +125,6 @@ ${SITE}`,
     icon: '📸',
     format: 'Square 1080×1080 (feed) · Vertical 1080×1920 (stories)',
     image: 'franks-pavilion.png · gold “AUTHENTICITY GUARANTEED” text overlay',
-    imageSrc: FRANKS_AD_LOGO,
     tip: 'Update @handle and bio link to thefranksstandard.com. Link in bio → /sell',
     copied: false,
     text: `THE FRANKS STANDARD 🏛️
@@ -192,7 +175,6 @@ Hashtags: #collectibles #sportscards #reseller #marketplace #authentication`,
     icon: '✈️',
     format: 'Square 1080×1080 + caption',
     image: 'franks-pavilion.png',
-    imageSrc: FRANKS_AD_LOGO,
     tip: 'Post in card/crypto/collectible channels — direct tone, no spam.',
     copied: false,
     text: `🏛️ THE FRANKS STANDARD — proof-first marketplace (rebrand live)
@@ -250,23 +232,5 @@ h1 { font-size: 1.8rem; margin-bottom: 8px; }
   border: 1px solid rgba(255, 255, 255, 0.06); max-height: 420px; overflow-y: auto;
 }
 .ad-notes { display: flex; flex-direction: column; gap: 4px; }
-.ad-preview {
-  margin: 0 0 16px;
-  padding: 14px;
-  border-radius: var(--radius);
-  border: 1px solid rgba(247, 202, 0, 0.25);
-  background: rgba(0, 0, 0, 0.35);
-  text-align: center;
-}
-.ad-preview__img {
-  display: block;
-  max-width: min(100%, 420px);
-  max-height: 280px;
-  margin: 0 auto;
-  object-fit: contain;
-  border-radius: 8px;
-}
-.ad-preview__caption { margin: 10px 0 0; line-height: 1.45; }
-.ad-preview__note { margin: 0 0 14px; }
 .small { font-size: 0.82rem; }
 </style>

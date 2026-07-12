@@ -24,7 +24,7 @@ export function isBrandyStoreHost (hostname) {
   return BRANDY_STORE_HOSTS.has(h)
 }
 
-export const BRANDY_HOLD_HEADLINE = "Brandy's Sporting Goods — coming soon"
+export const BRANDY_HOLD_HEADLINE = "Brandy's Sporting Goods — opening soon"
 export const BRANDY_HOLD_MESSAGE =
   'We are finishing supplier setup and inventory before checkout goes live. Check back soon or browse the main marketplace.'
 

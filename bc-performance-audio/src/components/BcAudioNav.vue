@@ -1,5 +1,5 @@
 <script setup>
-import { SHOP_STORES, isShopStoreComingSoon } from '~/utils/dropshipCatalogs.js'
+import { SHOP_STORES } from '~/utils/dropshipCatalogs.js'
 import { getBcExternalSiteUrl } from '~/utils/bcExternalSite.js'
 import { franksMarketplacePath } from '~/utils/franksMarketplaceUrl.js'
 import { getBcCartPath, getBcSupport } from '~/utils/bcSupport.js'
@@ -44,10 +44,6 @@ function storeHref (store) {
 
 function isExternalStore (store) {
   return store.id !== 'bc-performance-audio'
-}
-
-function storeComingSoon (store) {
-  return isShopStoreComingSoon(store)
 }
 
 function closeAll () {
@@ -148,7 +144,6 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
                 v-if="isExternalStore(store)"
                 :href="storeHref(store)"
                 class="bc-nav__stores-item"
-                :class="{ 'bc-nav__stores-item--soon': storeComingSoon(store) }"
                 target="_blank"
                 rel="noopener noreferrer"
                 @click="closeAll"
@@ -157,21 +152,18 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
                 <span>
                   <strong>{{ store.name }}</strong>
                   <small>{{ store.tagline }}</small>
-                  <span v-if="storeComingSoon(store)" class="bc-nav__stores-soon">Coming soon</span>
                 </span>
               </a>
               <NuxtLink
                 v-else
                 :to="storeHref(store)"
                 class="bc-nav__stores-item"
-                :class="{ 'bc-nav__stores-item--soon': storeComingSoon(store) }"
                 @click="closeAll"
               >
                 <span class="bc-nav__stores-dot" :style="{ background: store.accent }" />
                 <span>
                   <strong>{{ store.name }}</strong>
                   <small>{{ store.tagline }}</small>
-                  <span v-if="storeComingSoon(store)" class="bc-nav__stores-soon">Coming soon</span>
                 </span>
               </NuxtLink>
             </template>

@@ -35,7 +35,7 @@
         >
           <div class="store-card-top">
             <span class="store-badge">STORE</span>
-            <span v-if="store.onHold" class="store-status">Coming soon</span>
+            <span v-if="store.onHold" class="store-status">Opening soon</span>
           </div>
           <h2>{{ store.displayName }}</h2>
           <p class="text-muted">{{ store.subhead }}</p>
@@ -72,8 +72,8 @@ const defaultFeaturedStores = [
   },
   {
     displayName: "Brandy's Sporting Goods",
-    slug: 'brandysportinggoods',
-    subhead: 'Outdoor, fitness & sporting gear — coming soon on The Franks Standard.',
+    slug: 'brandyssportinggoods',
+    subhead: 'Opening soon on The Franks Standard — first storefront for authenticated gear.',
     onHold: true,
     stats: null,
   },
