@@ -8,6 +8,8 @@
  */
 const fs = require('node:fs')
 const path = require('node:path')
+const crypto = require('node:crypto')
+const { pathToFileURL } = require('node:url')
 
 const ROOT = path.join(__dirname, '..')
 const DEFAULT_CSV = path.join(process.env.USERPROFILE || '', 'Downloads', 'prodlist.csv')
@@ -24,6 +26,22 @@ function resolveCategoryMarkup (category, name) {
   if (cat.includes('accessory') || label.includes('cable') || label.includes('mount') || label.includes('adapter')) return 2.50
   if (cat.includes('electronics') || cat.includes('computer') || cat.includes('workstation')) return 1.35
   return 1.55
+}
+
+function buildCatalogSignature (products) {
+  const lines = products
+    .map((p) => `${String(p.sku || p.id || '').trim()}|${p.inStock === false ? 0 : 1}|${Number(p.retailPrice || p.price || 0).toFixed(2)}`)
+    .sort()
+  return crypto.createHash('sha256').update(`${products.length}\n${lines.join('\n')}`).digest('hex').slice(0, 24)
+}
+
+async function countBcAudioProducts (products) {
+  try {
+    const mod = await import(pathToFileURL(path.join(ROOT, 'bc-performance-audio', 'src', 'utils', 'bcAudioOnlyCatalog.js')))
+    return mod.filterBcAudioProducts(products).length
+  } catch {
+    return 0
+  }
 }
 
 function buildBcCatalogItem (item) {
@@ -218,7 +236,7 @@ function loadPetraRows (csvPath) {
   return products
 }
 
-function main () {
+async function main () {
   const { csvPath } = parseArgs()
   if (!fs.existsSync(csvPath)) {
     if (fs.existsSync(OUT_FILE)) {
@@ -274,33 +292,57 @@ function main () {
 
   fs.writeFileSync(OUT_FILE, JSON.stringify(payload), 'utf8')
 
+  const catalogSignature = buildCatalogSignature(products)
+  const audioCount = await countBcAudioProducts(products)
+  const inStock = products.filter((p) => p.inStock).length
+
   const catalogIndex = {
     catalogUrl: '/catalog/petra-products.json',
     imagePolicy: 'external-only',
     imageHost: payload.imageHost,
     count: products.length,
-    inStockCount: products.filter((p) => p.inStock).length,
+    audioCount,
+    inStockCount: inStock,
     updatedAt: payload.generatedAt,
+    catalogSignature,
+    sourceFile: path.basename(csvPath),
   }
   const contentDir = path.join(ROOT, 'content')
   const srcContentDir = path.join(ROOT, 'src', 'content')
+  const publicContentDir = path.join(ROOT, 'public', 'content')
+  const publicCatalogDir = path.join(ROOT, 'public', 'catalog')
   fs.mkdirSync(contentDir, { recursive: true })
   fs.mkdirSync(srcContentDir, { recursive: true })
+  fs.mkdirSync(publicContentDir, { recursive: true })
+  const indexJson = `${JSON.stringify(catalogIndex, null, 2)}\n`
   fs.writeFileSync(
     path.join(contentDir, 'products.json'),
-    `${JSON.stringify(catalogIndex, null, 2)}\n`,
+    indexJson,
     'utf8',
   )
   fs.writeFileSync(
     path.join(srcContentDir, 'products.json'),
-    `${JSON.stringify(catalogIndex, null, 2)}\n`,
+    indexJson,
+    'utf8',
+  )
+  fs.writeFileSync(
+    path.join(publicContentDir, 'products.json'),
+    indexJson,
+    'utf8',
+  )
+  fs.writeFileSync(
+    path.join(publicCatalogDir, 'catalog-index.json'),
+    indexJson,
     'utf8',
   )
 
-  const inStock = products.filter((p) => p.inStock).length
-  console.log(`import-petra-prodlist: wrote ${products.length} products (${inStock} in stock)`)
+  const inStockLabel = inStock
+  console.log(`import-petra-prodlist: wrote ${products.length} products (${inStockLabel} in stock, ${audioCount} B&C audio)`)
   console.log(`  catalog file: ${OUT_FILE}`)
   console.log('  images: served from Petra CDN (not stored on site)')
 }
 
-main()
+main().catch((err) => {
+  console.error(err)
+  process.exit(1)
+})

@@ -1,11 +1,15 @@
 <script setup>
 import { BC_BRAND } from '~/utils/bcBrand.js'
+import { isBcPowerAudioPrimarySite } from '~/utils/bcPrimarySite.js'
+import { franksMarketplacePath } from '~/utils/franksMarketplaceUrl.js'
 import { getBcSupport } from '~/utils/bcSupport.js'
 
 definePageMeta({ layout: 'bc-audio' })
 
 const config = useRuntimeConfig()
 const support = computed(() => getBcSupport(config))
+const storefrontPath = computed(() => (isBcPowerAudioPrimarySite(config.public.siteUrl) ? '/' : '/bc-audio'))
+const franksParentUrl = computed(() => franksMarketplacePath(config, '/'))
 
 useSeoMeta({
   title: `Open Door Policy — ${BC_BRAND.full}`,
@@ -67,8 +71,15 @@ useSeoMeta({
       <div class="bc-od__cta">
         <a :href="`mailto:${support.email}?subject=Open%20Door%20-%20B%26C%20Audio`" class="bc-od__btn bc-od__btn--primary">Send feedback</a>
         <a :href="`tel:${support.phoneTel}`" class="bc-od__btn">Call {{ support.phoneDisplay }}</a>
-        <NuxtLink to="/bc-audio" class="bc-od__btn bc-od__btn--ghost">Back to storefront</NuxtLink>
+        <NuxtLink :to="storefrontPath" class="bc-od__btn bc-od__btn--ghost">Back to storefront</NuxtLink>
       </div>
+
+      <p class="bc-od__parent">
+        B&amp;C is a division of
+        <a :href="franksParentUrl" target="_blank" rel="noopener noreferrer">The Franks Standard</a>
+        (parent company for checkout and tax). For collectibles and other partner stores, use
+        <strong>Shop Stores</strong> in the top menu — not this Open Door line.
+      </p>
     </div>
   </div>
 </template>
@@ -105,4 +116,14 @@ useSeoMeta({
 }
 .bc-od__btn--primary { background: linear-gradient(135deg, #d32f2f, #b71c1c); border-color: transparent; color: #fff; }
 .bc-od__btn--ghost { color: #9ca3af; }
+.bc-od__parent {
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: #6b7280;
+}
+.bc-od__parent a { color: #9ca3af; }
+.bc-od__parent a:hover { color: #ff5252; }
 </style>

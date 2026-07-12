@@ -4,6 +4,7 @@
  */
 
 import { PRICING_PUBLIC } from '~/utils/pricingPublic.js'
+import { FRANKS_AD_LOGO, FRANKS_COA_AD_IMAGE } from '~/utils/socialAdImages.js'
 
 export const SITE_URL = 'https://thefranksstandard.com'
 
@@ -69,6 +70,7 @@ export const SOCIAL_ADS_PROTECTION = [
     icon: '🛡️',
     format: '1200×628 or 1080×1080 — split graphic: buyer left / seller right',
     image: 'franks-pavilion.png + "Trust both sides" headline',
+    imageSrc: FRANKS_AD_LOGO,
     text: balancedProtectionAd(),
   },
   {
@@ -76,6 +78,7 @@ export const SOCIAL_ADS_PROTECTION = [
     icon: '𝕏',
     format: 'Tweet + 1200×675 card',
     image: 'Floor office COA diagram mockup',
+    imageSrc: FRANKS_COA_AD_IMAGE,
     text: `New on The Franks Standard — protection that respects buyers AND sellers.
 
 Buyers: COA serial = one listing office. Verify at ${SITE_URL}/verify/coa. Escrow until you confirm.

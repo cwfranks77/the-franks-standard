@@ -18,16 +18,19 @@ import {
 import { bcPlaceholderImageForProduct, resolveBcProductImage } from '~/utils/bcProductImage.js'
 import { BC_HOMEPAGE_DEFAULTS } from '~/utils/bcRetailPricing.js'
 import { fetchBcPublicSiteContent } from '~/composables/useBcPublicSiteContent'
+import { isBcPowerAudioPrimarySite } from '~/utils/bcPrimarySite.js'
 
 definePageMeta({ layout: 'bc-audio' })
 
-const GRID_LIMIT = 24
+const GRID_LIMIT = 48
 
 const DEPARTMENTS = BC_AUDIO_DEPARTMENTS
 
 type DeptKey = (typeof DEPARTMENTS)[number]['key']
 
 const config = useRuntimeConfig()
+const bcPrimarySite = computed(() => isBcPowerAudioPrimarySite(config.public.siteUrl))
+const storeHomePath = computed(() => (bcPrimarySite.value ? '/' : '/bc-audio'))
 const cartPath = computed(() => getBcCartPath(config))
 const support = computed(() => getBcSupport(config))
 const { canPurchase, accountsRequired, isLoggedIn, isPending } = useBcCustomerAccount()
@@ -42,7 +45,7 @@ const cartAddedId = ref('')
 const checkoutNoteById = ref<Record<string, string>>({})
 let cartAddedTimer: ReturnType<typeof setTimeout> | null = null
 const { addItem, itemCount, hasItem } = useCart()
-const { products, pending: catalogPending, refresh: refreshCatalog } = useBcProductCatalog()
+const { products, pending: catalogPending, error: catalogError, refresh: refreshCatalog } = useBcProductCatalog()
 
 const homepageCopy = ref({ ...BC_HOMEPAGE_DEFAULTS })
 
@@ -184,7 +187,7 @@ function syncCategoryFromRoute () {
 function onCategoryChange () {
   const dept = DEPARTMENTS.find((d) => d.key === selectedCategory.value)
   const query = dept && dept.key !== 'all' ? { dept: dept.query } : {}
-  router.replace({ path: '/bc-audio', query })
+  router.replace({ path: storeHomePath.value, query })
 }
 
 watch(() => route.query.dept, syncCategoryFromRoute)
@@ -330,8 +333,14 @@ const isCheckoutBusy = (product: any) =>
 
       <p v-if="catalogPending" class="bc-home__status">Loading authorized catalog…</p>
 
+      <BcShowcaseScrollLanes
+        v-else-if="selectedCategory === 'all' && catalogInDept.length"
+        :products="catalogInDept"
+        class="bc-fade-in"
+      />
+
       <BcCheckoutTermsAgreement
-        v-else-if="filteredProducts.length"
+        v-if="!catalogPending && filteredProducts.length"
         v-model="checkoutTermsAccepted"
         compact
         class="bc-home__terms"
@@ -400,8 +409,8 @@ const isCheckoutBusy = (product: any) =>
       </p>
 
       <p v-if="hasMoreInCatalog" class="bc-home__more">
-        Showing {{ filteredProducts.length }} of {{ totalInView.toLocaleString() }} items in this view.
-        <NuxtLink to="/bc-audio/catalog" class="bc-home__catalog-link">Open full catalog →</NuxtLink>
+        Showing {{ filteredProducts.length }} of {{ totalInView.toLocaleString() }} authorized audio items on this page.
+        <NuxtLink to="/bc-audio/catalog" class="bc-home__catalog-link">Open full catalog (all {{ catalogInDept.length.toLocaleString() }}) →</NuxtLink>
       </p>
     </main>
 

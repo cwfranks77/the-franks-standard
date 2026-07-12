@@ -115,6 +115,17 @@
           <article v-for="ad in SOCIAL_ADS_PROTECTION" :key="ad.platform" class="ads-card">
             <h3>{{ ad.icon }} {{ ad.platform }}</h3>
             <p class="format text-muted small">{{ ad.format }}</p>
+            <figure v-if="ad.imageSrc" class="ads-card__preview">
+              <img
+                :src="ad.imageSrc"
+                :alt="`${ad.platform} creative`"
+                class="ads-card__img"
+                loading="lazy"
+                decoding="async"
+              >
+              <figcaption v-if="ad.image" class="text-muted small">{{ ad.image }}</figcaption>
+            </figure>
+            <p v-else-if="ad.image" class="text-muted small ads-card__image-note"><strong>Image:</strong> {{ ad.image }}</p>
             <pre class="ad-text">{{ ad.text }}</pre>
           </article>
         </div>
@@ -268,6 +279,23 @@ useSeoMeta({
   border-radius: 12px;
 }
 .ads-card h3 { font-size: 1rem; font-weight: 800; margin: 0 0 8px; }
+.ads-card__preview {
+  margin: 0 0 12px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #f8f9fb;
+  text-align: center;
+}
+.ads-card__img {
+  display: block;
+  max-width: min(100%, 360px);
+  max-height: 220px;
+  margin: 0 auto;
+  object-fit: contain;
+}
+.ads-card__preview figcaption { margin-top: 8px; line-height: 1.45; }
+.ads-card__image-note { margin: 0 0 10px; }
 .ad-text {
   white-space: pre-wrap;
   font-size: 0.82rem;

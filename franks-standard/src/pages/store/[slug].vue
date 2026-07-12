@@ -2,7 +2,7 @@
   <div class="store-page">
     <div class="container">
       <div v-if="storeOnHold" class="store-hold card">
-        <p class="eyebrow">Opening soon</p>
+        <p class="eyebrow">Coming soon</p>
         <h1>{{ holdHeadline }}</h1>
         <p class="text-muted">{{ holdMessage }}</p>
         <p class="text-muted small">
@@ -132,13 +132,13 @@ const filteredListings = computed(() => {
 useSeoMeta({
   title: () =>
     storeOnHold.value
-      ? "Brandy's Sporting Goods — opening soon"
+      ? "Brandy's Sporting Goods — coming soon"
       : store.value
         ? `${store.value.displayName} — The Franks Standard`
         : 'Store',
   description: () =>
     storeOnHold.value
-      ? 'Brandy\'s Sporting Goods on The Franks Standard — catalog opening soon. Browse the marketplace meanwhile.'
+      ? 'Brandy\'s Sporting Goods on The Franks Standard — coming soon. Browse the marketplace meanwhile.'
       : store.value
         ? `Shop ${store.value.displayName} on The Franks Standard — tactical, outdoor, and hunting gear.`
         : 'Seller storefront on The Franks Standard',

@@ -1,5 +1,5 @@
 <script setup>
-import { SHOP_STORES } from '~/utils/dropshipCatalogs.js'
+import { SHOP_STORES, isShopStoreComingSoon } from '~/utils/dropshipCatalogs.js'
 import { getBcExternalSiteUrl } from '~/utils/bcExternalSite.js'
 import { franksMarketplacePath } from '~/utils/franksMarketplaceUrl.js'
 import { getBcCartPath, getBcSupport } from '~/utils/bcSupport.js'
@@ -11,8 +11,21 @@ const cartPath = computed(() => getBcCartPath(config))
 const brandHomePath = computed(() => (bcPrimarySite.value ? '/' : '/bc-audio'))
 const bcExternalUrl = computed(() => getBcExternalSiteUrl(config))
 const franksStoresUrl = computed(() => franksMarketplacePath(config, '/stores'))
-const franksHomeUrl = computed(() => franksMarketplacePath(config, '/'))
 const support = computed(() => getBcSupport(config))
+
+/** Hide “Full website” when already on bcpoweraudio.com or when it points at the same host. */
+const showExternalSiteLink = computed(() => {
+  const external = bcExternalUrl.value
+  if (!external || bcPrimarySite.value) return false
+  try {
+    const siteRaw = String(config.public.siteUrl || '').trim()
+    const currentHost = new URL(siteRaw.startsWith('http') ? siteRaw : `https://${siteRaw}`).hostname
+    const externalHost = new URL(external).hostname
+    return currentHost !== externalHost
+  } catch {
+    return Boolean(external)
+  }
+})
 const onBrandKnock = inject('opsLogoKnock', null)
 
 const { isLoggedIn, isApproved, canPurchase } = useBcCustomerAccount()
@@ -31,6 +44,10 @@ function storeHref (store) {
 
 function isExternalStore (store) {
   return store.id !== 'bc-performance-audio'
+}
+
+function storeComingSoon (store) {
+  return isShopStoreComingSoon(store)
 }
 
 function closeAll () {
@@ -131,6 +148,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
                 v-if="isExternalStore(store)"
                 :href="storeHref(store)"
                 class="bc-nav__stores-item"
+                :class="{ 'bc-nav__stores-item--soon': storeComingSoon(store) }"
                 target="_blank"
                 rel="noopener noreferrer"
                 @click="closeAll"
@@ -139,18 +157,21 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
                 <span>
                   <strong>{{ store.name }}</strong>
                   <small>{{ store.tagline }}</small>
+                  <span v-if="storeComingSoon(store)" class="bc-nav__stores-soon">Coming soon</span>
                 </span>
               </a>
               <NuxtLink
                 v-else
                 :to="storeHref(store)"
                 class="bc-nav__stores-item"
+                :class="{ 'bc-nav__stores-item--soon': storeComingSoon(store) }"
                 @click="closeAll"
               >
                 <span class="bc-nav__stores-dot" :style="{ background: store.accent }" />
                 <span>
                   <strong>{{ store.name }}</strong>
                   <small>{{ store.tagline }}</small>
+                  <span v-if="storeComingSoon(store)" class="bc-nav__stores-soon">Coming soon</span>
                 </span>
               </NuxtLink>
             </template>
@@ -165,14 +186,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
         <NuxtLink to="/bc-audio/open-door" class="bc-nav__link bc-nav__link--door" @click="closeAll">Open Door</NuxtLink>
         <BcInstallApp v-if="bcPrimarySite" variant="link" class="bc-nav__link" />
         <a
-          :href="franksHomeUrl"
-          class="bc-nav__link bc-nav__link--muted"
-          target="_blank"
-          rel="noopener noreferrer"
-          @click="closeAll"
-        >The Franks Standard ↗</a>
-        <a
-          v-if="bcExternalUrl"
+          v-if="showExternalSiteLink"
           :href="bcExternalUrl"
           class="bc-nav__link bc-nav__link--external"
           target="_blank"
@@ -361,6 +375,20 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 .bc-nav__stores-item:hover { background: rgba(211, 47, 47, 0.08); }
 .bc-nav__stores-item strong { display: block; font-size: 0.88rem; }
 .bc-nav__stores-item small { display: block; font-size: 0.72rem; color: #7a8190; margin-top: 2px; }
+.bc-nav__stores-item--soon { opacity: 0.92; }
+.bc-nav__stores-soon {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+}
 .bc-nav__stores-dot {
   width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0;
 }

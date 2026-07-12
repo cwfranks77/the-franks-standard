@@ -48,6 +48,7 @@ jobs:
           NUXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NUXT_PUBLIC_SUPABASE_KEY }}
           NUXT_PUBLIC_OPS_ACCESS_KEY: ${{ secrets.NUXT_PUBLIC_OPS_ACCESS_KEY }}
           NUXT_PUBLIC_OPS_ACCESS_KEY_HASH: ${{ secrets.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH }}
+          NUXT_PUBLIC_BRANDY_STORE_ON_HOLD: 'true'
         run: npm run build
 
       - name: Upload artifact

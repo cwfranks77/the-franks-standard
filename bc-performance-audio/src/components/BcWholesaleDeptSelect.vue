@@ -1,7 +1,11 @@
 <script setup>
 import { BC_AUDIO_DEPARTMENTS } from '~/utils/bcAudioOnlyCatalog.js'
+import { isBcPowerAudioPrimarySite } from '~/utils/bcPrimarySite.js'
 
 const route = useRoute()
+const config = useRuntimeConfig()
+const bcPrimarySite = computed(() => isBcPowerAudioPrimarySite(config.public.siteUrl))
+const storeHomePath = computed(() => (bcPrimarySite.value ? '/' : '/bc-audio'))
 
 const departments = [
   { key: 'showroom', label: 'All audio departments', category: '' },
@@ -27,11 +31,12 @@ const selected = computed({
   },
   set (key) {
     if (!key || key === 'showroom') {
-      navigateTo({ path: '/bc-audio', query: {} })
+      navigateTo({ path: storeHomePath.value, query: {} })
       return
     }
-    if (route.path === '/bc-audio' || route.path === '/bc-audio/') {
-      navigateTo({ path: '/bc-audio', query: { dept: key } })
+    const homePaths = new Set([storeHomePath.value, '/bc-audio', '/bc-audio/'])
+    if (homePaths.has(route.path)) {
+      navigateTo({ path: storeHomePath.value, query: { dept: key } })
       return
     }
     const dept = departments.find((d) => d.key === key)

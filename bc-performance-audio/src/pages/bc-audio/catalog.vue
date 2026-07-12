@@ -2,10 +2,13 @@
 import { BC_BRAND } from '~/utils/bcBrand.js'
 import { getBcSupport } from '~/utils/bcSupport.js'
 import { BC_SEO_KEYWORDS } from '~/utils/bcSeo.js'
+import { isBcPowerAudioPrimarySite } from '~/utils/bcPrimarySite.js'
 
 definePageMeta({ layout: 'bc-audio' })
 
 const config = useRuntimeConfig()
+const bcPrimarySite = computed(() => isBcPowerAudioPrimarySite(config.public.siteUrl))
+const storeHomePath = computed(() => (bcPrimarySite.value ? '/' : '/bc-audio'))
 const support = computed(() => getBcSupport(config))
 const route = useRoute()
 
@@ -56,7 +59,7 @@ useHead(() => ({
       <h1 class="bc-catalog-page__title">Product catalog</h1>
       <p class="bc-catalog-page__sub">
         Pick a unit from the grid — checkout form stays on the right.
-        <NuxtLink to="/bc-audio" class="bc-catalog-page__home">← Store home</NuxtLink>
+        <NuxtLink :to="storeHomePath" class="bc-catalog-page__home">← Store home</NuxtLink>
       </p>
     </header>
 

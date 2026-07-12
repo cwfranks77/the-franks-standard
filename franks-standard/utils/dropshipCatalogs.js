@@ -21,13 +21,13 @@ export const SHOP_STORES = [
   {
     id: 'brandy-sporting',
     name: "Brandy's Sporting Goods",
-    slug: 'brandyssportinggoods',
-    path: '/store/brandyssportinggoods',
-    tagline: 'Outdoor, fitness & sporting gear — dropship from Petra wholesale feed',
+    slug: 'brandysportinggoods',
+    path: '/store/brandysportinggoods',
+    tagline: 'Outdoor, fitness & sporting gear — coming soon',
     accent: '#146eb4',
-    status: 'live',
+    status: 'coming-soon',
+    comingSoon: true,
     dropship: true,
-    catalogUrl: '/catalog/brandy-sporting-products.json',
   },
   {
     id: 'store-directory',
@@ -40,6 +40,12 @@ export const SHOP_STORES = [
     dropship: false,
   },
 ]
+
+export function isShopStoreComingSoon (store) {
+  if (!store) return false
+  if (store.comingSoon || store.status === 'coming-soon') return true
+  return false
+}
 
 /** B&C Performance Audio — live dropship catalog (mirrors /shop inventory) */
 export const BC_AUDIO_CATALOG = [

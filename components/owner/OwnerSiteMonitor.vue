@@ -37,6 +37,13 @@ async function runAutoRemediation () {
   autoFixLog.value = log
 }
 
+function clearStaleErrors () {
+  if (!import.meta.client) return
+  localStorage.removeItem('tfs-site-errors-v1')
+  errors.value = []
+  reload()
+}
+
 onMounted(reload)
 </script>
 

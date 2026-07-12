@@ -3,6 +3,9 @@
   "imagePolicy": "external-only",
   "imageHost": "https://petraimages.com.s3.amazonaws.com",
   "count": 2391,
+  "audioCount": 304,
   "inStockCount": 1856,
-  "updatedAt": "2026-07-11T07:26:10.921Z"
+  "updatedAt": "2026-07-12T18:17:55.710Z",
+  "catalogSignature": "7576499c0ca3daa5581dcab8",
+  "sourceFile": "prodlist.csv"
 }
