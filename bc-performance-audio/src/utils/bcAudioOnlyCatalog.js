@@ -1,13 +1,13 @@
 /**
- * B&C Performance Audio — keep only audio SKUs on the storefront.
- * Home audio, car audio, and powersports/marine audio only.
+ * B&C Performance Audio — storefront catalog filter (audio + laptops).
  */
 
 export const BC_AUDIO_DEPARTMENTS = [
-  { key: 'all', label: '📂 ALL AUDIO DEPARTMENTS', query: 'showroom' },
+  { key: 'all', label: '📂 ALL DEPARTMENTS', query: 'showroom' },
   { key: 'home', label: '🔊 Home Audio', query: 'home-audio' },
   { key: 'car', label: '🚗 Car Audio', query: 'car-audio' },
   { key: 'powersports', label: '⚓ Powersports Audio', query: 'powersports-audio' },
+  { key: 'laptops', label: '💻 Laptops & Notebooks', query: 'laptops' },
 ]
 
 /** Petra / wholesale rows we treat as audio inventory. */
@@ -27,8 +27,13 @@ const AUDIO_CATEGORIES = new Set([
   'Musical Equipment',
 ])
 
+const LAPTOP_CATEGORY = 'Computers & Computer Accessories'
+
+const LAPTOP_PRODUCT_RE =
+  /\b(laptop|notebook|lptop|notbk|ntbk|chromebook|macbook|ultrabook|2-in-1|convertible)\b/i
+
 const NON_AUDIO_NAME_RE =
-  /\b(laptop|computer|monitor|keyboard|mouse|printer|router|network switch|tablet|iphone|android phone|phone case|screen protector|drill|wrench|hammer|refrigerator|microwave|coffee maker|toaster|blender|vacuum|lawn mower|grill|fishing rod|tent|mattress|office chair|desk chair|gps|navigator|navigation|drivesmart|drive\s*\d{2}|dash\s*cam|backup\s*cam|rearview|friction\s*mount|magnetic\s*mnt|wall\s*dog|garage\s*door|data-bus|cat5\/6|hdmi\s*ext|video\s*ext|ir\s*kit|terminal\s*cup|data modul|data module|interface module|bypass module|remote start|car alarm|security system|obd|can-?bus|crimestopper|evo-all|headrest monitor|overhead monitor|dvd player|antenna\b|cb radio|tire|wheel|oil filter|brake pad|spark plug|battery charger(?!.*audio))\b/i
+  /\b(computer|monitor|keyboard|mouse|printer|router|network switch|tablet|iphone|android phone|phone case|screen protector|drill|wrench|hammer|refrigerator|microwave|coffee maker|toaster|blender|vacuum|lawn mower|grill|fishing rod|tent|mattress|office chair|desk chair|gps|navigator|navigation|drivesmart|drive\s*\d{2}|dash\s*cam|backup\s*cam|rearview|friction\s*mount|magnetic\s*mnt|wall\s*dog|garage\s*door|data-bus|cat5\/6|hdmi\s*ext|video\s*ext|ir\s*kit|terminal\s*cup|data modul|data module|interface module|bypass module|remote start|car alarm|security system|obd|can-?bus|crimestopper|evo-all|headrest monitor|overhead monitor|dvd player|antenna\b|cb radio|tire|wheel|oil filter|brake pad|spark plug|battery charger(?!.*audio))\b/i
 
 const CAR_SECURITY_RE =
   /\b(bypass|interface module|data modul|remote start|security|alarm system|keyless|immobilizer|obd|can bus|crimestopper|evo-all)\b/i
@@ -57,9 +62,28 @@ function productText (product) {
   return `${product?.name || ''} ${product?.description || ''} ${product?.tagline || ''}`.trim()
 }
 
-/** True when this row belongs on the B&C audio storefront. */
+function isBcLaptopProduct (product) {
+  if (!product) return false
+  const cat = normalizeBcCatalogCategory(product.category)
+  const name = String(product?.name || '')
+  const text = productText(product)
+
+  if (cat === LAPTOP_CATEGORY) {
+    return LAPTOP_PRODUCT_RE.test(name) || LAPTOP_PRODUCT_RE.test(text)
+  }
+
+  if (cat === 'Cell Phone Batteries, Chargers & Cables') {
+    return /\b(ntbk|notebook|laptop)\b/i.test(text)
+  }
+
+  return false
+}
+
+/** True when this row belongs on the B&C storefront. */
 export function isBcAudioProduct (product) {
   if (!product) return false
+  if (isBcLaptopProduct(product)) return true
+
   const cat = normalizeBcCatalogCategory(product.category)
   if (!AUDIO_CATEGORIES.has(cat)) return false
 
@@ -109,9 +133,11 @@ export function isBcAudioProduct (product) {
   return false
 }
 
-/** home | car | powersports — for department filters. */
+/** home | car | powersports | laptops — for department filters. */
 export function bcAudioDepartmentKey (product) {
   if (!isBcAudioProduct(product)) return null
+
+  if (isBcLaptopProduct(product)) return 'laptops'
 
   const cat = normalizeBcCatalogCategory(product.category)
   const name = String(product?.name || '')
@@ -137,6 +163,7 @@ export function bcAudioDepartmentLabel (key) {
   if (key === 'home') return 'Home Audio'
   if (key === 'car') return 'Car Audio'
   if (key === 'powersports') return 'Powersports Audio'
+  if (key === 'laptops') return 'Laptops & Notebooks'
   return 'Authorized Audio'
 }
 
@@ -144,6 +171,7 @@ export function bcAudioDepartmentIcon (key) {
   if (key === 'home') return '🔊'
   if (key === 'car') return '🚗'
   if (key === 'powersports') return '⚓'
+  if (key === 'laptops') return '💻'
   return '🛒'
 }
 
