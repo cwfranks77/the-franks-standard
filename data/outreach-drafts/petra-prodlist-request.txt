@@ -1,0 +1,31 @@
+To: customerservice@petra.com
+From: B&C Performance Audio LLC <bc-audio@thefranksstandard.com>
+Reply-To: bc-audio@thefranksstandard.com
+Subject: B&C Performance Audio LLC — updated prodlist.csv and approved brand lines
+
+Hello Petra Dealer Support,
+
+My name is Charles W. Franks, owner of B&C Performance Audio LLC (Louisiana LLC, EIN and resale certificate on file with Petra).
+
+I am following up on my sales representative’s message that additional brand lines were approved for my dealer account. I have not yet seen those items in my product export.
+
+Could you please:
+
+1. Confirm which brand lines are active on my dealer account today.
+2. Send or point me to a fresh prodlist.csv (full product and price file) that includes every SKU I am authorized to sell.
+3. Confirm my FTP/EDI download path if automated catalog refresh is available on my account.
+
+My storefront pulls inventory from prodlist.csv for bcpoweraudio.com. My current export shows about 2,391 total SKUs with a limited audio selection, so I want to make sure I am receiving the complete authorized feed.
+
+Business contact:
+Charles W. Franks
+B&C Performance Audio LLC (division of The Franks Standard LLC)
+Phone: (833) 722-4147
+Email: bc-audio@thefranksstandard.com
+Website: https://www.bcpoweraudio.com
+
+Thank you for your help. A written reply with next steps or a timeline would be appreciated.
+
+Respectfully,
+Charles W. Franks
+B&C Performance Audio LLC

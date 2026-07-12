@@ -1,0 +1,46 @@
+# One-click Petra prodlist follow-up from B&C Performance Audio
+name: Send Petra catalog email
+
+on:
+  workflow_dispatch:
+    inputs:
+      force_resend:
+        description: 'Send even if already sent in the last 7 days'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Send Petra catalog request
+        env:
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          SENDGRID_FROM_EMAIL: ${{ secrets.SENDGRID_FROM_EMAIL }}
+          SENDGRID_BC_FROM_EMAIL: bc-audio@thefranksstandard.com
+          SENDGRID_BC_REPLY_TO: bc-audio@thefranksstandard.com
+          OUTREACH_LIVE: 'true'
+          PETRA_EMAIL_FORCE: ${{ inputs.force_resend }}
+        run: node scripts/send-petra-catalog-request.cjs --send
+
+      - name: Commit sent log
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/outreach-sent-log.json
+          if git diff --staged --quiet; then
+            echo "No log changes."
+          else
+            git commit -m "chore(outreach): log Petra catalog request email"
+            git push
+          fi
