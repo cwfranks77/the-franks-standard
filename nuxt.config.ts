@@ -36,14 +36,20 @@ const siteTitle = bcPrimarySite ? BC_LEGAL_NAME : franksSiteTitle
 const siteDescription = bcPrimarySite ? bcSiteDescription : META_DESCRIPTION
 const siteOgDescription = bcPrimarySite ? bcSiteDescription : OG_DESCRIPTION
 const bcLogoAsset = '/img/bc-logo-primary.png?v=20260622'
+/** Set NUXT_PUBLIC_COMING_SOON=false when ready to open for business. */
+const comingSoon = String(process.env.NUXT_PUBLIC_COMING_SOON ?? 'true').trim().toLowerCase() !== 'false'
 const bcPrerenderRoutes = bcPrimarySite
-  ? [
-      '/',
-      '/bc-audio/catalog',
-      '/bc-audio/open-door',
-      '/bc-audio/order-success',
-      '/bc-audio/sms-consent',
-    ]
+  ? (
+      comingSoon
+        ? ['/']
+        : [
+            '/',
+            '/bc-audio/catalog',
+            '/bc-audio/open-door',
+            '/bc-audio/order-success',
+            '/bc-audio/sms-consent',
+          ]
+    )
   : []
 const rawOg = process.env.NUXT_PUBLIC_OG_IMAGE
 const ogImage = (rawOg && String(rawOg).trim())
@@ -186,6 +192,7 @@ export default defineNuxtConfig({
     stripeDistributorConnectAccountId: process.env.STRIPE_DISTRIBUTOR_CONNECT_ACCOUNT_ID || '',
     public: {
       siteUrl: siteUrl,
+      comingSoon,
       opsUnlockAvailable,
       /** SHA-256 of normalized phrase — safe for static unlock; never the plain phrase. */
       opsAccessKeyHash,

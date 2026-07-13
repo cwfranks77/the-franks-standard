@@ -144,6 +144,7 @@ jobs:
 
       - name: Build static site
         env:
+          NUXT_PUBLIC_COMING_SOON: 'true'
           NUXT_PUBLIC_SUPABASE_URL: ${{ secrets.NUXT_PUBLIC_SUPABASE_URL }}
           NUXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NUXT_PUBLIC_SUPABASE_KEY }}
           NUXT_PUBLIC_SITE_URL: https://www.bcpoweraudio.com
