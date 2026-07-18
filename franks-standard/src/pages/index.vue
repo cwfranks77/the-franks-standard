@@ -1,46 +1,48 @@
-<script setup>
-definePageMeta({ layout: false })
+﻿<script setup>
+const { listings, pending, loadError } = usePublishedListings()
+const { profile, load: loadWpProfile } = useFranksSiteProfile()
+const featured = computed(() => listings.value.slice(0, 6))
+
+onMounted(() => {
+  loadWpProfile()
+})
 
 useHead({
-  title: 'The Franks Standard',
-  meta: [{ name: 'description', content: 'Coming soon.' }],
+  title: () => profile.value?.seo?.title || 'The Franks Standard',
+  meta: [
+    {
+      name: 'description',
+      content: () => profile.value?.seo?.description || 'Authenticity-first collectibles marketplace.',
+    },
+  ],
 })
 </script>
 
 <template>
-  <div class="coming-soon coming-soon--tfs">
-    <h1>The Franks Standard</h1>
-    <p>Coming soon</p>
+  <div class="marketplace-shell min-h-screen flex flex-col bg-bg text-textMain">
+    <MainHeader />
+    <HeroBanner />
+    <DepartmentScroll />
+
+    <section class="max-w-6xl mx-auto px-4 pb-2 w-full">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-lg font-semibold text-white">Live listings</h2>
+        <p class="text-xs text-white/80">Only real seller inventory ΓÇö no sample items</p>
+      </div>
+      <p v-if="loadError" class="text-sm text-amber-200 mb-4" role="alert">{{ loadError }}</p>
+      <p v-else-if="pending" class="text-sm text-white/70 mb-4">Loading live listingsΓÇª</p>
+    </section>
+
+    <SpotlightCarousel v-if="featured.length" :products="featured" />
+    <section v-else-if="!pending" class="px-4 pb-6">
+      <MarketplaceEmptyState />
+    </section>
+
+    <section v-if="listings.length > featured.length" class="max-w-6xl mx-auto px-4 pb-2">
+      <h2 class="text-lg font-semibold text-white mb-3">More on the floor</h2>
+    </section>
+    <ProductGrid v-if="listings.length > featured.length" :products="listings.slice(featured.length)" />
+
+    <MainFooter />
   </div>
 </template>
-
-<style scoped>
-.coming-soon {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 2rem;
-}
-
-.coming-soon--tfs {
-  background: #0d1117;
-  color: #f3f4f6;
-}
-
-.coming-soon--tfs h1 {
-  font-size: clamp(1.75rem, 5vw, 2.75rem);
-  font-weight: 700;
-  margin: 0 0 1rem;
-}
-
-.coming-soon--tfs p {
-  font-size: 1.25rem;
-  color: #9ca3af;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin: 0;
-}
-</style>

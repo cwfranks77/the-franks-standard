@@ -1,5 +1,4 @@
 # Publishes the same Nuxt static build to cwfranks77/bcpoweraudio for www.bcpoweraudio.com
-# (GitHub Pages allows one custom domain per repo; thefranksstandard.com stays on the-franks-standard.)
 name: Deploy B&C to bcpoweraudio.com
 
 on:
@@ -7,122 +6,15 @@ on:
     branches: [main, master]
     paths:
       - 'pages/bc-audio/**'
-      - 'bc-performance-audio/src/pages/**'
-      - 'bc-performance-audio/src/components/**'
-      - 'bc-performance-audio/src/composables/**'
-      - 'bc-performance-audio/src/utils/**'
-      - 'franks-standard/src/pages/index.vue'
-      - 'pages/index.vue'
-      - 'pages/cart.vue'
-      - 'bc-performance-audio/src/pages/bc-audio/cart.vue'
-      - 'content/**'
-      - 'src/content/**'
-      - 'public/catalog/**'
-      - 'data/petra-wholesale-by-sku.json'
-      - 'scripts/build-petra-wholesale-map.cjs'
-      - 'scripts/import-petra-prodlist.cjs'
-      - 'server/utils/petraWholesaleLookup.js'
-      - 'bc-performance-audio/src/server/**'
-      - 'franks-standard/src/server/**'
-      - 'public/img/bc-logo-primary.png'
-      - 'public/img/bc-catalog/**'
-      - 'bc-performance-audio/src/assets/img/**'
-      - 'bc-performance-audio/src/assets/icons/**'
-      - 'public/img/pictures/**'
-      - 'package.json'
-      - 'composables/useBcProductCatalog.js'
-      - 'utils/bcAudioOnlyCatalog.js'
-      - 'utils/bcProductImage.js'
-      - 'scripts/import-petra-prodlist.cjs'
-      - 'scripts/deploy-ai-voice-agent.cjs'
-      - 'scripts/deploy-franks-voice.cjs'
-      - 'scripts/twilio-voice-lib.cjs'
-      - 'composables/useBcDropshipCatalog.js'
-      - 'utils/supportContacts.js'
-      - 'middleware/**'
-      - 'bc-performance-audio/src/middleware/**'
-      - 'utils/bcPrimarySite.js'
-      - 'plugins/bc-domain-host.client.js'
-      - 'plugins/bc-https-canonical.client.js'
-      - 'bc-performance-audio/src/plugins/00-register-bc-middleware.ts'
-      - 'components/BcAudioNav.vue'
-      - 'bc-performance-audio/src/components/BcInstallApp.vue'
-      - 'components/OperatorUnlockModal.vue'
-      - 'composables/useOpsLogoKnock.ts'
-      - 'layouts/bc-audio.vue'
-      - 'components/BcAiSupportDrawer.vue'
-      - 'composables/useBcAiSupport.ts'
-      - 'composables/useBcTheme.ts'
-      - 'utils/bcSupport.js'
-      - 'docs/BC-PHONE-SETUP.md'
-      - 'middleware/bc-ops-host.ts'
-      - 'middleware/bc-ops-auth.ts'
-      - 'app.vue'
-      - 'components/BcOpsStoreEditor.vue'
-      - 'server/api/ops/bc-orders.get.ts'
-      - 'server/utils/ownerCms.ts'
-      - 'composables/useOpsUnlock.ts'
-      - 'composables/useOpsSession.ts'
-      - 'composables/useOpsApi.ts'
-      - 'utils/publicSupabase.js'
-      - 'plugins/ops-error-capture.client.ts'
-      - 'utils/opsClientAuth.js'
-      - 'composables/useBcPublicSiteContent.ts'
-      - 'utils/sha256Browser.js'
-      - 'supabase/functions/ops-cms-action/**'
-      - 'bc-performance-audio/src/utils/bcRetailPricing.js'
-      - 'utils/bcSeo.js'
-      - 'utils/bcMetaDefaults.js'
-      - 'utils/siteSocial.js'
-      - 'composables/useBcSiteMeta.ts'
-      - 'composables/useBcPublicSiteContent.ts'
-      - 'scripts/generate-bc-sitemap.cjs'
-      - 'middleware/bc-ops-gate.ts'
-      - 'pages/bc-audio/product/**'
-      - 'bc-performance-audio/src/pages/bc-audio/product/**'
-      - 'components/BcProductCatalogGrid.vue'
-      - 'components/BcDropshipOrderForm.vue'
-      - 'components/BcShippingEstimate.vue'
-      - 'components/BcCheckoutTermsAgreement.vue'
-      - 'utils/bcShipping.js'
-      - 'utils/bcCheckout.js'
-      - 'scripts/patch-gh-pages-spa.cjs'
-      - 'scripts/ensure-bc-cart-page.cjs'
-      - 'scripts/inject-spa-fallback.cjs'
-      - 'scripts/merge-project-layouts.cjs'
-      - 'scripts/merge-project-components.cjs'
-      - 'scripts/merge-project-middleware.cjs'
-      - 'scripts/restore-nuxt-franks-public-assets.cjs'
-      - 'composables/useBcCustomerAccount.ts'
-      - 'bc-performance-audio/src/composables/useBcCustomerAccount.ts'
-      - 'components/BcOpsDashboard.vue'
-      - 'components/BcOpsCustomerAccounts.vue'
-      - 'components/BcOpsAppSettings.vue'
-      - 'components/BcOpsActivityFeed.vue'
-      - 'components/BcOpsDisputes.vue'
-      - 'components/BcOpsAuctions.vue'
-      - 'components/BcOpsPayouts.vue'
-      - 'pages/bc-audio/account.vue'
-      - 'bc-performance-audio/src/pages/bc-audio/account.vue'
-      - 'assets/**'
-      - 'bc-performance-audio/src/assets/**'
-      - '.env.bc-owner.example'
-      - 'scripts/bc-combine-sql.cjs'
-      - 'scripts/bc-verify-project.cjs'
-      - 'scripts/run-bc-owner-jobs.cjs'
-      - 'scripts/restore-nuxt-bc-links.cjs'
-      - 'scripts/restore-nuxt-bc-public-assets.cjs'
-      - 'plugins/0.remove-static-fallback.client.ts'
-      - 'scripts/configure-bcpoweraudio-github-pages.cjs'
+      - 'bc-performance-audio/**'
       - 'nuxt.config.ts'
+      - 'package.json'
+      - 'middleware/**'
       - '.github/workflows/deploy-bcpoweraudio-site.yml'
   workflow_dispatch:
 
 permissions:
   contents: write
-
-# Cross-repo deploy needs a PAT with repo scope on cwfranks77/bcpoweraudio.
-# Add repository secret BC_DEPLOY_PAT (or disable this workflow; manual gh-pages push works).
 
 concurrency:
   group: pages-bcpoweraudio
@@ -144,20 +36,14 @@ jobs:
 
       - name: Build static site
         env:
-          NUXT_PUBLIC_COMING_SOON: 'true'
+          NUXT_PUBLIC_COMING_SOON: 'false'
           NUXT_PUBLIC_SUPABASE_URL: ${{ secrets.NUXT_PUBLIC_SUPABASE_URL }}
           NUXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NUXT_PUBLIC_SUPABASE_KEY }}
           NUXT_PUBLIC_SITE_URL: https://www.bcpoweraudio.com
           NUXT_BC_PRIMARY_SITE: 'true'
-          NUXT_PUBLIC_BC_AUDIO_SUPPORT_PHONE: ${{ secrets.NUXT_PUBLIC_BC_AUDIO_SUPPORT_PHONE }}
-          NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL: ${{ secrets.NUXT_PUBLIC_BC_AUDIO_SUPPORT_TEL }}
           NUXT_PUBLIC_BC_AUDIO_SUPPORT_EMAIL: bc-audio@thefranksstandard.com
           NUXT_PUBLIC_OPS_ACCESS_KEY: ${{ secrets.NUXT_PUBLIC_OPS_ACCESS_KEY }}
           NUXT_PUBLIC_OPS_ACCESS_KEY_HASH: ${{ secrets.NUXT_PUBLIC_OPS_ACCESS_KEY_HASH }}
-          NUXT_PUBLIC_BC_ACCOUNTS_REQUIRED: 'true'
-          NUXT_PUBLIC_PAY_LISTING_FEE_URL: ${{ secrets.NUXT_PUBLIC_PAY_LISTING_FEE_URL }}
-          NUXT_PUBLIC_PAY_PRO_SELLER_URL: ${{ secrets.NUXT_PUBLIC_PAY_PRO_SELLER_URL }}
-          NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL: ${{ secrets.NUXT_PUBLIC_PAY_ORDER_DEPOSIT_URL }}
         run: npm run build
 
       - name: Generate sitemap and robots.txt for search engines
@@ -165,7 +51,7 @@ jobs:
           NUXT_PUBLIC_SITE_URL: https://www.bcpoweraudio.com
         run: node scripts/generate-bc-sitemap.cjs
 
-      - name: Add CNAME (must match GitHub Pages custom domain exactly)
+      - name: Add CNAME
         run: echo 'www.bcpoweraudio.com' > .output/public/CNAME
 
       - name: Deploy to cwfranks77/bcpoweraudio

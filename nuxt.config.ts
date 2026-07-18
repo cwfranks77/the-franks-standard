@@ -36,8 +36,8 @@ const siteTitle = bcPrimarySite ? BC_LEGAL_NAME : franksSiteTitle
 const siteDescription = bcPrimarySite ? bcSiteDescription : META_DESCRIPTION
 const siteOgDescription = bcPrimarySite ? bcSiteDescription : OG_DESCRIPTION
 const bcLogoAsset = '/img/bc-logo-primary.png?v=20260622'
-/** Set NUXT_PUBLIC_COMING_SOON=false when ready to open for business. */
-const comingSoon = String(process.env.NUXT_PUBLIC_COMING_SOON ?? 'true').trim().toLowerCase() !== 'false'
+/** Set NUXT_PUBLIC_COMING_SOON=true to lock storefronts to home pages only. Default: open for business. */
+const comingSoon = String(process.env.NUXT_PUBLIC_COMING_SOON ?? 'false').trim().toLowerCase() === 'true'
 const bcPrerenderRoutes = bcPrimarySite
   ? (
       comingSoon
