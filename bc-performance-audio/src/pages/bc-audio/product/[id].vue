@@ -2,6 +2,7 @@
 import { BC_BRAND } from '~/utils/bcBrand.js'
 import { getBcCartPath } from '~/utils/bcSupport.js'
 import { bcProductJsonLd, bcProductSeoTitle, BC_SEO_KEYWORDS } from '~/utils/bcSeo.js'
+import { resolveBcProductImage, bcPlaceholderImageForProduct } from '~/utils/bcProductImage.js'
 definePageMeta({ layout: 'bc-audio' })
 
 const route = useRoute()
@@ -21,11 +22,13 @@ const catalogItem = computed(() => {
   return findProduct(productId.value)
 })
 
-watch([catalogItem, catalogPending], () => {
-  if (catalogPending.value) return
-  if (catalogItem.value) return
-  throw createError({ statusCode: 404, statusMessage: 'Product not found' })
-}, { immediate: true })
+const productImage = computed(() => {
+  const item = catalogItem.value
+  if (!item) return bcPlaceholderImageForProduct(null)
+  return resolveBcProductImage(item) || bcPlaceholderImageForProduct(item)
+})
+
+const missingProduct = computed(() => !catalogPending.value && !catalogItem.value)
 
 const buyUrl = computed(() => `/bc-audio/catalog?pick=${encodeURIComponent(productId.value)}`)
 
@@ -49,11 +52,18 @@ function handleAddToCart () {
     sku: item.sku || productId.value,
     price,
     retailPrice: price,
-    image: item.image || undefined,
+    image: productImage.value || undefined,
   })
   justAdded.value = true
   if (addedTimer) clearTimeout(addedTimer)
   addedTimer = setTimeout(() => { justAdded.value = false }, 8000)
+}
+
+function onImageError (event) {
+  const img = event?.target
+  if (!img) return
+  const fallback = bcPlaceholderImageForProduct(catalogItem.value)
+  if (img.src !== fallback) img.src = fallback
 }
 
 useSeoMeta({
@@ -63,20 +73,33 @@ useSeoMeta({
   robots: 'index, follow',
   ogTitle: () => (catalogItem.value ? bcProductSeoTitle(catalogItem.value.name) : BC_BRAND.full),
   ogDescription: () => catalogItem.value?.tagline || catalogItem.value?.description,
-  ogImage: () => bcProductImageSrc(catalogItem.value?.image, siteUrl.value),
+  ogImage: () => productImage.value,
 })
 
 useHead(() => ({
   link: [{ rel: 'canonical', href: `${siteUrl.value}/bc-audio/product/${productId.value}` }],
   script: catalogItem.value ? [{
     type: 'application/ld+json',
-    innerHTML: JSON.stringify(bcProductJsonLd(siteUrl.value, catalogItem.value)),
+    innerHTML: JSON.stringify(bcProductJsonLd(siteUrl.value, {
+      ...catalogItem.value,
+      image: productImage.value,
+    })),
   }] : [],
 }))
 </script>
 
 <template>
-  <article v-if="catalogItem" class="bc-product-page">
+  <div v-if="catalogPending" class="bc-product-page bc-product-page--loading">
+    <p>Loading product…</p>
+  </div>
+
+  <div v-else-if="missingProduct" class="bc-product-page bc-product-page--missing">
+    <h1>Product not found</h1>
+    <p>This item is not in the live catalog right now.</p>
+    <NuxtLink to="/bc-audio/catalog" class="bc-product-page__btn bc-product-page__btn--buy">Back to catalog</NuxtLink>
+  </div>
+
+  <article v-else-if="catalogItem" class="bc-product-page">
     <nav class="bc-product-page__crumb">
       <NuxtLink to="/bc-audio/catalog">Catalog</NuxtLink>
       <span aria-hidden="true"> / </span>
@@ -86,13 +109,14 @@ useHead(() => ({
     <div class="bc-product-page__grid">
       <div class="bc-product-page__media">
         <img
-          :src="bcProductImageSrc(catalogItem.image, siteUrl)"
+          :src="productImage"
           :alt="catalogItem.name"
           width="480"
           height="480"
           loading="lazy"
           decoding="async"
           referrerpolicy="no-referrer"
+          @error="onImageError"
         >
       </div>
       <div class="bc-product-page__copy">
@@ -116,7 +140,7 @@ useHead(() => ({
             Go to Cart →
           </NuxtLink>
         </div>
-        <p class="bc-product-page__legal">Sold by {{ BC_BRAND.full }} · B&amp;C Performance Audio LLC · Louisiana tax at checkout</p>
+        <p class="bc-product-page__legal">Sold by {{ BC_BRAND.full }} · B&amp;C Performance Audio LLC · Louisiana tax at checkout uses your shipping ZIP</p>
       </div>
     </div>
   </article>
@@ -124,6 +148,9 @@ useHead(() => ({
 
 <style scoped>
 .bc-product-page { max-width: 960px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+.bc-product-page--loading,
+.bc-product-page--missing { text-align: center; color: #9ca3af; }
+.bc-product-page--missing h1 { color: #f5f5f7; margin-bottom: 0.75rem; }
 .bc-product-page__crumb { font-size: 0.85rem; color: #9ca3af; margin-bottom: 1.5rem; }
 .bc-product-page__crumb a { color: #ff5252; text-decoration: none; }
 .bc-product-page__grid { display: grid; gap: 2rem; grid-template-columns: 1fr; }

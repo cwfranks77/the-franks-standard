@@ -122,7 +122,11 @@ export function filePathToRoute (relativeFile: string): string {
   let path = relativeFile
     .replace(/\\/g, '/')
     .replace(/\.vue$/, '')
-    .replace(/\/index$/, '')
+    // Root index.vue becomes "index" (no slash). Folder indexes become "owner/index".
+    // Both must collapse to the folder path — otherwise the storefront home is
+    // registered as "/index" and https://thefranksstandard.com/ shows a 404.
+    .replace(/(?:^|\/)index$/, '')
+    .replace(/\/$/, '')
 
   if (!path) {
     return '/'

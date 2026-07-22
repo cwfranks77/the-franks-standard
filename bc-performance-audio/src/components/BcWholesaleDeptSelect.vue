@@ -17,10 +17,11 @@ const departments = [
 ]
 
 function departmentCategory (key) {
-  if (key === 'home') return 'Home Audio & Theater'
-  if (key === 'car') return 'Automotive Electronics'
-  if (key === 'powersports') return 'Marine Electronics'
-  if (key === 'bluetooth') return 'Portable Audio & Video'
+  // Must match bcProductShelfCategory labels used by the catalog grid.
+  if (key === 'home') return 'Receivers & Home Theater'
+  if (key === 'car') return 'Car Audio'
+  if (key === 'powersports') return 'Marine & Powersports Audio'
+  if (key === 'bluetooth') return 'Bluetooth & Portable'
   return ''
 }
 

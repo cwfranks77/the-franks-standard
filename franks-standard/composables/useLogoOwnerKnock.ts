@@ -1,3 +1,5 @@
+import { useOwnerAccess } from './useOwnerAccess'
+
 /** Five taps on the pavilion logo opens owner unlock (hidden from public nav). */
 export function useLogoOwnerKnock () {
   const router = useRouter()

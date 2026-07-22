@@ -1,4 +1,4 @@
-﻿<!--
+<!--
 CURSOR: STRICT MODE ΓÇö B&C PERFORMANCE AUDIO standalone storefront home.
 Only this namespace. No Franks Standard branding in page copy.
 -->
@@ -7,7 +7,7 @@ import { computed, ref, watch } from 'vue'
 import { BC_BRAND } from '~/utils/bcBrand.js'
 import { BC_SHIPPING } from '~/utils/bcShipping.js'
 import { BC_LEGAL_NAME } from '~/utils/bcSeo.js'
-import { getBcCartPath, getBcSupport } from '~/utils/bcSupport.js'
+import { getBcSupport } from '~/utils/bcSupport.js'
 import { getPublicSupabaseKey, getPublicSupabaseUrl } from '~/utils/publicSupabase.js'
 import {
   BC_AUDIO_DEPARTMENTS,
@@ -31,7 +31,6 @@ type DeptKey = (typeof DEPARTMENTS)[number]['key']
 const config = useRuntimeConfig()
 const bcPrimarySite = computed(() => isBcPowerAudioPrimarySite(config.public.siteUrl))
 const storeHomePath = computed(() => (bcPrimarySite.value ? '/' : '/bc-audio'))
-const cartPath = computed(() => getBcCartPath(config))
 const support = computed(() => getBcSupport(config))
 const { canPurchase, accountsRequired, isLoggedIn, isPending } = useBcCustomerAccount()
 const route = useRoute()
@@ -44,7 +43,7 @@ const checkoutTermsAccepted = ref(false)
 const cartAddedId = ref('')
 const checkoutNoteById = ref<Record<string, string>>({})
 let cartAddedTimer: ReturnType<typeof setTimeout> | null = null
-const { addItem, itemCount, hasItem } = useCart()
+const { addItem, hasItem } = useCart()
 const { products, pending: catalogPending, error: catalogError, refresh: refreshCatalog } = useBcProductCatalog()
 
 const homepageCopy = ref({ ...BC_HOMEPAGE_DEFAULTS })
@@ -300,12 +299,6 @@ const isCheckoutBusy = (product: any) =>
 
     <div class="bc-home__gate">
       <div class="bc-home__gate-inner">
-        <NuxtLink :to="cartPath" class="bc-home__gate-cart" aria-label="View your cart" title="View your cart">
-          <svg class="bc-home__gate-cart-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path fill="currentColor" d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zM7.16 14h9.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 21.05 5H5.21L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7.42l.74-1z" />
-          </svg>
-          <span v-if="itemCount > 0" class="bc-home__gate-cart-badge">{{ itemCount > 99 ? '99+' : itemCount }}</span>
-        </NuxtLink>
         <label class="bc-home__gate-label" for="bc-dept-filter">Audio departments</label>
         <select
           id="bc-dept-filter"
@@ -331,7 +324,7 @@ const isCheckoutBusy = (product: any) =>
         </p>
       </div>
 
-      <p v-if="catalogPending" class="bc-home__status">Loading authorized catalogΓÇª</p>
+      <p v-if="catalogPending" class="bc-home__status">Loading authorized catalog…</p>
 
       <BcShowcaseScrollLanes
         v-else-if="catalogInDept.length"
@@ -339,18 +332,12 @@ const isCheckoutBusy = (product: any) =>
         class="bc-fade-in"
       />
 
-      <p v-if="!catalogPending && catalogInDept.length" class="bc-home__more bc-fade-in">
-        <NuxtLink to="/bc-audio/catalog" class="bc-home__catalog-link">Browse full catalog ΓåÆ</NuxtLink>
-      </p>
-
       <p v-else-if="!catalogPending && !catalogError && !catalogInDept.length" class="bc-home__status">
         No products in the catalog yet.
-        <NuxtLink to="/bc-audio/catalog" class="bc-home__catalog-link">Browse full catalog ΓåÆ</NuxtLink>
       </p>
 
       <p v-else-if="!catalogPending && selectedCategory !== 'all'" class="bc-home__status">
-        Department filter applies on the full catalog.
-        <NuxtLink :to="`/bc-audio/catalog?dept=${selectedCategory}`" class="bc-home__catalog-link">Open this department ΓåÆ</NuxtLink>
+        No products in this department right now. Choose All audio departments above.
       </p>
     </main>
 

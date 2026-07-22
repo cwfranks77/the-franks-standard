@@ -18,7 +18,10 @@ const BC_PLACEHOLDER_IMAGES = {
 export function bcProductImageSrc (raw, siteUrl = '') {
   const value = String(raw || '').trim()
   if (!value) return PLACEHOLDER
-  if (/^https?:\/\//i.test(value)) return value.replace(/^http:\/\//i, 'https://')
+  if (/^https?:\/\//i.test(value)) {
+    // Fix the old broken Petra host so catalog photos actually load.
+    return fixPetraImageUrl(value)
+  }
   if (value.startsWith('/')) return value
   const base = String(siteUrl || '').replace(/\/$/, '')
   return base ? `${base}/${value.replace(/^\//, '')}` : value

@@ -1,7 +1,4 @@
 <script setup>
-import { BC_PARTNER_STORES, isBcPartnerStoreComingSoon } from '~/utils/bcPartnerStores.js'
-import { getBcExternalSiteUrl } from '~/utils/bcExternalSite.js'
-import { franksMarketplacePath } from '~/utils/franksMarketplaceUrl.js'
 import { getBcCartPath, getBcSupport } from '~/utils/bcSupport.js'
 import { isBcPowerAudioPrimarySite } from '~/utils/bcPrimarySite.js'
 
@@ -9,60 +6,18 @@ const config = useRuntimeConfig()
 const bcPrimarySite = computed(() => isBcPowerAudioPrimarySite(config.public.siteUrl))
 const cartPath = computed(() => getBcCartPath(config))
 const brandHomePath = computed(() => (bcPrimarySite.value ? '/' : '/bc-audio'))
-const bcExternalUrl = computed(() => getBcExternalSiteUrl(config))
-const franksStoresUrl = computed(() => franksMarketplacePath(config, '/stores'))
 const support = computed(() => getBcSupport(config))
 
-/** Hide “Full website” when already on bcpoweraudio.com or when it points at the same host. */
-const showExternalSiteLink = computed(() => {
-  const external = bcExternalUrl.value
-  if (!external || bcPrimarySite.value) return false
-  try {
-    const siteRaw = String(config.public.siteUrl || '').trim()
-    const currentHost = new URL(siteRaw.startsWith('http') ? siteRaw : `https://${siteRaw}`).hostname
-    const externalHost = new URL(external).hostname
-    return currentHost !== externalHost
-  } catch {
-    return Boolean(external)
-  }
-})
 const onBrandKnock = inject('opsLogoKnock', null)
 
-const { isLoggedIn, isApproved, canPurchase } = useBcCustomerAccount()
+const { isLoggedIn, isApproved } = useBcCustomerAccount()
 const { itemCount } = useCart()
 
 const menuOpen = ref(false)
-const storesOpen = ref(false)
-const storesRoot = ref(null)
-
-const partnerStores = BC_PARTNER_STORES
-
-function storeComingSoon (store) {
-  return isBcPartnerStoreComingSoon(store)
-}
-
-function storeHref (store) {
-  if (store.id === 'bc-performance-audio') return store.path
-  return franksMarketplacePath(config, store.path)
-}
-
-function isExternalStore (store) {
-  return store.id !== 'bc-performance-audio'
-}
 
 function closeAll () {
   menuOpen.value = false
-  storesOpen.value = false
 }
-
-function onDocClick (e) {
-  if (storesRoot.value && !storesRoot.value.contains(e.target)) {
-    storesOpen.value = false
-  }
-}
-
-onMounted(() => document.addEventListener('click', onDocClick))
-onUnmounted(() => document.removeEventListener('click', onDocClick))
 </script>
 
 <template>
@@ -84,7 +39,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
         >
       </NuxtLink>
 
-      <!-- Cart sits directly left of Products / department dropdowns -->
+      <!-- Cart stays on the right with Products / department tools -->
       <div class="bc-nav__actions">
         <NuxtLink
           :to="cartPath"
@@ -126,64 +81,9 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
       </div>
 
       <nav class="bc-nav__links" :class="{ open: menuOpen }">
-        <!-- Mobile only: catalog + department inside expanded menu -->
         <div class="bc-nav__menu-tools bc-nav__menu-tools--mobile">
           <BcCatalogNavMenu class="bc-nav__catalog-menu" @close="closeAll" />
           <BcWholesaleDeptSelect class="bc-nav__dept-in-menu" @click="closeAll" />
-        </div>
-
-        <div ref="storesRoot" class="bc-nav__stores">
-          <button
-            type="button"
-            class="bc-nav__stores-btn"
-            :aria-expanded="storesOpen"
-            @click.stop="storesOpen = !storesOpen"
-          >
-            Shop Stores
-            <span class="bc-nav__chev" />
-          </button>
-          <div v-show="storesOpen" class="bc-nav__stores-panel">
-            <template v-for="store in partnerStores" :key="store.id">
-              <span
-                v-if="isExternalStore(store) && storeComingSoon(store)"
-                class="bc-nav__stores-item bc-nav__stores-item--soon"
-              >
-                <span class="bc-nav__stores-dot" :style="{ background: store.accent }" />
-                <span>
-                  <strong>{{ store.name }}</strong>
-                  <small>{{ store.tagline }}</small>
-                  <span class="bc-nav__stores-soon">Coming soon</span>
-                </span>
-              </span>
-              <a
-                v-else-if="isExternalStore(store)"
-                :href="storeHref(store)"
-                class="bc-nav__stores-item"
-                target="_blank"
-                rel="noopener noreferrer"
-                @click="closeAll"
-              >
-                <span class="bc-nav__stores-dot" :style="{ background: store.accent }" />
-                <span>
-                  <strong>{{ store.name }}</strong>
-                  <small>{{ store.tagline }}</small>
-                </span>
-              </a>
-              <NuxtLink
-                v-else
-                :to="storeHref(store)"
-                class="bc-nav__stores-item"
-                @click="closeAll"
-              >
-                <span class="bc-nav__stores-dot" :style="{ background: store.accent }" />
-                <span>
-                  <strong>{{ store.name }}</strong>
-                  <small>{{ store.tagline }}</small>
-                </span>
-              </NuxtLink>
-            </template>
-            <a :href="franksStoresUrl" class="bc-nav__stores-all" target="_blank" rel="noopener noreferrer" @click="closeAll">All stores on The Franks Standard ↗</a>
-          </div>
         </div>
 
         <NuxtLink to="/bc-audio/catalog" class="bc-nav__link bc-nav__link--catalog" @click="closeAll">Full catalog</NuxtLink>
@@ -192,14 +92,6 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
         </NuxtLink>
         <NuxtLink to="/bc-audio/open-door" class="bc-nav__link bc-nav__link--door" @click="closeAll">Open Door</NuxtLink>
         <BcInstallApp v-if="bcPrimarySite" variant="link" class="bc-nav__link" />
-        <a
-          v-if="showExternalSiteLink"
-          :href="bcExternalUrl"
-          class="bc-nav__link bc-nav__link--external"
-          target="_blank"
-          rel="noopener noreferrer"
-          @click="closeAll"
-        >Full website ↗</a>
         <a :href="`tel:${support.phoneTel}`" class="bc-nav__link bc-nav__phone" @click="closeAll">{{ support.phoneDisplay }}</a>
       </nav>
     </div>

@@ -1,6 +1,7 @@
 <script setup>
 import { processCatalogArrays } from '~/utils/dropshipCatalogs.js'
 import { BC_BRAND } from '~/utils/bcBrand.js'
+import { resolveBcProductImage } from '~/utils/bcProductImage.js'
 
 const props = defineProps({
   catalogs: { type: Array, default: () => [] },
@@ -9,9 +10,6 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['select'])
-
-const config = useRuntimeConfig()
-const siteUrl = computed(() => String(config.public.siteUrl || '').replace(/\/$/, ''))
 
 const filter = ref('All')
 const search = ref('')
@@ -108,7 +106,7 @@ function onImageError (event, item) {
       >
         <div class="bc-catalog__img-wrap">
           <img
-            :src="bcProductImageSrc(item.image, siteUrl)"
+            :src="resolveBcProductImage(item)"
             :alt="item.name"
             loading="lazy"
             decoding="async"

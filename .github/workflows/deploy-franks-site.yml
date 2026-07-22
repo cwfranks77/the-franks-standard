@@ -7,6 +7,10 @@ on:
     branches: [master]
     paths:
       - 'franks-standard/**'
+      - 'config/**'
+      - 'composables/**'
+      - 'components/**'
+      - 'error.vue'
       - 'public/img/**'
       - 'assets/**'
       - 'tailwind.config.cjs'
@@ -17,6 +21,7 @@ on:
       - 'scripts/inject-spa-fallback.cjs'
       - 'scripts/patch-gh-pages-spa.cjs'
       - 'scripts/merge-project-components.cjs'
+      - 'scripts/merge-project-composables.cjs'
 
 permissions:
   contents: read

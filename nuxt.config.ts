@@ -103,24 +103,30 @@ function bcPage (relativeFile: string, path: string) {
 const bcPagesFromProjectFolder = bcPrimarySite
   ? [
       bcPage('index.vue', '/'),
+      bcPage('cart.vue', '/cart'),
       bcPage('catalog.vue', '/bc-audio/catalog'),
+      bcPage('account.vue', '/bc-audio/account'),
       bcPage('open-door.vue', '/bc-audio/open-door'),
       bcPage('order-success.vue', '/bc-audio/order-success'),
       bcPage('sms-consent.vue', '/bc-audio/sms-consent'),
       bcPage('ops/index.vue', '/bc-audio/ops'),
       bcPage('ops/panel.vue', '/bc-audio/ops/panel'),
       bcPage('ops/marketing-automation.vue', '/bc-audio/ops/marketing-automation'),
+      bcPage('ops/social-ads.vue', '/bc-audio/ops/social-ads'),
       bcPage('product/[id].vue', '/bc-audio/product/:id'),
     ]
   : [
       bcPage('index.vue', '/bc-audio'),
+      bcPage('cart.vue', '/bc-audio/cart'),
       bcPage('catalog.vue', '/bc-audio/catalog'),
+      bcPage('account.vue', '/bc-audio/account'),
       bcPage('open-door.vue', '/bc-audio/open-door'),
       bcPage('order-success.vue', '/bc-audio/order-success'),
       bcPage('sms-consent.vue', '/bc-audio/sms-consent'),
       bcPage('ops/index.vue', '/bc-audio/ops'),
       bcPage('ops/panel.vue', '/bc-audio/ops/panel'),
       bcPage('ops/marketing-automation.vue', '/bc-audio/ops/marketing-automation'),
+      bcPage('ops/social-ads.vue', '/bc-audio/ops/social-ads'),
       bcPage('product/[id].vue', '/bc-audio/product/:id'),
     ]
 
@@ -238,13 +244,21 @@ export default defineNuxtConfig({
 
   hooks: {
     'pages:extend' (pages) {
+      const registeredPaths = new Set(pages.map((page) => page.path))
       for (const page of bcPagesFromProjectFolder) {
+        if (registeredPaths.has(page.path)) continue
         pages.push(page)
+        registeredPaths.add(page.path)
       }
       const franksPages = collectPagesFromDir(franksPagesRoot, rootDir)
       const franksRoutes = bcPrimarySite ? filterFranksPagesForBcPrimary(franksPages) : franksPages
       for (const page of franksRoutes) {
+        // Nuxt already discovers the root marketplace pages. Registering
+        // another file for the same URL can make the client router choose a
+        // missing route and show its 404 screen at the storefront home page.
+        if (registeredPaths.has(page.path)) continue
         pages.push(page)
+        registeredPaths.add(page.path)
       }
     },
     'vite:extendConfig' (viteInlineConfig) {
@@ -255,12 +269,17 @@ export default defineNuxtConfig({
 
   imports: {
     dirs: [
+      'composables',
+      'franks-standard/composables',
       'franks-standard/src/composables',
       'bc-performance-audio/src/composables',
     ],
   },
 
   components: [
+    // Merged root components (build copies Franks + B&C helpers here first).
+    { path: '~/components', pathPrefix: false },
+    { path: '~/franks-standard/components', pathPrefix: false },
     { path: '~/franks-standard/src/components', pathPrefix: false },
     { path: '~/bc-performance-audio/src/components', pathPrefix: false },
   ],

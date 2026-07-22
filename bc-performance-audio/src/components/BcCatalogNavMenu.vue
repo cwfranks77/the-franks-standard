@@ -1,10 +1,9 @@
 <script setup>
 import { BC_BRAND } from '~/utils/bcBrand.js'
+import { resolveBcProductImage } from '~/utils/bcProductImage.js'
 
 const emit = defineEmits(['close'])
 
-const config = useRuntimeConfig()
-const siteUrl = computed(() => String(config.public.siteUrl || '').replace(/\/$/, ''))
 const route = useRoute()
 
 const open = ref(false)
@@ -159,7 +158,7 @@ watch(() => route.fullPath, closeMenu)
               @click="closeMenu"
             >
               <img
-                :src="bcProductImageSrc(item.image, siteUrl)"
+                :src="resolveBcProductImage(item)"
                 :alt="item.name"
                 loading="lazy"
                 decoding="async"
