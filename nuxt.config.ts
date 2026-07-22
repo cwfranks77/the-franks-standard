@@ -268,20 +268,35 @@ export default defineNuxtConfig({
   },
 
   imports: {
-    dirs: [
-      'composables',
-      'franks-standard/composables',
-      'franks-standard/src/composables',
-      'bc-performance-audio/src/composables',
-    ],
+    // Last matching dir wins on duplicate names — keep the active site's composables last.
+    dirs: bcPrimarySite
+      ? [
+          'composables',
+          'franks-standard/composables',
+          'franks-standard/src/composables',
+          'bc-performance-audio/src/composables',
+        ]
+      : [
+          'composables',
+          'bc-performance-audio/src/composables',
+          'franks-standard/composables',
+          'franks-standard/src/composables',
+        ],
   },
 
   components: [
-    // Merged root components (build copies Franks + B&C helpers here first).
     { path: '~/components', pathPrefix: false },
-    { path: '~/franks-standard/components', pathPrefix: false },
-    { path: '~/franks-standard/src/components', pathPrefix: false },
-    { path: '~/bc-performance-audio/src/components', pathPrefix: false },
+    ...(bcPrimarySite
+      ? [
+          { path: '~/franks-standard/components', pathPrefix: false },
+          { path: '~/franks-standard/src/components', pathPrefix: false },
+          { path: '~/bc-performance-audio/src/components', pathPrefix: false },
+        ]
+      : [
+          { path: '~/bc-performance-audio/src/components', pathPrefix: false },
+          { path: '~/franks-standard/components', pathPrefix: false },
+          { path: '~/franks-standard/src/components', pathPrefix: false },
+        ]),
   ],
 
   vite: {
