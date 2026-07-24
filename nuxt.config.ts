@@ -52,7 +52,7 @@ const bcPrerenderRoutes = bcPrimarySite
     )
   : []
 const rawOg = process.env.NUXT_PUBLIC_OG_IMAGE
-const franksLogoAsset = '/img/tfs-logo-red-black.png'
+const franksLogoAsset = '/img/tfs-logo-red-black.png' // Franks header/favicon/OG mark
 const ogImage = (rawOg && String(rawOg).trim())
   ? String(rawOg).trim()
   : (bcPrimarySite ? `${siteUrl}/img/bc-logo-primary.png` : `${siteUrl}${franksLogoAsset}`)
