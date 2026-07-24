@@ -20,7 +20,9 @@ export async function verifyOpsPhraseBrowser (phrase, expectedHash) {
 export function storeOpsPhraseForSession (phrase) {
   if (!import.meta.client) return
   const normalized = normalizeOpsPhrase(phrase)
+  // Keep both: session for this tab, local so refresh / new tab still has the phrase for owner tools.
   sessionStorage.setItem(OPS_PHRASE_STORAGE_KEY, normalized)
+  localStorage.setItem(OPS_PHRASE_STORAGE_KEY, normalized)
 }
 
 export function setStoredOpsPhrase (phrase) {
@@ -35,7 +37,9 @@ export function clearStoredOpsPhrase () {
 
 export function getStoredOpsPhrase () {
   if (!import.meta.client) return ''
-  return sessionStorage.getItem(OPS_PHRASE_STORAGE_KEY) || ''
+  return sessionStorage.getItem(OPS_PHRASE_STORAGE_KEY)
+    || localStorage.getItem(OPS_PHRASE_STORAGE_KEY)
+    || ''
 }
 
 export function isOpsApiUnavailable (error) {
