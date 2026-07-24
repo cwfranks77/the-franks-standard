@@ -142,6 +142,12 @@ function runRebuildNote() {
                 Activity log
               </button>
             </div>
+            <p class="text-xs text-primary mt-2">
+              Redesign homepage text &amp; theme:
+              <NuxtLink to="/store-builder" class="underline hover:text-white">AI Store Builder</NuxtLink>
+              ·
+              <button type="button" class="underline hover:text-white" @click="selectedTool = 'ai-store'">Open in console</button>
+            </p>
           </div>
           <button
             type="button"

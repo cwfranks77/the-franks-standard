@@ -31,6 +31,11 @@ async function syncAuthed () {
   return ok
 }
 
+/**
+ * Shared ops session helper.
+ * - unlock(phrase): B&C logo knock path (stores phrase, then verifies)
+ * - grant(): Franks owner path after useOwnerAccess already verified + stored the phrase
+ */
 export function useOpsSession () {
   if (import.meta.client) {
     syncAuthed()
@@ -41,6 +46,12 @@ export function useOpsSession () {
     return syncAuthed()
   }
 
+  /** Same outcome as unlock when the phrase is already in sessionStorage. */
+  function grant () {
+    if (!import.meta.client) return
+    void syncAuthed()
+  }
+
   async function revoke () {
     clearStoredOpsPhrase()
     authed.value = false
@@ -49,6 +60,7 @@ export function useOpsSession () {
   return {
     isAuthed: authed,
     unlock,
+    grant,
     revoke,
     syncAuthed,
   }

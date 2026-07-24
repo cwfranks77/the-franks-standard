@@ -30,8 +30,9 @@ export function useOpsUnlock () {
       const expectedHash = String(config.public?.opsAccessKeyHash || '').trim().toLowerCase()
 
       async function unlockSuccess () {
-        grant()
+        // Store phrase first — owner listing tools read it from sessionStorage.
         storeOpsPhraseForSession(normalizeOpsPhrase(raw))
+        grant()
         phrase.value = ''
         return true
       }

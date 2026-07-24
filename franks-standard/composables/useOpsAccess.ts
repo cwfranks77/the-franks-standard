@@ -32,9 +32,10 @@ export const useOpsAccess = () => {
     const isValid = await verifyOpsPhrase(password)
 
     if (isValid && typeof window !== 'undefined') {
+      // Store phrase first — owner listing tools need it in sessionStorage.
+      storeOpsPhraseForSession(password)
       const { grant } = useOpsSession()
       grant()
-      storeOpsPhraseForSession(password)
       sessionStorage.setItem('ops_access_granted', 'true')
     }
 

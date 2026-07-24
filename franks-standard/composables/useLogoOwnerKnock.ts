@@ -36,6 +36,12 @@ export function useLogoOwnerKnock () {
       nextTick(() => {
         modalOpen.value = true
       })
+      return
+    }
+
+    // One to four taps: logo still acts as Home (count keeps rising for the secret unlock).
+    if (router.currentRoute.value.path !== '/') {
+      router.push('/')
     }
   }
 
@@ -45,7 +51,6 @@ export function useLogoOwnerKnock () {
   }
 
   if (import.meta.client) {
-    const router = useRouter()
     router.afterEach((to) => {
       if (to.path.startsWith('/owner')) modalOpen.value = false
     })

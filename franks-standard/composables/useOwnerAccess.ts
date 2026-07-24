@@ -5,6 +5,7 @@ import {
 } from '~/utils/opsClientAuth'
 import { verifyOpsPhrase } from '~/utils/verifyOpsPhrase'
 import { appendLocalActivity } from '~/utils/platformActivity'
+import { useOpsSession } from '~/franks-standard/composables/useOpsSession'
 
 export function useOwnerAccess () {
   const config = useRuntimeConfig()
@@ -15,9 +16,21 @@ export function useOwnerAccess () {
     () => Boolean(config.public.opsUnlockAvailable),
   )
 
+  function grantOpsSession () {
+    try {
+      const session = useOpsSession()
+      if (typeof session.grant === 'function') session.grant()
+    } catch {
+      /* ignore — unlock still works for the /owner page */
+    }
+  }
+
   function restoreSessionIfPossible () {
     if (!import.meta.client || unlocked.value) return
-    if (getStoredOpsPhrase()) unlocked.value = true
+    if (getStoredOpsPhrase()) {
+      unlocked.value = true
+      grantOpsSession()
+    }
   }
 
   if (import.meta.client) {
@@ -34,17 +47,20 @@ export function useOwnerAccess () {
     if (ok) {
       unlocked.value = true
       storeOpsPhraseForSession(phrase)
-      const { grant } = useOpsSession()
-      grant()
-      appendLocalActivity({
-        user_id: 'operator',
-        user_display_name: 'Operator',
-        ip_address: 'browser-session',
-        user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
-        action: 'Operator console unlocked',
-        action_category: 'owner',
-        metadata: {},
-      })
+      grantOpsSession()
+      try {
+        appendLocalActivity({
+          user_id: 'operator',
+          user_display_name: 'Operator',
+          ip_address: 'browser-session',
+          user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
+          action: 'Operator console unlocked',
+          action_category: 'owner',
+          metadata: {},
+        })
+      } catch {
+        /* activity log is optional */
+      }
       return true
     }
     error.value = 'That operator phrase does not match. Capitals do not matter. Include the exclamation mark at the end if your password has one.'
@@ -54,7 +70,11 @@ export function useOwnerAccess () {
   async function lock () {
     unlocked.value = false
     clearStoredOpsPhrase()
-    await useOpsSession().revoke()
+    try {
+      await useOpsSession().revoke()
+    } catch {
+      /* ignore */
+    }
   }
 
   return { unlocked, error, keyConfigured, tryUnlock, lock }

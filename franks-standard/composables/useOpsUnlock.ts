@@ -29,8 +29,9 @@ export function useOpsUnlock () {
         error.value = 'That phrase does not match. Type it exactly — spaces become dashes, capitals do not matter.'
         return false
       }
-      grant()
+      // Store phrase first — listing tools read it from sessionStorage.
       storeOpsPhraseForSession(normalizeOpsPhrase(raw))
+      grant()
       phrase.value = ''
       return true
     } finally {

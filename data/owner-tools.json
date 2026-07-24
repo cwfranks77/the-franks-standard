@@ -1,5 +1,12 @@
 [
   {
+    "id": "listing-control",
+    "icon": "🗂️",
+    "title": "Manage All Listings",
+    "description": "Search, edit, hide, or remove any seller listing on the marketplace — yours or someone else's.",
+    "category": "Operations"
+  },
+  {
     "id": "site-activity",
     "icon": "📡",
     "title": "Site Activity Monitor",
@@ -91,13 +98,6 @@
     "category": "Trust"
   },
   {
-    "id": "listing-control",
-    "icon": "🗑️",
-    "title": "Listing Control",
-    "description": "Remove, suspend, or flag counterfeit listings. Auto-freeze sellers on confirmed counterfeit.",
-    "category": "Trust"
-  },
-  {
     "id": "compliance-monitor",
     "icon": "🛡️",
     "title": "Compliance Monitor",
@@ -122,7 +122,7 @@
     "id": "coa-manager",
     "icon": "🛡️",
     "title": "COA Manager",
-    "description": "Issue and verify floor office COA serials (FS-YYYY-NNNNNN).",
+    "description": "COA registry with strict fraud locks — item thumbnails, verification, never transferable.",
     "category": "Trust"
   },
   {
