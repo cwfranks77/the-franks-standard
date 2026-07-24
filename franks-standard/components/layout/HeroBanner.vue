@@ -13,7 +13,7 @@
       <div class="flex flex-wrap gap-3 mb-6">
         <NuxtLink
           to="/browse"
-          class="inline-flex items-center px-4 py-2 rounded-md bg-gold text-stone-900 text-sm font-bold hover:bg-goldLight transition"
+          class="inline-flex items-center px-4 py-2 rounded-md bg-primary text-bg text-sm font-bold hover:bg-primary/90 transition"
         >
           Browse marketplace
         </NuxtLink>

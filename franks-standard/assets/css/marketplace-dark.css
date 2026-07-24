@@ -34,6 +34,14 @@ html:has(.marketplace-shell) body::before {
   color: #fbbf24 !important;
 }
 
+/* Solid gold/primary CTA buttons keep dark readable labels */
+.marketplace-shell a[class*="bg-primary"],
+.marketplace-shell button[class*="bg-primary"],
+.marketplace-shell .btn-primary {
+  color: #050509 !important;
+  -webkit-text-fill-color: #050509 !important;
+}
+
 .marketplace-shell input,
 .marketplace-shell textarea,
 .marketplace-shell select {
