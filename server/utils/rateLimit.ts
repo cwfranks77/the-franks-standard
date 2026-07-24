@@ -1,15 +1,15 @@
 /**
- * Rate Limiting Middleware
- * Protects sensitive endpoints from brute force and DDoS
+ * Rate limiting helpers for sensitive API routes.
+ * Kept under server/utils so Nitro does not treat this as auto middleware.
  */
 
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>()
 
-function getClientId(event: any): string {
+function getClientId (event: any): string {
   return getHeader(event, 'x-forwarded-for') || getHeader(event, 'x-real-ip') || 'unknown'
 }
 
-function checkRateLimit(clientId: string, limit: number, windowMs: number): boolean {
+function checkRateLimit (clientId: string, limit: number, windowMs: number): boolean {
   const now = Date.now()
   const record = rateLimitStore.get(clientId)
 
@@ -36,7 +36,7 @@ setInterval(() => {
   }
 }, 5 * 60 * 1000)
 
-export function requireRateLimit(limit: number, windowMs: number = 60000) {
+export function requireRateLimit (limit: number, windowMs: number = 60000) {
   return defineEventHandler((event) => {
     const clientId = getClientId(event)
     const allowed = checkRateLimit(clientId, limit, windowMs)
