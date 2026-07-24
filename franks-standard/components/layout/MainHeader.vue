@@ -54,7 +54,7 @@ function runSearch () {
 
           type="button"
 
-          class="h-9 w-9 rounded-md overflow-hidden shrink-0 p-0 border border-gold/25 bg-black cursor-pointer touch-manipulation"
+          class="h-12 w-12 rounded-md overflow-hidden shrink-0 p-0 border border-gold/25 bg-black cursor-pointer touch-manipulation"
 
           aria-label="The Franks Standard home"
 
@@ -64,15 +64,15 @@ function runSearch () {
 
           <img
 
-            src="/img/tfs-logo-red-black.png"
+            src="/img/tfs-logo-red-black.png?v=20260724c"
 
-            alt=""
+            alt="TFS"
 
             class="h-full w-full object-contain pointer-events-none select-none"
 
-            width="36"
+            width="48"
 
-            height="36"
+            height="48"
 
             decoding="async"
 

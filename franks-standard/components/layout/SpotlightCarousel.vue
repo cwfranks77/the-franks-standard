@@ -13,7 +13,7 @@ const displayProducts = computed(() =>
     description: p.description,
     category: p.category,
     price: p.price ?? null,
-    image: p.image || (p.images && p.images[0]) || '/img/franks-pavilion.png',
+    image: p.image || (p.images && p.images[0]) || '/img/tfs-logo-red-black.png?v=20260724c',
     coaSerial: p.coaSerial || (p.coaId ? String(p.coaId) : ''),
   })),
 )

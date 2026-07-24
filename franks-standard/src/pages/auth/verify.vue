@@ -1,7 +1,7 @@
 <template>
   <div class="auth-page">
     <div class="auth-card">
-      <img src="/img/tfs-logo-red-black.png" alt="" class="auth-logo" role="presentation" @error="onAuthLogoError" />
+      <img src="/img/tfs-logo-red-black.png?v=20260724c" alt="" class="auth-logo" role="presentation" @error="onAuthLogoError" />
       <h1>Confirming your email</h1>
       <p v-if="phase === 'loading'" class="text-muted">One moment while we finish signing you in...</p>
       <p v-else-if="phase === 'error'" class="err">{{ message }}</p>

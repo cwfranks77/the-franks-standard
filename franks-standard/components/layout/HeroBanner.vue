@@ -13,19 +13,19 @@
       <div class="flex flex-wrap gap-3 mb-6">
         <NuxtLink
           to="/browse"
-          class="inline-flex items-center px-4 py-2 rounded-md bg-primary text-bg text-sm font-bold hover:bg-primary/90 transition"
+          class="tfs-cta inline-flex items-center px-4 py-2 rounded-md text-sm font-bold transition"
         >
           Browse marketplace
         </NuxtLink>
         <NuxtLink
           to="/sell/start"
-          class="inline-flex items-center px-4 py-2 rounded-md border border-border text-sm text-white hover:border-gold hover:text-gold transition"
+          class="tfs-cta-secondary inline-flex items-center px-4 py-2 rounded-md border text-sm transition"
         >
           Start selling
         </NuxtLink>
         <NuxtLink
           to="/collections"
-          class="inline-flex items-center px-4 py-2 rounded-md border border-gold/35 text-sm text-gold hover:bg-gold/10 transition"
+          class="tfs-cta-outline inline-flex items-center px-4 py-2 rounded-md border text-sm transition"
         >
           Featured collections
         </NuxtLink>

@@ -1,4 +1,23 @@
 /* Loaded last — overrides light-theme rules from main.css on marketplace pages */
+
+/* Global CTA labels (modals teleport outside .marketplace-shell) */
+.tfs-cta {
+  background: #ffb300 !important;
+  color: #050509 !important;
+  -webkit-text-fill-color: #050509 !important;
+  font-weight: 700 !important;
+}
+.tfs-cta-secondary {
+  background: transparent !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+.tfs-cta-outline {
+  background: transparent !important;
+  color: #ffb300 !important;
+  -webkit-text-fill-color: #ffb300 !important;
+}
+
 html:has(.marketplace-shell) body {
   background: #050509 !important;
   color: #ffffff !important;
@@ -30,16 +49,33 @@ html:has(.marketplace-shell) body::before {
   color: #e5e7eb !important;
 }
 
-.marketplace-shell a:not([class*="bg-primary"]):not(.btn-primary):not(.btn) {
+.marketplace-shell a:not([class*="bg-primary"]):not(.btn-primary):not(.btn):not(.tfs-cta):not(.tfs-cta-secondary):not(.tfs-cta-outline) {
   color: #fbbf24 !important;
 }
 
 /* Solid gold/primary CTA buttons keep dark readable labels */
 .marketplace-shell a[class*="bg-primary"],
 .marketplace-shell button[class*="bg-primary"],
-.marketplace-shell .btn-primary {
+.marketplace-shell .btn-primary,
+.marketplace-shell .tfs-cta {
+  background: #ffb300 !important;
   color: #050509 !important;
   -webkit-text-fill-color: #050509 !important;
+  font-weight: 700 !important;
+}
+
+.marketplace-shell .tfs-cta-secondary {
+  background: transparent !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  border-color: #1f2933 !important;
+}
+
+.marketplace-shell .tfs-cta-outline {
+  background: transparent !important;
+  color: #ffb300 !important;
+  -webkit-text-fill-color: #ffb300 !important;
+  border-color: rgba(255, 179, 0, 0.45) !important;
 }
 
 .marketplace-shell input,

@@ -66,7 +66,7 @@ function submit () {
           <button
             v-if="keyConfigured"
             type="button"
-            class="px-3 py-2 text-sm rounded-md bg-primary text-bg font-medium hover:bg-primary/90 disabled:opacity-50"
+            class="px-3 py-2 text-sm rounded-md tfs-cta disabled:opacity-50"
             :disabled="submitting"
             @click="submit"
           >

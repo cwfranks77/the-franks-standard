@@ -5,7 +5,7 @@
     <p class="text-sm text-white/80 mb-5">{{ message }}</p>
     <NuxtLink
       to="/sell/start"
-      class="inline-flex items-center px-4 py-2 rounded-md bg-primary text-bg text-sm font-medium hover:bg-primary/90 transition"
+      class="tfs-cta inline-flex items-center px-4 py-2 rounded-md text-sm font-medium transition"
     >
       Start selling
     </NuxtLink>
