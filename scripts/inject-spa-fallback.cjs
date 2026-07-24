@@ -130,7 +130,7 @@ function fallbackForRoute (route) {
     <div class="fss-static-copy">`
   const heroCloseFranks = `    </div>
     <div class="fss-static-media">
-      <img src="/franks-pavilion.png" alt="The Franks Standard" width="200" height="200" />
+      <img src="/img/tfs-logo-red-black.png" alt="The Franks Standard" width="200" height="200" />
     </div>
   </div>
   ${SHARED_FOOTER}

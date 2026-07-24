@@ -12,6 +12,10 @@ on:
       - 'components/**'
       - 'error.vue'
       - 'public/img/**'
+      - 'public/logo.png'
+      - 'public/logo.svg'
+      - 'public/tfs-logo-red-black.png'
+      - 'public/franks-pavilion.png'
       - 'assets/**'
       - 'tailwind.config.cjs'
       - 'app.vue'
@@ -22,6 +26,7 @@ on:
       - 'scripts/patch-gh-pages-spa.cjs'
       - 'scripts/merge-project-components.cjs'
       - 'scripts/merge-project-composables.cjs'
+      - 'scripts/restore-nuxt-franks-public-assets.cjs'
 
 permissions:
   contents: read

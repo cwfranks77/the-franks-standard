@@ -52,9 +52,10 @@ const bcPrerenderRoutes = bcPrimarySite
     )
   : []
 const rawOg = process.env.NUXT_PUBLIC_OG_IMAGE
+const franksLogoAsset = '/img/tfs-logo-red-black.png'
 const ogImage = (rawOg && String(rawOg).trim())
   ? String(rawOg).trim()
-  : (bcPrimarySite ? `${siteUrl}/img/bc-logo-primary.png` : `${siteUrl}/franks-pavilion.png`)
+  : (bcPrimarySite ? `${siteUrl}/img/bc-logo-primary.png` : `${siteUrl}${franksLogoAsset}`)
 
 // Operator unlock: hash the phrase at BUILD time (normalized, same as the modal).
 // NUXT_PUBLIC_OPS_ACCESS_KEY is the source of truth when set; HASH is fallback only.
@@ -337,14 +338,14 @@ export default defineNuxtConfig({
     registerWebManifestInRouteRules: true,
     includeAssets: bcPrimarySite
       ? ['img/bc-logo-primary.png', 'logo.svg', 'icons/icon-192.png', 'icons/icon-512.png']
-      : ['franks-pavilion.png', 'logo.svg', 'icons/icon-192.png', 'icons/icon-512.png'],
+      : ['img/tfs-logo-red-black.png', 'tfs-logo-red-black.png', 'logo.svg', 'logo.png'],
     manifest: {
       id: '/',
       name: bcPrimarySite ? BC_LEGAL_NAME : 'The Franks Standard',
       short_name: bcPrimarySite ? BC_BRAND.short : 'Franks Standard',
       description: siteDescription,
-      theme_color: '#0c0619',
-      background_color: '#0c0619',
+      theme_color: bcPrimarySite ? '#0c0619' : '#050509',
+      background_color: bcPrimarySite ? '#0c0619' : '#050509',
       display: 'standalone',
       start_url: '/',
       scope: '/',
@@ -357,9 +358,9 @@ export default defineNuxtConfig({
             { src: bcLogoAsset, sizes: '512x512', type: 'image/png', purpose: 'maskable' },
           ]
         : [
-            { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
-            { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
-            { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+            { src: franksLogoAsset, sizes: '192x192', type: 'image/png', purpose: 'any' },
+            { src: franksLogoAsset, sizes: '512x512', type: 'image/png', purpose: 'any' },
+            { src: franksLogoAsset, sizes: '512x512', type: 'image/png', purpose: 'maskable' },
           ],
     },
     workbox: {
@@ -434,7 +435,7 @@ export default defineNuxtConfig({
         { name: 'twitter:title', content: siteTitle },
         { name: 'twitter:description', content: siteOgDescription },
         { name: 'twitter:image', content: ogImage },
-        { name: 'theme-color', content: '#0c0619' },
+        { name: 'theme-color', content: bcPrimarySite ? '#0c0619' : '#050509' },
         { name: 'mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
@@ -444,11 +445,11 @@ export default defineNuxtConfig({
         { 'http-equiv': 'Expires', content: '0' },
       ],
       link: [
-        { rel: 'icon', type: 'image/png', href: bcPrimarySite ? bcLogoAsset : '/franks-pavilion.png' },
-        { rel: 'apple-touch-icon', href: bcPrimarySite ? bcLogoAsset : '/franks-pavilion.png' },
+        { rel: 'icon', type: 'image/png', href: bcPrimarySite ? bcLogoAsset : franksLogoAsset },
+        { rel: 'apple-touch-icon', href: bcPrimarySite ? bcLogoAsset : franksLogoAsset },
         ...(bcPrimarySite
           ? [{ rel: 'preload', as: 'image', href: bcLogoAsset, fetchpriority: 'high' }]
-          : []),
+          : [{ rel: 'preload', as: 'image', href: franksLogoAsset, fetchpriority: 'high' }]),
         { rel: 'manifest', href: '/manifest.webmanifest' },
         { rel: 'preconnect', href: 'https://meet.jit.si' },
         { rel: 'preconnect', href: 'https://js.stripe.com' },

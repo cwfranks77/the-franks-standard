@@ -1,4 +1,4 @@
-﻿<script setup>
+<script setup>
 const { listings, pending, loadError } = usePublishedListings()
 const { profile, load: loadWpProfile } = useFranksSiteProfile()
 const featured = computed(() => listings.value.slice(0, 6))
@@ -27,10 +27,10 @@ useHead({
     <section class="max-w-6xl mx-auto px-4 pb-2 w-full">
       <div class="flex items-center justify-between mb-3">
         <h2 class="text-lg font-semibold text-white">Live listings</h2>
-        <p class="text-xs text-white/80">Only real seller inventory ΓÇö no sample items</p>
+        <p class="text-xs text-white/80">Only real seller inventory — no sample items</p>
       </div>
       <p v-if="loadError" class="text-sm text-amber-200 mb-4" role="alert">{{ loadError }}</p>
-      <p v-else-if="pending" class="text-sm text-white/70 mb-4">Loading live listingsΓÇª</p>
+      <p v-else-if="pending" class="text-sm text-white/70 mb-4">Loading live listings…</p>
     </section>
 
     <SpotlightCarousel v-if="featured.length" :products="featured" />

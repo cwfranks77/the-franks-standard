@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">The Franks Standard</title>
+  <rect width="512" height="512" fill="#000000"/>
+  <g fill="#D32F2F">
+    <!-- stepped base -->
+    <rect x="96" y="390" width="320" height="22" rx="2"/>
+    <rect x="118" y="368" width="276" height="22" rx="2"/>
+    <rect x="140" y="346" width="232" height="22" rx="2"/>
+    <!-- columns -->
+    <rect x="156" y="210" width="36" height="136" rx="3"/>
+    <rect x="210" y="210" width="36" height="136" rx="3"/>
+    <rect x="266" y="210" width="36" height="136" rx="3"/>
+    <rect x="320" y="210" width="36" height="136" rx="3"/>
+    <!-- column capitals -->
+    <rect x="148" y="198" width="52" height="14" rx="2"/>
+    <rect x="202" y="198" width="52" height="14" rx="2"/>
+    <rect x="258" y="198" width="52" height="14" rx="2"/>
+    <rect x="312" y="198" width="52" height="14" rx="2"/>
+    <!-- architrave -->
+    <rect x="132" y="176" width="248" height="24" rx="2"/>
+    <!-- pediment -->
+    <polygon points="256,78 388,176 124,176"/>
+  </g>
+  <!-- pediment inner face -->
+  <polygon points="256,102 362,168 150,168" fill="#B71C1C"/>
+  <text x="256" y="156" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="42" font-weight="700" fill="#FFCDD2" letter-spacing="4">TFS</text>
+</svg>
