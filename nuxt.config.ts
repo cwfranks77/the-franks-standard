@@ -52,7 +52,7 @@ const bcPrerenderRoutes = bcPrimarySite
     )
   : []
 const rawOg = process.env.NUXT_PUBLIC_OG_IMAGE
-const franksLogoAsset = '/img/TFS-logo.png?v=20260724d' // New red/black TFS temple logo
+const franksLogoAsset = '/img/TFS-logo.png?v=20260724e' // Red TFS letters on black (text-only)
 const ogImage = (rawOg && String(rawOg).trim())
   ? String(rawOg).trim()
   : (bcPrimarySite ? `${siteUrl}/img/bc-logo-primary.png` : `${siteUrl}${franksLogoAsset}`)

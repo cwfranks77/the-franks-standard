@@ -1,5 +1,7 @@
 <template>
-  <div class="page sellers-page">
+  <div class="marketplace-shell min-h-screen flex flex-col bg-bg text-textMain">
+    <MainHeader />
+    <div class="page sellers-page flex-1">
     <div class="container narrow">
       <h1>For stores and professional sellers</h1>
       <p class="lead text-muted">
@@ -16,8 +18,8 @@
           Live links to accredited appraiser directories (ASA, ISA, AAA), grading services, and sold comps —
           plus our <strong>Seller Excellence</strong> cycle: top sellers every six months earn reduced or waived platform fees.
         </p>
-        <NuxtLink to="/seller-tools" class="btn btn-primary btn-sm">Appraisal &amp; research links</NuxtLink>
-        <NuxtLink to="/top-sellers" class="btn btn-outline btn-sm">Top sellers &amp; rewards</NuxtLink>
+        <NuxtLink to="/seller-tools" class="btn btn-primary btn-sm tfs-cta">Appraisal &amp; research links</NuxtLink>
+        <NuxtLink to="/top-sellers" class="btn btn-outline btn-sm tfs-cta-outline">Top sellers &amp; rewards</NuxtLink>
       </div>
 
       <div class="card callout switch-callout highlight-transfer">
@@ -26,9 +28,9 @@
         <ul class="transfer-bullets">
           <li v-for="(b, i) in transferBullets" :key="i">{{ b }}</li>
         </ul>
-        <NuxtLink to="/sell/import" class="btn btn-primary btn-sm">AI inventory transfer →</NuxtLink>
-        <NuxtLink to="/sellers/switch" class="btn btn-outline btn-sm">Switching guide</NuxtLink>
-        <NuxtLink to="/learn" class="btn btn-outline btn-sm">Free guides &amp; tools</NuxtLink>
+        <NuxtLink to="/sell/import" class="btn btn-primary btn-sm tfs-cta">AI inventory transfer →</NuxtLink>
+        <NuxtLink to="/sellers/switch" class="btn btn-outline btn-sm tfs-cta-outline">Switching guide</NuxtLink>
+        <NuxtLink to="/learn" class="btn btn-outline btn-sm tfs-cta-outline">Free guides &amp; tools</NuxtLink>
       </div>
 
       <div class="card callout">
@@ -56,9 +58,9 @@
       </div>
 
       <div class="actions">
-        <a class="btn btn-primary btn-lg" :href="applicationMailto">Apply to sell (email)</a>
-        <NuxtLink to="/sell/start" class="btn btn-outline btn-lg">Prepare a single listing draft</NuxtLink>
-        <NuxtLink to="/contact" class="btn btn-dark btn-lg">Contact</NuxtLink>
+        <a class="btn btn-primary btn-lg tfs-cta" :href="applicationMailto">Apply to sell (email)</a>
+        <NuxtLink to="/sell/start" class="btn btn-outline btn-lg tfs-cta-outline">Prepare a single listing draft</NuxtLink>
+        <NuxtLink to="/contact" class="btn btn-dark btn-lg tfs-cta-secondary">Contact</NuxtLink>
       </div>
 
       <p class="text-muted mt-3 small">
@@ -67,6 +69,8 @@
         <NuxtLink to="/contact">Contact</NuxtLink>.
       </p>
     </div>
+    </div>
+    <MainFooter />
   </div>
 </template>
 
@@ -96,13 +100,13 @@ useSeoMeta({
 .sellers-promos { margin: 0 0 28px; }
 .switch-callout { margin-bottom: 1.25rem; }
 .highlight-transfer { border-color: rgba(0, 224, 255, 0.35); }
-.transfer-bullets { margin: 0.75rem 0 1rem; padding-left: 1.2rem; color: #374151; font-weight: 600; line-height: 1.55; }
+.transfer-bullets { margin: 0.75rem 0 1rem; padding-left: 1.2rem; color: #e5e7eb; font-weight: 600; line-height: 1.55; }
 .transfer-bullets li { margin-bottom: 0.35rem; }
 .switch-callout h2 { font-size: 1.15rem; color: var(--gold); margin-bottom: 0.5rem; }
-h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+h1 { font-size: 2rem; margin-bottom: 0.5rem; color: #ffffff; }
 .callout { padding: 1.5rem; margin: 1.5rem 0; }
 .callout h2 { font-size: 1.15rem; color: var(--gold); margin-bottom: 0.75rem; }
-.callout ul { color: #374151; line-height: 1.7; margin: 0; padding-left: 1.25rem; font-weight: 600; }
+.callout ul { color: #e5e7eb; line-height: 1.7; margin: 0; padding-left: 1.25rem; font-weight: 600; }
 .callout li { margin-bottom: 0.5rem; }
 .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 1.5rem; }
 .small { line-height: 1.5; }

@@ -1,5 +1,7 @@
 <template>
-  <div class="browse-page">
+  <div class="marketplace-shell min-h-screen flex flex-col bg-bg text-textMain">
+    <MainHeader />
+    <div class="browse-page flex-1">
     <div class="container">
       <div class="browse-header">
         <div class="browse-title-row">
@@ -95,9 +97,11 @@
         <p style="font-size: 3rem;">🏛️</p>
         <h3 class="mt-2">No Listings Yet</h3>
         <p class="text-muted mt-1">The marketplace is just getting started. Be the first to list an item!</p>
-        <NuxtLink to="/sell/start" class="btn btn-primary mt-3">List Your First Item</NuxtLink>
+        <NuxtLink to="/sell/start" class="btn btn-primary mt-3 tfs-cta">List Your First Item</NuxtLink>
       </div>
     </div>
+    </div>
+    <MainFooter />
   </div>
 </template>
 
@@ -278,7 +282,7 @@ const filteredListings = computed(() => {
 <style scoped>
 .browse-page { padding: 40px 0; }
 .browse-header { margin-bottom: 24px; }
-.browse-header h1 { font-size: 2rem; }
+.browse-header h1 { font-size: 2rem; color: #ffffff; }
 .filter-banner {
   margin-top: 10px;
   padding: 10px 14px;
@@ -288,6 +292,7 @@ const filteredListings = computed(() => {
   font-size: 0.9rem;
   font-weight: 600;
   max-width: 640px;
+  color: #fde68a;
 }
 .limited-badge {
   top: auto;
@@ -303,13 +308,17 @@ const filteredListings = computed(() => {
 }
 .search-input { flex: 2; min-width: 200px; }
 .search-input::placeholder {
-  color: #000000;
-  font-weight: 700;
+  color: #9ca3af;
+  font-weight: 600;
   opacity: 1;
 }
 .filter-select { flex: 1; min-width: 160px; }
 
 .listing-card { text-decoration: none; color: inherit; }
+.listing-card :deep(.card-body),
+.listing-card .card-body {
+  color: #ffffff;
+}
 .listing-image {
   position: relative;
   aspect-ratio: 1;
@@ -347,7 +356,7 @@ const filteredListings = computed(() => {
   font-size: 0.95rem;
   font-weight: 600;
   margin: 4px 0 10px;
-  color: #111827;
+  color: #ffffff;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
