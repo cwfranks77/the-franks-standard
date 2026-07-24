@@ -11,7 +11,7 @@
       >
       <img
         v-else
-        src="/img/TFS-logo.png?v=20260724d"
+        src="/img/TFS-logo.png?v=20260724e"
         alt="The Franks Standard"
         class="error-logo"
         width="160"

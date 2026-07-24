@@ -64,7 +64,7 @@ function runSearch () {
 
           <img
 
-            src="/img/TFS-logo.png?v=20260724d"
+            src="/img/TFS-logo.png?v=20260724e"
 
             alt="TFS"
 
