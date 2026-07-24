@@ -10,6 +10,21 @@ const props = defineProps({
 
 const emit = defineEmits(['update:phrase', 'close', 'submit'])
 
+const inputRef = ref(null)
+let ignoreCloseUntil = 0
+
+watch(
+  () => props.open,
+  (isOpen) => {
+    if (!isOpen) return
+    // Ignore the opening tap so it cannot immediately close via the backdrop
+    ignoreCloseUntil = Date.now() + 400
+    nextTick(() => {
+      inputRef.value?.focus?.()
+    })
+  },
+)
+
 function onInput (e) {
   emit('update:phrase', e.target.value)
 }
@@ -18,16 +33,22 @@ function onKeydown (e) {
   if (e.key === 'Enter') emit('submit')
   if (e.key === 'Escape') emit('close')
 }
+
+function requestClose () {
+  if (Date.now() < ignoreCloseUntil) return
+  emit('close')
+}
 </script>
 
 <template>
   <div v-if="open" class="op-modal" role="dialog" aria-modal="true" aria-label="Owner unlock">
-    <div class="op-modal__backdrop" @click="emit('close')" />
-    <div class="op-modal__card">
+    <div class="op-modal__backdrop" @click="requestClose" />
+    <div class="op-modal__card" @click.stop>
       <h2>Owner unlock</h2>
       <p>Enter your owner phrase to open the B&amp;C console.</p>
       <p v-if="!keyConfigured" class="op-modal__warn">Owner phrase is not configured on this deploy.</p>
       <input
+        ref="inputRef"
         :value="phrase"
         class="input op-modal__input"
         type="password"
@@ -38,7 +59,7 @@ function onKeydown (e) {
       >
       <p v-if="error" class="op-modal__err">{{ error }}</p>
       <div class="op-modal__actions">
-        <button type="button" class="btn btn-outline btn-sm" @click="emit('close')">Cancel</button>
+        <button type="button" class="btn btn-outline btn-sm" @click="requestClose">Cancel</button>
         <button type="button" class="btn btn-primary btn-sm" :disabled="submitting" @click="emit('submit')">
           {{ submitting ? 'Checking…' : 'Unlock' }}
         </button>

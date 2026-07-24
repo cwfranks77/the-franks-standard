@@ -1,54 +1,61 @@
-import { getStoredOpsPhrase, setStoredOpsPhrase, clearStoredOpsPhrase } from '~/utils/opsClientAuth.js'
-
-function normalizeOpsPhrase (phrase: string) {
-  return String(phrase || '')
-    .normalize('NFKC')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .toLowerCase()
-}
-
-async function hashOpsPhrase (phrase: string) {
-  const data = new TextEncoder().encode(normalizeOpsPhrase(phrase))
-  const hash = await crypto.subtle.digest('SHA-256', data)
-  return Array.from(new Uint8Array(hash)).map((b) => b.toString(16).padStart(2, '0')).join('')
-}
-
-const authed = ref(false)
-
-async function syncAuthed () {
-  if (!import.meta.client) return false
-  const config = useRuntimeConfig()
-  const expected = String(config.public.opsAccessKeyHash || '').trim().toLowerCase()
-  const phrase = getStoredOpsPhrase()
-  if (!expected || !phrase) {
-    authed.value = false
-    return false
-  }
-  const actual = await hashOpsPhrase(phrase)
-  const ok = actual === expected
-  authed.value = ok
-  return ok
-}
+import {
+  getStoredOpsPhrase,
+  storeOpsPhraseForSession,
+  clearStoredOpsPhrase,
+  verifyOpsPhraseBrowser,
+} from '~/utils/opsClientAuth.js'
+import { normalizeOpsPhrase } from '~/utils/opsPhrase.js'
 
 /**
- * Shared ops session helper.
- * - unlock(phrase): B&C logo knock path (stores phrase, then verifies)
- * - grant(): Franks owner path after useOwnerAccess already verified + stored the phrase
+ * B&C owner session — logo ×5 unlock on the storefront.
+ * Verify first, then store the phrase (never wipe a good session on a typo).
  */
 export function useOpsSession () {
+  const config = useRuntimeConfig()
+  const authed = useState<boolean>('bc-ops-authed', () => false)
+
+  function restoreSessionIfPossible () {
+    if (!import.meta.client || authed.value) return
+    // Sync restore so route middleware does not bounce while hash verify is in flight.
+    if (getStoredOpsPhrase()) authed.value = true
+  }
+
   if (import.meta.client) {
-    syncAuthed()
+    restoreSessionIfPossible()
+  }
+
+  async function syncAuthed () {
+    if (!import.meta.client) return false
+    const expected = String(config.public.opsAccessKeyHash || '').trim().toLowerCase()
+    const phrase = getStoredOpsPhrase()
+    if (!expected || !phrase) {
+      authed.value = false
+      return false
+    }
+    const ok = await verifyOpsPhraseBrowser(phrase, expected)
+    authed.value = ok
+    return ok
   }
 
   async function unlock (phrase: string) {
-    setStoredOpsPhrase(phrase)
-    return syncAuthed()
+    const expected = String(config.public.opsAccessKeyHash || '').trim().toLowerCase()
+    const raw = String(phrase || '')
+    if (!expected) {
+      authed.value = false
+      return false
+    }
+    const ok = await verifyOpsPhraseBrowser(raw, expected)
+    if (!ok) return false
+    // Store only after a successful match — wrong attempts must not clear a good phrase.
+    storeOpsPhraseForSession(normalizeOpsPhrase(raw))
+    authed.value = true
+    return true
   }
 
-  /** Same outcome as unlock when the phrase is already in sessionStorage. */
+  /** Restore in-memory auth when the phrase is already in storage (middleware / refresh). */
   function grant () {
     if (!import.meta.client) return
+    restoreSessionIfPossible()
     void syncAuthed()
   }
 
@@ -63,5 +70,6 @@ export function useOpsSession () {
     grant,
     revoke,
     syncAuthed,
+    restoreSessionIfPossible,
   }
 }

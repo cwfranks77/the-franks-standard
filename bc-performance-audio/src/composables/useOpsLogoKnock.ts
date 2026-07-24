@@ -1,8 +1,8 @@
 import { useOpsSession } from '~/composables/useOpsSession'
-import { getBcOpsPanelPath } from '~/utils/bcSupport.js'
+import { getBcOpsPanelPath, getBcStorefrontPath } from '~/utils/bcSupport.js'
 
 const KNOCK_COUNT = 5
-const KNOCK_WINDOW_MS = 2500
+const KNOCK_WINDOW_MS = 2800
 const KNOCK_STORAGE_KEY = 'bc_ops_logo_taps_v1'
 
 function readKnockTimes (): number[] {
@@ -30,6 +30,7 @@ function clearKnockTimes () {
 
 export function useOpsLogoKnock () {
   const config = useRuntimeConfig()
+  const router = useRouter()
   const { unlock } = useOpsSession()
 
   const isDev = computed(() => import.meta.dev)
@@ -38,28 +39,39 @@ export function useOpsLogoKnock () {
     || Boolean(config.public.opsUnlockAvailable),
   )
 
-  const opModalOpen = ref(false)
+  // useState survives layout remounts (NuxtLink home nav used to wipe a plain ref modal).
+  const opModalOpen = useState('bc-ops-knock-modal', () => false)
   const opPhrase = ref('')
   const opError = ref('')
   const opSubmitting = ref(false)
 
-  let knockTimes: number[] = []
-
   function onBrandOrLogoClick (e?: Event) {
-    if (e?.defaultPrevented) return
+    // Stop the logo NuxtLink from navigating on the 5th tap (and remounting away the popup).
+    e?.preventDefault?.()
     try {
       e?.stopPropagation?.()
     } catch { /* ignore */ }
+
     const now = Date.now()
-    knockTimes = readKnockTimes().filter((t) => now - t < KNOCK_WINDOW_MS)
+    const knockTimes = readKnockTimes().filter((t) => now - t < KNOCK_WINDOW_MS)
     knockTimes.push(now)
     writeKnockTimes(knockTimes)
+
     if (knockTimes.length >= KNOCK_COUNT) {
       clearKnockTimes()
-      knockTimes = []
-      opModalOpen.value = true
       opPhrase.value = ''
       opError.value = ''
+      // Defer open so the same tap cannot hit the modal backdrop and instantly close it.
+      nextTick(() => {
+        opModalOpen.value = true
+      })
+      return
+    }
+
+    // Taps 1–4: logo still acts as Home (count keeps rising for the secret unlock).
+    const home = getBcStorefrontPath()
+    if (router.currentRoute.value.path !== home) {
+      void router.push(home)
     }
   }
 
@@ -69,17 +81,26 @@ export function useOpsLogoKnock () {
     opError.value = ''
   }
 
+  if (import.meta.client) {
+    router.afterEach((to) => {
+      if (to.path.startsWith('/bc-audio/ops')) opModalOpen.value = false
+    })
+  }
+
   async function submitOpModal () {
     opSubmitting.value = true
     opError.value = ''
-    const ok = await unlock(opPhrase.value)
-    opSubmitting.value = false
-    if (!ok) {
-      opError.value = 'Wrong phrase — try again.'
-      return
+    try {
+      const ok = await unlock(opPhrase.value)
+      if (!ok) {
+        opError.value = 'Wrong phrase — try again.'
+        return
+      }
+      closeOpModal()
+      await navigateTo(getBcOpsPanelPath())
+    } finally {
+      opSubmitting.value = false
     }
-    closeOpModal()
-    await navigateTo(getBcOpsPanelPath())
   }
 
   return {

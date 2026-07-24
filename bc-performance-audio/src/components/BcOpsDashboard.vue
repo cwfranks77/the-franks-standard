@@ -1,10 +1,14 @@
 <script setup>
+import { getBcStorefrontPath } from '~/utils/bcSupport.js'
+
 const emit = defineEmits(['go'])
 
 const props = defineProps({
   pendingAccounts: { type: Number, default: 0 },
   orderCount: { type: Number, default: 0 },
 })
+
+const storefrontPath = computed(() => getBcStorefrontPath())
 
 const tools = [
   { id: 'website', icon: '🌐', title: 'Edit website', desc: 'Headline, ribbon, header text, colors, Google preview' },
@@ -52,7 +56,7 @@ function open (id) {
         :key="t.id"
         type="button"
         class="bc-dash__card"
-        @click="open(t.id)"
+        @click.stop.prevent="open(t.id)"
       >
         <span class="bc-dash__icon">{{ t.icon }}</span>
         <strong>{{ t.title }}</strong>
@@ -62,7 +66,7 @@ function open (id) {
 
     <div class="bc-dash__links">
       <NuxtLink to="/bc-audio/ops/marketing-automation" class="btn btn-primary btn-sm">Marketing automation ↗</NuxtLink>
-      <NuxtLink to="/bc-audio" class="btn btn-outline btn-sm" target="_blank">Preview storefront ↗</NuxtLink>
+      <NuxtLink :to="storefrontPath" class="btn btn-outline btn-sm" target="_blank">Preview storefront ↗</NuxtLink>
       <NuxtLink to="/bc-audio/account" class="btn btn-outline btn-sm" target="_blank">Customer account page ↗</NuxtLink>
     </div>
   </div>
@@ -92,6 +96,7 @@ function open (id) {
   background: #121216;
   color: #f5f5f7;
   cursor: pointer;
+  touch-action: manipulation;
   display: flex;
   flex-direction: column;
   gap: 6px;

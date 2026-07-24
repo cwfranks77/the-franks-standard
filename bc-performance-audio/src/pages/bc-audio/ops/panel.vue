@@ -65,7 +65,12 @@ const tabs = [
 
 function goToTab (id) {
   tab.value = id
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  if (!import.meta.client) return
+  nextTick(() => {
+    const panel = document.getElementById('bc-owner-tool-panel')
+    panel?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    panel?.focus?.()
+  })
 }
 
 const orderSummary = computed(() => summarizeBcOrders(orders.value))
@@ -220,12 +225,14 @@ useSeoMeta({
         type="button"
         class="bc-panel__tab"
         :class="{ active: tab === t.id }"
-        @click="tab = t.id"
+        :aria-current="tab === t.id ? 'page' : undefined"
+        @click.stop.prevent="goToTab(t.id)"
       >
         {{ t.label }}
       </button>
     </nav>
 
+    <div id="bc-owner-tool-panel" tabindex="-1" class="bc-panel__tool-panel">
   <!-- DASHBOARD -->
     <section v-show="tab === 'dashboard'" class="bc-panel__section">
       <h2>Owner dashboard — all tools</h2>
@@ -500,11 +507,12 @@ useSeoMeta({
       </ul>
       <div class="bc-panel__actions">
         <button type="button" class="btn btn-outline btn-sm" @click="clearSiteCache">Clear cache &amp; reload</button>
-        <NuxtLink to="/bc-audio" class="btn btn-outline btn-sm">Open storefront</NuxtLink>
+        <NuxtLink :to="getBcStorefrontPath()" class="btn btn-outline btn-sm">Open storefront</NuxtLink>
         <NuxtLink to="/bc-audio/open-door" class="btn btn-outline btn-sm">Open Door page</NuxtLink>
         <NuxtLink to="/bc-audio/ops/marketing-automation" class="btn btn-outline btn-sm">Marketing automation</NuxtLink>
       </div>
     </section>
+    </div>
   </div>
 </template>
 
@@ -522,12 +530,18 @@ useSeoMeta({
 }
 .bc-stat__label { display: block; font-size: 0.72rem; text-transform: uppercase; color: #9ca3af; margin-bottom: 4px; }
 .bc-stat__value { font-size: 1.35rem; color: #ff5252; }
-.bc-panel__tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1.25rem; }
+.bc-panel__tabs {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1.25rem;
+  position: sticky; top: 68px; z-index: 40;
+  padding: 8px 0; background: rgba(10, 10, 12, 0.94); backdrop-filter: blur(10px);
+}
 .bc-panel__tab {
   padding: 8px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.12);
   background: #16161c; color: #b8bcc6; font-size: 0.82rem; font-weight: 700; cursor: pointer;
+  touch-action: manipulation;
 }
 .bc-panel__tab.active { background: rgba(211,47,47,0.2); border-color: #ff5252; color: #fff; }
+.bc-panel__tool-panel { scroll-margin-top: 140px; outline: none; }
 .bc-panel__section {
   padding: 1.25rem 1.5rem; border: 1px solid rgba(255,255,255,0.08);
   border-radius: 12px; background: var(--bc-bg-card, #16161c);

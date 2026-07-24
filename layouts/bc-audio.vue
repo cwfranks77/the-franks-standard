@@ -5,17 +5,23 @@
       <slot />
     </main>
 
-    <OperatorUnlockModal
-      :open="opModalOpen"
-      :phrase="opPhrase"
-      :error="opError"
-      :submitting="opSubmitting"
-      :key-configured="keyConfigured"
-      :is-dev="isDev"
-      @update:phrase="opPhrase = $event"
-      @close="closeOpModal"
-      @submit="submitOpModal"
-    />
+    <!--
+      ClientOnly + shared useState modal: do not clear opModalOpen on mount —
+      that raced remounts (logo NuxtLink / lazy shell) and closed the unlock popup.
+    -->
+    <ClientOnly>
+      <OperatorUnlockModal
+        :open="opModalOpen"
+        :phrase="opPhrase"
+        :error="opError"
+        :submitting="opSubmitting"
+        :key-configured="keyConfigured"
+        :is-dev="isDev"
+        @update:phrase="opPhrase = $event"
+        @close="closeOpModal"
+        @submit="submitOpModal"
+      />
+    </ClientOnly>
 
     <BcAiSupportDrawer />
     <BcInstallApp />

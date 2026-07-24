@@ -18,6 +18,12 @@ const menuOpen = ref(false)
 function closeAll () {
   menuOpen.value = false
 }
+
+function onBrandClick (e) {
+  closeAll()
+  // Knock handler preventDefault() on the 5th tap so the link does not navigate away
+  onBrandKnock?.(e)
+}
 </script>
 
 <template>
@@ -26,7 +32,7 @@ function closeAll () {
       <NuxtLink
         :to="brandHomePath"
         class="bc-nav__brand"
-        @click="(e) => { closeAll(); onBrandKnock?.(e) }"
+        @click="onBrandClick"
       >
         <img
           src="/img/bc-logo-primary.png?v=20260622"
