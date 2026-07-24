@@ -22,6 +22,7 @@ on:
       - 'nuxt.config.ts'
       - 'package.json'
       - 'middleware/**'
+      - 'server/**'
       - 'scripts/inject-spa-fallback.cjs'
       - 'scripts/patch-gh-pages-spa.cjs'
       - 'scripts/merge-project-components.cjs'
