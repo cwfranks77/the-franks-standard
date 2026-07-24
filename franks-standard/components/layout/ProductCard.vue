@@ -18,7 +18,7 @@ const priceLabel = computed(() => {
   <article class="bg-surface2 border border-border rounded-lg overflow-hidden hover:border-gold transition flex flex-col text-textMain">
     <div class="aspect-video bg-bg">
       <img
-        :src="product.image || '/img/tfs-logo-red-black.png?v=20260724c'"
+        :src="product.image || '/img/TFS-logo.png?v=20260724d'"
         :alt="product.title || product.name"
         class="w-full h-full object-contain bg-black"
         loading="lazy"

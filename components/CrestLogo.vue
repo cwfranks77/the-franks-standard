@@ -1,5 +1,5 @@
 <template>
-  <img src="/img/tfs-logo-red-black.png?v=20260724c" alt="The Franks Standard crest" class="crest" />
+  <img src="/img/TFS-logo.png?v=20260724d" alt="The Franks Standard crest" class="crest" />
 </template>
 
 <style scoped>

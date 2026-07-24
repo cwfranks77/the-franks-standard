@@ -1,21 +1,26 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
-  <title id="title">The Franks Standard</title>
+  <title id="title">TFS — The Franks Standard</title>
   <rect width="512" height="512" fill="#000000"/>
-  <g fill="#D32F2F">
-    <rect x="96" y="390" width="320" height="22" rx="2"/>
-    <rect x="118" y="368" width="276" height="22" rx="2"/>
-    <rect x="140" y="346" width="232" height="22" rx="2"/>
-    <rect x="156" y="210" width="36" height="136" rx="3"/>
-    <rect x="210" y="210" width="36" height="136" rx="3"/>
-    <rect x="266" y="210" width="36" height="136" rx="3"/>
-    <rect x="320" y="210" width="36" height="136" rx="3"/>
-    <rect x="148" y="198" width="52" height="14" rx="2"/>
-    <rect x="202" y="198" width="52" height="14" rx="2"/>
-    <rect x="258" y="198" width="52" height="14" rx="2"/>
-    <rect x="312" y="198" width="52" height="14" rx="2"/>
-    <rect x="132" y="176" width="248" height="24" rx="2"/>
-    <polygon points="256,78 388,176 124,176"/>
+  <g fill="none" stroke="#E53935" stroke-width="14" stroke-linejoin="miter">
+    <polygon points="256,70 400,180 112,180"/>
+    <rect x="120" y="180" width="272" height="28"/>
   </g>
-  <polygon points="256,102 362,168 150,168" fill="#B71C1C"/>
-  <text x="256" y="156" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="42" font-weight="700" fill="#FFCDD2" letter-spacing="4">TFS</text>
+  <g fill="#E53935">
+    <!-- columns -->
+    <rect x="148" y="220" width="12" height="150"/>
+    <rect x="168" y="220" width="12" height="150"/>
+    <rect x="188" y="220" width="12" height="150"/>
+    <rect x="236" y="220" width="12" height="150"/>
+    <rect x="256" y="220" width="12" height="150"/>
+    <rect x="276" y="220" width="12" height="150"/>
+    <rect x="324" y="220" width="12" height="150"/>
+    <rect x="344" y="220" width="12" height="150"/>
+    <rect x="364" y="220" width="12" height="150"/>
+    <!-- steps -->
+    <rect x="130" y="370" width="252" height="14"/>
+    <rect x="118" y="390" width="276" height="14"/>
+    <rect x="106" y="410" width="300" height="14"/>
+    <rect x="94" y="430" width="324" height="14"/>
+  </g>
+  <text x="256" y="165" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="48" font-weight="700" fill="#E53935" letter-spacing="6">TFS</text>
 </svg>

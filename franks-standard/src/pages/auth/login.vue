@@ -1,7 +1,7 @@
 <template>
   <div class="auth-page">
     <div class="auth-card">
-      <img src="/img/tfs-logo-red-black.png?v=20260724c" alt="" class="auth-logo" role="presentation" @error="onAuthLogoError" />
+      <img src="/img/TFS-logo.png?v=20260724d" alt="" class="auth-logo" role="presentation" @error="onAuthLogoError" />
       <h1>Sign In</h1>
       <p class="text-muted">Welcome back to The Franks Standard</p>
 

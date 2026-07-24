@@ -2,7 +2,7 @@
 export function publicListingImageUrl (
   supabaseUrl: string,
   path: string | null | undefined,
-  fallback = '/img/tfs-logo-red-black.png?v=20260724c',
+  fallback = '/img/TFS-logo.png?v=20260724d',
 ): string {
   const base = String(supabaseUrl || '').replace(/\/$/, '')
   const cleaned = String(path || '').trim().replace(/^\//, '')
