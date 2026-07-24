@@ -64,11 +64,11 @@ function runSearch () {
 
           <img
 
-            src="/img/franks-pavilion.png"
+            src="/img/tfs-logo-red-black.png"
 
             alt=""
 
-            class="h-full w-full object-cover pointer-events-none select-none"
+            class="h-full w-full object-contain pointer-events-none select-none"
 
             width="36"
 

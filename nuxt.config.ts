@@ -52,7 +52,7 @@ const bcPrerenderRoutes = bcPrimarySite
     )
   : []
 const rawOg = process.env.NUXT_PUBLIC_OG_IMAGE
-const franksLogoAsset = '/img/franks-pavilion.png' // Rebuild pavilion logo (header/favicon/OG)
+const franksLogoAsset = '/img/tfs-logo-red-black.png' // New red/black TFS temple logo
 const ogImage = (rawOg && String(rawOg).trim())
   ? String(rawOg).trim()
   : (bcPrimarySite ? `${siteUrl}/img/bc-logo-primary.png` : `${siteUrl}${franksLogoAsset}`)
@@ -343,7 +343,7 @@ export default defineNuxtConfig({
     registerWebManifestInRouteRules: true,
     includeAssets: bcPrimarySite
       ? ['img/bc-logo-primary.png', 'logo.svg', 'icons/icon-192.png', 'icons/icon-512.png']
-      : ['franks-pavilion.png', 'img/franks-pavilion.png', 'logo.svg', 'logo.png'],
+      : ['img/tfs-logo-red-black.png', 'tfs-logo-red-black.png', 'logo.svg', 'logo.png'],
     manifest: {
       id: '/',
       name: bcPrimarySite ? BC_LEGAL_NAME : 'The Franks Standard',
